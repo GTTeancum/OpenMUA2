@@ -1,0 +1,116 @@
+{
+  "source": "Original RMSE52 DOL; static inspection only, not MG02 runtime replay",
+  "dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+  "dol_size": 6190656,
+  "historical_mg02_entry": "0x80388908",
+  "historical_mg02_end": "0x80388B00",
+  "conversion_instructions_in_range": [
+    {
+      "pc": "8038895C",
+      "instruction_word": "FC20081E",
+      "opcode": "fctiwz",
+      "destination_fpr": 1,
+      "input_fpr": 1
+    },
+    {
+      "pc": "80388960",
+      "instruction_word": "FC40101E",
+      "opcode": "fctiwz",
+      "destination_fpr": 2,
+      "input_fpr": 2
+    },
+    {
+      "pc": "80388964",
+      "instruction_word": "FC00001E",
+      "opcode": "fctiwz",
+      "destination_fpr": 0,
+      "input_fpr": 0
+    },
+    {
+      "pc": "803889B4",
+      "instruction_word": "FC20081E",
+      "opcode": "fctiwz",
+      "destination_fpr": 1,
+      "input_fpr": 1
+    },
+    {
+      "pc": "803889B8",
+      "instruction_word": "FC40101E",
+      "opcode": "fctiwz",
+      "destination_fpr": 2,
+      "input_fpr": 2
+    },
+    {
+      "pc": "803889BC",
+      "instruction_word": "FC00001E",
+      "opcode": "fctiwz",
+      "destination_fpr": 0,
+      "input_fpr": 0
+    },
+    {
+      "pc": "80388A14",
+      "instruction_word": "FC40101E",
+      "opcode": "fctiwz",
+      "destination_fpr": 2,
+      "input_fpr": 2
+    },
+    {
+      "pc": "80388A18",
+      "instruction_word": "FC60181E",
+      "opcode": "fctiwz",
+      "destination_fpr": 3,
+      "input_fpr": 3
+    },
+    {
+      "pc": "80388A1C",
+      "instruction_word": "FC20081E",
+      "opcode": "fctiwz",
+      "destination_fpr": 1,
+      "input_fpr": 1
+    },
+    {
+      "pc": "80388A24",
+      "instruction_word": "FC00001E",
+      "opcode": "fctiwz",
+      "destination_fpr": 0,
+      "input_fpr": 0
+    },
+    {
+      "pc": "80388A88",
+      "instruction_word": "FC40101E",
+      "opcode": "fctiwz",
+      "destination_fpr": 2,
+      "input_fpr": 2
+    },
+    {
+      "pc": "80388A8C",
+      "instruction_word": "FC60181E",
+      "opcode": "fctiwz",
+      "destination_fpr": 3,
+      "input_fpr": 3
+    },
+    {
+      "pc": "80388A90",
+      "instruction_word": "FC20081E",
+      "opcode": "fctiwz",
+      "destination_fpr": 1,
+      "input_fpr": 1
+    },
+    {
+      "pc": "80388A98",
+      "instruction_word": "FC00001E",
+      "opcode": "fctiwz",
+      "destination_fpr": 0,
+      "input_fpr": 0
+    },
+    {
+      "pc": "80388AF8",
+      "instruction_word": "FC60181E",
+      "opcode": "fctiwz",
+      "destination_fpr": 3,
+      "input_fpr": 3
+    }
+  ],
+  "interpretation": "This historical mismatch range contains fctiwz instructions. This does not identify the MG02 executed path or operands or prove the live mismatch is fixed.",
+  "native_gameplay_retested": false
+}

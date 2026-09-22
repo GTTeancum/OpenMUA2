@@ -1,0 +1,131 @@
+{
+  "chunk_start": "0x804aa900",
+  "chunk_end": "0x804ae900",
+  "capture": "boot-ogl-fixed final memory",
+  "original_sha256": "9f9662d4909174a187a7f5ee4c4454457b6e7d520fed650867231d2091a08c2e",
+  "observed_sha256": "a9714693652f0dd04c59116e8c719df600254ce49f37efe2cdefb27c91db72ef",
+  "word_difference_count": 24,
+  "word_differences": [
+    {
+      "address": "0x804ae53c",
+      "original": "4bf40a79",
+      "observed": "4bb5e1bd"
+    },
+    {
+      "address": "0x804ae54c",
+      "original": "4bf40a69",
+      "observed": "4bb5e1ad"
+    },
+    {
+      "address": "0x804ae55c",
+      "original": "4bf40a59",
+      "observed": "4bb5e19d"
+    },
+    {
+      "address": "0x804ae56c",
+      "original": "4bf40a49",
+      "observed": "4bb5e18d"
+    },
+    {
+      "address": "0x804ae57c",
+      "original": "4bf40a39",
+      "observed": "4bb5e17d"
+    },
+    {
+      "address": "0x804ae58c",
+      "original": "4bf40a29",
+      "observed": "4bb5e16d"
+    },
+    {
+      "address": "0x804ae59c",
+      "original": "4bf40a19",
+      "observed": "4bb5e15d"
+    },
+    {
+      "address": "0x804ae5ac",
+      "original": "4bf40a09",
+      "observed": "4bb5e14d"
+    },
+    {
+      "address": "0x804ae5bc",
+      "original": "4bf409f9",
+      "observed": "4bb5e13d"
+    },
+    {
+      "address": "0x804ae5cc",
+      "original": "4bf409e9",
+      "observed": "4bb5e12d"
+    },
+    {
+      "address": "0x804ae5dc",
+      "original": "4bf409d9",
+      "observed": "4bb5e11d"
+    },
+    {
+      "address": "0x804ae5ec",
+      "original": "4bf409c9",
+      "observed": "4bb5e10d"
+    },
+    {
+      "address": "0x804ae5fc",
+      "original": "4bf409b9",
+      "observed": "4bb5e0fd"
+    },
+    {
+      "address": "0x804ae60c",
+      "original": "4bf409a9",
+      "observed": "4bb5e0ed"
+    },
+    {
+      "address": "0x804ae61c",
+      "original": "4bf40999",
+      "observed": "4bb5e0dd"
+    },
+    {
+      "address": "0x804ae62c",
+      "original": "4bf40989",
+      "observed": "4bb5e0cd"
+    },
+    {
+      "address": "0x804ae63c",
+      "original": "4bf40979",
+      "observed": "4bb5e0bd"
+    },
+    {
+      "address": "0x804ae64c",
+      "original": "4bf40969",
+      "observed": "4bb5e0ad"
+    },
+    {
+      "address": "0x804ae65c",
+      "original": "4bf40959",
+      "observed": "4bb5e09d"
+    },
+    {
+      "address": "0x804ae66c",
+      "original": "4bf40949",
+      "observed": "4bb5e08d"
+    },
+    {
+      "address": "0x804ae67c",
+      "original": "4bf40939",
+      "observed": "4bb5e07d"
+    },
+    {
+      "address": "0x804ae68c",
+      "original": "4bf40929",
+      "observed": "4bb5e06d"
+    },
+    {
+      "address": "0x804ae69c",
+      "original": "4bf40919",
+      "observed": "4bb5e05d"
+    },
+    {
+      "address": "0x804ae6c0",
+      "original": "4bf40981",
+      "observed": "4bb5e0f1"
+    }
+  ],
+  "note": "Runtime hash protection remained enabled; native coverage was withheld for a mismatching chunk."
+}

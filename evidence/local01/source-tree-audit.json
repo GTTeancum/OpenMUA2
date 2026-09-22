@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "original_source_files": 37302,
+  "delivered_source_files": 37269,
+  "source_node_count": 42,
+  "unique_verified_source_archives": 41,
+  "transformation_counts": {
+    "preserve_upstream_git_metadata_under_nonactive_name": 160,
+    "omitted_font_resource": 33,
+    "materialized_internal_file_symlink": 10,
+    "recovered_MG01_build_fix": 3,
+    "recovered_FPC01_fctiw_fix": 2
+  },
+  "changed_production_files": [
+    "project/lib/DolRecomp/src/cpu/cpu.c",
+    "project/lib/ModernGekko/CMakeLists.txt",
+    "project/lib/ModernGekko/vendor/dolphin/CMakeLists.txt",
+    "project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c",
+    "project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/CMakeLists.txt"
+  ],
+  "unexpected_source_edits": 0,
+  "case_collisions": 0,
+  "windows_reserved_path_components": 0,
+  "source_symlinks": 0,
+  "longest_relative_source_path": 224,
+  "source_bytes": 848853796,
+  "status": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "game_id": "RMSE52",
+  "module_abi": 3,
+  "cpu_abi": 4,
+  "cpu_state_size": 3536,
+  "entry_point": 2147508080,
+  "code_ranges": 2,
+  "verified_chunk_hashes": 325,
+  "covered_text_bytes": 5316160,
+  "rel_modules": 0,
+  "uncovered_dispatch_test": true,
+  "game_boot_test": false
+}

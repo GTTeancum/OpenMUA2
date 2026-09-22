@@ -1,0 +1,3 @@
+SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+Integrity PASS: 37,429 files (FILE-MANIFEST.json).
+Existing repository retained. No staging, commit, config change or reset was performed.

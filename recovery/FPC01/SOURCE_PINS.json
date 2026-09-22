@@ -1,0 +1,55 @@
+{
+  "dolrecomp_commit": "1bec3554ecc4817cf78319ca3d8a0669477f29fa",
+  "recompcore_commit": "10f7ac4fe48f74485fbc161ebf4d67242e11e671",
+  "moderngekko_commit": "edd460adad0e82b56909af1d793642c83b6d31c8",
+  "reference_files": [
+    {
+      "path": "Source/Core/Core/PowerPC/PowerPC.cpp",
+      "sha256": "684ad2216ac457825caadaa51f4d3d07ad6ce2972ece87be86051da8d4d173f3"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PowerPC.h",
+      "sha256": "de16912719c6259cea69913e475c364173976e56d59e818330ed815a3b1ff411"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PPCCache.cpp",
+      "sha256": "8027ff33c074b2e30f55553d720216ca41c44060473424deff23ecbab1c2d05e"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PPCCache.h",
+      "sha256": "8a3835dee79831387fafd24bf79c1506198a6b65b9fb2cc08061c0aee986221b"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/ConditionRegister.cpp",
+      "sha256": "9e2722d92305d4c1cabc1e947d386321453888900acffd9f2025993a41a18c4f"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/ConditionRegister.h",
+      "sha256": "72c2aa97de7a70ee6954dab3a5718602ca0ecfc592c7d0155eaf9f690b8edfb2"
+    },
+    {
+      "path": "Source/Core/Common/Config/Config.cpp",
+      "sha256": "365223e3b0e6dbc46da6e11890036b17d9c0261491d57d237d2a1edf8b310376"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatMisc.cpp",
+      "sha256": "18684297e618da4c0e680816b1d966abf3d2e180130ed6766afb74b42d282ce8"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/Interpreter_FPUtils.h",
+      "sha256": "860cb48bf7596eeb9e0872c73029697a060c9c7a4cca7aa758122ddbd0b3cff7"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/ExceptionUtils.h",
+      "sha256": "ad94ae0edd58df16a8dcd09634e0f732e17677502da393f0ba24374d3297c78c"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Gekko.h",
+      "sha256": "fad9f1cbb274f63955b44680627bfab542e1940b24b6f6625ee1653436a6020c"
+    },
+    {
+      "path": "Source/Core/Common/FloatUtils.h",
+      "sha256": "b0fee6cae8b5592f6b7626161c2425d034dee607ebefab3ad3947c03b02940be"
+    }
+  ]
+}

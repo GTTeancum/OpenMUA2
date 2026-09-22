@@ -1,0 +1,630 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Offline OpenMUA2 workspace, build, and backup commands. Python 3.11+.
+
+No downloads, installers, global Git configuration, implicit clean, or game writes.
+LOCAL01 is the recovered MG01 + FPC01 source baseline, not MR01 gameplay code.
+"""
+from __future__ import annotations
+import argparse
+from contextlib import contextmanager
+from datetime import datetime, timezone
+import hashlib
+import json
+import os
+from pathlib import Path, PurePosixPath
+import platform
+import re
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import uuid
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[1]
+GAME_ID = 'RMSE52'
+BASELINE = 'LOCAL01: recovered MG01 + FPC01; DOL-native / REL-fallback'
+PRIVATE_EXT = {'.wbfs', '.wbf1', '.wbf2', '.wbf3', '.iso', '.gcm', '.rvz', '.wia',
+               '.dol', '.rel', '.sav', '.raw', '.gci', '.pem', '.key', '.pfx'}
+CODE_DIRS = {'project', 'tools', 'tests', 'docs', 'configs', 'cmake', 'patches',
+             'locks', 'recovery', 'evidence', '.vscode'}
+ROOT_FILES = {'README.md', 'AGENTS.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md',
+              '.gitignore', '.gitattributes', '.editorconfig', 'FILE-MANIFEST.json',
+              'OpenMUA2.cmd', 'Setup.cmd', 'Build.cmd', 'Run.cmd', 'Snapshot.cmd',
+              'Backup.cmd', 'openmua2.json', 'OpenMUA2.code-workspace'}
+BANNER = ('SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01\'s '
+          'later fixes are absent. See docs/CURRENT-STATUS.md.')
+
+
+def sha256(path: Path) -> str:
+    with path.open('rb') as f:
+        return hashlib.file_digest(f, 'sha256').hexdigest()
+
+
+def stamp() -> str:
+    return datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ')
+
+
+def safe_rel(value: str) -> Path:
+    if not isinstance(value, str) or not value or '\\' in value or '\0' in value or ':' in value:
+        raise ValueError(f'Invalid relative path: {value!r}')
+    p = PurePosixPath(value)
+    if p.is_absolute() or '..' in p.parts or str(p) != value:
+        raise ValueError(f'Invalid relative path: {value!r}')
+    return Path(*p.parts)
+
+
+def within(root: Path, rel: str) -> Path:
+    path = root / safe_rel(rel)
+    # Reject symlinks, including parent directory links, even if they point inward.
+    probe = root
+    for part in safe_rel(rel).parts:
+        probe = probe / part
+        if probe.is_symlink():
+            raise ValueError(f'Symlink/reparse redirection is not supported: {probe}')
+        if hasattr(probe, 'is_junction') and probe.is_junction():
+            raise ValueError(f'Junction redirection is not supported: {probe}')
+    if not path.resolve().is_relative_to(root.resolve()):
+        raise ValueError(f'Path escapes workspace: {path}')
+    return path
+
+
+def write_json(path: Path, obj: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temp = path.with_name(path.name + '.' + uuid.uuid4().hex + '.tmp')
+    try:
+        with temp.open('x', encoding='utf-8', newline='\n') as out:
+            json.dump(obj, out, indent=2, ensure_ascii=True)
+            out.write('\n')
+        os.replace(temp, path)
+    finally:
+        temp.unlink(missing_ok=True)
+
+
+def manifest_rows(root: Path, name: str = 'FILE-MANIFEST.json') -> list[dict]:
+    doc = json.loads(within(root, name).read_text(encoding='utf-8'))
+    if doc.get('schema') != 1 or not isinstance(doc.get('files'), list):
+        raise ValueError('Unsupported file manifest')
+    rows = doc['files']
+    seen: set[str] = set()
+    for row in rows:
+        safe_rel(row['path'])
+        key = row['path'].casefold()
+        if key in seen or not re.fullmatch(r'[0-9a-f]{64}', row.get('sha256', '')):
+            raise ValueError('Duplicate path or invalid hash in manifest')
+        if not isinstance(row.get('size'), int) or row['size'] < 0:
+            raise ValueError('Invalid manifest size')
+        seen.add(key)
+    return rows
+
+
+def verify_manifest(root: Path, name: str = 'FILE-MANIFEST.json') -> int:
+    rows = manifest_rows(root, name)
+    failed = []
+    for row in rows:
+        p = within(root, row['path'])
+        if not p.is_file() or p.stat().st_size != row['size'] or sha256(p) != row['sha256']:
+            failed.append(row['path'])
+    if failed:
+        raise ValueError(f'{len(failed)} files differ from {name}: ' + ', '.join(failed[:12]) +
+                         '. Edits may be intentional; this check never overwrites them.')
+    print(f'Integrity PASS: {len(rows):,} files ({name}).', flush=True)
+    return len(rows)
+
+
+def invoke(args: list[str | Path], cwd: Path, *, capture: bool = False,
+           input_bytes: bytes | None = None, check: bool = True,
+           env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
+    return subprocess.run([str(x) for x in args], cwd=cwd, input=input_bytes,
+                          stdout=subprocess.PIPE if capture else None,
+                          stderr=subprocess.PIPE if capture else None,
+                          env=env, check=check)
+
+
+def git(root: Path, *args: str, capture: bool = True, check: bool = True,
+        input_bytes: bytes | None = None) -> subprocess.CompletedProcess:
+    if not shutil.which('git'):
+        raise ValueError('Git is not on PATH. No installer will be run.')
+    return invoke(['git', '-c', 'core.quotepath=false', *args], root,
+                  capture=capture, input_bytes=input_bytes, check=check)
+
+
+def git_text(root: Path, *args: str) -> str:
+    return git(root, *args).stdout.decode('utf-8', 'strict').strip()
+
+
+def assert_own_git(root: Path) -> None:
+    if not (root / '.git').exists():
+        raise ValueError('No local Git repository. Run Setup.cmd first.')
+    top = Path(git_text(root, 'rev-parse', '--show-toplevel')).resolve()
+    if top != root.resolve():
+        raise ValueError('Git resolved a different repository; refusing to modify it.')
+
+
+def new_git_config(root: Path) -> None:
+    git(root, 'config', '--local', 'core.autocrlf', 'false')
+    git(root, 'config', '--local', 'core.longpaths', 'true')
+    if os.name == 'nt':
+        git(root, 'config', '--local', 'core.filemode', 'false')
+
+
+def commit(root: Path, message: str) -> None:
+    opts: list[str] = []
+    for key, fallback in [('user.name', 'OpenMUA2 Local Snapshot'),
+                          ('user.email', 'local-snapshot@openmua2.invalid')]:
+        if git(root, 'config', '--get', key, check=False).returncode != 0:
+            opts += ['-c', key + '=' + fallback]
+    git(root, *opts, 'commit', '-m', message, capture=False)
+
+
+def setup(root: Path) -> None:
+    print(BANNER, flush=True)
+    backup = root / '.backup-manifest.json'
+    verify_manifest(root, '.backup-manifest.json' if backup.is_file() else 'FILE-MANIFEST.json')
+    marker = root / '.git/openmua2-initializing.json'
+    resume = False
+    if (root / '.git').exists():
+        assert_own_git(root)
+        has_head = git(root, 'rev-parse', '--verify', 'HEAD', check=False).returncode == 0
+        if not backup.is_file() and marker.is_file() and not has_head:
+            record = json.loads(marker.read_text(encoding='utf-8'))
+            if record.get('manifest_sha256') != sha256(root / 'FILE-MANIFEST.json'):
+                raise ValueError('Interrupted setup marker belongs to a different manifest; review manually.')
+            allowed = {r['path'] for r in manifest_rows(root)} | {'FILE-MANIFEST.json'}
+            indexed = {n.decode('utf-8') for n in git(root, 'ls-files', '-z').stdout.split(b'\0') if n}
+            if indexed - allowed:
+                raise ValueError('Interrupted setup has unrelated staged files; refusing to commit them.')
+            print("Resuming this package's interrupted initial source commit.")
+            resume = True
+        else:
+            print('Existing repository retained. No staging, commit, config change or reset was performed.')
+            return
+    if backup.is_file():
+        info = json.loads((root / '.backup-info.json').read_text())
+        if not re.fullmatch('[0-9a-f]{40,64}', info.get('head', '')):
+            raise ValueError('Invalid backup HEAD')
+        bundle = within(root, '.recovery-history.bundle')
+        git(root, 'init', '-b', 'restored-local', capture=False)
+        new_git_config(root)
+        git(root, 'bundle', 'verify', str(bundle), capture=False)
+        git(root, 'fetch', '--no-tags', str(bundle),
+            'refs/heads/*:refs/heads/*', 'refs/tags/*:refs/tags/*', capture=False)
+        branch = info.get('branch', '')
+        if branch and git(root, 'check-ref-format', '--branch', branch, check=False).returncode == 0:
+            git(root, 'symbolic-ref', 'HEAD', 'refs/heads/' + branch)
+        # Mixed reset restores the index only, NEVER checks out over the saved worktree.
+        git(root, 'reset', '--mixed', info['head'], capture=False)
+        print('Offline Git history restored. Saved worktree edits/deletions remain uncommitted.')
+        return
+    if not resume:
+        git(root, 'init', '-b', 'main', capture=False)
+        new_git_config(root)
+        write_json(marker, {'schema': 1, 'manifest_sha256': sha256(root / 'FILE-MANIFEST.json')})
+    names = [r['path'] for r in manifest_rows(root)] + ['FILE-MANIFEST.json']
+    payload = b'\0'.join(n.encode('utf-8') for n in names) + b'\0'
+    # Exact literal paths, not a glob/pathspec scan over tens of thousands of paths.
+    # update-index avoids quadratic pathspec matching; never "git add ." over a WBFS.
+    git(root, 'update-index', '--add', '--remove', '-z', '--stdin', input_bytes=payload)
+    commit(root, 'OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)')
+    marker.unlink(missing_ok=True)
+    print('Local repository and initial commit created. No remote was added; no files were uploaded.')
+
+
+def discover_image(root: Path, explicit: str | None = None) -> Path:
+    if explicit:
+        p = Path(explicit)
+        if not p.is_absolute():
+            p = root / p
+        if p.is_symlink() or p.resolve().parent != root.resolve() or p.suffix.lower() != '.wbfs':
+            raise ValueError('The image must be an ordinary .wbfs file at the repository root.')
+        if not p.is_file():
+            raise ValueError('WBFS not found: ' + str(p))
+        return p.resolve()
+    found = sorted(p for p in root.iterdir() if p.is_file() and p.suffix.lower() == '.wbfs')
+    if len(found) != 1:
+        raise ValueError(f'Expected one .wbfs at the repository root; found {len(found)}. '
+                         'Use --image "exact filename.wbfs" to select between several.')
+    return discover_image(root, found[0].name)
+
+
+def image_record(path: Path) -> list[dict]:
+    with path.open('rb') as src:
+        if src.read(4) != b'WBFS':
+            raise ValueError('The selected file does not have a WBFS header.')
+    parts = [path]
+    # Wiimms split files are .wbf1, .wbf2, ... alongside the primary .wbfs.
+    extras = {int(p.suffix[4:]): p for p in path.parent.iterdir()
+              if p.is_file() and p.stem.casefold() == path.stem.casefold()
+              and re.fullmatch(r'\.wbf[1-9][0-9]*', p.suffix.lower())}
+    if extras and sorted(extras) != list(range(1, max(extras) + 1)):
+        raise ValueError('Non-contiguous .wbfN companions')
+    parts.extend(extras[i] for i in sorted(extras))
+    for p in parts:
+        if p.is_symlink():
+            raise ValueError('WBFS companion must not be a symlink')
+    print('Hashing original WBFS input (read-only)...', flush=True)
+    return [{'name': p.name, 'size': p.stat().st_size, 'sha256': sha256(p)} for p in parts]
+
+
+def is_code_path(name: str, delivered: set[str]) -> bool:
+    safe_rel(name)
+    if name in delivered:
+        return True
+    parts = PurePosixPath(name).parts
+    p = PurePosixPath(name)
+    if p.suffix.lower() in PRIVATE_EXT or re.search(r'\.wbf\d+$', name, re.I):
+        return False
+    if any(part.lower().startswith('.env') or part.lower() in
+           {'.local', '.backups', '.git', '__pycache__', 'node_modules', 'game', 'extracted', 'generated'}
+           for part in parts):
+        return False
+    return name in ROOT_FILES or (len(parts) > 1 and parts[0] in CODE_DIRS)
+
+
+def working_code(root: Path) -> tuple[list[str], list[str]]:
+    assert_own_git(root)
+    delivered = {r['path'] for r in manifest_rows(root)} | {'FILE-MANIFEST.json'}
+    tracked = [x.decode('utf-8') for x in git(root, 'ls-files', '-z').stdout.split(b'\0') if x]
+    forbidden = [n for n in tracked if not is_code_path(n, delivered)]
+    if forbidden:
+        raise ValueError('Private/unrecognized files are already tracked; review the index: ' + ', '.join(forbidden[:10]))
+    others = [x.decode('utf-8') for x in git(root, 'ls-files', '--others', '--exclude-standard', '-z').stdout.split(b'\0') if x]
+    allowed = [n for n in others if is_code_path(n, delivered)]
+    omitted = [n for n in others if n not in allowed]
+    return sorted(set(tracked + allowed)), omitted
+
+
+def snapshot(root: Path, message: str | None = None) -> None:
+    names, omitted = working_code(root)
+    if omitted:
+        print('Not staged (outside code allowlist): ' + ', '.join(omitted[:10]))
+    payload = b'\0'.join(n.encode() for n in names) + b'\0'
+    git(root, 'update-index', '--add', '--remove', '-z', '--stdin', input_bytes=payload)
+    check = git(root, 'diff', '--cached', '--quiet', check=False)
+    if check.returncode == 0:
+        print('No staged source changes. Existing commits retained.')
+        return
+    if check.returncode != 1:
+        raise ValueError('Cannot inspect Git index')
+    commit(root, message or 'Local OpenMUA2 source checkpoint ' + stamp())
+    print('Source snapshot committed locally. Game image, generated files and saves remain excluded.')
+
+
+def backup(root: Path, destination: str | None = None) -> Path:
+    names, omitted = working_code(root)
+    head = git_text(root, 'rev-parse', 'HEAD')
+    branch_p = git(root, 'symbolic-ref', '--short', 'HEAD', check=False)
+    branch = branch_p.stdout.decode().strip() if branch_p.returncode == 0 else ''
+    status_before = git(root, 'status', '--porcelain=v1', '-z').stdout
+    if (root / '.git/index.lock').exists():
+        raise ValueError('Git index is locked. Finish the other Git operation before backing up.')
+    out = Path(destination) if destination else within(root, '.backups') / ('OpenMUA2-source-' + stamp() + '.zip')
+    if not out.is_absolute():
+        out = root / out
+    out = out.resolve()
+    if out.exists():
+        raise ValueError('Backup destination already exists; choose a new filename.')
+    out.parent.mkdir(parents=True, exist_ok=True)
+    local = within(root, '.local'); local.mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='backup-', dir=local) as temp:
+        temp = Path(temp)
+        bundle = temp / 'history.bundle'
+        git(root, 'bundle', 'create', str(bundle), '--all', capture=False)
+        git(root, 'bundle', 'verify', str(bundle), capture=False)
+        info = {'schema': 1, 'created_utc': stamp(), 'head': head, 'branch': branch,
+                'includes_game_or_saves': False, 'omitted_untracked': omitted,
+                'note': 'Full local source history plus current source worktree; not a game-data backup.'}
+        rows = []
+        staging = out.with_name(out.name + '.' + uuid.uuid4().hex + '.partial')
+        try:
+            with zipfile.ZipFile(staging, 'x', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+                for name in names:
+                    p = within(root, name)
+                    if not p.exists():
+                        continue  # A deleted tracked file stays deleted after restore.
+                    if not p.is_file():
+                        raise ValueError('Expected ordinary source file: ' + name)
+                    data = p.read_bytes()
+                    z.writestr(name, data)
+                    rows.append({'path': name, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+                info_data = (json.dumps(info, indent=2) + '\n').encode()
+                for name, data in [('.backup-info.json', info_data), ('.recovery-history.bundle', bundle.read_bytes())]:
+                    z.writestr(name, data)
+                    rows.append({'path': name, 'size': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+                z.writestr('.backup-manifest.json', json.dumps({'schema': 1, 'files': rows}, indent=2) + '\n')
+            if git_text(root, 'rev-parse', 'HEAD') != head or git(root, 'status', '--porcelain=v1', '-z').stdout != status_before:
+                raise ValueError('Git changed during backup. No final backup was published; retry with editing paused.')
+            # Hash every backed-up source again, catching edits that do not change porcelain status.
+            for row in rows:
+                if row['path'].startswith(('.backup-', '.recovery-history')):
+                    continue
+                if sha256(within(root, row['path'])) != row['sha256']:
+                    raise ValueError('A source file changed during backup; retry with editing paused.')
+            with zipfile.ZipFile(staging) as z:
+                if z.testzip() is not None:
+                    raise ValueError('Backup CRC verification failed')
+            os.rename(staging, out)
+        finally:
+            staging.unlink(missing_ok=True)
+    print('Verified source/history backup: ' + str(out))
+    print('Restore into an empty folder and run Setup.cmd. Keep the WBFS and .local/user separately.')
+    return out
+
+
+def logged(root: Path, label: str, args: list[str | Path], env: dict[str, str] | None = None) -> None:
+    logdir = within(root, '.local/logs'); logdir.mkdir(parents=True, exist_ok=True)
+    token = stamp() + '-' + label
+    logfile = logdir / (token + '.log')
+    argv = [str(x) for x in args]
+    print('\n' + subprocess.list2cmdline(argv), flush=True)
+    with logfile.open('x', encoding='utf-8', newline='\n') as log:
+        with subprocess.Popen(argv, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                              text=True, encoding='utf-8', errors='replace') as child:
+            try:
+                assert child.stdout is not None
+                for line in child.stdout:
+                    print(line, end='', flush=True); log.write(line); log.flush()
+                rc = child.wait()
+            except KeyboardInterrupt:
+                child.terminate()
+                try: child.wait(timeout=10)
+                except subprocess.TimeoutExpired: child.kill(); child.wait()
+                raise
+    write_json(logdir / (token + '.json'), {'argv': argv, 'returncode': rc, 'log': logfile.name,
+                                           'baseline': BASELINE, 'gameplay_verified': False})
+    if rc:
+        raise RuntimeError(f'{label} failed ({rc}); log: {logfile}')
+
+
+def executable(path: str) -> str:
+    found = shutil.which(path)
+    if found:
+        return found
+    p = Path(path)
+    if p.is_file():
+        return str(p.resolve())
+    raise ValueError('Required tool not found: ' + path + '. No installation will be attempted.')
+
+
+def doctor(root: Path, options: argparse.Namespace) -> None:
+    print(BANNER)
+    if struct.calcsize('P') != 8 or platform.machine().lower() not in ('amd64', 'x86_64'):
+        raise ValueError('The supplied local workflow targets a 64-bit x86 host/Python.')
+    for name in ('cmake', 'ctest', 'ninja', 'git'):
+        print(name + ': ' + executable(name))
+    for name in (options.cc, options.cxx, options.module_cc):
+        print('compiler: ' + executable(name))
+    needed = ('project/lib/DolRecomp/CMakeLists.txt', 'project/lib/ModernGekko/CMakeLists.txt',
+              'project/lib/ModernGekko/vendor/dolphin/module-template/CMakeLists.txt')
+    for name in needed:
+        if not within(root, name).is_file():
+            raise ValueError('Missing source: ' + name)
+    print('Host/source preflight passed. This is not a Windows build or gameplay test.')
+
+
+def build_base(root: Path) -> Path:
+    tag = 'windows-x64' if os.name == 'nt' else 'linux-x64'
+    p = within(root, '.local/build/' + tag); p.mkdir(parents=True, exist_ok=True)
+    return p
+
+
+def cmake_configure(root: Path, source: Path, out: Path, options: argparse.Namespace,
+                    extra: list[str] | None = None, module: bool = False) -> None:
+    cc = executable(options.module_cc if module else options.cc)
+    args: list[str | Path] = ['cmake', '-S', source, '-B', out, '-G', 'Ninja',
+                             '-DCMAKE_BUILD_TYPE=' + options.config,
+                             '-DCMAKE_C_COMPILER=' + cc,
+                             '-DCMAKE_OBJECT_PATH_MAX=180',
+                             '-DFETCHCONTENT_FULLY_DISCONNECTED=ON',
+                             '-DFETCHCONTENT_UPDATES_DISCONNECTED=ON']
+    if not module:
+        args.append('-DCMAKE_CXX_COMPILER=' + executable(options.cxx))
+    args += extra or []
+    # CMake rejects incompatible cached generator/compiler changes; never deletes a build.
+    env = os.environ.copy(); env['CMAKE_NINJA_FORCE_RESPONSE_FILE'] = '1'
+    logged(root, out.name + '-configure', args, env)
+
+
+def cmake_build(root: Path, out: Path, options: argparse.Namespace) -> None:
+    logged(root, out.name + '-build', ['cmake', '--build', out, '--config', options.config,
+                                     '--parallel', str(options.jobs)])
+
+
+def built_exe(directory: Path, name: str, config: str = 'Release') -> Path:
+    suffix = '.exe' if os.name == 'nt' else ''
+    choices = [directory / (name + suffix), directory / config / (name + suffix)]
+    found = [p for p in choices if p.is_file()]
+    if len(found) != 1:
+        raise ValueError(f'Expected one {name}{suffix} in {directory}; found {len(found)}.')
+    return found[0].resolve()
+
+
+def build_recompiler(root: Path, options: argparse.Namespace) -> Path:
+    out = build_base(root) / 'dolrecomp'
+    cmake_configure(root, root / 'project/lib/DolRecomp', out, options,
+                    ['-DDOLRECOMP_ENABLE_LLVM=OFF', '-DBUILD_TESTING=ON'])
+    cmake_build(root, out, options)
+    logged(root, 'dolrecomp-tests', ['ctest', '--test-dir', out, '-C', options.config, '--output-on-failure'])
+    return built_exe(out, 'dolrecomp', options.config)
+
+
+def game_audit(root: Path, game: Path) -> dict:
+    sys.path.insert(0, str(root / 'tools'))
+    import audit_game
+    result = audit_game.audit(game)
+    if result['disc_id'] != GAME_ID:
+        raise ValueError('Wrong disc ID')
+    return result
+
+
+def extract_game(root: Path, options: argparse.Namespace, recompiler: Path) -> Path:
+    image = discover_image(root, options.image)
+    records = image_record(image)
+    dest = within(root, '.local/game')
+    receipt = within(root, '.local/receipts/extraction.json')
+    if dest.exists():
+        if not receipt.is_file() or json.loads(receipt.read_text()).get('source_parts') != records:
+            raise ValueError('Existing extracted game has no matching source receipt. '
+                             'It was retained; move it aside explicitly before replacing it.')
+        game_audit(root, dest)
+        print('Existing extracted game validated; nothing re-extracted.')
+        return dest
+    wit = executable(options.wit)
+    stage = within(root, '.local/game-staging-' + uuid.uuid4().hex)
+    logged(root, 'disc-extract', [recompiler, 'extract', '--wit', wit, image, stage])
+    audit = game_audit(root, stage)
+    # Ensure the image was not edited during extraction.
+    if image_record(image) != records:
+        raise ValueError('WBFS changed during extraction; staged output retained for inspection.')
+    if dest.exists():
+        raise ValueError('Game destination appeared during extraction; refusing to overwrite it.')
+    stage.rename(dest)
+    write_json(receipt, {'schema': 1, 'source_parts': records, 'audit': audit,
+                         'original_image_was_written': False})
+    print('Game extracted and DOL/REL hashes validated. Original WBFS was not changed.')
+    return dest
+
+
+def generate(root: Path, options: argparse.Namespace, recompiler: Path, game: Path) -> Path:
+    out = within(root, '.local/generated-mg01')
+    # The guarded historical generator refuses to overwrite edits or mismatched receipts.
+    logged(root, 'generate-dol', [sys.executable, root / 'tools/generate_dol_mg01.py',
+                                '--recompiler', recompiler, '--dol', game / 'sys/main.dol',
+                                '--output', out, '--jobs', str(options.jobs)])
+    return out / 'generated'
+
+
+def build_runtime(root: Path, options: argparse.Namespace) -> Path:
+    out = build_base(root) / 'runtime'
+    extra = ['-DBUILD_TESTING=ON', '-DDOLRECOMP_ENABLE_LLVM=OFF',
+             '-DMODERNGEKKO_ENABLE_DOLPHIN_RUNTIME=ON', '-DUSE_SYSTEM_LIBS=OFF']
+    if options.sdk:
+        if os.name == 'nt':
+            raise ValueError('--sdk is a Linux-only optional private SDK, not a Windows toolchain.')
+        extra.append('-DMODERNGEKKO_FRONTEND_SDK=' + str(Path(options.sdk).resolve()))
+    cmake_configure(root, root / 'project/lib/ModernGekko', out, options, extra)
+    cmake_build(root, out, options)
+    logged(root, 'runtime-tests', ['ctest', '--test-dir', out, '-C', options.config,
+                                  '--output-on-failure', '--timeout', '90', '-R', '^moderngekko[.]'])
+    return built_exe(out, 'moderngekko-run', options.config)
+
+
+def build_module(root: Path, options: argparse.Namespace, generated: Path, game: Path) -> Path:
+    core = root / 'project/lib/ModernGekko/vendor/dolphin'
+    out = build_base(root) / 'module-mg01'
+    cmake_configure(root, core / 'module-template', out, options,
+                    ['-DGAME_ID=RMSE52', '-DGENERATED_DIR=' + str(generated),
+                     '-DRECOMPCORE_MODULE_ENABLE_IPO=OFF',
+                     '-DRECOMPCORE_MODULE_OPT_LEVEL=' + str(options.module_opt)], module=True)
+    cmake_build(root, out, options)
+    module = out / ('gRMSE52_recomp.dll' if os.name == 'nt' else 'gRMSE52_recomp.so')
+    if not module.is_file():
+        raise ValueError('Expected native module was not produced: ' + str(module))
+    audit_dir = build_base(root) / 'native-audit'
+    cmake_configure(root, root / 'tools/native-audit', audit_dir, options,
+                    ['-DRECOMPCORE_SOURCE=' + str(core)], module=True)
+    cmake_build(root, audit_dir, options)
+    audit_exe = built_exe(audit_dir, 'openmua2-verify-module', options.config)
+    logged(root, 'module-abi-hashes', [audit_exe, module, game / 'sys/main.dol'])
+    return module
+
+
+def build(root: Path, options: argparse.Namespace) -> None:
+    doctor(root, options)
+    recompiler = build_recompiler(root, options)
+    game = extract_game(root, options, recompiler)
+    generated = generate(root, options, recompiler, game)
+    runner = build_runtime(root, options)
+    module = build_module(root, options, generated, game)
+    receipt = {'schema': 1, 'baseline': BASELINE, 'created_utc': stamp(),
+               'platform': platform.platform(), 'game': game.relative_to(root).as_posix(),
+               'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
+               'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
+               'gameplay_verified': False, 'native_rel_integrated': False}
+    write_json(within(root, '.local/receipts/build.json'), receipt)
+    print('\nLOCAL01 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
+
+
+def run_game(root: Path, options: argparse.Namespace) -> None:
+    print(BANNER)
+    record_path = within(root, '.local/receipts/build.json')
+    if not record_path.is_file():
+        raise ValueError('No successful local build receipt. Run Build.cmd first.')
+    record = json.loads(record_path.read_text())
+    runner, module = within(root, record['runner']), within(root, record['module'])
+    for p, key in [(runner, 'runner_sha256'), (module, 'module_sha256')]:
+        if not p.is_file() or sha256(p) != record[key]:
+            raise ValueError('Build output changed after verification; rebuild/verify before running: ' + str(p))
+    game = within(root, record['game']); game_audit(root, game)
+    user = within(root, '.local/user'); user.mkdir(parents=True, exist_ok=True)
+    args = [runner, '--game', game, '--module', module, '--user-dir', user]
+    if options.graphics:
+        args += ['--graphics', options.graphics]
+    if options.audio:
+        args += ['--audio', options.audio]
+    # Existing user controller settings are intentionally not overwritten.
+    logged(root, 'runtime-session', args)
+
+
+def make_parser() -> argparse.ArgumentParser:
+    p = argparse.ArgumentParser(description=__doc__)
+    sub = p.add_subparsers(dest='action', required=True)
+    for action in ('setup', 'verify', 'status', 'test'):
+        sub.add_parser(action)
+    s = sub.add_parser('snapshot'); s.add_argument('-m', '--message')
+    s = sub.add_parser('backup'); s.add_argument('--destination')
+    for action in ('doctor', 'build', 'build-tools', 'extract', 'generate'):
+        s = sub.add_parser(action)
+        s.add_argument('--jobs', type=int, default=2)
+        s.add_argument('--config', choices=('Debug', 'Release', 'RelWithDebInfo'), default='Release')
+        s.add_argument('--cc', default=os.environ.get('CC', 'cl' if os.name == 'nt' else 'gcc'))
+        s.add_argument('--cxx', default=os.environ.get('CXX', 'cl' if os.name == 'nt' else 'g++'))
+        s.add_argument('--module-cc', default='cl' if os.name == 'nt' else ('clang' if shutil.which('clang') else 'gcc'))
+        s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=0)
+        s.add_argument('--wit', default=os.environ.get('WIT', 'wit'))
+        s.add_argument('--image', help='Exact .wbfs filename at repository root (optional if unique)')
+        s.add_argument('--sdk', help='Optional Linux-only private SDK root')
+    s = sub.add_parser('run'); s.add_argument('--graphics'); s.add_argument('--audio')
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    options = make_parser().parse_args(argv)
+    if hasattr(options, 'jobs') and not 1 <= options.jobs <= 128:
+        raise ValueError('--jobs must be 1..128')
+    action = options.action
+    if action == 'setup': setup(ROOT)
+    elif action == 'verify': verify_manifest(ROOT)
+    elif action == 'status':
+        print(BANNER)
+        print((ROOT / 'docs/CURRENT-STATUS.md').read_text(encoding='utf-8'))
+    elif action == 'snapshot': snapshot(ROOT, options.message)
+    elif action == 'backup': backup(ROOT, options.destination)
+    elif action == 'test':
+        logged(ROOT, 'local-workspace-tests', [sys.executable, '-m', 'unittest', 'discover', '-s', ROOT / 'tests', '-v'])
+    elif action == 'doctor': doctor(ROOT, options)
+    elif action == 'build-tools': doctor(ROOT, options); build_recompiler(ROOT, options)
+    elif action in ('extract', 'generate'):
+        doctor(ROOT, options)
+        tool = build_recompiler(ROOT, options); game = extract_game(ROOT, options, tool)
+        if action == 'generate': generate(ROOT, options, tool, game)
+    elif action == 'build': build(ROOT, options)
+    elif action == 'run': run_game(ROOT, options)
+    return 0
+
+
+if __name__ == '__main__':
+    try:
+        if sys.version_info < (3, 11):
+            raise ValueError('Python 3.11 or newer is required')
+        raise SystemExit(main())
+    except (OSError, ValueError, RuntimeError, subprocess.CalledProcessError) as exc:
+        print('STOPPED: ' + str(exc), file=sys.stderr)
+        if isinstance(exc, subprocess.CalledProcessError) and exc.stderr:
+            print(exc.stderr.decode('utf-8', 'replace'), file=sys.stderr)
+        raise SystemExit(1)
+    except KeyboardInterrupt:
+        print('Interrupted. Existing sources, game image and saves were retained.', file=sys.stderr)
+        raise SystemExit(130)

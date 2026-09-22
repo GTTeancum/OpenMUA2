@@ -1,0 +1,13 @@
+FAIL input=0000000000000000 initial=00020004 mode=0 tz=0 native=00020004 ref=00000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020004 mode=0 tz=0 native=82020004 ref=82000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=a1020104 mode=0 tz=0 native=a1020104 ref=a1000104 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202000c mode=0 tz=0 native=5202000c ref=5200000c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=00020004 mode=1 tz=1 native=00020004 ref=00000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020004 mode=1 tz=1 native=82020004 ref=82000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=a1020104 mode=1 tz=1 native=a1020104 ref=a1000104 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202000c mode=1 tz=1 native=5202000c ref=5200000c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=00020084 mode=0 tz=0 native=00020084 ref=00000084 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020084 mode=0 tz=0 native=82020084 ref=82000084 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=e1020184 mode=0 tz=0 native=e1020184 ref=e1000184 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202008c mode=0 tz=0 native=5202008c ref=5200008c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+{"cases":1298576,"matrix_cases":1048576,"random_cases":250000,"failures":1217268,"fpscr_mismatches":1217268,"result_mismatches":0,"write_mismatches":0,"fprf_preservation_failures":973909,"independent_invariant_failures":973823,"invalid_cases":351888,"nan_cases":32881,"exact_cases":65536,"inexact_cases":881152,"blocked_invalid_writes":175820,"seed":"91af83476d09ebc2","host_fp_traps":false,"host_ftz_daz":false,"gameplay_tested":false}

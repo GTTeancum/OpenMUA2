@@ -1,0 +1,30 @@
+{
+  "package": "OpenMUA2 LOCAL01b",
+  "scope": "Portable sample filename and corresponding fixture/manifest repair; unchanged runtime/compiler implementations.",
+  "baseline": "LOCAL01 MG01 + FPC01; native REL integration and MR01 fixes remain absent",
+  "python_suite": {
+    "tests_run": 66,
+    "passed": 61,
+    "skipped": 5,
+    "failed": 0,
+    "skip_reason": "Native Windows CMD execution tests require Windows"
+  },
+  "native_tinygltf_test": {
+    "selector": "image-uri-spaces",
+    "test_cases_passed": 1,
+    "assertions_passed": 22,
+    "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+    "command": "g++ -std=c++17 -O0 -DCATCH_CONFIG_NO_POSIX_SIGNALS -I<TINYGLTF> <TINYGLTF>/tests/tester.cc -o tinygltf-tests; cd <TINYGLTF>/tests; <path>/tinygltf-tests image-uri-spaces",
+    "note": "Catch POSIX signal handler disabled for compatibility with host libc. This is not a Windows run or game test."
+  },
+  "original_failure": "Reproduced exact one-file manifest error in a full extracted LOCAL01 + LOCAL01a tree, with the leading space removed to model extraction normalization.",
+  "path_change": {
+    "from": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/ 2x2 image  has multiple      spaces.png",
+    "to": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/2x2 image  has multiple      spaces.png",
+    "size": 79,
+    "sha256": "00b9839320de4bbd342d092e5cedf05845ab4be733c0240d5dd5466a9565b217"
+  },
+  "native_windows_execution": false,
+  "game_build_or_gameplay_test": false,
+  "full_tree_setup_and_zip_verification": "Recorded separately in the external final ZIP validation receipt."
+}

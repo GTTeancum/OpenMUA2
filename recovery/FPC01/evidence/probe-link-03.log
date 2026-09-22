@@ -1,0 +1,3 @@
+/usr/bin/ld: /mnt/data/mua2-recovery/fp-repair/evidence/ppccache.o: in function `PowerPC::InstructionCache::~InstructionCache()':
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/PPCCache.cpp:94:(.text._ZN7PowerPC16InstructionCacheD2Ev+0x68): undefined reference to `Config::RemoveConfigChangedCallback(Config::ConfigChangedCallbackID)'
+collect2: error: ld returned 1 exit status

@@ -1,0 +1,23 @@
+{
+  "dry_run": true,
+  "files": [
+    {
+      "file": "/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu/cpu.c",
+      "state": "needs_fix",
+      "input_sha256": "6cb6679523d0afa23ae70a81865a9b9c3ca4626c026f36b55cc7e557fc78d662",
+      "output_sha256": "c9c21b3ac9fbcc7a45f0f825f83441e84b238f456a605ae859a3c79064041691",
+      "function_input_sha256": "1c370c3431430be5e8023869379ec4de4966a66f5e4f17650dba7a15a6540d5e",
+      "function_output_sha256": "e5e2f983011abf146a8c50a7636fb7415a80b363aa1f32f27720d687ca7da245",
+      "applied": false
+    },
+    {
+      "file": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c",
+      "state": "needs_fix",
+      "input_sha256": "6cb6679523d0afa23ae70a81865a9b9c3ca4626c026f36b55cc7e557fc78d662",
+      "output_sha256": "c9c21b3ac9fbcc7a45f0f825f83441e84b238f456a605ae859a3c79064041691",
+      "function_input_sha256": "1c370c3431430be5e8023869379ec4de4966a66f5e4f17650dba7a15a6540d5e",
+      "function_output_sha256": "e5e2f983011abf146a8c50a7636fb7415a80b363aa1f32f27720d687ca7da245",
+      "applied": false
+    }
+  ]
+}

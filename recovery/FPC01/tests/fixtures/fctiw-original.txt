@@ -1,0 +1,43 @@
+bool ppc_fctiw(CPUState* cpu, f64 value, bool toward_zero, u64* output) {
+    f64 rounded;
+    switch (toward_zero ? 1u : (cpu->fpscr & 3u)) {
+    case 1: rounded = trunc(value); break;
+    case 2: rounded = ceil(value); break;
+    case 3: rounded = floor(value); break;
+    default: rounded = round_nearest_even(value); break;
+    }
+
+    u32 result;
+    bool invalid = false;
+    if (isnan(value)) {
+        if (is_snan(value))
+            set_fp_exception(cpu, 0x01000000u);
+        result = 0x80000000u;
+        invalid = true;
+    } else if (rounded >= 2147483648.0) {
+        result = 0x7FFFFFFFu;
+        invalid = true;
+    } else if (rounded < -2147483648.0) {
+        result = 0x80000000u;
+        invalid = true;
+    } else {
+        result = (u32)(s32)rounded;
+    }
+
+    cpu->fpscr &= ~0x00006000u;
+    if (invalid) {
+        set_fp_exception(cpu, 0x00000100u);
+    } else if (rounded != value) {
+        set_fp_exception(cpu, 0x02000000u);
+        cpu->fpscr |= 0x00004000u;
+        if (fabs(rounded) > fabs(value))
+            cpu->fpscr |= 0x00002000u;
+    }
+
+    if (invalid && (cpu->fpscr & 0x80u))
+        return false;
+
+    *output = 0xFFF8000000000000ull | result |
+              ((result == 0 && signbit(value)) ? 0x100000000ull : 0ull);
+    return true;
+}

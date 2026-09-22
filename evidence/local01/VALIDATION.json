@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "delivery": "OpenMUA2 LOCAL01",
+  "date": "2026-09-22",
+  "baseline": "Recovered MG01 + FPC01, not MR01",
+  "host": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "fresh_tests": {
+    "workspace_unittests": {
+      "passed": 40,
+      "scope": "Includes real temporary Git setup/snapshot/offline backup/restore; extraction uses fixtures, Windows commands not executed"
+    },
+    "fpc01_patch_guard": {
+      "passed": 16
+    },
+    "dolrecomp_c_backend": {
+      "build": "PASS",
+      "ctests_passed": 19,
+      "compiler": "GCC 14.2.0",
+      "llvm_enabled": false
+    },
+    "dol_regeneration": {
+      "chunks": 325,
+      "byte_identical_to_retained_MG01": 325,
+      "source": "Original retained main.dol, not a new WBFS extraction"
+    },
+    "native_module_auditor": {
+      "build": "PASS",
+      "compiler": "Clang 17.0.0",
+      "tested_module": "Existing retained MG01 Linux module, not a new game module",
+      "verified_chunks": 325,
+      "text_bytes": 5316160,
+      "rel_modules": 0
+    }
+  },
+  "source_audit": {
+    "schema": 1,
+    "original_source_files": 37302,
+    "delivered_source_files": 37269,
+    "source_node_count": 42,
+    "unique_verified_source_archives": 41,
+    "transformation_counts": {
+      "preserve_upstream_git_metadata_under_nonactive_name": 160,
+      "omitted_font_resource": 33,
+      "materialized_internal_file_symlink": 10,
+      "recovered_MG01_build_fix": 3,
+      "recovered_FPC01_fctiw_fix": 2
+    },
+    "changed_production_files": [
+      "project/lib/DolRecomp/src/cpu/cpu.c",
+      "project/lib/ModernGekko/CMakeLists.txt",
+      "project/lib/ModernGekko/vendor/dolphin/CMakeLists.txt",
+      "project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c",
+      "project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/CMakeLists.txt"
+    ],
+    "unexpected_source_edits": 0,
+    "case_collisions": 0,
+    "windows_reserved_path_components": 0,
+    "source_symlinks": 0,
+    "longest_relative_source_path": 224,
+    "source_bytes": 848853796,
+    "status": "PASS"
+  },
+  "full_source_git_initialization": {
+    "status": "PASS",
+    "tracked_files": 37430,
+    "source_nodes_flattened": 42,
+    "gitlinks": 0,
+    "remotes": 0,
+    "dirty_files": 0,
+    "setup_idempotence": "PASS",
+    "commit": "f0c81c3d7dde495ef62a21dd1f0afe3fdf0c6b3b",
+    "git_history_in_distribution": false
+  },
+  "not_tested": [
+    "Windows CMD execution",
+    "Windows compilation",
+    "Full LOCAL01 runtime build",
+    "Full new native game-module compilation",
+    "New WBFS extraction",
+    "Gameplay",
+    "Audio",
+    "Physical controller",
+    "Game-owned saving/reload"
+  ],
+  "old_MR01_code_recovered": false,
+  "new_gameplay_claimed": false,
+  "source_assets_omitted": "33 standalone font files/resources; exact paths recorded",
+  "source_archive_hashes_verified": 41,
+  "source_nodes_restored": 42,
+  "dependency_part_hashes_verified": 3
+}

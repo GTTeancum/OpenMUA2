@@ -1,0 +1,21 @@
+test_all_preflighted (test_patch_guard.GuardTests.test_all_preflighted) ... ok
+test_conflict_refused (test_patch_guard.GuardTests.test_conflict_refused) ... ok
+test_crlf (test_patch_guard.GuardTests.test_crlf) ... ok
+test_dry_run (test_patch_guard.GuardTests.test_dry_run) ... ok
+test_duplicate_definition_refused (test_patch_guard.GuardTests.test_duplicate_definition_refused) ... ok
+test_duplicate_destination_refused (test_patch_guard.GuardTests.test_duplicate_destination_refused) ... ok
+test_fixture_hash (test_patch_guard.GuardTests.test_fixture_hash) ... ok
+test_idempotent (test_patch_guard.GuardTests.test_idempotent) ... ok
+test_missing_boundary_refused (test_patch_guard.GuardTests.test_missing_boundary_refused) ... ok
+test_missing_definition_refused (test_patch_guard.GuardTests.test_missing_definition_refused) ... ok
+test_mixed_newlines_refused (test_patch_guard.GuardTests.test_mixed_newlines_refused) ... ok
+test_mode_preserved (test_patch_guard.GuardTests.test_mode_preserved) ... ok
+test_symlink_refused (test_patch_guard.GuardTests.test_symlink_refused) ... ok
+test_three_changes_only (test_patch_guard.GuardTests.test_three_changes_only) ... ok
+test_two_copies (test_patch_guard.GuardTests.test_two_copies) ... ok
+test_unrelated_changes_preserved (test_patch_guard.GuardTests.test_unrelated_changes_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.007s
+
+OK

@@ -1,0 +1,42 @@
+database/titles.txt is missing; using GameCube mode. Run dolrecomp --setup to download it.
+=== DOL Info ===
+entry point: 0x80005F70
+game: GameCube DOL
+BSS: 0x805E7100 (0x235F58 bytes)
+
+text sections:
+  [0] file:0x00000100 -> addr:0x80004000  size:0x000026A0
+  [1] file:0x000027A0 -> addr:0x80006900  size:0x0050F7A0
+data sections:
+  [0] file:0x00511F40 -> addr:0x800066A0  size:0x00000160
+  [1] file:0x005120A0 -> addr:0x80006800  size:0x00000100
+  [2] file:0x005121A0 -> addr:0x805160A0  size:0x00000100
+  [3] file:0x005122A0 -> addr:0x805161A0  size:0x00000020
+  [4] file:0x005122C0 -> addr:0x805161C0  size:0x0000C700
+  [5] file:0x0051E9C0 -> addr:0x805228C0  size:0x000C4820
+  [6] file:0x005E31E0 -> addr:0x80814240  size:0x00002600
+  [7] file:0x005E57E0 -> addr:0x8081B1E0  size:0x00001E60
+cpu: Broadway (Wii)
+
+writing output to: /mnt/data/OpenMUA2_LOCAL01/.local/regeneration-check/generated/generated.c
+decoding text[0]: 2472 instructions at 0x80004000
+  2472 decoded, 829 known, 1643 embedded data, 0 unknown
+  writing 1 chunks with 1 job
+decoding text[1]: 1326568 instructions at 0x80006900
+  1326568 decoded, 1308924 known, 17644 embedded data, 0 unknown
+  writing 324 chunks with 2 jobs
+warning: this DOL may patch executable memory at runtime. generated code many need additional patches
+  possible patching instructions:
+    0x80004208-0x80004208
+    0x80006254-0x80006254
+    0x8000D614-0x8000D614
+    0x8000EBBC-0x8000EBBC
+    0x8007665C-0x8007665C
+    0x80076668-0x80076668
+    0x80076674-0x80076674
+    0x80093184-0x80093184
+    ...
+  full list: /mnt/data/OpenMUA2_LOCAL01/.local/regeneration-check/generated/generated_smc.txt
+done!
+  header: /mnt/data/OpenMUA2_LOCAL01/.local/regeneration-check/generated/generated.h
+  chunks: /mnt/data/OpenMUA2_LOCAL01/.local/regeneration-check/generated/chunks (325 files)

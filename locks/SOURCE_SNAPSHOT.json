@@ -1,0 +1,348 @@
+{
+  "root": {
+    "url": "https://github.com/ExpansionPak/ModernGekko-Template.git",
+    "ref": "refs/heads/main",
+    "commit": "c2553a99584b2045dbe46a70e1570994dae8beef",
+    "locked_at": "2026-09-21T19:16:29.618696+00:00"
+  },
+  "nodes": [
+    {
+      "destination": "project",
+      "url": "https://github.com/ExpansionPak/ModernGekko-Template.git",
+      "commit": "c2553a99584b2045dbe46a70e1570994dae8beef",
+      "archive": "sources/3629f8699dd1c57e80b1b9dd.tar.gz",
+      "sha256": "2538615acc2b2e9f05d1c284b40348d84d939f1be58d01a44587156864b8ac96",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/DolRecomp",
+      "url": "https://github.com/ExpansionPak/DolRecomp.git",
+      "commit": "1bec3554ecc4817cf78319ca3d8a0669477f29fa",
+      "archive": "sources/7dee5a4d8616d521b46d4daf.tar.gz",
+      "sha256": "084ebf7b7a618325b31fc067c62df49fc13e41e41b6a899713ec51bc08a446fc",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko",
+      "url": "https://github.com/ExpansionPak/ModernGekko.git",
+      "commit": "edd460adad0e82b56909af1d793642c83b6d31c8",
+      "archive": "sources/1398ae309e8e60173d40f71a.tar.gz",
+      "sha256": "229f9ee86356a179ee07c324260bb806a58efb766cb9251fcf24b669ffdacef2",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin",
+      "url": "https://github.com/ExpansionPak/RecompCore.git",
+      "commit": "10f7ac4fe48f74485fbc161ebf4d67242e11e671",
+      "archive": "sources/c080faaf199e91e7c7fbc730.tar.gz",
+      "sha256": "7f5c24c3ddd962e8f4982335a2074e5c783c2249ddb98dbce51e0a1e83ca1a89",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/DolRecomp",
+      "url": "https://github.com/ExpansionPak/DolRecomp.git",
+      "commit": "1bec3554ecc4817cf78319ca3d8a0669477f29fa",
+      "archive": "sources/7dee5a4d8616d521b46d4daf.tar.gz",
+      "sha256": "084ebf7b7a618325b31fc067c62df49fc13e41e41b6a899713ec51bc08a446fc",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/FFmpeg-bin",
+      "url": "https://github.com/dolphin-emu/ext-win-ffmpeg.git",
+      "commit": "9bc087fbca36ce5a85eb4fd73f0c73813593e5a2",
+      "archive": "sources/1cd4fb94c6b22c67740d1092.tar.gz",
+      "sha256": "4ddbf6b5438c40ae8214ebc34a9ace97fc8fefa658ced8a711eb91cdf9aa46ea",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/Qt",
+      "url": "https://github.com/dolphin-emu/ext-win-qt.git",
+      "commit": "495517af2b922c10c24f543e0fd6ea3ddf774e50",
+      "archive": "sources/d5452f1c1cd53b1f7e302d7e.tar.gz",
+      "sha256": "11aef6968a60b7536f1c8fd8023fa78e324f3481906da97200f0111ed5bd04cf",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL",
+      "url": "https://github.com/libsdl-org/SDL.git",
+      "commit": "5848e584a1b606de26e3dbd1c7e4ecbc34f807a6",
+      "archive": "sources/e1eab5247d223b01e964ca7c.tar.gz",
+      "sha256": "074a62ab21e8c698d0ded42d58e43a0cf0484bc065187b2bc3de45adfce6f43b",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML",
+      "url": "https://github.com/SFML/SFML.git",
+      "commit": "0fa201c969e48ecc253581c5841ce73f44d42f49",
+      "archive": "sources/2fd3e2ef615a51b133e8c7e1.tar.gz",
+      "sha256": "dfc4559619ae784d9da18b45dc2f3a276e8ef454b1040dbbca7e4222ba629b35",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/Vulkan-Headers",
+      "url": "https://github.com/KhronosGroup/Vulkan-Headers.git",
+      "commit": "39f924b810e561fd86b2558b6711ca68d4363f68",
+      "archive": "sources/49149e608e19c02af1a05774.tar.gz",
+      "sha256": "d592637fd4e35dd0cd5a733291a3f8e0543d0755fdbf05250ee792dbac7a907e",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/VulkanMemoryAllocator",
+      "url": "https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git",
+      "commit": "3bab6924988e5f19bf36586a496156cf72f70d9f",
+      "archive": "sources/6eaeb2007fd9075eb707090a.tar.gz",
+      "sha256": "287a2aebc9e27746ab14d35ec4c9e6401659f100a0ffd6bd0b879e661a26756d",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/bzip2/bzip2",
+      "url": "https://gitlab.com/bzip2/bzip2.git",
+      "commit": "6a8690fc8d26c815e798c588f796eabe9d684cf0",
+      "archive": "sources/4a2f616348bdb7cd4daf510f.tar.gz",
+      "sha256": "750beb0ff9ab486ee6aeeda795ab2482cf7f3348c830a9518315ac7877cba670",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-ipc/cpp-ipc",
+      "url": "https://github.com/mutouyun/cpp-ipc.git",
+      "commit": "ce0773b3e6d5abaa8d104100c5704321113853ca",
+      "archive": "sources/2770f7313a9f9ef3fb58a05b.tar.gz",
+      "sha256": "5584187e4ab28233cca2e12c72c7d9d2b33d674f55dd91e88674e25cc0afea3a",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-optparse/cpp-optparse",
+      "url": "https://github.com/weisslj/cpp-optparse.git",
+      "commit": "2265d647232249a53a03b411099863ceca35f0d3",
+      "archive": "sources/709fd5d10332184cf0733be7.tar.gz",
+      "sha256": "f8f197fb8751a4c3479bff18ad2a9d1f042e14496c33e3d6f68ab9279663c9b0",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb",
+      "url": "https://github.com/mozilla/cubeb.git",
+      "commit": "54217bca3f3e0cd53c073690a23dd25d83557909",
+      "archive": "sources/3ef75de9b937dc3acb7e9131.tar.gz",
+      "sha256": "0fa24ca6e217da33e606e53f8d41fc693d52f64b5f59e01609207451cb8b564e",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/cmake/sanitizers-cmake",
+      "url": "https://github.com/arsenm/sanitizers-cmake",
+      "commit": "aab6948fa863bc1cbe5d0850bc46b9ef02ed4c1a",
+      "archive": "sources/ba6419dbaba7ad09d1b8faef.tar.gz",
+      "sha256": "7b2d3c61e6e220e978031703e940c3b2b7c98f5eece14f6a2e3777bc70d6dfb1",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/googletest",
+      "url": "https://github.com/google/googletest",
+      "commit": "40412d85124f7c6f3d88454583c4633e5e10fc8c",
+      "archive": "sources/44a199791892af8f16cef3ef.tar.gz",
+      "sha256": "3e46e4bf3189e0b5223a399713b177f98ba8677f3c00b5dacf3dc50bf825b4cd",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl",
+      "url": "https://github.com/curl/curl.git",
+      "commit": "cfbfb65047e85e6b08af65fe9cdbcf68e9ad496a",
+      "archive": "sources/826f6c81a2f8fcac824478a0.tar.gz",
+      "sha256": "4c17ccfbdd226e570a61c55d14ece8fa3c6eadd67503cd8f0957e944009e6ab7",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/enet/enet",
+      "url": "https://github.com/lsalzman/enet.git",
+      "commit": "2662c0de09e36f2a2030ccc2c528a3e4c9e8138a",
+      "archive": "sources/99c92b95df97d026f4565209.tar.gz",
+      "sha256": "835106cd07989397af09e5eaeaa3ef60c84d00e04d72aaa7ab611d7f58d80344",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt",
+      "url": "https://github.com/fmtlib/fmt.git",
+      "commit": "e424e3f2e607da02742f73db84873b8084fc714c",
+      "archive": "sources/7450c2520d526fde72277d8b.tar.gz",
+      "sha256": "3e631d6b31e617b91f3282d8bc6d6719efe581292b68b70428d38744aab7e8a1",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/glslang/glslang",
+      "url": "https://github.com/KhronosGroup/glslang.git",
+      "commit": "a57276bf558f5cf94d3a9854ebdf5a2236849a5a",
+      "archive": "sources/e6eb12a54d1ec24346f20ad8.tar.gz",
+      "sha256": "24b5fd0753c143c2fe356a0ab72b833539e9f875e15bc35138ed073939243850",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/gtest",
+      "url": "https://github.com/google/googletest.git",
+      "commit": "eb2d85edd0bff7a712b6aff147cd9f789f0d7d0b",
+      "archive": "sources/1d2aaf505d5665c57e054b11.tar.gz",
+      "sha256": "58b47173f53fe96b409549c3c91da0498b781242b64c00308af0e32471629503",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src",
+      "url": "https://github.com/libusb/hidapi.git",
+      "commit": "d6b2a974608dec3b76fb1e36c189f22b9cf3650c",
+      "archive": "sources/33c18bbdec36d2744e7da184.tar.gz",
+      "sha256": "d4ecacde7a9c59fbf60166c0cedff578b6ff7184a74c2904ceb48bf46f270db0",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui",
+      "url": "https://github.com/ocornut/imgui.git",
+      "commit": "45acd5e0e82f4c954432533ae9985ff0e1aad6d5",
+      "archive": "sources/bec17c12afd25d7a096ae668.tar.gz",
+      "sha256": "6a6ad3c1006e8529817eac758cc709b8264d86e72842a096519ddebf2e33f159",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/implot/implot",
+      "url": "https://github.com/epezent/implot.git",
+      "commit": "3da8bd34299965d3b0ab124df743fe3e076fa222",
+      "archive": "sources/7991c9ca96cdc82237563cf6.tar.gz",
+      "sha256": "f6b6f621abc53020a459b92df8e2dc7d0aa59fcb91a4bbe7e75eb0c99fb30f89",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/libadrenotools",
+      "url": "https://github.com/bylaws/libadrenotools.git",
+      "commit": "8fae8ce254dfc1344527e05301e43f37dea2df80",
+      "archive": "sources/f2cb627ac426d9dfbc42bdb0.tar.gz",
+      "sha256": "178a5ebf1553227e63ab1bfc8e5becbe31aa7661aea68273b5c0b57205cdbb0e",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/libadrenotools/lib/linkernsbypass",
+      "url": "https://github.com/bylaws/liblinkernsbypass",
+      "commit": "aa3975893d83ef1bc84c321ec60c65fbf1287887",
+      "archive": "sources/26e603b39506e85125f38d37.tar.gz",
+      "sha256": "148ec083e38c70ff836c746ccf0d97e0c0f42fd6f8c313458bf235c8681c3b8f",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/libspng/libspng",
+      "url": "https://github.com/randy408/libspng.git",
+      "commit": "fb768002d4288590083a476af628e51c3f1d47cd",
+      "archive": "sources/1b44fa01ebd29194db7bcdc8.tar.gz",
+      "sha256": "3414cbaceff8ba8a480ced0eee6f9bbdbf966a013d29e87368de2484ef5d29f9",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/libusb/libusb",
+      "url": "https://github.com/libusb/libusb.git",
+      "commit": "15a7ebb4d426c5ce196684347d2b7cafad862626",
+      "archive": "sources/b7602c61877999887e078ace.tar.gz",
+      "sha256": "0703cdfaec9e02984f05b936781cbb26995c605b8b82769fec3681a8a9a4b3fb",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4",
+      "url": "https://github.com/lz4/lz4.git",
+      "commit": "5fc0630a0ed55e9755b0fe3990cd021ae1c3edc1",
+      "archive": "sources/2066cd3b0b48e673e772bd55.tar.gz",
+      "sha256": "69cc9cb035e1247db75c924113e950154c9410c96c86bb621021fed2688b70e6",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba",
+      "url": "https://github.com/mgba-emu/mgba.git",
+      "commit": "0b40863f64d0940f333fa1c638e75f86f8a26a33",
+      "archive": "sources/ce604455e8d990717d08d2ee.tar.gz",
+      "sha256": "bf989a4cb9fec944884e42a0b21e26ec1f97dbb3686a4e644f3aee464d033f0c",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp",
+      "url": "https://github.com/miniupnp/miniupnp.git",
+      "commit": "bf4215a7574f88aa55859db9db00e3ae58cf42d6",
+      "archive": "sources/e4252e877a4255f0ba174b68.tar.gz",
+      "sha256": "4f933ab9e396c55fc337b060a485293af8a9cbff8e2c248a98ecf676ff5e1c67",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/minizip-ng/minizip-ng",
+      "url": "https://github.com/zlib-ng/minizip-ng.git",
+      "commit": "55db144e03027b43263e5ebcb599bf0878ba58de",
+      "archive": "sources/de04409d8a24ab8f3eca9ebc.tar.gz",
+      "sha256": "09866ad825042730bbc071ca60beaf251b7fc7e4417099789fd29427c9056121",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/pugixml/pugixml",
+      "url": "https://github.com/zeux/pugixml.git",
+      "commit": "ee86beb30e4973f5feffe3ce63bfa4fbadf72f38",
+      "archive": "sources/46e13defe14083e5ab6094da.tar.gz",
+      "sha256": "b0d0fdaf5f04a8937480485f7f3fb1318c32dc9ff31707ee571b333e23fa4d43",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/rcheevos/rcheevos",
+      "url": "https://github.com/RetroAchievements/rcheevos.git",
+      "commit": "926e4608f8dca7989267c787bbefb3ab1c835ac5",
+      "archive": "sources/a372d2e8217f57aab2436c40.tar.gz",
+      "sha256": "1739a7f1a1d15e4f88e12fa7e07ba56b45654aa20caadc7d25583bb2060b2df3",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/spirv_cross/SPIRV-Cross",
+      "url": "https://github.com/KhronosGroup/SPIRV-Cross.git",
+      "commit": "ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b",
+      "archive": "sources/957d108532dff8057580825d.tar.gz",
+      "sha256": "566395035e5240ce66db9204c3d3e1db429051c7510ff4c4d7dfb2d0871689ee",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf",
+      "url": "https://github.com/syoyo/tinygltf.git",
+      "commit": "c5641f2c22d117da7971504591a8f6a41ece488b",
+      "archive": "sources/61ad9bb323c88b3652393b99.tar.gz",
+      "sha256": "0a512f7418ac9e102dfd605a9f3b5109eab8742db968ab43d5c72f814ace0fa1",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher",
+      "url": "https://github.com/e-dant/watcher.git",
+      "commit": "b03bdcfc11549df595b77239cefe2643943a3e2f",
+      "archive": "sources/6df9988fae5c0db8a223743a.tar.gz",
+      "sha256": "d40bca54ea704055ece03146a2dbcb03a7637327ef61000f4106541ecc35eef3",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/wil",
+      "url": "https://github.com/microsoft/wil.git",
+      "commit": "7447d38337abf23a5c2286305b743506455aa9cc",
+      "archive": "sources/f49adcfd595c262718b425e6.tar.gz",
+      "sha256": "2aefc8cb4d65cfeb48f72cce5616072a3f1981d5338072c22e8573892872598f",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash",
+      "url": "https://github.com/Cyan4973/xxHash.git",
+      "commit": "e626a72bc2321cd320e953a0ccf1584cad60f363",
+      "archive": "sources/358c1d9e07d0cbcc344dab81.tar.gz",
+      "sha256": "d80d82725b6f04d66842326de86b6e8f30490a7b31f2c62233a07eeb90ad51e9",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng",
+      "url": "https://github.com/zlib-ng/zlib-ng.git",
+      "commit": "ce01b1e41da298334f8214389cc9369540a7560f",
+      "archive": "sources/9a9c40da31d0c793b4f7e96b.tar.gz",
+      "sha256": "3e62a012928a98c90dd18ab2e5af46d3a0ae765162af34a239decb00e9a8bc71",
+      "lfs": []
+    },
+    {
+      "destination": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd",
+      "url": "https://github.com/facebook/zstd.git",
+      "commit": "711e17da98510a3567bf47f85a08a76f64811474",
+      "archive": "sources/164059ba8100fe9ab76998d1.tar.gz",
+      "sha256": "ff561e0e76c146403ec81529679cebeb3f968553bde53a2035df4146956161a3",
+      "lfs": []
+    }
+  ],
+  "policy": "All recursive gitlinks pinned to parent commits; no submodule branch overrides.",
+  "source_transport": "Git object verification; source archives retain symlinks and executable modes."
+}

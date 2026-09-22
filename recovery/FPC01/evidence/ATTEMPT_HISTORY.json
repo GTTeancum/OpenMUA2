@@ -1,0 +1,33 @@
+{
+  "excluded_from_pass_counts": [
+    {
+      "attempt": "probe-build.log",
+      "result": "compile failed; missing platform define/include flags; preserved log"
+    },
+    {
+      "attempt": "probe-build-02.log / probe-link-03.log",
+      "result": "link failed; required unchanged production support sources not yet linked"
+    },
+    {
+      "attempt": "probe-link-04.log / probe-original.txt",
+      "result": "linked successfully; expected original-helper mismatch"
+    },
+    {
+      "attempt": "fctiw-fixed-build.log",
+      "result": "missing cpu.h include path; corrected in build-02"
+    },
+    {
+      "attempt": "gcc-o2-asan",
+      "result": "container command interrupted at 20 seconds; no completed suite; not a pass"
+    },
+    {
+      "attempt": "gcc-o2-asan-v2",
+      "result": "container command interrupted at 90 seconds during build; no completed suite; not a pass"
+    }
+  ],
+  "final_test_configurations": [
+    "GCC 14.2.0 O1 ASan+UBSan (vptr excluded)",
+    "Clang 17.0.0 O1 ASan+UBSan (vptr excluded)"
+  ],
+  "host_or_guest_game_run_this_turn": false
+}

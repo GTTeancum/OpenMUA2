@@ -1,0 +1,20 @@
+--- a/src/cpu/cpu.c
++++ b/src/cpu/cpu.c
+@@ -1300,14 +1300,14 @@
+         result = (u32)(s32)rounded;
+     }
+ 
+-    cpu->fpscr &= ~0x00006000u;
++    cpu->fpscr &= ~0x00060000u;
+     if (invalid) {
+         set_fp_exception(cpu, 0x00000100u);
+     } else if (rounded != value) {
+         set_fp_exception(cpu, 0x02000000u);
+-        cpu->fpscr |= 0x00004000u;
++        cpu->fpscr |= 0x00020000u;
+         if (fabs(rounded) > fabs(value))
+-            cpu->fpscr |= 0x00002000u;
++            cpu->fpscr |= 0x00040000u;
+     }
+ 
+     if (invalid && (cpu->fpscr & 0x80u))

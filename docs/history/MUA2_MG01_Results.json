@@ -1,0 +1,89 @@
+{
+  "checkpoint": "MUA2 MG01",
+  "date_utc": "2026-09-21",
+  "game": "Marvel: Ultimate Alliance 2 (Wii USA)",
+  "disc_id": "RMSE52",
+  "status": "NATIVE_LINUX_DOL_BOOT_TO_WRIST_STRAP_SCREEN; NOT_PLAYABLE_PORT",
+  "dependency_parts_verified": 3,
+  "payload_files_verified": 1246,
+  "source_nodes": 42,
+  "authenticated_private_debian_packages": 557,
+  "built": [
+    "DolRecomp",
+    "ModernGekko runner",
+    "ModernGekko launcher",
+    "ModernGekko port tool",
+    "native Linux DOL module"
+  ],
+  "generated_dol_c_chunks": 325,
+  "native_module_optimization": "Clang 19 -O0; IPO off",
+  "targeted_tests": {
+    "DolRecomp": {
+      "passed": 19,
+      "failed": 0
+    },
+    "ModernGekko": {
+      "passed": 30,
+      "failed": 0
+    },
+    "checkpoint_binary_and_relocation_audits": {
+      "passed": 20,
+      "failed": 0
+    }
+  },
+  "test_scope_note": "The unfiltered vendored CTest tree also listed unbuilt zstd executables. Those are not represented as passes. The explicit ModernGekko suite passed after the final EGL build.",
+  "native_dol_chunk_hashes_verified": 325,
+  "module_rel_descriptors": 0,
+  "runtime_native_dispatches": 523228655,
+  "runtime_frame_count": "177",
+  "runtime_elapsed_seconds": 144.474,
+  "runtime_result": "Actual wrist-strap startup screen; no title screen or gameplay verified.",
+  "runtime_renderer": "Mesa llvmpipe software OpenGL; native DOL module built O0",
+  "rel_loaded": true,
+  "rel_observed_base": "0x80e4a080",
+  "rel_relocation_operations_checked": 95772,
+  "rel_reconstructed_text_bytes": 3255744,
+  "rel_text_mismatch_bytes": 0,
+  "rel_native_compiled": false,
+  "dol_modified_chunk": {
+    "address": "0x804AA900",
+    "bytes": 16384,
+    "observed_changed_words": 24,
+    "verification_left_enabled": true
+  },
+  "windows_built": false,
+  "windows_tested": false,
+  "audio_audibility_tested": false,
+  "saves_tested": false,
+  "playability_verified": false,
+  "new_combined_build_helper_run_end_to_end": false,
+  "helper_validation": "Component commands executed; patch helpers applied idempotently; generation reuse exercised; Python and shell syntax checks and 20 checkpoint tests passed.",
+  "binaries": {
+    "ModernGekko": {
+      "size": 30270624,
+      "sha256": "658201f4bb632ebd1ca2967b9e4d300aea8d06cc9be6d8334eaf3a7c3f69983c"
+    },
+    "moderngekko-run": {
+      "size": 30537112,
+      "sha256": "09edb21d255019bc33850c7e19690661b097c3134e137039349fb89973e8a796"
+    },
+    "gRMSE52_recomp.so": {
+      "size": 336233648,
+      "sha256": "489470077c6a5fd9d78eb5bdef5397cd7f5c7029ac9405a2d1d05464a83fa0b0"
+    },
+    "moderngekko-port": {
+      "size": 252728,
+      "sha256": "92acfb30a26c6fd0520bf9ed51b0be6abfd23b56e2381fd9bf1336bd90daa37d"
+    },
+    "dolrecomp": {
+      "size": 194904,
+      "sha256": "5b4df4063bc56e04046a0f368ffec5445e56fead6ff331ee7d1001200b9c5f5e"
+    }
+  },
+  "next_development_targets": [
+    "Correct and integrate native REL relocation support using the observed BSS/header layout, without fixed-address assumptions or disabling validation.",
+    "Move beyond startup into title/menu/gameplay and verify input, audio and saves.",
+    "Create and test an optimized Windows build after runtime integration."
+  ],
+  "package_note": "Not a standalone Windows game or universal Linux bundle. Original verified dependency sources, SDK and game assets remain required. No complete Sys asset directory or SDK is repackaged."
+}

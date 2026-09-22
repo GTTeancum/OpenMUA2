@@ -1,0 +1,14 @@
+{
+  "full_tree_setup_first_attempt": {
+    "result": "TOOL_DEADLINE_200_SECONDS",
+    "stage": "Git staging, before commit",
+    "cause": "Full manifest passed to Git pathspec matching scaled poorly",
+    "repair": "Use literal NUL-terminated update-index paths; add interrupted-setup marker guard",
+    "counted_as_pass": false
+  },
+  "streaming_container_attempt": {
+    "result": "StreamingExecNotEnabledContainerError",
+    "action": "Re-ran synchronously",
+    "counted_as_code_failure": false
+  }
+}

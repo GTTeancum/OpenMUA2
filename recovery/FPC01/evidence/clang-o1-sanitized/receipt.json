@@ -1,0 +1,386 @@
+{
+  "status": "PASS_WITH_EXPECTED_FAILING_NEGATIVE_CONTROL",
+  "gameplay_tested": false,
+  "workspace_modified": false,
+  "sanitizers": [
+    "address",
+    "undefined (vptr excluded)"
+  ],
+  "optimization": "1",
+  "commands": [
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "-c",
+        "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/PowerPC.cpp",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-0.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 7.904,
+      "log": "compile-support-0.log"
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "-c",
+        "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/PPCCache.cpp",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-1.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 7.1,
+      "log": "compile-support-1.log"
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "-c",
+        "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/ConditionRegister.cpp",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-2.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.031,
+      "log": "compile-support-2.log"
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "-c",
+        "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/Config/Config.cpp",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-3.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 7.912,
+      "log": "compile-support-3.log"
+    },
+    {
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-c",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-original.c",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-original.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.181,
+      "log": "compile-cpu-original.log"
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "/mnt/data/mua2-recovery/fp-repair/tests/fctiw_differential.cpp",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-original.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-0.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-1.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-2.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-3.o",
+        "-Wl,--gc-sections",
+        "-lm",
+        "-pthread",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/fctiw-original"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 7.366,
+      "log": "link-original.log"
+    },
+    {
+      "command": [
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/fctiw-original"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.421,
+      "log": "test-original.log"
+    },
+    {
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-c",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-fixed.c",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-fixed.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.377,
+      "log": "compile-cpu-fixed.log"
+    },
+    {
+      "command": [
+        "clang++",
+        "-std=c++23",
+        "-D_M_X86_64=1",
+        "-O1",
+        "-g",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize=vptr",
+        "-fno-omit-frame-pointer",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+        "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+        "/mnt/data/mua2-recovery/fp-repair/tests/fctiw_differential.cpp",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/cpu-fixed.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-0.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-1.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-2.o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/support-3.o",
+        "-Wl,--gc-sections",
+        "-lm",
+        "-pthread",
+        "-o",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/fctiw-fixed"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 7.513,
+      "log": "link-fixed.log"
+    },
+    {
+      "command": [
+        "/mnt/data/mua2-recovery/fp-repair/evidence/clang-o1-sanitized/fctiw-fixed"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.268,
+      "log": "test-fixed.log"
+    }
+  ],
+  "reference_files": [
+    {
+      "path": "Source/Core/Core/PowerPC/PowerPC.cpp",
+      "sha256": "684ad2216ac457825caadaa51f4d3d07ad6ce2972ece87be86051da8d4d173f3"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PowerPC.h",
+      "sha256": "de16912719c6259cea69913e475c364173976e56d59e818330ed815a3b1ff411"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PPCCache.cpp",
+      "sha256": "8027ff33c074b2e30f55553d720216ca41c44060473424deff23ecbab1c2d05e"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/PPCCache.h",
+      "sha256": "8a3835dee79831387fafd24bf79c1506198a6b65b9fb2cc08061c0aee986221b"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/ConditionRegister.cpp",
+      "sha256": "9e2722d92305d4c1cabc1e947d386321453888900acffd9f2025993a41a18c4f"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/ConditionRegister.h",
+      "sha256": "72c2aa97de7a70ee6954dab3a5718602ca0ecfc592c7d0155eaf9f690b8edfb2"
+    },
+    {
+      "path": "Source/Core/Common/Config/Config.cpp",
+      "sha256": "365223e3b0e6dbc46da6e11890036b17d9c0261491d57d237d2a1edf8b310376"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatMisc.cpp",
+      "sha256": "18684297e618da4c0e680816b1d966abf3d2e180130ed6766afb74b42d282ce8"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/Interpreter_FPUtils.h",
+      "sha256": "860cb48bf7596eeb9e0872c73029697a060c9c7a4cca7aa758122ddbd0b3cff7"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Interpreter/ExceptionUtils.h",
+      "sha256": "ad94ae0edd58df16a8dcd09634e0f732e17677502da393f0ba24374d3297c78c"
+    },
+    {
+      "path": "Source/Core/Core/PowerPC/Gekko.h",
+      "sha256": "fad9f1cbb274f63955b44680627bfab542e1940b24b6f6625ee1653436a6020c"
+    },
+    {
+      "path": "Source/Core/Common/FloatUtils.h",
+      "sha256": "b0fee6cae8b5592f6b7626161c2425d034dee607ebefab3ad3947c03b02940be"
+    }
+  ],
+  "workspace_cpu": {
+    "file": "/mnt/data/mua2-recovery/scratch/project/lib/DolRecomp/src/cpu/cpu.c",
+    "state": "needs_fix",
+    "input_sha256": "6cb6679523d0afa23ae70a81865a9b9c3ca4626c026f36b55cc7e557fc78d662",
+    "output_sha256": "c9c21b3ac9fbcc7a45f0f825f83441e84b238f456a605ae859a3c79064041691",
+    "function_input_sha256": "1c370c3431430be5e8023869379ec4de4966a66f5e4f17650dba7a15a6540d5e",
+    "function_output_sha256": "e5e2f983011abf146a8c50a7636fb7415a80b363aa1f32f27720d687ca7da245"
+  },
+  "compilers": {
+    "c": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)",
+    "cxx": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)"
+  },
+  "tests": {
+    "original": {
+      "cases": 1298576,
+      "matrix_cases": 1048576,
+      "random_cases": 250000,
+      "failures": 1217268,
+      "fpscr_mismatches": 1217268,
+      "result_mismatches": 0,
+      "write_mismatches": 0,
+      "fprf_preservation_failures": 973909,
+      "independent_invariant_failures": 973823,
+      "invalid_cases": 351888,
+      "nan_cases": 32881,
+      "exact_cases": 65536,
+      "inexact_cases": 881152,
+      "blocked_invalid_writes": 175820,
+      "seed": "91af83476d09ebc2",
+      "host_fp_traps": false,
+      "host_ftz_daz": false,
+      "gameplay_tested": false,
+      "executable_sha256": "be064ebcaef8f033f5553010906f154554c067ffecdea5a9d11bc4cdad3dce29",
+      "exit_code": 1,
+      "seconds": 0.421
+    },
+    "fixed": {
+      "cases": 1298576,
+      "matrix_cases": 1048576,
+      "random_cases": 250000,
+      "failures": 0,
+      "fpscr_mismatches": 0,
+      "result_mismatches": 0,
+      "write_mismatches": 0,
+      "fprf_preservation_failures": 0,
+      "independent_invariant_failures": 0,
+      "invalid_cases": 351888,
+      "nan_cases": 32881,
+      "exact_cases": 65536,
+      "inexact_cases": 881152,
+      "blocked_invalid_writes": 175820,
+      "seed": "91af83476d09ebc2",
+      "host_fp_traps": false,
+      "host_ftz_daz": false,
+      "gameplay_tested": false,
+      "executable_sha256": "98488c09b115a02b7e4e76d09bd8bef7a1a8bf78bcba343a17831472d8a281b7",
+      "exit_code": 0,
+      "seconds": 0.268
+    }
+  }
+}

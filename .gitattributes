@@ -1,0 +1,3 @@
+# Exact source bytes matter for pinned hashes; upstream attributes are preserved
+# as UPSTREAM.gitattributes so they cannot silently alter this flat repository.
+* -text

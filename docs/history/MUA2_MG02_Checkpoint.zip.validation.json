@@ -1,0 +1,11 @@
+{
+  "file": "/mnt/data/MUA2_MG02_Checkpoint.zip",
+  "bytes": 384019790,
+  "sha256": "b458b6e0f1b1eddd40793be35fffff14b5856b50971dda3b10d3257961127779",
+  "members": 21240,
+  "zip_crc_all_members": "PASS",
+  "payload_sha256_files_verified": 21239,
+  "manifest_validation": "PASS",
+  "font_files_in_payload": 0,
+  "final_audit_seconds": 3.200620421000167
+}

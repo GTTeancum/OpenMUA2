@@ -1,0 +1,9 @@
+[0/2] Re-checking globbed directories...
+[1/9] Building C object CMakeFiles/dr_cpu.dir/src/cpu/cpu.c.o
+[2/9] Linking C static library libdr_cpu.a
+[3/9] Linking C executable test_jumptables
+[4/9] Linking C executable test_pc_reference
+[5/9] Linking C executable test_module_abi
+[6/9] Linking C executable test_c_execute
+[7/9] Linking C executable test_fpscr
+[8/9] Linking C executable test_float_semantics

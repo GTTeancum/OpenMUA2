@@ -1,0 +1,191 @@
+test_all_path_candidates_are_tested (test_python_launcher.LauncherContractTests.test_all_path_candidates_are_tested) ... ok
+test_child_arguments_and_exit_code_are_preserved (test_python_launcher.LauncherContractTests.test_child_arguments_and_exit_code_are_preserved) ... ok
+test_cmd_file_has_crlf (test_python_launcher.LauncherContractTests.test_cmd_file_has_crlf) ... ok
+test_explicit_override_is_checked_and_bad_override_stops (test_python_launcher.LauncherContractTests.test_explicit_override_is_checked_and_bad_override_stops) ... ok
+test_fallback_checks_specific_versions (test_python_launcher.LauncherContractTests.test_fallback_checks_specific_versions) ... ok
+test_installer_modes_disabled_only_for_this_process (test_python_launcher.LauncherContractTests.test_installer_modes_disabled_only_for_this_process) ... ok
+test_workspace_action_occurs_once_after_selection (test_python_launcher.LauncherContractTests.test_workspace_action_occurs_once_after_selection) ... ok
+test_explicit_interpreter_and_repository_spaces (test_python_launcher.NativeWindowsLauncherTests.test_explicit_interpreter_and_repository_spaces) ... skipped 'Requires native Windows CMD; not simulated'
+test_invalid_explicit_path_does_not_run_workspace (test_python_launcher.NativeWindowsLauncherTests.test_invalid_explicit_path_does_not_run_workspace) ... skipped 'Requires native Windows CMD; not simulated'
+test_nonzero_workspace_result_does_not_retry (test_python_launcher.NativeWindowsLauncherTests.test_nonzero_workspace_result_does_not_retry) ... skipped 'Requires native Windows CMD; not simulated'
+test_quoted_snapshot_message_is_one_argument (test_python_launcher.NativeWindowsLauncherTests.test_quoted_snapshot_message_is_one_argument) ... skipped 'Requires native Windows CMD; not simulated'
+test_stale_python_environment_does_not_poison_selected_interpreter (test_python_launcher.NativeWindowsLauncherTests.test_stale_python_environment_does_not_poison_selected_interpreter) ... skipped 'Requires native Windows CMD; not simulated'
+test_32_bit_is_rejected (test_python_launcher.PythonProbeTests.test_32_bit_is_rejected) ... ok
+test_broken_pythonhome_is_ignored_by_probe (test_python_launcher.PythonProbeTests.test_broken_pythonhome_is_ignored_by_probe) ... ok
+test_installed_interpreter_runs_the_production_probe (test_python_launcher.PythonProbeTests.test_installed_interpreter_runs_the_production_probe) ... ok
+test_minimum_and_later_versions (test_python_launcher.PythonProbeTests.test_minimum_and_later_versions) ... ok
+test_old_version_is_rejected (test_python_launcher.PythonProbeTests.test_old_version_is_rejected) ... ok
+test_probe_success_is_not_generic_zero (test_python_launcher.PythonProbeTests.test_probe_success_is_not_generic_zero) ... ok
+test_backup_destination_not_overwritten (test_workspace.WorkspaceTests.test_backup_destination_not_overwritten) ... Initialized empty Git repository in /tmp/openmua2 fixture _m5c2f9d/repo with spaces/.git/
+[main (root-commit) f5ca2fa] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_backup_refuses_index_lock (test_workspace.WorkspaceTests.test_backup_refuses_index_lock) ... Initialized empty Git repository in /tmp/openmua2 fixture rmbr7yij/repo with spaces/.git/
+[main (root-commit) 8cc90ae] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_backup_restores_history_and_uncommitted_work (test_workspace.WorkspaceTests.test_backup_restores_history_and_uncommitted_work) ... Initialized empty Git repository in /tmp/openmua2 fixture s77y8dto/repo with spaces/.git/
+[main (root-commit) 8cc90ae] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+/tmp/openmua2 fixture s77y8dto/repo with spaces/.local/backup-k6ypum_e/history.bundle is okay
+The bundle contains these 2 refs:
+8cc90ae662853f7871d9dbc621e7648b56e14ef4 refs/heads/main
+8cc90ae662853f7871d9dbc621e7648b56e14ef4 HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+Initialized empty Git repository in /tmp/openmua2 fixture s77y8dto/restored source/.git/
+/tmp/openmua2 fixture s77y8dto/restored source/.recovery-history.bundle is okay
+The bundle contains these 2 refs:
+8cc90ae662853f7871d9dbc621e7648b56e14ef4 refs/heads/main
+8cc90ae662853f7871d9dbc621e7648b56e14ef4 HEAD
+The bundle records a complete history.
+The bundle uses this hash algorithm: sha1
+From /tmp/openmua2 fixture s77y8dto/restored source/.recovery-history.bundle
+ * [new branch]      main       -> main
+Unstaged changes after reset:
+D	README.md
+M	project/example.c
+ok
+test_build_configure_argument_quoting_and_offline (test_workspace.WorkspaceTests.test_build_configure_argument_quoting_and_offline) ... ok
+test_code_allowlist_excludes_private (test_workspace.WorkspaceTests.test_code_allowlist_excludes_private) ... ok
+test_existing_unreceipted_game_not_overwritten (test_workspace.WorkspaceTests.test_existing_unreceipted_game_not_overwritten) ... Hashing original WBFS input (read-only)...
+ok
+test_extraction_is_atomic_and_readonly (test_workspace.WorkspaceTests.test_extraction_is_atomic_and_readonly) ... Hashing original WBFS input (read-only)...
+Hashing original WBFS input (read-only)...
+ok
+test_failed_child_is_not_success (test_workspace.WorkspaceTests.test_failed_child_is_not_success) ... Game extracted and DOL/REL hashes validated. Original WBFS was not changed.
+
+/opt/pyvenv/bin/python3 -c "import sys; print(\"failure fixture\");sys.exit(7)"
+failure fixture
+ok
+test_failed_extraction_does_not_publish_game (test_workspace.WorkspaceTests.test_failed_extraction_does_not_publish_game) ... Hashing original WBFS input (read-only)...
+ok
+test_image_ambiguity (test_workspace.WorkspaceTests.test_image_ambiguity) ... ok
+test_image_bad_magic (test_workspace.WorkspaceTests.test_image_bad_magic) ... ok
+test_image_missing (test_workspace.WorkspaceTests.test_image_missing) ... ok
+test_image_outside_root (test_workspace.WorkspaceTests.test_image_outside_root) ... ok
+test_image_readonly_hashing (test_workspace.WorkspaceTests.test_image_readonly_hashing) ... Hashing original WBFS input (read-only)...
+ok
+test_image_split_gaps_rejected (test_workspace.WorkspaceTests.test_image_split_gaps_rejected) ... ok
+test_image_split_parts_hashed (test_workspace.WorkspaceTests.test_image_split_parts_hashed) ... Hashing original WBFS input (read-only)...
+ok
+test_image_unique_and_case_insensitive (test_workspace.WorkspaceTests.test_image_unique_and_case_insensitive) ... ok
+test_manifest_case_duplicate_rejected (test_workspace.WorkspaceTests.test_manifest_case_duplicate_rejected) ... ok
+test_manifest_detects_corruption_without_repair (test_workspace.WorkspaceTests.test_manifest_detects_corruption_without_repair) ... ok
+test_manifest_invalid_hash_rejected (test_workspace.WorkspaceTests.test_manifest_invalid_hash_rejected) ... ok
+test_manifest_missing_file (test_workspace.WorkspaceTests.test_manifest_missing_file) ... ok
+test_manifest_passes (test_workspace.WorkspaceTests.test_manifest_passes) ... Integrity PASS: 4 files (FILE-MANIFEST.json).
+ok
+test_manifest_traversal_rejected (test_workspace.WorkspaceTests.test_manifest_traversal_rejected) ... ok
+test_module_configure_uses_explicit_compiler (test_workspace.WorkspaceTests.test_module_configure_uses_explicit_compiler) ... ok
+test_parser_defaults_conservative (test_workspace.WorkspaceTests.test_parser_defaults_conservative) ... ok
+test_path_validation (test_workspace.WorkspaceTests.test_path_validation) ... ok
+test_reject_symlink_destination (test_workspace.WorkspaceTests.test_reject_symlink_destination) ... ok
+test_run_requires_verified_build_receipt (test_workspace.WorkspaceTests.test_run_requires_verified_build_receipt) ... ok
+test_setup_existing_repo_is_idempotent (test_workspace.WorkspaceTests.test_setup_existing_repo_is_idempotent) ... Initialized empty Git repository in /tmp/openmua2 fixture uly8xst_/repo with spaces/.git/
+[main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_setup_git_preserves_wbfs_and_no_remote (test_workspace.WorkspaceTests.test_setup_git_preserves_wbfs_and_no_remote) ... Initialized empty Git repository in /tmp/openmua2 fixture avo6i5nn/repo with spaces/.git/
+[main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_setup_resume_rejects_changed_manifest (test_workspace.WorkspaceTests.test_setup_resume_rejects_changed_manifest) ... SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+Integrity PASS: 4 files (FILE-MANIFEST.json).
+ok
+test_setup_resume_rejects_unrelated_staged_files (test_workspace.WorkspaceTests.test_setup_resume_rejects_unrelated_staged_files) ... SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+Integrity PASS: 4 files (FILE-MANIFEST.json).
+ok
+test_setup_resumes_own_interrupted_initial_commit (test_workspace.WorkspaceTests.test_setup_resumes_own_interrupted_initial_commit) ... [main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_setup_stops_before_git_on_corruption (test_workspace.WorkspaceTests.test_setup_stops_before_git_on_corruption) ... SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+ok
+test_setup_uses_literal_index_input_not_quadratic_pathspec (test_workspace.WorkspaceTests.test_setup_uses_literal_index_input_not_quadratic_pathspec) ... Initialized empty Git repository in /tmp/openmua2 fixture ywmsqmwo/repo with spaces/.git/
+[main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_snapshot_noop_preserves_head (test_workspace.WorkspaceTests.test_snapshot_noop_preserves_head) ... Initialized empty Git repository in /tmp/openmua2 fixture 6rp_r4no/repo with spaces/.git/
+[main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_snapshot_records_deletion (test_workspace.WorkspaceTests.test_snapshot_records_deletion) ... Initialized empty Git repository in /tmp/openmua2 fixture 4mnyj35f/repo with spaces/.git/
+[main (root-commit) 6aae23a] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+[main 087cf44] Local OpenMUA2 source checkpoint 20260922T155631.017151Z
+ 1 file changed, 1 deletion(-)
+ delete mode 100644 project/example.c
+ok
+test_snapshot_rejects_forced_private_staging (test_workspace.WorkspaceTests.test_snapshot_rejects_forced_private_staging) ... Initialized empty Git repository in /tmp/openmua2 fixture rs86u5kg/repo with spaces/.git/
+[main (root-commit) 5b0882f] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+ok
+test_snapshot_tracks_edits_and_excludes_game (test_workspace.WorkspaceTests.test_snapshot_tracks_edits_and_excludes_game) ... Initialized empty Git repository in /tmp/openmua2 fixture tb3kikdb/repo with spaces/.git/
+[main (root-commit) 5b0882f] OpenMUA2 LOCAL01 recoverable source baseline (MG01 + FPC01)
+ 5 files changed, 11 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 FILE-MANIFEST.json
+ create mode 100644 README.md
+ create mode 100644 project/example.c
+[main b5ca458] fixture snapshot
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ create mode 100644 project/new.c
+ok
+test_write_json_replaces_only_destination (test_workspace.WorkspaceTests.test_write_json_replaces_only_destination) ... ok
+
+----------------------------------------------------------------------
+Ran 58 tests in 17.582s
+
+OK (skipped=5)

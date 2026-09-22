@@ -1,0 +1,1522 @@
+{
+  "checkpoint": "MR01",
+  "date_utc": "2026-09-22T11:02:46.269122+00:00",
+  "status": "NATIVE_GAMEPLAY_RECONSTRUCTED_BOUNDED_DIFFERENTIAL_PASS_NOT_FULL_GAME_CERTIFICATION",
+  "provenance": "Fresh reconstruction from MG01 + original pinned uploads + recovered FPC01; missing MG02 code/archive not recovered.",
+  "platform": "Debian 13 Linux x86-64, private SDK, Mesa software OpenGL; no Windows executable.",
+  "module_verification": {
+    "status": "PASS",
+    "game_id": "RMSE52",
+    "module_abi": 3,
+    "cpu_abi": 4,
+    "cpu_state_size": 3536,
+    "entry_point": 2147508080,
+    "code_ranges": 3,
+    "verified_chunk_hashes": 16743,
+    "covered_text_bytes": 8571904,
+    "rel_modules": 1,
+    "uncovered_dispatch_test": true,
+    "game_boot_test": false
+  },
+  "source_overlay_files": 31,
+  "clean_overlay": {
+    "status": "PASS",
+    "production_files": 31,
+    "first_apply_changed": 31,
+    "second_apply_changed": 0,
+    "all_output_hashes_match": true
+  },
+  "preintegration_upgrade": {
+    "status": "PASS",
+    "preintegration_files_changed": 26,
+    "upgrade_files_changed": 6,
+    "reapply_changed": 0,
+    "final_production_files": 31,
+    "all_final_hashes_match": true
+  },
+  "unit_test_suites": {
+    "dolrecomp_ctest": 19,
+    "runtime_targeted_ctest": 30,
+    "overlay_python": 12,
+    "probe_preflight_python": 7
+  },
+  "regression_receipt": "evidence/final-fma-audits/RESULTS.json",
+  "fma_regression": {
+    "fixed": {
+      "cases": 3027456,
+      "failures": 0,
+      "fpscr_mismatches": 0,
+      "value_mismatches": 0,
+      "write_mismatches": 0,
+      "variants": 8,
+      "host_ftz_daz": false,
+      "guest_trap_delivery_tested": false,
+      "exit_code": 0,
+      "reference_source": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatingPoint.cpp",
+      "reference_sha256": "7236837291069208c0b64b6a9112481fc09aab0ebcfc806240d910d6fb050485",
+      "native_source": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_float.c",
+      "native_sha256": "5d28cf3a5bb8324a2bfdb9c1927b5f8bd3dbd178fbcdbcad37588f01563fcceb",
+      "reference_adaptation": "Only instruction signatures and ppc_state binding changed; actual arithmetic/flag bodies retained.",
+      "sanitizers": "AddressSanitizer+UBSan except reference vptr; no Interpreter object/CPU dispatch"
+    },
+    "negative_control": {
+      "cases": 3027456,
+      "failures": 608086,
+      "fpscr_mismatches": 259606,
+      "value_mismatches": 485952,
+      "write_mismatches": 0,
+      "variants": 8,
+      "host_ftz_daz": false,
+      "guest_trap_delivery_tested": false,
+      "exit_code": 1,
+      "reference_source": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatingPoint.cpp",
+      "reference_sha256": "7236837291069208c0b64b6a9112481fc09aab0ebcfc806240d910d6fb050485",
+      "native_source": "/mnt/data/mua2-recovery/fma-repair/original-0.c",
+      "native_sha256": "b9e50cf083697ca14b525d923cdfca085dcd27aa885bd11ad91e4ab4e5d2a689",
+      "reference_adaptation": "Only instruction signatures and ppc_state binding changed; actual arithmetic/flag bodies retained.",
+      "sanitizers": "AddressSanitizer+UBSan except reference vptr; no Interpreter object/CPU dispatch"
+    },
+    "exact_release": {
+      "cases": 3027456,
+      "failures": 0,
+      "fpscr_mismatches": 0,
+      "value_mismatches": 0,
+      "write_mismatches": 0,
+      "variants": 8,
+      "host_ftz_daz": false,
+      "guest_trap_delivery_tested": false,
+      "exit_code": 0,
+      "reference_source": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatingPoint.cpp",
+      "reference_sha256": "7236837291069208c0b64b6a9112481fc09aab0ebcfc806240d910d6fb050485",
+      "native_source": "/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_float.c",
+      "native_sha256": "5d28cf3a5bb8324a2bfdb9c1927b5f8bd3dbd178fbcdbcad37588f01563fcceb",
+      "reference_adaptation": "Only instruction signatures and ppc_state binding changed; actual arithmetic/flag bodies retained.",
+      "sanitizers": "AddressSanitizer+UBSan except reference vptr; no Interpreter object/CPU dispatch",
+      "exact_release_objects": [
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c.o",
+          "sha256": "2bce6dedbe15abe521a19e66ce1bd967c229b3f843cd3be9c834556266d56567"
+        },
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_exception.c.o",
+          "sha256": "12d631d086ae724b0c19eade1db437d8a2f3952cd8ad9afad2d78351c9c06523"
+        },
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_float.c.o",
+          "sha256": "1c8a6adfa28b3b5468dd5962b82fa8aa226b0b68d05d2df0c587fc885cf1aa0c"
+        },
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_table.c.o",
+          "sha256": "67e38a68291826401c09edd69bcb6eb80aefd6f7583427347529a2f8d77ee51b"
+        },
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_integer.c.o",
+          "sha256": "00581debdbe47867d32e5ba679d9ed66697060ba27fc430974d90f71e5e1b4fc"
+        },
+        {
+          "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter.c.o",
+          "sha256": "229d7bbf5b1072ce003cbb9a1f9da9ebcdd2f225889a905a35b8d5593c02d62d"
+        }
+      ],
+      "native_helper_sanitized": false
+    }
+  },
+  "exact_release_fctiw": {
+    "cases": 1298576,
+    "matrix_cases": 1048576,
+    "random_cases": 250000,
+    "failures": 0,
+    "fpscr_mismatches": 0,
+    "result_mismatches": 0,
+    "write_mismatches": 0,
+    "fprf_preservation_failures": 0,
+    "independent_invariant_failures": 0,
+    "invalid_cases": 351888,
+    "nan_cases": 32881,
+    "exact_cases": 65536,
+    "inexact_cases": 881152,
+    "blocked_invalid_writes": 175820,
+    "seed": "91af83476d09ebc2",
+    "host_fp_traps": false,
+    "host_ftz_daz": false,
+    "gameplay_tested": false,
+    "exit_code": 0,
+    "scope": "Exact Clang 19 O1 release objects linked into the game module; not full-game validation",
+    "release_objects_sanitized": false,
+    "fixture_and_reference_sanitized": true,
+    "objects": [
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c.o",
+        "bytes": 11712,
+        "sha256": "2bce6dedbe15abe521a19e66ce1bd967c229b3f843cd3be9c834556266d56567"
+      },
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_exception.c.o",
+        "bytes": 1232,
+        "sha256": "12d631d086ae724b0c19eade1db437d8a2f3952cd8ad9afad2d78351c9c06523"
+      },
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_float.c.o",
+        "bytes": 41568,
+        "sha256": "1c8a6adfa28b3b5468dd5962b82fa8aa226b0b68d05d2df0c587fc885cf1aa0c"
+      },
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_table.c.o",
+        "bytes": 1344,
+        "sha256": "67e38a68291826401c09edd69bcb6eb80aefd6f7583427347529a2f8d77ee51b"
+      },
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_integer.c.o",
+        "bytes": 7416,
+        "sha256": "00581debdbe47867d32e5ba679d9ed66697060ba27fc430974d90f71e5e1b4fc"
+      },
+      {
+        "path": "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter.c.o",
+        "bytes": 960,
+        "sha256": "229d7bbf5b1072ce003cbb9a1f9da9ebcdd2f225889a905a35b8d5593c02d62d"
+      }
+    ],
+    "build_command": [
+      "g++",
+      "-std=c++23",
+      "-O1",
+      "-g",
+      "-fsanitize=address,undefined",
+      "-fno-sanitize=vptr",
+      "-fno-omit-frame-pointer",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-frounding-math",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-D_M_X86_64=1",
+      "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/include",
+      "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core",
+      "-I/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/include",
+      "/mnt/data/mua2-recovery/fctiw-release-final/fixture.cpp",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c.o",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_exception.c.o",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_float.c.o",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_table.c.o",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter_integer.c.o",
+      "/mnt/data/mua2-recovery/scratch/build/mua2-c128/CMakeFiles/gRMSE52_recomp.dir/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu_interpreter.c.o",
+      "/mnt/data/mua2-recovery/final-fma-audits/fpc/support-0.o",
+      "/mnt/data/mua2-recovery/final-fma-audits/fpc/support-1.o",
+      "/mnt/data/mua2-recovery/final-fma-audits/fpc/support-2.o",
+      "/mnt/data/mua2-recovery/final-fma-audits/fpc/support-3.o",
+      "-Wl,--gc-sections",
+      "-lm",
+      "-pthread",
+      "-o",
+      "/mnt/data/mua2-recovery/fctiw-release-final/test"
+    ]
+  },
+  "binaries": {
+    "moderngekko-port": {
+      "bytes": 252728,
+      "sha256": "90fe42121ff503eff8660be540d1f1870edb7af87ee40f8af1d30f9d9e6bb5c3"
+    },
+    "gRMSE52_recomp.so": {
+      "bytes": 182111824,
+      "sha256": "5def4a3e5d4f3fd4163a8b37bfbef767310f5c08743686c20ad97810ba8728ea"
+    },
+    "dolrecomp": {
+      "bytes": 194992,
+      "sha256": "f4693140faa9cd31d5263252dce90b13a4090f066394339a1f2c1c429c03c9f9"
+    },
+    "moderngekko-run": {
+      "bytes": 30541432,
+      "sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67"
+    },
+    "ModernGekko": {
+      "bytes": 30274944,
+      "sha256": "8b98dd2809b6998d87982418d72cfd0780c0554e93efca4dd931d5f3a040b0b0"
+    },
+    "moderngekko-module-info": {
+      "bytes": 163608,
+      "sha256": "8b32776ed0035e96a1d9cf52b7d422ddfaf2f62b5a90d9b82cd444060f8fad10"
+    }
+  },
+  "sessions": {
+    "native-cold-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/native-cold-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/native-cold-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/scratch/build/mua2-c128/gRMSE52_recomp.so"
+      ],
+      "runtime_sha256": "302332419b8c0c1da6dd71e59a9188513b4d22b9d846e03d89cf6f5310c2f989",
+      "module_sha256": "b255e5436f75ed19196ba6b47f530b358ec159032b77f98a6b90f3aa4377d783",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": null,
+      "profile": null,
+      "maximum_wall_seconds": 900.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 0,
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 818.011,
+      "stop_command_sent": false,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 12551035769,
+        "fallback": 0,
+        "native_exc": 616141,
+        "hook_fb": 230889900,
+        "smc_failed": 1,
+        "verifications": 6688,
+        "reverify_events": 7,
+        "bursts": 13632118,
+        "cycles": 138276740270
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "6.66655",
+        "vps": "13.6852",
+        "speed": "0.243292",
+        "frame_count": "5035",
+        "present_count": "16432",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "50",
+        "last_command": "01790072383515136713-control.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/difficulty.png",
+          "bytes": 324084,
+          "sha256": "58e883ba1a427f3947ed2c532a11c453f555c7ee722d4f618682382154321500"
+        },
+        {
+          "path": "automation/guest-setup.png",
+          "bytes": 179719,
+          "sha256": "dd9f84f753bbd016be37e48764f82fe350243d0d28566a03ef1e08b603c770fa"
+        },
+        {
+          "path": "automation/joined.png",
+          "bytes": 187868,
+          "sha256": "c91ba61cc36252e122995d5014d63a2d600c45945d736a38c19d6b467ab3b179"
+        },
+        {
+          "path": "automation/player-setup.png",
+          "bytes": 64290,
+          "sha256": "82ee046fb4b729ed7d528e8d29eadc56338d4f47044aba0176270739d62a7dbb"
+        },
+        {
+          "path": "automation/ready.png",
+          "bytes": 203463,
+          "sha256": "70db04f40304581b044e6cb7cc6842ef13780ab43b915f1d6db4bab0adc5cb5d"
+        },
+        {
+          "path": "automation/screen-00021.png",
+          "bytes": 1185,
+          "sha256": "14e891ea604bd94f569ddd3193adfddf1306f928a525151fbd8b637867ccd323"
+        },
+        {
+          "path": "automation/screen-00052.png",
+          "bytes": 103998,
+          "sha256": "e4b461d57352ffec4a2e0e0671d9dd7324853ee133b792b85bc191c3bfcaacb7"
+        },
+        {
+          "path": "automation/screen-00082.png",
+          "bytes": 103998,
+          "sha256": "e4b461d57352ffec4a2e0e0671d9dd7324853ee133b792b85bc191c3bfcaacb7"
+        },
+        {
+          "path": "automation/screen-00112.png",
+          "bytes": 123317,
+          "sha256": "8879b49082af860a964204c549eda7a59b4cf49b9e461c73cb68c509bdaf12f5"
+        },
+        {
+          "path": "automation/screen-00142.png",
+          "bytes": 76465,
+          "sha256": "872ab0999b7049df1b8af16ccdd762af18d87ab18860300b85e34e7ec7ebf481"
+        },
+        {
+          "path": "automation/screen-00172.png",
+          "bytes": 1220,
+          "sha256": "5c1d7e5e93f6ae964d940de95c3ce629d90af0c0f6d38a56d8581342de432f60"
+        },
+        {
+          "path": "automation/screen-00202.png",
+          "bytes": 104169,
+          "sha256": "953ae9f0873bec0ded1fdf88dab94fd957d0475d444876a297ba3032e7666b9c"
+        },
+        {
+          "path": "automation/screen-00232.png",
+          "bytes": 401061,
+          "sha256": "28b49fed516f4b14aea031cf02f1a66afb9e97224b1bc988c3d669cb104f0969"
+        },
+        {
+          "path": "automation/screen-00262.png",
+          "bytes": 13822,
+          "sha256": "659c52a83c64ffea9f1b4874b360211f3689b281c43d1a9b7764b25f2af08220"
+        },
+        {
+          "path": "automation/screen-00292.png",
+          "bytes": 44327,
+          "sha256": "94d621f0748932a6d11ee18ca24dfdca7d88667c1aba1e9664494422c001dbe6"
+        },
+        {
+          "path": "automation/screen-00322.png",
+          "bytes": 1220,
+          "sha256": "5c1d7e5e93f6ae964d940de95c3ce629d90af0c0f6d38a56d8581342de432f60"
+        },
+        {
+          "path": "automation/screen-00352.png",
+          "bytes": 78202,
+          "sha256": "74ed632d7ccaf4685356908e5562b8ffd271f520b9bf15b412c193e861d9918f"
+        },
+        {
+          "path": "automation/screen-00382.png",
+          "bytes": 89662,
+          "sha256": "ba3e31a440c01d1d38d5c3dcc93a47ede4a7d58df7158d5e771e66b79fea9d55"
+        },
+        {
+          "path": "automation/screen-00412.png",
+          "bytes": 88668,
+          "sha256": "75e5168e59307d64876aafa0c431b5127863ef3704251cf23b6d0d11f4b3f5a5"
+        },
+        {
+          "path": "automation/screen-00442.png",
+          "bytes": 324739,
+          "sha256": "6c7bbf858127a81a93337dd582017885570ec7b3ab73ea3bf1aebffa471b436e"
+        },
+        {
+          "path": "automation/screen-00472.png",
+          "bytes": 330466,
+          "sha256": "0d985c3841c5a1f3f88dbb31eebbc31e1010f445ce3d19dcc228c83166e6bca1"
+        },
+        {
+          "path": "automation/screen-00502.png",
+          "bytes": 324873,
+          "sha256": "8b474b3eb2c50d938a9c09a751d4abf2d1f4e41fa6327fe81776b88f211ae1bf"
+        },
+        {
+          "path": "automation/screen-00532.png",
+          "bytes": 325044,
+          "sha256": "893c9c75fd2c8aff6b48d50f31f823fdd2de6a8c0a8afbdc5ae7fc7dc770e011"
+        },
+        {
+          "path": "automation/screen-00563.png",
+          "bytes": 322818,
+          "sha256": "a2b49042bb4b96ef0c2496bed806add0c38dc452232cc638d1518176b624c240"
+        },
+        {
+          "path": "automation/screen-00593.png",
+          "bytes": 323739,
+          "sha256": "eca49adbfb32d4e61da94442d79366b3d709517ef93de4595deec2fefbe985e1"
+        },
+        {
+          "path": "automation/screen-00623.png",
+          "bytes": 63103,
+          "sha256": "596d62a674365488836c07c403f28020602fb6e06aff7c554b9d3762cc16d9a3"
+        },
+        {
+          "path": "automation/screen-00653.png",
+          "bytes": 63430,
+          "sha256": "098c03042e89c736ba008ffa716c7ac47f4679ebc4b9d6e3240062b6c621b654"
+        },
+        {
+          "path": "automation/screen-00683.png",
+          "bytes": 178339,
+          "sha256": "0009826dd4faa1e3f39ef4ee10441785eca9e8b88df842ba45ed6b0e263e5908"
+        },
+        {
+          "path": "automation/screen-00713.png",
+          "bytes": 178677,
+          "sha256": "67c7bc8b675d45470d62742f51b5382c8e3245b54d7dfef29bb9ac8695885bc1"
+        },
+        {
+          "path": "automation/screen-00743.png",
+          "bytes": 199430,
+          "sha256": "04e44cc9138ab7429a95697dd343b97a7c657a9cf29f20e3ccca7cda33a987ca"
+        },
+        {
+          "path": "automation/screen-00773.png",
+          "bytes": 187750,
+          "sha256": "b5175506b5bdc2addb13e8e9e07e246a0f2520b658c3584e28331f63b3117c2e"
+        },
+        {
+          "path": "automation/screen-00803.png",
+          "bytes": 191639,
+          "sha256": "27b5eef894bdf4d987b48cc8dd82793e2b526c85cee6c032327917cc90c1ae53"
+        },
+        {
+          "path": "automation/startup-a.png",
+          "bytes": 2271,
+          "sha256": "ac9af528ec8e69679052a8e7053f39c4aacc34c4727a82f850299cd892643a43"
+        },
+        {
+          "path": "automation/startup-current.png",
+          "bytes": 130685,
+          "sha256": "c7f121ca92ea273c24973a802488d0933b12a94c593964c7fa6d22502f54a8b1"
+        },
+        {
+          "path": "automation/story-menu.png",
+          "bytes": 324339,
+          "sha256": "dd749b4ecb70312da017268aa375a62a484b956a83b764871db2e888ce4507ca"
+        },
+        {
+          "path": "automation/title-menu.png",
+          "bytes": 324662,
+          "sha256": "9ec40f3308562542eb7f6e1aa0ed72fb0ade05c2172c38f8556d2c574ab85d1e"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time."
+    },
+    "native-combat-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/native-combat-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/native-combat-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/scratch/build/mua2-c128/gRMSE52_recomp.so",
+        "--load-state",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/automation/native-first-fight.sav"
+      ],
+      "runtime_sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67",
+      "module_sha256": "b255e5436f75ed19196ba6b47f530b358ec159032b77f98a6b90f3aa4377d783",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": "a27ec513015f715c25c8e88ef6ffed123df5b4cbbcc704194000b7c793058a4a",
+      "profile": "/mnt/data/mua2-recovery/runs/native-continuation-01/user",
+      "maximum_wall_seconds": 300.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 0,
+      "lockstep_environment": {},
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 112.314,
+      "stop_command_sent": false,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 889464593,
+        "fallback": 0,
+        "native_exc": 107635,
+        "hook_fb": 24001385,
+        "smc_failed": 0,
+        "verifications": 4477,
+        "reverify_events": 3,
+        "bursts": 1898571,
+        "cycles": 11308499647,
+        "native_rel": 16255206
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "4.63772",
+        "vps": "9.55589",
+        "speed": "0.259019",
+        "frame_count": "10049",
+        "present_count": "1335",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "17",
+        "last_command": "01790073731039754768-control.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/heavy-charged.png",
+          "bytes": 694386,
+          "sha256": "44c23ba7564cae11769217786e15b08d947b5a017af18a2fe8db891618197827"
+        },
+        {
+          "path": "automation/heavy-released.png",
+          "bytes": 697662,
+          "sha256": "609c4c1ca3c12583b6a5e2df19aa35548ffcdcca8a5d426e715bd2e62dc4d5c6"
+        },
+        {
+          "path": "automation/screen-00022.png",
+          "bytes": 680845,
+          "sha256": "81f06cff9ef4ca8d2e4a8d298be7c67167408301cfb215441ebf87253050031f"
+        },
+        {
+          "path": "automation/screen-00033.png",
+          "bytes": 679866,
+          "sha256": "9a70f8a62408898b456d5bdac1eb8dbd4c3bb6008243318248ff2ebce6afdf5d"
+        },
+        {
+          "path": "automation/screen-00043.png",
+          "bytes": 685379,
+          "sha256": "5b782eae0492b8c1ede18d34aa649fb4768a0d2ae6f056738c5f79d7740d69ba"
+        },
+        {
+          "path": "automation/screen-00053.png",
+          "bytes": 685731,
+          "sha256": "e79c5ececee91d54d62c2738610ce90046ad964e3f03f8aef433dd3654121128"
+        },
+        {
+          "path": "automation/screen-00063.png",
+          "bytes": 693689,
+          "sha256": "aaa7cffac3a2b7f05517406f18f855aa95ee3d4fd67c40c6d4f6513f75f82c5b"
+        },
+        {
+          "path": "automation/screen-00073.png",
+          "bytes": 699780,
+          "sha256": "52afcbe9b93976d28eef2bf5e34d2f2a06e270b0f63be598143f0f1684dfc987"
+        },
+        {
+          "path": "automation/screen-00083.png",
+          "bytes": 702910,
+          "sha256": "927b791b51ce3307c0cd1fdc3cafa7102afed1fd23031792498454656fb0841e"
+        },
+        {
+          "path": "automation/screen-00093.png",
+          "bytes": 708258,
+          "sha256": "44a6edcdba2c99ac09c93214c54154a98c67c40d979633ccd75724a6cb550424"
+        },
+        {
+          "path": "automation/screen-00103.png",
+          "bytes": 705053,
+          "sha256": "0675f9fc93b38d1754f33f0f62ba6aba5e5bf3243716be0c76980c8266fc2b60"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time."
+    },
+    "native-continuation-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/scratch/build/mua2-c128/gRMSE52_recomp.so",
+        "--load-state",
+        "/mnt/data/mua2-recovery/runs/native-cold-01/automation/native-ready.sav"
+      ],
+      "runtime_sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67",
+      "module_sha256": "b255e5436f75ed19196ba6b47f530b358ec159032b77f98a6b90f3aa4377d783",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": "396f109de15039166842d89b8ddbe3de4743a09c63f64f0e30407a417d0146ce",
+      "profile": "/mnt/data/mua2-recovery/runs/native-cold-01/user",
+      "maximum_wall_seconds": 900.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 0,
+      "lockstep_environment": {},
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 903.733,
+      "stop_command_sent": true,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 11063065880,
+        "fallback": 0,
+        "native_exc": 988892,
+        "hook_fb": 272960315,
+        "smc_failed": 1,
+        "verifications": 7597,
+        "reverify_events": 3,
+        "bursts": 17793498,
+        "cycles": 130609283915,
+        "native_rel": 129808814
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "5.72415",
+        "vps": "11.8254",
+        "speed": "0.263964",
+        "frame_count": "10222",
+        "present_count": "15999",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "78",
+        "last_command": "01790073469331412980-probe.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/enemy-approach-02.png",
+          "bytes": 696540,
+          "sha256": "4aa47326428489ff5c31b7bae348ec68461f74b61fcc9c7d2ca1a934b239f28d"
+        },
+        {
+          "path": "automation/enemy-approach.png",
+          "bytes": 665758,
+          "sha256": "21deae99df4fdcc10753316c7760f6bc2a14e187bf9c96dfa01b1bbdf0f7be01"
+        },
+        {
+          "path": "automation/intro-a.png",
+          "bytes": 111590,
+          "sha256": "94c2d2a083ab61c94549d6cfb44e9179644968f6f4f245cd1989f9793029f6b1"
+        },
+        {
+          "path": "automation/intro-skip.png",
+          "bytes": 194762,
+          "sha256": "2a4a73c0e43f8944c612b231ce3dc1094c83606fed574fb34f17edb3a4035cc5"
+        },
+        {
+          "path": "automation/intro-start.png",
+          "bytes": 272893,
+          "sha256": "2350701713e99aaeff0519eb82b0c2cc28878e96f0c289e585703a0b3a400dcb"
+        },
+        {
+          "path": "automation/light-attack.png",
+          "bytes": 690711,
+          "sha256": "4ad8c96c44c30fc6eebccb9ef44cadef513d412251fdc6fd6a0610dd4045d6cb"
+        },
+        {
+          "path": "automation/mission-load.png",
+          "bytes": 74546,
+          "sha256": "3b6ef7ea36c23aef7f91c884a6167fdc1f4ee83619daace46b288dc676909a27"
+        },
+        {
+          "path": "automation/movement-01.png",
+          "bytes": 542212,
+          "sha256": "7941986d4f486193f1a2f5842a0c2c9527d25735e6bbc788e6baa6b88516d36e"
+        },
+        {
+          "path": "automation/movement-switch.png",
+          "bytes": 622076,
+          "sha256": "041c529b7290d00414f27f135791d74108f60e4ea0faf9cbaaee297644a2c7ab"
+        },
+        {
+          "path": "automation/screen-00023.png",
+          "bytes": 202623,
+          "sha256": "5fdee76533037e737226f0c1521f273da812c71eb2a863412284baa86b2378fa"
+        },
+        {
+          "path": "automation/screen-00043.png",
+          "bytes": 188456,
+          "sha256": "dc7344efef51d317b2dfdaf0d1f73f177d56e5a195a0a9450203af9f47e588a7"
+        },
+        {
+          "path": "automation/screen-00063.png",
+          "bytes": 195157,
+          "sha256": "1bf411445ee5946e85b3cbedf582f4fa996f770f7987296e965b74b39d005f4f"
+        },
+        {
+          "path": "automation/screen-00084.png",
+          "bytes": 180410,
+          "sha256": "0163ebe43619c50411fccf76ae6436b711b7fa0ddfaa8c9845e1cd8749bd429d"
+        },
+        {
+          "path": "automation/screen-00104.png",
+          "bytes": 178574,
+          "sha256": "e80f52e04ad30494fed6d910418528cf71901b8c2f4a696fcb9e1084899ff29b"
+        },
+        {
+          "path": "automation/screen-00124.png",
+          "bytes": 183279,
+          "sha256": "069c4cd717fc6297c4b7e807fbd6be458c22b15d5b8bd6caff558270cc3eb07f"
+        },
+        {
+          "path": "automation/screen-00144.png",
+          "bytes": 74032,
+          "sha256": "d977e6fb63052db8ddebb5a7f4cb04784d675363d5fad796ac35dcad0708521e"
+        },
+        {
+          "path": "automation/screen-00164.png",
+          "bytes": 78318,
+          "sha256": "73a793bf709cec095768ceef43c57fa3305fee1f25846b755d8e914ac9939e72"
+        },
+        {
+          "path": "automation/screen-00184.png",
+          "bytes": 74417,
+          "sha256": "21c5d15a86854d94117a213c2b59343d70b40445afc175df71d3ff732ed33ea2"
+        },
+        {
+          "path": "automation/screen-00204.png",
+          "bytes": 246052,
+          "sha256": "57ce8a33e78fe122ab1f6daee85c6bf4dca3aa0bf9ccd4147a70d97863293b53"
+        },
+        {
+          "path": "automation/screen-00224.png",
+          "bytes": 291330,
+          "sha256": "fec1aefd243f28b9522daf0baf3d12ce3904bbba6e9f11e876d3f95bf870f689"
+        },
+        {
+          "path": "automation/screen-00244.png",
+          "bytes": 226588,
+          "sha256": "a5dd92042438e9c54e6bc6046625642803dfd8fb0631a1fce665a0fbc59d6ec8"
+        },
+        {
+          "path": "automation/screen-00264.png",
+          "bytes": 201788,
+          "sha256": "4acefdf790d0c26fb7372bdf6ed513f56388f8e2f1bbd4c1425fadc421b77624"
+        },
+        {
+          "path": "automation/screen-00284.png",
+          "bytes": 111013,
+          "sha256": "8e7ceaadaa206d5e1662dc74d12494e6823ae576e3c12b45f76ea8580447d41d"
+        },
+        {
+          "path": "automation/screen-00304.png",
+          "bytes": 112049,
+          "sha256": "f9be1af1adbb30870658a7b5c2cec1d1d84111505b634cb4dcf6987cc8eac394"
+        },
+        {
+          "path": "automation/screen-00324.png",
+          "bytes": 112030,
+          "sha256": "40659550c5e99b7307d24ff88b6c57ae57c16b5438a18a7b73168b152f1b82e6"
+        },
+        {
+          "path": "automation/screen-00344.png",
+          "bytes": 399857,
+          "sha256": "08cb45b0b43c0cc728265b1cb6cd962e0779b1cd77010aaf7424ed74ac14e46f"
+        },
+        {
+          "path": "automation/screen-00364.png",
+          "bytes": 555350,
+          "sha256": "cdc456f26c8c2660a7f140cc6def75a0f9b3acf4d3536bbbab5c504d840810bc"
+        },
+        {
+          "path": "automation/screen-00385.png",
+          "bytes": 610022,
+          "sha256": "8769d5847c9d918a1b6b046d7b295082da25d59a4a5ca6e10ab886527b09eb84"
+        },
+        {
+          "path": "automation/screen-00405.png",
+          "bytes": 609318,
+          "sha256": "16e00e677982b59cd8c9f476ddfbb24ae798708bec39be82344477bad552dab2"
+        },
+        {
+          "path": "automation/screen-00425.png",
+          "bytes": 611393,
+          "sha256": "3c5b2cec482d4840039b126c1bbe653ac2040d1ed32ad5609a2194dc4b0aa0c3"
+        },
+        {
+          "path": "automation/screen-00445.png",
+          "bytes": 611225,
+          "sha256": "bb26c2bcf9dc6dbc10c36472bbe7b658924bd09a88783185fff594e12b0d0fb1"
+        },
+        {
+          "path": "automation/screen-00465.png",
+          "bytes": 610885,
+          "sha256": "59e0179f4cf6d9cc9b4f3338c17491dd03c42ef2ae677c6b39b1780d1e7c3030"
+        },
+        {
+          "path": "automation/screen-00485.png",
+          "bytes": 610671,
+          "sha256": "86113581b63940bceb989abee1994c2e2b6fcd2f1def0335a8e126b9e25e600c"
+        },
+        {
+          "path": "automation/screen-00505.png",
+          "bytes": 551920,
+          "sha256": "c6262bd186d1b7b6b3f5b08249057b4e03a543a889b836a7c83c12e6c6f2befa"
+        },
+        {
+          "path": "automation/screen-00525.png",
+          "bytes": 547328,
+          "sha256": "1ae0c289d35ab09114d04afefa58d402dd61847637a089c84f3510dbe28bf7af"
+        },
+        {
+          "path": "automation/screen-00545.png",
+          "bytes": 545174,
+          "sha256": "337a92a05d1d155f6c79a2f1602f43b955e9fc28b7b19d69db786345a2349aa0"
+        },
+        {
+          "path": "automation/screen-00565.png",
+          "bytes": 622863,
+          "sha256": "50fe4aa2cbebcd5dea629a8b359988131e7c8c68428b20e7e1dbb049320f55fc"
+        },
+        {
+          "path": "automation/screen-00585.png",
+          "bytes": 630549,
+          "sha256": "c818e36898586f90b2c4ba178c7913655c15d3e589d3956451370dc9827ac01d"
+        },
+        {
+          "path": "automation/screen-00605.png",
+          "bytes": 636300,
+          "sha256": "7621f97a2cfc9af8907d53143bd4b52c8e908c6485778a5ac78c4c4289d57b32"
+        },
+        {
+          "path": "automation/screen-00625.png",
+          "bytes": 676556,
+          "sha256": "1b120159cd23d6c0118b8e80e90ee7138c2f3f6cc22f30fe7d9909a7627539a8"
+        },
+        {
+          "path": "automation/screen-00646.png",
+          "bytes": 660749,
+          "sha256": "19500d2ae74932e44e179e3c46bc4afd9dfcee3a37b73e346a42034b20b5fb52"
+        },
+        {
+          "path": "automation/screen-00666.png",
+          "bytes": 660375,
+          "sha256": "d9c7e98ada321c60f188733de6c3b923db57cc6843d50cdff13e9257291ab9fe"
+        },
+        {
+          "path": "automation/screen-00686.png",
+          "bytes": 667107,
+          "sha256": "d450502fa7f2aefe92cfec065e2d65ba323fdc03a8f68f1455c911a008d2818a"
+        },
+        {
+          "path": "automation/screen-00706.png",
+          "bytes": 647357,
+          "sha256": "980a4b66041d276bb7455651310a48256bfb569f502c9d7732c2d5ba5ea391e8"
+        },
+        {
+          "path": "automation/screen-00726.png",
+          "bytes": 601508,
+          "sha256": "793df6b7596d6a477b61c09cff9b51b71b037bfb24efb10f559975077319ee32"
+        },
+        {
+          "path": "automation/screen-00746.png",
+          "bytes": 695434,
+          "sha256": "4e51eb3d3bd5086be19a431d743918db80cb5a3afa0d1f1f64f344cd010a9f37"
+        },
+        {
+          "path": "automation/screen-00766.png",
+          "bytes": 673526,
+          "sha256": "53abbe2d7e3c8b046dffd2ccffc6e8b90c2c271d3d6c9da3d677d101d28461ba"
+        },
+        {
+          "path": "automation/screen-00786.png",
+          "bytes": 680062,
+          "sha256": "ffcbe55969faa42d31fbd4bac3215e4cf6a2c1a9b075832142c4e785575c4852"
+        },
+        {
+          "path": "automation/screen-00806.png",
+          "bytes": 690783,
+          "sha256": "4aa06d5ff93671f2b7148bdd3e02c79a271a45cd3592bf19579588310d63f233"
+        },
+        {
+          "path": "automation/screen-00826.png",
+          "bytes": 687171,
+          "sha256": "6dad76052b8591dfdce313374c1b2002d82a27ec8664679a2b15a15dfdcdd8cf"
+        },
+        {
+          "path": "automation/screen-00846.png",
+          "bytes": 685018,
+          "sha256": "abf76ba31fed5908367352a3df4fad34cb591fdea075c8f2ea59a372084ecea5"
+        },
+        {
+          "path": "automation/screen-00866.png",
+          "bytes": 685461,
+          "sha256": "aff84c36e609269ac7c32ac61a6e565b19479b51cac41e7ff7396f32c7a0b1a1"
+        },
+        {
+          "path": "automation/screen-00886.png",
+          "bytes": 684753,
+          "sha256": "a11c01bcfebac5717d47f66ee738d205768fe6c8ae178678daafbfdf1a21d233"
+        },
+        {
+          "path": "automation/start-game.png",
+          "bytes": 177928,
+          "sha256": "1309c999d8be2f5bf26a94e6f21cb94a74ca2dc4c0b7900e80cf674610daceca"
+        },
+        {
+          "path": "automation/street-02.png",
+          "bytes": 672031,
+          "sha256": "91072057c9da40d3a9d9e2a133cc5e4f001daa3f46e456e5328299888cb01ffe"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time."
+    },
+    "native-lockstep-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/native-lockstep-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/native-lockstep-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/scratch/build/mua2-c128/gRMSE52_recomp.so",
+        "--load-state",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/automation/native-first-fight.sav"
+      ],
+      "runtime_sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67",
+      "module_sha256": "b255e5436f75ed19196ba6b47f530b358ec159032b77f98a6b90f3aa4377d783",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": "a27ec513015f715c25c8e88ef6ffed123df5b4cbbcc704194000b7c793058a4a",
+      "profile": "/mnt/data/mua2-recovery/runs/native-continuation-01/user",
+      "maximum_wall_seconds": 300.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 10000000,
+      "lockstep_environment": {
+        "STATICRECOMP_LOCKSTEP": "1",
+        "STATICRECOMP_LOCKSTEP_LIMIT": "10000000",
+        "STATICRECOMP_LOCKSTEP_START": "0"
+      },
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 320.39,
+      "stop_command_sent": true,
+      "required_sigterm": true,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 1896613,
+        "fallback": 0,
+        "native_exc": 241,
+        "hook_fb": 56243,
+        "smc_failed": 0,
+        "verifications": 2359,
+        "reverify_events": 3,
+        "bursts": 6701,
+        "cycles": 24157762,
+        "native_rel": 35882
+      },
+      "last_status": {
+        "state": "running",
+        "booted": "1",
+        "fps": "0",
+        "vps": "0",
+        "speed": "0.20184",
+        "frame_count": "9605",
+        "present_count": "3",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "11",
+        "last_command": "01790074038297527725-probe.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/screen-00293.png",
+          "bytes": 680845,
+          "sha256": "81f06cff9ef4ca8d2e4a8d298be7c67167408301cfb215441ebf87253050031f"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time.",
+      "lockstep_summary": {
+        "checks": 11390,
+        "reports": 42,
+        "skipped_fallback": 7,
+        "skipped_zero": 499,
+        "cap_hits": 0,
+        "filtered": 0,
+        "undercharges": 0,
+        "max_deficit": 0,
+        "distinct_pcs": 11390,
+        "compared_candidates": 10884,
+        "passing_sweep": false
+      }
+    },
+    "native-lockstep-fma-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/native-lockstep-fma-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/native-lockstep-fma-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/scratch/build/mua2-c128/gRMSE52_recomp.so",
+        "--load-state",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/automation/native-first-fight.sav"
+      ],
+      "runtime_sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67",
+      "module_sha256": "5def4a3e5d4f3fd4163a8b37bfbef767310f5c08743686c20ad97810ba8728ea",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": "a27ec513015f715c25c8e88ef6ffed123df5b4cbbcc704194000b7c793058a4a",
+      "profile": "/mnt/data/mua2-recovery/runs/native-continuation-01/user",
+      "maximum_wall_seconds": 510.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 2000000,
+      "lockstep_environment": {
+        "STATICRECOMP_LOCKSTEP": "1",
+        "STATICRECOMP_LOCKSTEP_LIMIT": "2000000",
+        "STATICRECOMP_LOCKSTEP_START": "0"
+      },
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 438.541,
+      "stop_command_sent": false,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 729189788,
+        "fallback": 0,
+        "native_exc": 83380,
+        "hook_fb": 19043483,
+        "smc_failed": 0,
+        "verifications": 4403,
+        "reverify_events": 3,
+        "bursts": 1571906,
+        "cycles": 9144516508,
+        "native_rel": 12508199
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "5.03811",
+        "vps": "10.4088",
+        "speed": "0.246583",
+        "frame_count": "9946",
+        "present_count": "1026",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "16",
+        "last_command": "01790074786675242070-control.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/screen-00353.png",
+          "bytes": 680845,
+          "sha256": "81f06cff9ef4ca8d2e4a8d298be7c67167408301cfb215441ebf87253050031f"
+        },
+        {
+          "path": "automation/screen-00383.png",
+          "bytes": 683968,
+          "sha256": "43baa29a62e437d55de973e464ec9af958e1c3335d4a8aaa88854d9f836eceab"
+        },
+        {
+          "path": "automation/screen-00413.png",
+          "bytes": 673452,
+          "sha256": "1c5443883cdb0a0041a24503715a17b0b0fc11b8109b35b46d59012800d6ab2e"
+        },
+        {
+          "path": "automation/verified-combat.png",
+          "bytes": 676027,
+          "sha256": "2bead2f47c2001c375b532d7d06abc41eeb8788cb6ee81c5775beb0c0c0a532b"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time.",
+      "lockstep_summary": {
+        "checks": 12389,
+        "reports": 0,
+        "skipped_fallback": 7,
+        "skipped_zero": 550,
+        "cap_hits": 0,
+        "filtered": 0,
+        "undercharges": 0,
+        "max_deficit": 0,
+        "distinct_pcs": 12389,
+        "compared_candidates": 11832,
+        "passing_sweep": true
+      }
+    },
+    "packaged-combat-01": {
+      "mode": "native",
+      "command": [
+        "/mnt/data/mua2-recovery/checkpoint/linux-x86_64/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/packaged-combat-01/user",
+        "--title",
+        "MUA2 MR01 native diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/packaged-combat-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--module",
+        "/mnt/data/mua2-recovery/checkpoint/linux-x86_64/gRMSE52_recomp.so",
+        "--load-state",
+        "/mnt/data/mua2-recovery/runs/native-continuation-01/automation/native-first-fight.sav"
+      ],
+      "runtime_sha256": "806c1ce07b8fc06188d397b94c2a373595d30760ee237d33902c302fdf6ecd67",
+      "module_sha256": "5def4a3e5d4f3fd4163a8b37bfbef767310f5c08743686c20ad97810ba8728ea",
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": "a27ec513015f715c25c8e88ef6ffed123df5b4cbbcc704194000b7c793058a4a",
+      "profile": "/mnt/data/mua2-recovery/runs/native-continuation-01/user",
+      "maximum_wall_seconds": 210.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 0,
+      "lockstep_environment": {},
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 212.08,
+      "stop_command_sent": true,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 1753118992,
+        "fallback": 0,
+        "native_exc": 211196,
+        "hook_fb": 47316378,
+        "smc_failed": 0,
+        "verifications": 4523,
+        "reverify_events": 3,
+        "bursts": 3705440,
+        "cycles": 21416686670,
+        "native_rel": 28712319
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "3.99189",
+        "vps": "8.66953",
+        "speed": "0.238021",
+        "frame_count": "10479",
+        "present_count": "2625",
+        "title": "MUA2 MR01 native diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "24",
+        "last_command": "01790074757423716637-probe.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/final-heavy-charge.png",
+          "bytes": 711060,
+          "sha256": "2c953ce48b7b9003255e0c033c114ef7a65f0483ea17d2cbda2f677f1017ad1c"
+        },
+        {
+          "path": "automation/final-heavy-release.png",
+          "bytes": 708691,
+          "sha256": "7b132b7315bf99a176019be5c790ac14f4737110507156e8c06a83b71144b87d"
+        },
+        {
+          "path": "automation/screen-00025.png",
+          "bytes": 680845,
+          "sha256": "81f06cff9ef4ca8d2e4a8d298be7c67167408301cfb215441ebf87253050031f"
+        },
+        {
+          "path": "automation/screen-00040.png",
+          "bytes": 686000,
+          "sha256": "bd1dc2bf945e1da42e0f69a3e565fc090e414a8b664f2322b7cd143996d84950"
+        },
+        {
+          "path": "automation/screen-00055.png",
+          "bytes": 685605,
+          "sha256": "83d277935b32696d6aa3dd718d64580880ca62cb73dfa4ff8b2d72a548f131e4"
+        },
+        {
+          "path": "automation/screen-00070.png",
+          "bytes": 673272,
+          "sha256": "5dabca03e85aa21ba8ce9f3c5ab67dbb39d37ae4aba56a5d9b687ea9de353aec"
+        },
+        {
+          "path": "automation/screen-00085.png",
+          "bytes": 709388,
+          "sha256": "0674b2c8509d185f0d334138341e949b3930b3945496ce62bf879e61fa04d88e"
+        },
+        {
+          "path": "automation/screen-00100.png",
+          "bytes": 709370,
+          "sha256": "0368dbe638f362ebeb34d70e9736c1807cae6842d9286b6b4f332785e1ee9ed5"
+        },
+        {
+          "path": "automation/screen-00115.png",
+          "bytes": 711484,
+          "sha256": "2221612033841481f581fc83c3657aa4d1565d98603365f6f30633361fbeb0db"
+        },
+        {
+          "path": "automation/screen-00130.png",
+          "bytes": 713323,
+          "sha256": "e0518263c03e63d961bd9852c5d94824466286b6df130676f21d0c74f382125c"
+        },
+        {
+          "path": "automation/screen-00146.png",
+          "bytes": 709353,
+          "sha256": "b8a93e068de9a0da8a102f389dc7006f98c431fc71debd7b605ba5b0aed87b8d"
+        },
+        {
+          "path": "automation/screen-00161.png",
+          "bytes": 709541,
+          "sha256": "df0b7d0659de08af74c153932e2aa5954ac026f51c72ebcbb00bdcd8ae4aca9c"
+        },
+        {
+          "path": "automation/screen-00176.png",
+          "bytes": 711512,
+          "sha256": "7b38a215490d6887a2c8bd42848c642d5e3422839c5c893507db60c2e140684b"
+        },
+        {
+          "path": "automation/screen-00191.png",
+          "bytes": 711390,
+          "sha256": "cad9fa60b8f087cf529a59a196b8b0494ec310677ea9bd528e9221abf87a5c2a"
+        },
+        {
+          "path": "automation/screen-00206.png",
+          "bytes": 711417,
+          "sha256": "e1af2683e18477e26575e3fa0ac8bb14f0f2ccc9c95615c40a460e8b1e48a492"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time."
+    },
+    "reference-cold-01": {
+      "mode": "reference",
+      "command": [
+        "/mnt/data/mua2-recovery/scratch/build/moderngekko/moderngekko-run",
+        "--game",
+        "/mnt/data/mua2-recovery/scratch/game",
+        "--user-dir",
+        "/mnt/data/mua2-recovery/runs/reference-cold-01/user",
+        "--title",
+        "MUA2 MR01 reference diagnostic",
+        "--automation-dir",
+        "/mnt/data/mua2-recovery/runs/reference-cold-01/automation",
+        "--graphics",
+        "OGL",
+        "--audio",
+        "No Audio Output",
+        "--mute",
+        "--no-mods",
+        "--x11",
+        "--allow-interpreter"
+      ],
+      "runtime_sha256": "302332419b8c0c1da6dd71e59a9188513b4d22b9d846e03d89cf6f5310c2f989",
+      "module_sha256": null,
+      "game_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+      "load_state_sha256": null,
+      "profile": null,
+      "maximum_wall_seconds": 600.0,
+      "headless": false,
+      "audio": "muted null backend; not verified",
+      "lockstep_start": 0,
+      "lockstep_limit": 0,
+      "process_exit_code": 0,
+      "elapsed_wall_seconds": 177.665,
+      "stop_command_sent": false,
+      "required_sigterm": false,
+      "forced_sigkill": false,
+      "shutdown_counters": {
+        "native": 0,
+        "fallback": 0,
+        "native_exc": 0,
+        "hook_fb": 0,
+        "smc_failed": 0,
+        "verifications": 0,
+        "reverify_events": 0,
+        "bursts": 0,
+        "cycles": 0
+      },
+      "last_status": {
+        "state": "stopped",
+        "booted": "1",
+        "fps": "4.76274",
+        "vps": "17.0267",
+        "speed": "0.543981",
+        "frame_count": "853",
+        "present_count": "3206",
+        "title": "MUA2 MR01 reference diagnostic",
+        "game_id": "RMSE52",
+        "game_name": "Marvel Ultimate Alliance 2",
+        "navigation_mode": "0",
+        "navigation_valid": "0",
+        "navigation_room_id": "0",
+        "navigation_player_x": "0",
+        "navigation_player_z": "0",
+        "navigation_facing": "0",
+        "navigation_collision_valid": "0",
+        "navigation_collision_base": "0",
+        "navigation_collision_segments": "0",
+        "navigation_npc_count": "0",
+        "navigation_archive": "",
+        "navigation_location": "",
+        "processed_commands": "6",
+        "last_command": "01790071557364970325-control.txt",
+        "last_error": ""
+      },
+      "screenshots": [
+        {
+          "path": "automation/screen-00029.png",
+          "bytes": 1185,
+          "sha256": "14e891ea604bd94f569ddd3193adfddf1306f928a525151fbd8b637867ccd323"
+        },
+        {
+          "path": "automation/screen-00059.png",
+          "bytes": 103998,
+          "sha256": "e4b461d57352ffec4a2e0e0671d9dd7324853ee133b792b85bc191c3bfcaacb7"
+        },
+        {
+          "path": "automation/screen-00089.png",
+          "bytes": 103998,
+          "sha256": "e4b461d57352ffec4a2e0e0671d9dd7324853ee133b792b85bc191c3bfcaacb7"
+        },
+        {
+          "path": "automation/screen-00119.png",
+          "bytes": 123317,
+          "sha256": "8879b49082af860a964204c549eda7a59b4cf49b9e461c73cb68c509bdaf12f5"
+        },
+        {
+          "path": "automation/screen-00149.png",
+          "bytes": 2263,
+          "sha256": "fbb72de0d31d6bcdc70e7afca06ed5154eaeb28034c9551e12497cfc52c86189"
+        }
+      ],
+      "failed_commands": 0,
+      "visual_result": "Requires inspection of actual captures; not inferred by script.",
+      "counter_note": "Dispatches are not instruction counts, percentages of native coverage, or elapsed game time."
+    }
+  },
+  "untested": [
+    "Full-game stability and absence of all glitches",
+    "Later missions or completed level transitions",
+    "Real-time performance",
+    "Audible output",
+    "Physical controllers",
+    "Windows build/execution",
+    "Game-owned save/load round trip",
+    "Multiplayer",
+    "Unrestricted REL rebasing"
+  ],
+  "guardrails": [
+    "Code hash verification enabled; modified/uncovered code uses fallback.",
+    "No game-memory patch or startup bypass.",
+    "No FPSCR/register masks or address whitelists in live replay.",
+    "Reference-created states were not used in native progression."
+  ],
+  "scope_notes": [
+    "Cold boot and first mission used the pre-FMA module; final module separately tested using the native-created first-fight state.",
+    "The final differential window ends at native dispatch index 2000000, not at two million comparisons.",
+    "Candidate counts include explicit fallback/zero-charge skips.",
+    "Native dispatch counters are not PowerPC instruction counts or native-coverage percentages.",
+    "The first pre-FMA differential replay required SIGTERM after its stop deadline; it is not counted as passing.",
+    "Helper comparison is against pinned reference code, not an independent physical Wii trace."
+  ]
+}

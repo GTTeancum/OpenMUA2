@@ -1,0 +1,90 @@
+--- a/project/lib/ModernGekko/CMakeLists.txt
++++ b/project/lib/ModernGekko/CMakeLists.txt
+@@ -113,7 +113,12 @@
+     set(ENABLE_HWDB OFF CACHE BOOL "" FORCE)
+     set(ENABLE_EVDEV OFF CACHE BOOL "" FORCE)
+     set(ENABLE_WAYLAND ON CACHE BOOL "" FORCE)
+-    set(ENABLE_EGL OFF CACHE BOOL "" FORCE)
++    # RecompCore's Linux OpenGL context factory requires EGL.
++    if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++        set(ENABLE_EGL ON CACHE BOOL "" FORCE)
++    else()
++        set(ENABLE_EGL OFF CACHE BOOL "" FORCE)
++    endif()
+     set(USE_SYSTEM_SDL3 OFF CACHE BOOL "" FORCE)
+     # SDL bundles its own copy of the macOS hidapi backend
+     if(APPLE)
+@@ -133,6 +138,11 @@
+         # These two imported targets historically rely on X11 headers living
+         # in the compiler's default /usr/include search path.
+         target_include_directories(common SYSTEM PRIVATE "${_moderngekko_sdk_usr}/include")
++        # hidapi's Linux wrapper links udev by name and does not inherit its
++        # pkg-config include path. Keep the private frontend SDK self-contained.
++        if(TARGET hidapi)
++            target_include_directories(hidapi SYSTEM PRIVATE "${_moderngekko_sdk_usr}/include")
++        endif()
+         if(TARGET videovulkan)
+             target_include_directories(videovulkan SYSTEM PRIVATE
+                 "${_moderngekko_sdk_usr}/include")
+--- a/project/lib/ModernGekko/vendor/dolphin/CMakeLists.txt
++++ b/project/lib/ModernGekko/vendor/dolphin/CMakeLists.txt
+@@ -527,7 +527,7 @@
+ if(ENABLE_EGL)
+   find_package(EGL)
+   if(EGL_FOUND)
+-    add_definitions(-DHAVE_EGL=1)
++    # HAVE_EGL is scoped to its consumer, Common/GL/GLContext.cpp.
+     message(STATUS "EGL OpenGL interface enabled")
+   else()
+     message(WARNING "EGL support enabled but not found. This build will not support EGL.")
+--- a/project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/CMakeLists.txt
++++ b/project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/CMakeLists.txt
+@@ -297,6 +297,8 @@
+ )
+ 
+ if(ENABLE_EGL AND EGL_FOUND)
++  # Avoid changing every target's compiler command for a context-factory flag.
++  set_property(SOURCE GL/GLContext.cpp APPEND PROPERTY COMPILE_DEFINITIONS HAVE_EGL=1)
+   target_sources(common PRIVATE
+     GL/GLInterface/EGL.cpp
+     GL/GLInterface/EGL.h
+--- a/project/lib/DolRecomp/src/cpu/cpu.c
++++ b/project/lib/DolRecomp/src/cpu/cpu.c
+@@ -1300,14 +1300,14 @@
+         result = (u32)(s32)rounded;
+     }
+ 
+-    cpu->fpscr &= ~0x00006000u;
++    cpu->fpscr &= ~0x00060000u;
+     if (invalid) {
+         set_fp_exception(cpu, 0x00000100u);
+     } else if (rounded != value) {
+         set_fp_exception(cpu, 0x02000000u);
+-        cpu->fpscr |= 0x00004000u;
++        cpu->fpscr |= 0x00020000u;
+         if (fabs(rounded) > fabs(value))
+-            cpu->fpscr |= 0x00002000u;
++            cpu->fpscr |= 0x00040000u;
+     }
+ 
+     if (invalid && (cpu->fpscr & 0x80u))
+--- a/project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c
++++ b/project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c
+@@ -1300,14 +1300,14 @@
+         result = (u32)(s32)rounded;
+     }
+ 
+-    cpu->fpscr &= ~0x00006000u;
++    cpu->fpscr &= ~0x00060000u;
+     if (invalid) {
+         set_fp_exception(cpu, 0x00000100u);
+     } else if (rounded != value) {
+         set_fp_exception(cpu, 0x02000000u);
+-        cpu->fpscr |= 0x00004000u;
++        cpu->fpscr |= 0x00020000u;
+         if (fabs(rounded) > fabs(value))
+-            cpu->fpscr |= 0x00002000u;
++            cpu->fpscr |= 0x00040000u;
+     }
+ 
+     if (invalid && (cpu->fpscr & 0x80u))

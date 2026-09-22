@@ -1,0 +1,156 @@
+{
+  "checkpoint": "FPC01",
+  "kind": "PRE_INTEGRATION_COMPILER_REPAIR_NOT_A_GAME_BUILD",
+  "game": "Marvel: Ultimate Alliance 2 (Wii USA RMSE52)",
+  "original_function_sha256": "1c370c3431430be5e8023869379ec4de4966a66f5e4f17650dba7a15a6540d5e",
+  "fixed_function_sha256": "e5e2f983011abf146a8c50a7636fb7415a80b363aa1f32f27720d687ca7da245",
+  "production_change": "Three FPSCR bit-mask constants in ppc_fctiw, used by fctiw and fctiwz",
+  "cases_per_configuration": 1298576,
+  "cases_are": "helper inputs, not gameplay frames or routes",
+  "tests": {
+    "gcc-o1-sanitized": {
+      "status": "PASS_WITH_EXPECTED_FAILING_NEGATIVE_CONTROL",
+      "compilers": {
+        "c": "gcc (Debian 14.2.0-19) 14.2.0",
+        "cxx": "g++ (Debian 14.2.0-19) 14.2.0"
+      },
+      "sanitizers": [
+        "address",
+        "undefined (vptr excluded)"
+      ],
+      "original": {
+        "cases": 1298576,
+        "matrix_cases": 1048576,
+        "random_cases": 250000,
+        "failures": 1217268,
+        "fpscr_mismatches": 1217268,
+        "result_mismatches": 0,
+        "write_mismatches": 0,
+        "fprf_preservation_failures": 973909,
+        "independent_invariant_failures": 973823,
+        "invalid_cases": 351888,
+        "nan_cases": 32881,
+        "exact_cases": 65536,
+        "inexact_cases": 881152,
+        "blocked_invalid_writes": 175820,
+        "seed": "91af83476d09ebc2",
+        "host_fp_traps": false,
+        "host_ftz_daz": false,
+        "gameplay_tested": false,
+        "executable_sha256": "32cbd9ff9a026a00bf3ec76b87425333ef6190b694c5db2a6a1c44ec65fa04b6",
+        "exit_code": 1,
+        "seconds": 0.671
+      },
+      "fixed": {
+        "cases": 1298576,
+        "matrix_cases": 1048576,
+        "random_cases": 250000,
+        "failures": 0,
+        "fpscr_mismatches": 0,
+        "result_mismatches": 0,
+        "write_mismatches": 0,
+        "fprf_preservation_failures": 0,
+        "independent_invariant_failures": 0,
+        "invalid_cases": 351888,
+        "nan_cases": 32881,
+        "exact_cases": 65536,
+        "inexact_cases": 881152,
+        "blocked_invalid_writes": 175820,
+        "seed": "91af83476d09ebc2",
+        "host_fp_traps": false,
+        "host_ftz_daz": false,
+        "gameplay_tested": false,
+        "executable_sha256": "313cfff26860aaf763cf423f24e5a891687a7d91e4d0f1c138fdbf2a7abaabd2",
+        "exit_code": 0,
+        "seconds": 0.722
+      },
+      "receipt": "evidence/gcc-o1-sanitized/receipt.json"
+    },
+    "clang-o1-sanitized": {
+      "status": "PASS_WITH_EXPECTED_FAILING_NEGATIVE_CONTROL",
+      "compilers": {
+        "c": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)",
+        "cxx": "clang version 17.0.0 (https://github.com/swiftlang/llvm-project.git 10999b6d034fe318f3d56c83bddb6572593a8bb0)"
+      },
+      "sanitizers": [
+        "address",
+        "undefined (vptr excluded)"
+      ],
+      "original": {
+        "cases": 1298576,
+        "matrix_cases": 1048576,
+        "random_cases": 250000,
+        "failures": 1217268,
+        "fpscr_mismatches": 1217268,
+        "result_mismatches": 0,
+        "write_mismatches": 0,
+        "fprf_preservation_failures": 973909,
+        "independent_invariant_failures": 973823,
+        "invalid_cases": 351888,
+        "nan_cases": 32881,
+        "exact_cases": 65536,
+        "inexact_cases": 881152,
+        "blocked_invalid_writes": 175820,
+        "seed": "91af83476d09ebc2",
+        "host_fp_traps": false,
+        "host_ftz_daz": false,
+        "gameplay_tested": false,
+        "executable_sha256": "be064ebcaef8f033f5553010906f154554c067ffecdea5a9d11bc4cdad3dce29",
+        "exit_code": 1,
+        "seconds": 0.421
+      },
+      "fixed": {
+        "cases": 1298576,
+        "matrix_cases": 1048576,
+        "random_cases": 250000,
+        "failures": 0,
+        "fpscr_mismatches": 0,
+        "result_mismatches": 0,
+        "write_mismatches": 0,
+        "fprf_preservation_failures": 0,
+        "independent_invariant_failures": 0,
+        "invalid_cases": 351888,
+        "nan_cases": 32881,
+        "exact_cases": 65536,
+        "inexact_cases": 881152,
+        "blocked_invalid_writes": 175820,
+        "seed": "91af83476d09ebc2",
+        "host_fp_traps": false,
+        "host_ftz_daz": false,
+        "gameplay_tested": false,
+        "executable_sha256": "98488c09b115a02b7e4e76d09bd8bef7a1a8bf78bcba343a17831472d8a281b7",
+        "exit_code": 0,
+        "seconds": 0.268
+      },
+      "receipt": "evidence/clang-o1-sanitized/receipt.json"
+    }
+  },
+  "patch_guard_tests": {
+    "passed": 16,
+    "log": "evidence/patch-guard-tests.txt"
+  },
+  "upstream_c_backend_ctests": {
+    "before_fix_passed": 19,
+    "after_fix_passed": 19,
+    "receipt": "evidence/upstream-repro-wrapper/receipt.json"
+  },
+  "gameplay_retested": false,
+  "mg02_integration_tested": false,
+  "new_game_binary_built": false,
+  "actual_game_save_reload_tested": false,
+  "windows_execution_tested": false,
+  "mg02_historical_mismatches_closed": 0,
+  "missing_required_artifact": {
+    "name": "MUA2_MG02_Checkpoint.zip",
+    "expected_size": 384019790,
+    "expected_sha256": "b458b6e0f1b1eddd40793be35fffff14b5856b50971dda3b10d3257961127779",
+    "note": "Size/hash copied from the retained MG02 ZIP validation receipt; ZIP bytes unavailable in this session."
+  },
+  "original_workspace_unchanged": true,
+  "limits": [
+    "Only conversion helper correctness is tested here; not full instruction dispatch, CPU exception delivery or gameplay.",
+    "MSR.FE0/FE1 are disabled; host FTZ/DAZ are off. The vptr-only part of UBSan is excluded.",
+    "The same deterministic matrix is replayed under both compilers; these are not disjoint additional inputs.",
+    "Other legacy helper masks and the other MG02 differences remain unpatched and unverified."
+  ]
+}

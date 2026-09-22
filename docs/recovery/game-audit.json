@@ -1,0 +1,292 @@
+{
+  "game": "Marvel: Ultimate Alliance 2",
+  "platform": "Wii USA",
+  "disc_id": "RMSE52",
+  "hashes": {
+    "sys/main.dol": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+    "files/Marvel-rev-fin-plf2.rel": "5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f"
+  },
+  "dol": {
+    "size": 6190656,
+    "entry_point": 2147508080,
+    "sections": [
+      {
+        "kind": "text",
+        "index": 0,
+        "file_offset": 256,
+        "address": 2147500032,
+        "size": 9888
+      },
+      {
+        "kind": "text",
+        "index": 1,
+        "file_offset": 10144,
+        "address": 2147510528,
+        "size": 5306272
+      },
+      {
+        "kind": "data",
+        "index": 0,
+        "file_offset": 5316416,
+        "address": 2147509920,
+        "size": 352
+      },
+      {
+        "kind": "data",
+        "index": 1,
+        "file_offset": 5316768,
+        "address": 2147510272,
+        "size": 256
+      },
+      {
+        "kind": "data",
+        "index": 2,
+        "file_offset": 5317024,
+        "address": 2152816800,
+        "size": 256
+      },
+      {
+        "kind": "data",
+        "index": 3,
+        "file_offset": 5317280,
+        "address": 2152817056,
+        "size": 32
+      },
+      {
+        "kind": "data",
+        "index": 4,
+        "file_offset": 5317312,
+        "address": 2152817088,
+        "size": 50944
+      },
+      {
+        "kind": "data",
+        "index": 5,
+        "file_offset": 5368256,
+        "address": 2152868032,
+        "size": 804896
+      },
+      {
+        "kind": "data",
+        "index": 6,
+        "file_offset": 6173152,
+        "address": 2155954752,
+        "size": 9728
+      },
+      {
+        "kind": "data",
+        "index": 7,
+        "file_offset": 6182880,
+        "address": 2155983328,
+        "size": 7776
+      }
+    ],
+    "text_bytes": 5316160,
+    "bss_address": 2153672960,
+    "bss_size": 2318168
+  },
+  "rel": {
+    "size": 4381544,
+    "module_id": 1,
+    "version": 3,
+    "section_count": 19,
+    "section_table_offset": 76,
+    "sections": [
+      {
+        "index": 0,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 1,
+        "file_offset": 228,
+        "size": 3255744,
+        "executable": true,
+        "bss": false
+      },
+      {
+        "index": 2,
+        "file_offset": 3255972,
+        "size": 216,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 3,
+        "file_offset": 3256188,
+        "size": 12,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 4,
+        "file_offset": 3256200,
+        "size": 43288,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 5,
+        "file_offset": 3299488,
+        "size": 315792,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 6,
+        "file_offset": 0,
+        "size": 1692544,
+        "executable": false,
+        "bss": true
+      },
+      {
+        "index": 7,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 8,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 9,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 10,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 11,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 12,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 13,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 14,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 15,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 16,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 17,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      },
+      {
+        "index": 18,
+        "file_offset": 0,
+        "size": 0,
+        "executable": false,
+        "bss": false
+      }
+    ],
+    "bss_size": 1692544,
+    "text_bytes": 3255744,
+    "imports": [
+      {
+        "module_id": 1,
+        "stream_offset": 3615296,
+        "record_counts": {
+          "DOLPHIN_SECTION": 5,
+          "ADDR16_HA": 10891,
+          "ADDR16_LO": 12812,
+          "ADDR32": 24630,
+          "DOLPHIN_END": 1
+        },
+        "relocations": 48333,
+        "source_sections": {
+          "1": 23703,
+          "2": 53,
+          "3": 2,
+          "4": 1710,
+          "5": 22865
+        }
+      },
+      {
+        "module_id": 0,
+        "stream_offset": 4002008,
+        "record_counts": {
+          "DOLPHIN_SECTION": 2,
+          "REL24": 39278,
+          "ADDR16_HA": 3264,
+          "ADDR16_LO": 3946,
+          "ADDR32": 951,
+          "DOLPHIN_END": 1
+        },
+        "relocations": 47439,
+        "source_sections": {
+          "1": 46488,
+          "5": 951
+        }
+      }
+    ],
+    "entries": {
+      "prolog": {
+        "section": 1,
+        "offset": 340
+      },
+      "epilog": {
+        "section": 1,
+        "offset": 376
+      },
+      "unresolved": {
+        "section": 1,
+        "offset": 452
+      }
+    },
+    "runtime_load_address": null,
+    "native_rel_integration_verified": false
+  },
+  "linker_script": {
+    "path": "files/eppcStatic.lcf",
+    "forceactive_names": 1168,
+    "address_map": false
+  },
+  "asset_files": 385
+}

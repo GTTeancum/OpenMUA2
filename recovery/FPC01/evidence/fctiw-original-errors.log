@@ -1,0 +1,12 @@
+FAIL input=0000000000000000 initial=00020004 mode=0 tz=0 native=00020004 ref=00000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020004 mode=0 tz=0 native=82020004 ref=82000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=a1020104 mode=0 tz=0 native=a1020104 ref=a1000104 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202000c mode=0 tz=0 native=5202000c ref=5200000c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=00020004 mode=1 tz=1 native=00020004 ref=00000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020004 mode=1 tz=1 native=82020004 ref=82000004 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=a1020104 mode=1 tz=1 native=a1020104 ref=a1000104 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202000c mode=1 tz=1 native=5202000c ref=5200000c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=00020084 mode=0 tz=0 native=00020084 ref=00000084 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=82020084 mode=0 tz=0 native=82020084 ref=82000084 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=e1020184 mode=0 tz=0 native=e1020184 ref=e1000184 out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1
+FAIL input=0000000000000000 initial=5202008c mode=0 tz=0 native=5202008c ref=5200008c out=fff8000000000000 refout=fff8000000000000 wrote=1/1 invariant=1

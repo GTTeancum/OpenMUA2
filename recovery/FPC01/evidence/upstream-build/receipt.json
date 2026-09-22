@@ -1,0 +1,77 @@
+{
+  "status": "PASS",
+  "commands": [
+    {
+      "command": [
+        "cmake",
+        "-S",
+        "/mnt/data/mua2-recovery/validation-dolrecomp",
+        "-B",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DDOLRECOMP_ENABLE_LLVM=OFF"
+      ],
+      "exit_code": 0,
+      "seconds": 1.58,
+      "log": "configure.log"
+    },
+    {
+      "command": [
+        "cmake",
+        "--build",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "seconds": 13.422,
+      "log": "build-original.log"
+    },
+    {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "seconds": 2.691,
+      "log": "ctest-original.log"
+    },
+    {
+      "command": [
+        "python3",
+        "/mnt/data/mua2-recovery/fp-repair/tools/patch_fctiw.py",
+        "--file",
+        "/mnt/data/mua2-recovery/validation-dolrecomp/src/cpu/cpu.c",
+        "--apply"
+      ],
+      "exit_code": 0,
+      "seconds": 1.625,
+      "log": "apply.log"
+    },
+    {
+      "command": [
+        "cmake",
+        "--build",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "seconds": 2.729,
+      "log": "build-fixed.log"
+    },
+    {
+      "command": [
+        "ctest",
+        "--test-dir",
+        "/mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build",
+        "--output-on-failure"
+      ],
+      "exit_code": 0,
+      "seconds": 2.079,
+      "log": "ctest-fixed.log"
+    }
+  ]
+}

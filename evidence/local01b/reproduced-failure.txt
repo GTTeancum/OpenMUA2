@@ -1,0 +1,1 @@
+STOPPED: 1 files differ from FILE-MANIFEST.json: project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/ 2x2 image  has multiple      spaces.png. Edits may be intentional; this check never overwrites them.

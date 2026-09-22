@@ -1,0 +1,2 @@
+/usr/bin/ld: cannot find /mnt/data/mua2-recovery/fp-repair/evidence/cpu-fixed.o: No such file or directory
+collect2: error: ld returned 1 exit status

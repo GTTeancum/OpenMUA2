@@ -1,0 +1,11 @@
+/usr/bin/ld: /tmp/ccmkgQIg.o: warning: relocation against `_ZN7PowerPC17ConditionRegister9s_crTableE' in read-only section `.text._ZN12_GLOBAL__N_116ConvertToIntegerERN7PowerPC12PowerPCStateE17UGeckoInstructionNS_12RoundingModeE'
+/usr/bin/ld: /tmp/ccmkgQIg.o: in function `(anonymous namespace)::ConvertToInteger(PowerPC::PowerPCState&, UGeckoInstruction, (anonymous namespace)::RoundingMode)':
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatMisc.cpp:57:(.text._ZN12_GLOBAL__N_116ConvertToIntegerERN7PowerPC12PowerPCStateE17UGeckoInstructionNS_12RoundingModeE+0x24): undefined reference to `PowerPC::PairedSingle::PS0AsDouble() const'
+/usr/bin/ld: /tmp/ccmkgQIg.o: in function `PowerPC::ConditionRegister::SetField(unsigned int, unsigned int)':
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/ConditionRegister.h:61:(.text._ZN12_GLOBAL__N_116ConvertToIntegerERN7PowerPC12PowerPCStateE17UGeckoInstructionNS_12RoundingModeE+0x51c): undefined reference to `PowerPC::ConditionRegister::s_crTable'
+/usr/bin/ld: /tmp/ccmkgQIg.o: in function `PowerPC::PowerPCState::~PowerPCState()':
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/PowerPC.h:122:(.text._ZNSt10unique_ptrIN7PowerPC12PowerPCStateESt14default_deleteIS1_EED2Ev[_ZNSt10unique_ptrIN7PowerPC12PowerPCStateESt14default_deleteIS1_EED5Ev]+0x62): undefined reference to `PowerPC::InstructionCache::~InstructionCache()'
+/usr/bin/ld: /tmp/ccmkgQIg.o: in function `main':
+/mnt/data/mua2-recovery/fp-repair/tests/probe.cpp:14:(.text.main+0x2f3): undefined reference to `PowerPC::PairedSingle::SetPS0(double)'
+/usr/bin/ld: warning: creating DT_TEXTREL in a PIE
+collect2: error: ld returned 1 exit status

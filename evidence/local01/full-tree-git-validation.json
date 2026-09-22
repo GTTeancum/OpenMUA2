@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "tracked_files": 37430,
+  "source_nodes_flattened": 42,
+  "gitlinks": 0,
+  "remotes": 0,
+  "dirty_files": 0,
+  "setup_idempotence": "PASS",
+  "commit": "f0c81c3d7dde495ef62a21dd1f0afe3fdf0c6b3b",
+  "git_history_in_distribution": false
+}

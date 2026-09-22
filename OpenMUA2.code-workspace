@@ -1,0 +1,18 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      ".local": true,
+      ".backups": true
+    },
+    "search.exclude": {
+      ".local": true,
+      ".backups": true
+    },
+    "cmake.configureOnOpen": false
+  }
+}

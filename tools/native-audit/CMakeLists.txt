@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.20)
+project(OpenMUA2NativeAudit LANGUAGES C)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(RECOMPCORE_SOURCE "" CACHE PATH "Pinned RecompCore root")
+if(NOT EXISTS "${RECOMPCORE_SOURCE}/GXRuntime/include/core/cpu.h")
+  message(FATAL_ERROR "Set RECOMPCORE_SOURCE to project/lib/ModernGekko/vendor/dolphin")
+endif()
+add_executable(openmua2-verify-module verify_module.c)
+target_include_directories(openmua2-verify-module PRIVATE
+  "${RECOMPCORE_SOURCE}/GXRuntime/include"
+  "${RECOMPCORE_SOURCE}/Source/Core/Core/PowerPC/StaticRecomp")
+if(NOT WIN32)
+  target_link_libraries(openmua2-verify-module PRIVATE ${CMAKE_DL_LIBS})
+endif()

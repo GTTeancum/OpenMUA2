@@ -1,0 +1,307 @@
+{
+  "checkpoint": "MG02",
+  "game": "Marvel: Ultimate Alliance 2 \u2014 Wii USA RMSE52",
+  "state": "BOUNDED_NATIVE_GAMEPLAY_VERIFIED_NOT_STABLE_RELEASE",
+  "native_module": {
+    "status": "PASS",
+    "game_id": "RMSE52",
+    "module_abi": 3,
+    "cpu_abi": 4,
+    "cpu_state_size": 3536,
+    "entry_point": 2147508080,
+    "code_ranges": 3,
+    "verified_chunk_hashes": 16743,
+    "covered_text_bytes": 8571904,
+    "rel_modules": 1,
+    "uncovered_dispatch_test": true,
+    "game_boot_test": false
+  },
+  "sessions": {
+    "native-cold-01": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 1004.539,
+      "first_observed_frame": 2,
+      "final_frame": 6262,
+      "runtime_sha256": "70fa3868eb2f7fd6fc8f83e0a7d1c55cacf667d5c9a21efd5c3a28f1d8300f40",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": null,
+      "metrics": {
+        "native_dispatches": 15498524041,
+        "fallback_steps": 0,
+        "native_exceptions": 765920,
+        "hook_fallback_instructions": 282793731,
+        "smc_failed_chunks": 1,
+        "verifications": 6688,
+        "reverify_events": 7
+      },
+      "lockstep_summary": null,
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 76454295
+    },
+    "native-cold-02": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 596.216,
+      "first_observed_frame": 6252,
+      "final_frame": 9963,
+      "runtime_sha256": "ba6bab6c1e5a1b3967df631e64646c2f17ecb9d1bd49ba98a1fb8110df2bac81",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": "629ab931b14d89ce30d2aea18091872abdeccfdeb8720892be1f0a0d8b559233",
+      "metrics": {
+        "native_dispatches": 7539981961,
+        "fallback_steps": 0,
+        "native_exceptions": 671203,
+        "hook_fallback_instructions": 214294712,
+        "smc_failed_chunks": 1,
+        "verifications": 7539,
+        "reverify_events": 3
+      },
+      "lockstep_summary": null,
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 79710518
+    },
+    "native-lockstep-01": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": true,
+      "wall_seconds": 78.597,
+      "first_observed_frame": 20904,
+      "final_frame": 20905,
+      "runtime_sha256": "73d38a76e3edc20e506b122b16316958a9fda6c2d376f53f2fee0d000ee21821",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": "7cb24af143d7237b8be846f3366d63a9750d5c60700b97f0ce678453df28cd30",
+      "metrics": {
+        "native_dispatches": 151461940,
+        "fallback_steps": 0,
+        "native_exceptions": 4,
+        "hook_fallback_instructions": 6148,
+        "smc_failed_chunks": 0,
+        "verifications": 358,
+        "reverify_events": 3
+      },
+      "lockstep_summary": "checks=1411 reports=19 skipped_fallback=5 skipped_zero=157 cap_hits=0 filtered=0 undercharges=0 max_deficit=0 distinct_pcs=1411",
+      "divergences": [
+        "[lockstep] DIVERGE #1 entry=0x80223554 end=0x80303540: r0:N=0x7000002,I=0x7000003",
+        "[lockstep] DIVERGE #2 entry=0x80303540 end=0x80223634: r0:N=0x0,I=0x4 r5:N=0x0,I=0x1",
+        "[lockstep] DIVERGE #3 entry=0x80223634 end=0x802233E4: r0:N=0x1800003,I=0x1800004",
+        "[lockstep] DIVERGE #4 entry=0x8030DCB0 end=0x802A1C50: r0:N=0x1800005,I=0x1800006 r5:N=0x1800004,I=0x1800005",
+        "[lockstep] DIVERGE #5 entry=0x802A1C50 end=0x8030DCF0: r0:N=0x5,I=0x4 r4:N=0x1800006,I=0x1800005",
+        "[lockstep] DIVERGE #6 entry=0x802233C4 end=0x802236C8: r0:N=0x7000002,I=0x7000003 r3:N=0x7000001,I=0x7000002",
+        "[lockstep] DIVERGE #7 entry=0x8022374C end=0x8030DC90: r0:N=0x486,I=0x90c",
+        "[lockstep] DIVERGE #8 entry=0x8051400C end=0x80359EF8: fpscr:N=0x8004,I=0xc004",
+        "[lockstep] DIVERGE #9 entry=0x80370C90 end=0x80389620: r0:N=0x1800003,I=0x1800004 r4:N=0x1800002,I=0x1800003",
+        "[lockstep] DIVERGE #10 entry=0x802A9140 end=0x803888F8: fpscr:N=0x8004,I=0xc004",
+        "[lockstep] DIVERGE #11 entry=0x802A91A0 end=0x80388908: fpscr:N=0x2004,I=0xa004",
+        "[lockstep] DIVERGE #12 entry=0x80388908 end=0x80388B00: fpscr:N=0x82024004,I=0x82004004",
+        "[lockstep] DIVERGE #13 entry=0x802A1C08 end=0x802A1C1C: r0:N=0x1,I=0x802a1c1c r3:N=0x92ea4688,I=0x0 r4:N=0x7000002,I=0x0 r5:N=0x5f,I=0x20c0b r6:N=0x0,I=0x21b8f18 r7:N=0x92e77fd8,I=0x5265cb0 r8:N=0x3,I=0x21276ce r9:N=0xfffffffd,I=0x517159a r10:N=0x0,I=0xcba0d6 r11:N=0x8083cc40,I=0x8083cc00 r12:N=0x803b76c0,I=0x802f1cc0 r29:N=0x24,I=0x12 r31:N=0x90,I=0x48 ctr:N=0x803b76c0,I=0x802f1cc0 cr:N=0x48000888,I=0x28000888 xer:N=0x0,I=0x20000000",
+        "[lockstep] DIVERGE #14 entry=0x802A1C1C end=0x802A1C08: r0:N=0x1,I=0x802a1c1c r3:N=0x92ea49e8,I=0x0 r4:N=0x7000002,I=0x0 r5:N=0x5f,I=0x20c0b r6:N=0x0,I=0x21b8f18 r7:N=0x92e77fd8,I=0x5265cb0 r8:N=0x3,I=0x21276ce r9:N=0xfffffffd,I=0x517159a r10:N=0x0,I=0xcba0d6 r11:N=0x8083cc40,I=0x8083cc00 r12:N=0x803b76c0,I=0x802f1cc0 r29:N=0x37,I=0x26 r31:N=0xdc,I=0x98 ctr:N=0x803b76c0,I=0x802f1cc0 xer:N=0x0,I=0x20000000",
+        "[lockstep] DIVERGE #15 entry=0x80387390 end=0x80251DE0: fpscr:N=0x82002004,I=0x82026004",
+        "[lockstep] DIVERGE #16 entry=0x80222D94 end=0x80251E94: r0:N=0x901eae48,I=0x901eae50 r4:N=0x901eae40,I=0x901eae48 r5:N=0x901ced54,I=0x901ced60 r6:N=0x901ced48,I=0x901ced54 r7:N=0x901ced48,I=0x901ced54 r8:N=0x0,I=0x1",
+        "[lockstep] DIVERGE #17 entry=0x8022312C end=0x80303540: r0:N=0x7000003,I=0x7000004",
+        "[lockstep] DIVERGE #18 entry=0x8022320C end=0x802233E4: r0:N=0x1800061,I=0x1800062",
+        "[lockstep] DIVERGE #19 entry=0x80223328 end=0x8030DC90: r0:N=0x5,I=0xa"
+      ],
+      "failed_commands": [],
+      "native_rel_dispatches": 1402
+    },
+    "native-lockstep-02": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 184.992,
+      "first_observed_frame": 20904,
+      "final_frame": 21623,
+      "runtime_sha256": "70fa3868eb2f7fd6fc8f83e0a7d1c55cacf667d5c9a21efd5c3a28f1d8300f40",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": "7cb24af143d7237b8be846f3366d63a9750d5c60700b97f0ce678453df28cd30",
+      "metrics": {
+        "native_dispatches": 1659050870,
+        "fallback_steps": 0,
+        "native_exceptions": 156283,
+        "hook_fallback_instructions": 37064992,
+        "smc_failed_chunks": 0,
+        "verifications": 2644,
+        "reverify_events": 3
+      },
+      "lockstep_summary": "checks=512 reports=0 skipped_fallback=0 skipped_zero=76 cap_hits=0 filtered=0 undercharges=0 max_deficit=0 distinct_pcs=512",
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 14401207
+    },
+    "native-lockstep-03": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 202.343,
+      "first_observed_frame": 20904,
+      "final_frame": 21616,
+      "runtime_sha256": "70fa3868eb2f7fd6fc8f83e0a7d1c55cacf667d5c9a21efd5c3a28f1d8300f40",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": "7cb24af143d7237b8be846f3366d63a9750d5c60700b97f0ce678453df28cd30",
+      "metrics": {
+        "native_dispatches": 1583465424,
+        "fallback_steps": 0,
+        "native_exceptions": 154776,
+        "hook_fallback_instructions": 36709699,
+        "smc_failed_chunks": 0,
+        "verifications": 2644,
+        "reverify_events": 3
+      },
+      "lockstep_summary": "checks=1924 reports=6 skipped_fallback=7 skipped_zero=192 cap_hits=0 filtered=0 undercharges=0 max_deficit=0 distinct_pcs=1924",
+      "divergences": [
+        "[lockstep] DIVERGE #1 entry=0x8051400C end=0x80359EF8: fpscr:N=0x8004,I=0xc004",
+        "[lockstep] DIVERGE #2 entry=0x802A9140 end=0x803888F8: fpscr:N=0x8004,I=0xc004",
+        "[lockstep] DIVERGE #3 entry=0x802A91A0 end=0x80388908: fpscr:N=0x2004,I=0xa004",
+        "[lockstep] DIVERGE #4 entry=0x80388908 end=0x80388B00: fpscr:N=0x82024004,I=0x82004004",
+        "[lockstep] DIVERGE #5 entry=0x802A1C08 end=0x802A1C1C: r3:N=0x92ea4688,I=0x92ea42b0 r29:N=0x24,I=0x12 r31:N=0x90,I=0x48 mem2[0x92e7fd87]:N=0x1,I=0x2",
+        "[lockstep] DIVERGE #6 entry=0x80387390 end=0x80251DE0: fpscr:N=0x82002004,I=0x82026004"
+      ],
+      "failed_commands": [],
+      "native_rel_dispatches": 14260676
+    },
+    "native-lockstep-04": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 203.616,
+      "first_observed_frame": 20904,
+      "final_frame": 21635,
+      "runtime_sha256": "ba6bab6c1e5a1b3967df631e64646c2f17ecb9d1bd49ba98a1fb8110df2bac81",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": "7cb24af143d7237b8be846f3366d63a9750d5c60700b97f0ce678453df28cd30",
+      "metrics": {
+        "native_dispatches": 1654684235,
+        "fallback_steps": 0,
+        "native_exceptions": 158883,
+        "hook_fallback_instructions": 37693292,
+        "smc_failed_chunks": 0,
+        "verifications": 2644,
+        "reverify_events": 3
+      },
+      "lockstep_summary": "checks=1924 reports=3 skipped_fallback=7 skipped_zero=192 cap_hits=0 filtered=0 undercharges=0 max_deficit=0 distinct_pcs=1924",
+      "divergences": [
+        "[lockstep] DIVERGE #1 entry=0x80388908 end=0x80388B00: fpscr:N=0x82024004,I=0x82004004",
+        "[lockstep] DIVERGE #2 entry=0x802A1C08 end=0x802A1C1C: r3:N=0x92ea4688,I=0x92ea42b0 r29:N=0x24,I=0x12 r31:N=0x90,I=0x48 mem2[0x92e7fd87]:N=0x1,I=0x2",
+        "[lockstep] DIVERGE #3 entry=0x80387390 end=0x80251DE0: fpscr:N=0x82002004,I=0x82022004"
+      ],
+      "failed_commands": [],
+      "native_rel_dispatches": 14640068
+    },
+    "native-mission-01": {
+      "mode": "native",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 756.635,
+      "first_observed_frame": 20904,
+      "final_frame": 24811,
+      "runtime_sha256": "73d38a76e3edc20e506b122b16316958a9fda6c2d376f53f2fee0d000ee21821",
+      "module_sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "initial_state_sha256": null,
+      "metrics": {
+        "native_dispatches": 8315105504,
+        "fallback_steps": 0,
+        "native_exceptions": 869866,
+        "hook_fallback_instructions": 204320241,
+        "smc_failed_chunks": 0,
+        "verifications": 4827,
+        "reverify_events": 3
+      },
+      "lockstep_summary": null,
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 104194798
+    },
+    "reference-01": {
+      "mode": "reference",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 903.114,
+      "first_observed_frame": 2,
+      "final_frame": 16835,
+      "runtime_sha256": "09edb21d255019bc33850c7e19690661b097c3134e137039349fb89973e8a796",
+      "module_sha256": null,
+      "initial_state_sha256": null,
+      "metrics": {},
+      "lockstep_summary": null,
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 0
+    },
+    "reference-02": {
+      "mode": "reference",
+      "returncode": 0,
+      "forced_stop": false,
+      "wall_seconds": 903.06,
+      "first_observed_frame": 16652,
+      "final_frame": 25025,
+      "runtime_sha256": "09edb21d255019bc33850c7e19690661b097c3134e137039349fb89973e8a796",
+      "module_sha256": null,
+      "initial_state_sha256": null,
+      "metrics": {},
+      "lockstep_summary": null,
+      "divergences": [],
+      "failed_commands": [],
+      "native_rel_dispatches": 0
+    }
+  },
+  "tests": {
+    "dolrecomp_llvm_ctest": {
+      "passed": 30,
+      "log": "logs/rel-tests.log"
+    },
+    "moderngekko_latest_ctest": {
+      "passed": 30,
+      "log": "logs/runtime-tests-latest.log"
+    },
+    "production_rel_fields_cases": 322,
+    "production_rel_header_assertions": 10173,
+    "mem2_snapshot_assertions": 60003,
+    "local_join_assertions": 10006,
+    "production_finite_float_compare_cases": 1536,
+    "overlay_python_tests": 11,
+    "cumulative_overlay": {
+      "status": "PASS",
+      "source_files": 28,
+      "first_apply": {
+        "checked": 28,
+        "changes": 28,
+        "dry_run": false
+      },
+      "idempotent_apply": {
+        "checked": 28,
+        "changes": 0,
+        "dry_run": false
+      },
+      "all_final_bytes_match_manifest": true
+    },
+    "standalone_build_run_receipt": "evidence/standalone-audits-final/unit-audits.json"
+  },
+  "pending": [
+    "Latest broad differential pass: 1924 checks, 3 unresolved reports (two FPSCR.FI differences, one inlined-loop boundary/state difference). Not a clean pass.",
+    "Software OpenGL performance roughly 4\u20139 FPS in the observed diagnostic sessions; no real-time benchmark claim.",
+    "Windows execution, audible audio, actual in-game save/reload, later-level transitions, full-game correctness and long-duration stability unverified.",
+    "Native REL limited to canonical verified linked layout; other layouts use fallback. Uncovered and modified-code fallback remains enabled.",
+    "Runtime save states are diagnostic checkpoints, not evidence of the game save system."
+  ],
+  "packaging_stage": "Checkpoint",
+  "created_at_utc": "2026-09-22T01:52:01Z",
+  "binaries": {
+    "moderngekko-run": {
+      "sha256": "ba6bab6c1e5a1b3967df631e64646c2f17ecb9d1bd49ba98a1fb8110df2bac81",
+      "size": 30541368
+    },
+    "gRMSE52_recomp.so": {
+      "sha256": "d637b11e1ebeaab493a382b7b27ab27f77788c516455d517b2b13767262a50e4",
+      "size": 182111304
+    },
+    "dolrecomp": {
+      "sha256": "fb376edde800a371d66a403a8ff0897f910ba31ac93048b241d0fe7a9d840027",
+      "size": 776728
+    }
+  }
+}

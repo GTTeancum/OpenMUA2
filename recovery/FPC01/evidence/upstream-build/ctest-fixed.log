@@ -1,0 +1,44 @@
+Internal ctest changing into directory: /mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build
+Test project /mnt/data/mua2-recovery/fp-repair/evidence/upstream-build/build
+      Start  1: cli
+ 1/19 Test  #1: cli ..............................   Passed    0.01 sec
+      Start  2: source_policy
+ 2/19 Test  #2: source_policy ....................   Passed    0.18 sec
+      Start  3: opcodes
+ 3/19 Test  #3: opcodes ..........................   Passed    0.01 sec
+      Start  4: cross_check
+ 4/19 Test  #4: cross_check ......................   Passed    0.01 sec
+      Start  5: dol
+ 5/19 Test  #5: dol ..............................   Passed    0.01 sec
+      Start  6: rel
+ 6/19 Test  #6: rel ..............................   Passed    0.01 sec
+      Start  7: rpx
+ 7/19 Test  #7: rpx ..............................   Passed    0.01 sec
+      Start  8: disc_extract
+ 8/19 Test  #8: disc_extract .....................   Passed    0.03 sec
+      Start  9: pc_reference
+ 9/19 Test  #9: pc_reference .....................   Passed    0.19 sec
+      Start 10: jumptables
+10/19 Test #10: jumptables .......................   Passed    0.02 sec
+      Start 11: dispatch
+11/19 Test #11: dispatch .........................   Passed    0.01 sec
+      Start 12: module_abi
+12/19 Test #12: module_abi .......................   Passed    0.01 sec
+      Start 13: c_cfg
+13/19 Test #13: c_cfg ............................   Passed    0.01 sec
+      Start 14: symbols
+14/19 Test #14: symbols ..........................   Passed    0.02 sec
+      Start 15: codegen_compile
+15/19 Test #15: codegen_compile ..................   Passed    1.40 sec
+      Start 16: c_execute
+16/19 Test #16: c_execute ........................   Passed    0.01 sec
+      Start 17: fpscr
+17/19 Test #17: fpscr ............................   Passed    0.01 sec
+      Start 18: float_semantics
+18/19 Test #18: float_semantics ..................   Passed    0.01 sec
+      Start 19: dolir
+19/19 Test #19: dolir ............................   Passed    0.01 sec
+
+100% tests passed, 0 tests failed out of 19
+
+Total Test time (real) =   2.00 sec

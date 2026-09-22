@@ -1,0 +1,160 @@
+SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01's later fixes are absent. See docs/CURRENT-STATUS.md.
+cmake: /usr/bin/cmake
+ctest: /usr/bin/ctest
+ninja: /usr/bin/ninja
+git: /usr/bin/git
+compiler: /usr/bin/gcc
+compiler: /usr/bin/g++
+compiler: /usr/local/swift/usr/bin/clang
+Host/source preflight passed. This is not a Windows build or gameplay test.
+
+cmake -S /mnt/data/OpenMUA2_LOCAL01/project/lib/DolRecomp -B /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=/usr/bin/gcc -DCMAKE_OBJECT_PATH_MAX=180 -DFETCHCONTENT_FULLY_DISCONNECTED=ON -DFETCHCONTENT_UPDATES_DISCONNECTED=ON -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DDOLRECOMP_ENABLE_LLVM=OFF -DBUILD_TESTING=ON
+-- The C compiler identification is GNU 14.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Codegen source digest: 62810f35c97bb047766ee16d7411ac3f0d5705cdbe89b5dd6a861fcdbcde9566 (53 files)
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+CMake Warning:
+  Manually-specified variables were not used by the project:
+
+    BUILD_TESTING
+    CMAKE_CXX_COMPILER
+    FETCHCONTENT_FULLY_DISCONNECTED
+    FETCHCONTENT_UPDATES_DISCONNECTED
+
+
+-- Build files have been written to: /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp
+
+cmake --build /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp --config Release --parallel 2
+[0/2] Re-checking globbed directories...
+[1/79] Building C object CMakeFiles/dr_frontend.dir/src/frontend/container/dol.c.o
+[2/79] Building C object CMakeFiles/dr_frontend.dir/src/frontend/container/rel.c.o
+[3/79] Building C object CMakeFiles/dr_frontend.dir/src/frontend/decoder.c.o
+[4/79] Building C object CMakeFiles/dr_frontend.dir/src/frontend/container/rpx.c.o
+[5/79] Building C object CMakeFiles/dr_analysis.dir/src/analysis/embedded_data.c.o
+[6/79] Building C object CMakeFiles/dr_analysis.dir/src/analysis/smc.c.o
+[7/79] Building C object CMakeFiles/dr_frontend.dir/src/frontend/container/disc_extract.c.o
+[8/79] Linking C static library libdr_frontend.a
+[9/79] Building C object CMakeFiles/dr_analysis.dir/src/analysis/symbol_map.c.o
+[10/79] Linking C static library libdr_analysis.a
+[11/79] Building C object CMakeFiles/dr_backend.dir/src/backend/c_cfg.c.o
+[12/79] Building C object CMakeFiles/dr_backend.dir/src/backend/dispatch.c.o
+[13/79] Building C object CMakeFiles/dr_backend.dir/src/backend/codegen.c.o
+[14/79] Building C object CMakeFiles/dr_backend.dir/src/backend/symbols.c.o
+[15/79] Building C object CMakeFiles/dr_backend.dir/src/backend/module_abi.c.o
+[16/79] Building C object CMakeFiles/dr_backend.dir/src/backend/emitter.c.o
+[17/79] Building C object CMakeFiles/dr_backend.dir/src/backend/variant_output.c.o
+[18/79] Linking C static library libdr_backend.a
+[19/79] Building C object CMakeFiles/test_codegen_emit.dir/tests/test_codegen_emit.c.o
+[20/79] Building C object CMakeFiles/dr_platform.dir/src/platform/fs.c.o
+[21/79] Building C object CMakeFiles/dr_platform.dir/src/platform/strutil.c.o
+[22/79] Building C object CMakeFiles/dr_platform.dir/src/platform/pathlist.c.o
+[23/79] Building C object CMakeFiles/dr_platform.dir/src/platform/process.c.o
+[24/79] Building C object CMakeFiles/dr_ir.dir/src/ir/dolir.c.o
+[25/79] Building C object CMakeFiles/dr_ir.dir/src/ir/dolir_address.c.o
+[26/79] Building C object CMakeFiles/dr_ir.dir/src/ir/dolir_effects.c.o
+[27/79] Building C object CMakeFiles/dr_cpu.dir/src/cpu/cpu.c.o
+[28/79] Linking C static library libdr_cpu.a
+[29/79] Linking C executable test_codegen_emit
+[30/79] Linking C static library libdr_platform.a
+[31/79] Building C object CMakeFiles/dr_app.dir/src/app/cli.c.o
+[32/79] Building C object CMakeFiles/dr_ir.dir/src/ir/dolir_builder.c.o
+[33/79] Linking C static library libdr_ir.a
+[34/79] Building C object CMakeFiles/dr_app.dir/src/app/database.c.o
+[35/79] Building C object CMakeFiles/dr_app.dir/src/app/setup.c.o
+[36/79] Building C object CMakeFiles/dr_app.dir/src/app/paths.c.o
+[37/79] Generating c_execute_generated.c
+[38/79] Building C object CMakeFiles/dolrecomp.dir/src/app/main.c.o
+[39/79] Building C object CMakeFiles/test_cli.dir/tests/test_cli.c.o
+[40/79] Building C object CMakeFiles/dr_app.dir/src/app/pipeline.c.o
+[41/79] Linking C static library libdr_app.a
+[42/79] Building C object CMakeFiles/dolir_stats.dir/tools/dolir_stats.c.o
+[43/79] Building C object CMakeFiles/test_cross_check.dir/tests/test_cross_check.c.o
+[44/79] Building C object CMakeFiles/test_opcodes.dir/tests/test_opcodes.c.o
+[45/79] Building C object CMakeFiles/test_dol.dir/tests/test_dol.c.o
+[46/79] Building C object CMakeFiles/test_rel.dir/tests/test_rel.c.o
+[47/79] Building C object CMakeFiles/test_rpx.dir/tests/test_rpx.c.o
+[48/79] Building C object CMakeFiles/test_disc_extract.dir/tests/test_disc_extract.c.o
+[49/79] Building C object CMakeFiles/test_jumptables.dir/tests/test_jumptables.c.o
+[50/79] Building C object CMakeFiles/test_dispatch.dir/tests/test_dispatch.c.o
+[51/79] Building C object CMakeFiles/test_module_abi.dir/tests/test_module_abi.c.o
+[52/79] Building C object CMakeFiles/test_c_cfg.dir/tests/test_c_cfg.c.o
+[53/79] Building C object CMakeFiles/test_symbols.dir/tests/test_symbols.c.o
+[54/79] Building C object CMakeFiles/test_c_execute.dir/tests/test_c_execute.c.o
+[55/79] Building C object CMakeFiles/test_pc_reference.dir/tests/test_pc_reference.c.o
+[56/79] Building C object CMakeFiles/test_c_execute.dir/c_execute_generated.c.o
+[57/79] Building C object CMakeFiles/test_fpscr.dir/tests/test_fpscr.c.o
+[58/79] Building C object CMakeFiles/test_float_semantics.dir/tests/test_float_semantics.c.o
+[59/79] Linking C executable dolrecomp
+[60/79] Linking C executable test_cli
+[61/79] Building C object CMakeFiles/test_dolir.dir/tests/test_dolir.c.o
+[62/79] Linking C executable test_opcodes
+[63/79] Linking C executable dolir_stats
+[64/79] Linking C executable test_cross_check
+[65/79] Linking C executable test_dol
+[66/79] Linking C executable test_rel
+[67/79] Linking C executable test_rpx
+[68/79] Linking C executable test_disc_extract
+[69/79] Linking C executable test_pc_reference
+[70/79] Linking C executable test_jumptables
+[71/79] Linking C executable test_dispatch
+[72/79] Linking C executable test_c_cfg
+[73/79] Linking C executable test_module_abi
+[74/79] Linking C executable test_symbols
+[75/79] Linking C executable test_c_execute
+[76/79] Linking C executable test_fpscr
+[77/79] Linking C executable test_float_semantics
+[78/79] Linking C executable test_dolir
+
+ctest --test-dir /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp -C Release --output-on-failure
+Internal ctest changing into directory: /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp
+Test project /mnt/data/OpenMUA2_LOCAL01/.local/build/linux-x64/dolrecomp
+      Start  1: cli
+ 1/19 Test  #1: cli ..............................   Passed    0.00 sec
+      Start  2: source_policy
+ 2/19 Test  #2: source_policy ....................   Passed    0.07 sec
+      Start  3: opcodes
+ 3/19 Test  #3: opcodes ..........................   Passed    0.00 sec
+      Start  4: cross_check
+ 4/19 Test  #4: cross_check ......................   Passed    0.00 sec
+      Start  5: dol
+ 5/19 Test  #5: dol ..............................   Passed    0.00 sec
+      Start  6: rel
+ 6/19 Test  #6: rel ..............................   Passed    0.00 sec
+      Start  7: rpx
+ 7/19 Test  #7: rpx ..............................   Passed    0.00 sec
+      Start  8: disc_extract
+ 8/19 Test  #8: disc_extract .....................   Passed    0.00 sec
+      Start  9: pc_reference
+ 9/19 Test  #9: pc_reference .....................   Passed    0.02 sec
+      Start 10: jumptables
+10/19 Test #10: jumptables .......................   Passed    0.00 sec
+      Start 11: dispatch
+11/19 Test #11: dispatch .........................   Passed    0.00 sec
+      Start 12: module_abi
+12/19 Test #12: module_abi .......................   Passed    0.00 sec
+      Start 13: c_cfg
+13/19 Test #13: c_cfg ............................   Passed    0.00 sec
+      Start 14: symbols
+14/19 Test #14: symbols ..........................   Passed    0.00 sec
+      Start 15: codegen_compile
+15/19 Test #15: codegen_compile ..................   Passed    0.60 sec
+      Start 16: c_execute
+16/19 Test #16: c_execute ........................   Passed    0.00 sec
+      Start 17: fpscr
+17/19 Test #17: fpscr ............................   Passed    0.00 sec
+      Start 18: float_semantics
+18/19 Test #18: float_semantics ..................   Passed    0.00 sec
+      Start 19: dolir
+19/19 Test #19: dolir ............................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 19
+
+Total Test time (real) =   0.73 sec

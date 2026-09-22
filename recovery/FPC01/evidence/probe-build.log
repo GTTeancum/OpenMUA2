@@ -1,0 +1,16 @@
+In file included from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/JitInterface.h:16,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/Debugger/BranchWatch.h:17,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/PowerPC.h:16,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/ExceptionUtils.h:8,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FPUtils.h:14,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/Interpreter/Interpreter_FloatMisc.cpp:12,
+                 from /mnt/data/mua2-recovery/fp-repair/tests/probe.cpp:4:
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/MachineContext.h:137:2: error: #error No context definition for architecture
+  137 | #error No context definition for architecture
+      |  ^~~~~
+In file included from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompModuleSource.h:9,
+                 from /mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/JitInterface.h:17:
+/mnt/data/mua2-recovery/scratch/project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompABI.h:18:10: fatal error: core/cpu.h: No such file or directory
+   18 | #include "core/cpu.h"
+      |          ^~~~~~~~~~~~
+compilation terminated.

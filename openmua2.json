@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "name": "OpenMUA2",
+  "workspace": "LOCAL01",
+  "source_baseline": "Recovered MG01 build fixes plus FPC01; NOT MR01",
+  "platform": "Wii USA",
+  "disc_id": "RMSE52",
+  "image_location": "Exactly one .wbfs at repository root, or --image",
+  "dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+  "rel_sha256": "5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f",
+  "native_rel_integrated": false,
+  "windows_execution_verified": false,
+  "source_nodes": 42,
+  "script": "tools/workspace.py",
+  "local_state": ".local",
+  "default_module_opt": 0
+}

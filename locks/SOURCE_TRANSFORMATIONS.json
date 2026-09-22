@@ -1,0 +1,1076 @@
+[
+  {
+    "path": "project/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/.gitmodules",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/UPSTREAM.gitmodules"
+  },
+  {
+    "path": "project/lib/DolRecomp/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/DolRecomp/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/DolRecomp/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/DolRecomp/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/.gitmodules",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/UPSTREAM.gitmodules"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/.gitmodules",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/UPSTREAM.gitmodules"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Data/Sys/Resources/OSD_Font.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "da4281dc7db17a3dfce64a62ced92875c5895340055ec8ba24a3914eb97b349d"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/DolRecomp/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/DolRecomp/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/DolRecomp/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/DolRecomp/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/src/render/gpu/shaders/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/src/render/gpu/shaders/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/src/render/gpu/shaders/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/src/render/gpu/shaders/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/android/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/android/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/android/app/src/main/assets/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/cocoa/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/event_handling/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/island/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/joystick/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/keyboard/resources/Tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "b97cd5005278b24aabb69b8b6ead98860955599558f6e8119483b575a5fdce98"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/opengl/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/raw_input/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/shader/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/sound_effects/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/examples/tennis/resources/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/test/Graphics/tuffy-\u0144.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/test/Graphics/tuffy-\ud83d\udc0c.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/test/Graphics/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/tools/xcode/templates/SFML/SFML App.xctemplate/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SFML/SFML/tools/xcode/templates/SFML/SFML CLT.xctemplate/tuffy.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "531b0148e9e700ca4ad91eda038bed432074af6c544cae8e9a0433c8f544c9a2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/Vulkan-Headers/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/Vulkan-Headers/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/Vulkan-Headers/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/Vulkan-Headers/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/VulkanMemoryAllocator/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/VulkanMemoryAllocator/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/bzip2/bzip2/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/bzip2/bzip2/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/bzip2/bzip2/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/bzip2/bzip2/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-ipc/cpp-ipc/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-ipc/cpp-ipc/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-optparse/cpp-optparse/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cpp-optparse/cpp-optparse/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/.gitmodules",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/UPSTREAM.gitmodules"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/cmake/sanitizers-cmake/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/cmake/sanitizers-cmake/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/googletest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/cubeb/cubeb/googletest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/cmdline-opts/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/cmdline-opts/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/examples/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/examples/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/libcurl/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/docs/libcurl/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/lib/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/lib/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/m4/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/m4/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/projects/Windows/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/projects/Windows/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/projects/Windows/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/projects/Windows/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/src/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/src/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/certs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/certs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/client/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/client/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/data/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/data/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/data/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/data/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/http/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/http/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/http/testenv/mod_curltest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/http/testenv/mod_curltest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/libtest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/libtest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/server/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/server/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/tunit/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/tunit/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/unit/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/tests/unit/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/winbuild/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/curl/curl/winbuild/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/test/fuzzing/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/fmt/fmt/test/fuzzing/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/glslang/glslang/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/glslang/glslang/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/glslang/glslang/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/glslang/glslang/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/gtest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/gtest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/hidtest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/hidtest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/libusb/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/libusb/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/linux/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/linux/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/m4/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/m4/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/mac/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/mac/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/pc/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/pc/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/testgui/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/testgui/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/windows/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/hidapi/hidapi-src/windows/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/examples/example_android_opengl3/android/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/examples/example_android_opengl3/android/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/Cousine-Regular.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "0d5d5eeb6a342432bd63a3c0d16e8470160e019933ee5af3e159d06d665dacce"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/DroidSans.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "4e2371bc0e4cf6983342e150412f140da79d674c9be0b56458401f581072ecd3"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/Karla-Regular.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "907c55a993e35b3ae4f3b8b8c28367f4b6d431df8e9ca6fbd382d8317dd3684e"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/ProggyClean.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "527d2a443ce051f93f7e77b855609722b8cb220a9f104b4aa037be5c90b71324"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/ProggyTiny.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "79bf8d3896ba83ae2f9c4fa214dce8fc689eae47950474947a4cc5c6e14a9bfc"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/imgui/imgui/misc/fonts/Roboto-Medium.ttf",
+    "action": "omitted_font_resource",
+    "original_sha256": "8559132c89ad51d8a2ba5b171887a44a7ba93776e205f553573de228e64b45f8"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/libadrenotools/.gitmodules",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/libadrenotools/UPSTREAM.gitmodules"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/libspng/libspng/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/libspng/libspng/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/libusb/libusb/README.md",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "README",
+    "sha256": "a8cbb93dea30035c124e54dc5c158e437b35854b83cac8c00c6f3692b31dbe9b"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/build/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/build/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/build/cmake/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/build/cmake/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/contrib/gen_manual/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/contrib/gen_manual/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/examples/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/examples/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/lib/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/lib/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/ossfuzz/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/ossfuzz/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/programs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/programs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/lz4/lz4/tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/cinema/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/cinema/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/scripts/demos/SourceSans3-Regular.otf",
+    "action": "omitted_font_resource",
+    "original_sha256": "08df266400933d3178d081a45f94a08814c3e55b4b7dd2e0ff69cb1329f13ab6"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/src/platform/python/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/src/platform/python/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/src/third-party/discord-rpc/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/src/third-party/discord-rpc/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/3rdparty/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/3rdparty/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/3rdparty/everest/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/3rdparty/everest/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/include/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/include/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/library/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/mbedtls/library/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/minissdpd/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/minissdpd/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/minissdpd/LICENSE",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../LICENSE",
+    "sha256": "b3633761a56f77c6cd65358126da1f5d952eb1ecafa1a42e83dadb068b35e29f"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/minissdpd/getifaddr.c",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../miniupnpd/getifaddr.c",
+    "sha256": "612445a9276eff894d17bf1f5af5310e68d1995eef750939fee0541699cbfd64"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/minissdpd/getifaddr.h",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../miniupnpd/getifaddr.h",
+    "sha256": "037cc346b9a069ea1caf213fc2061a80832d9d518987c09126eb1e82c86dd68e"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/LICENSE",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../LICENSE",
+    "sha256": "b3633761a56f77c6cd65358126da1f5d952eb1ecafa1a42e83dadb068b35e29f"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/java/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/java/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/msvc/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc/msvc/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-async/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-async/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-libevent/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-libevent/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-libuv/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpc-libuv/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpd/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpd/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpd/LICENSE",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../LICENSE",
+    "sha256": "b3633761a56f77c6cd65358126da1f5d952eb1ecafa1a42e83dadb068b35e29f"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpd/mac/getroute.c",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../bsd/getroute.c",
+    "sha256": "61934373769468a87c9390023d71ae81b6aa4aaad05ee8acc3691d30bdffe605"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/miniupnpc/miniupnp/miniupnpd/mac/ifacewatcher.c",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "../bsd/ifacewatcher.c",
+    "sha256": "90019263b79ebe972b5ebf01b8cf0d8e5b3cb3bd8196cf8db37376ba5ba4d3d0"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/minizip-ng/minizip-ng/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/minizip-ng/minizip-ng/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/pugixml/pugixml/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/pugixml/pugixml/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/pugixml/pugixml/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/pugixml/pugixml/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/rcheevos/rcheevos/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/rcheevos/rcheevos/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/spirv_cross/SPIRV-Cross/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/spirv_cross/SPIRV-Cross/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/basic/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/basic/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/common/glm/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/common/glm/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/common/glm/util/conan-package/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/common/glm/util/conan-package/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/glview/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/examples/glview/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-c/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-c/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-nodejs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-nodejs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-py/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/watcher/watcher/watcher-py/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/wil/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/wil/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/wil/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/wil/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/cmake_unofficial/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/cmake_unofficial/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/tests/bench/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/tests/bench/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/tests/collisions/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/xxhash/xxHash/tests/collisions/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/arch/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/arch/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/test/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zlib-ng/zlib-ng/test/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/.gitattributes",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/UPSTREAM.gitattributes"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/lib/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/lib/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/programs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/programs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/cmake/tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/single_file_libs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/build/single_file_libs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/diagnose_corruption/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/diagnose_corruption/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/externalSequenceProducer/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/externalSequenceProducer/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/gen_html/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/gen_html/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/largeNbDicts/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/largeNbDicts/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/linux-kernel/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/linux-kernel/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/pzstd/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/pzstd/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/seekable_format/examples/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/seekable_format/examples/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/seekable_format/tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/contrib/seekable_format/tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/doc/educational_decoder/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/doc/educational_decoder/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/examples/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/examples/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/lib/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/lib/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/programs/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/programs/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/cli-tests/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/cli-tests/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/cli-tests/bin/unzstd",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "zstd",
+    "sha256": "808cc561268e42dd3ca2dcb1f39874661e19a568cc05374a1bff3d9d440e5022"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/cli-tests/bin/zstdcat",
+    "action": "materialized_internal_file_symlink",
+    "original_link": "zstd",
+    "sha256": "808cc561268e42dd3ca2dcb1f39874661e19a568cc05374a1bff3d9d440e5022"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/fuzz/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/fuzz/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/golden-decompression-errors/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/golden-decompression-errors/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/regression/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/tests/regression/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/zlibWrapper/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/zstd/zstd/zlibWrapper/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/GXRuntime/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/GXRuntime/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/GXRuntime/graphics/aurora/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/GXRuntime/graphics/aurora/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/app/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/app/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/benchmark/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Source/Android/benchmark/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Source/DSPSpy/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Source/DSPSpy/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/StrikersRecomp/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/StrikersRecomp/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/docs/DSP/GameCube_DSP_Users_Manual/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/docs/DSP/GameCube_DSP_Users_Manual/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/fmt/fmt/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/fmt/fmt/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/fmt/fmt/test/fuzzing/.gitignore",
+    "action": "preserve_upstream_git_metadata_under_nonactive_name",
+    "new_path": "project/lib/ModernGekko/vendor/fmt/fmt/test/fuzzing/UPSTREAM.gitignore"
+  },
+  {
+    "path": "project/lib/ModernGekko/CMakeLists.txt",
+    "action": "recovered_MG01_build_fix",
+    "original_sha256": "7afe5bc26a399e6bddf9356162fd42dd4a2001ade34d2915982111b6c18644f9",
+    "sha256": "8ef791e1474a47685dd7fc4f5730d2db6a9e7ae02fda811fd7c6d93347ba27f2"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/CMakeLists.txt",
+    "action": "recovered_MG01_build_fix",
+    "original_sha256": "0df2ed2769eaee614cff567951e1dcb0dc49a489eec754205543105401a7a6f0",
+    "sha256": "5213b9af7c50dda35381c6f56eb2cc9382218d45f0117f8509c978237ee74226"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Source/Core/Common/CMakeLists.txt",
+    "action": "recovered_MG01_build_fix",
+    "original_sha256": "b08026545185f1dcb7e4096f25a0e5e8df13e2de199906aecac0a74fa1641e40",
+    "sha256": "abbef5f53a13734f2ce11e1df3a519c37aefdf7f2903f6d167bb9a2c82751db0"
+  },
+  {
+    "path": "project/lib/DolRecomp/src/cpu/cpu.c",
+    "action": "recovered_FPC01_fctiw_fix",
+    "original_sha256": "6cb6679523d0afa23ae70a81865a9b9c3ca4626c026f36b55cc7e557fc78d662",
+    "sha256": "c9c21b3ac9fbcc7a45f0f825f83441e84b238f456a605ae859a3c79064041691"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/cpu/cpu.c",
+    "action": "recovered_FPC01_fctiw_fix",
+    "original_sha256": "6cb6679523d0afa23ae70a81865a9b9c3ca4626c026f36b55cc7e557fc78d662",
+    "sha256": "c9c21b3ac9fbcc7a45f0f825f83441e84b238f456a605ae859a3c79064041691"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Data/Sys/GC/font_japanese.bin",
+    "action": "omitted_font_resource",
+    "original_sha256": "38f9f59d505bc4e2d86b0196706195f33ad72b7fe9d029cf263072cde19d044f"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Data/Sys/GC/font_western.bin",
+    "action": "omitted_font_resource",
+    "original_sha256": "4ad991be2b0aa305f09b90a79fc50f57833b30b008890b5ef1336cc3d9d0bae0"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/test/unifont-15.1.05.hex",
+    "action": "omitted_font_resource",
+    "original_sha256": "fefddbdd1743e6706dd03e9e1109c20b42283c3172491c7443ccaa632d31f9d5"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/SDL/SDL/test/msdf_font.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "3e924af0f16bc136599e5aa465f17bf1409997533d96aec2e7f6ffabad9c12c3"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/font-new.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "aa2a9dc0817fc2f642b284685319a419535c7be148129f95e25ff5c2153d2efb"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/font-mask.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "45d1ba3edd63db60c61114280540d70f5b168ecf9a213874b19b823eaa22fb76"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/font.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "b30ce2ff63cdc4d671e56b35ae28b0d43a4dbb67250b345fd923c456cb7aac3d"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/font2x.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "90f9d755f7ec6993e61d14087a6ab6c1b1928d34bb94a24b129b37d26b304957"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/mGBA/mgba/res/font-sdf.png",
+    "action": "omitted_font_resource",
+    "original_sha256": "77694d41ddcdd2dda37ba7cf4a13badb7146820f35840f05ad6a7c6f120c476b"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/ 2x2 image  has multiple      spaces.png",
+    "action": "local01b_remove_leading_ascii_space_from_fixture_name",
+    "new_path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/2x2 image  has multiple      spaces.png",
+    "sha256": "00b9839320de4bbd342d092e5cedf05845ab4be733c0240d5dd5466a9565b217",
+    "reason": "Preserve the same 79 PNG bytes under a filename that survives Windows extraction. Internal repeated spaces are unchanged."
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/models/CubeImageUriSpaces/CubeImageUriMultipleSpaces.gltf",
+    "action": "local01b_portable_tinygltf_fixture",
+    "original_sha256": "ad529b2a72e6ee6dfb154767ede1ea92e45247527d34708fbc876e6eae9acd13",
+    "result_sha256": "8f9e91a8b4e5c9e84c5204ec0b42a455438cbcfe71a1883a717fbdf0d9be3884"
+  },
+  {
+    "path": "project/lib/ModernGekko/vendor/dolphin/Externals/tinygltf/tinygltf/tests/tester.cc",
+    "action": "local01b_portable_tinygltf_fixture",
+    "original_sha256": "331129f5a93044a3ed0b3bfb00ea0d89ca962d4750036474ba7a8e4eab47921e",
+    "result_sha256": "5ade4df2ec5881287c2f2e1ecedc1ecf61dfc605f5f8b25583c599abb4d38d34"
+  }
+]

@@ -1,0 +1,7 @@
+VERIFIED MUA2-dependencies.zip.001
+VERIFIED MUA2-dependencies.zip.002
+VERIFIED MUA2-dependencies.zip.003
+Source archives verified: 41 nodes: 42
+RESTORED /mnt/data/openmua2-packaging/original
+EXTRACTED MUA2_MG01_Checkpoint.zip
+EXTRACTED MUA2_FPC01_PreIntegration.zip

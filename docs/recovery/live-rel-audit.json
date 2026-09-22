@@ -1,0 +1,229 @@
+{
+  "status": "LIVE_TEXT_MATCH",
+  "source_rel_sha256": "5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f",
+  "module_id": 1,
+  "observed_rel_base": 2162466944,
+  "live_section_table_field": 2162467020,
+  "section_table_address": 2162467020,
+  "section_table_is_absolute": true,
+  "live_import_table_size": 0,
+  "live_fix_size_field": 2166082240,
+  "original_fix_size": 3615296,
+  "original_module_alignment": 8,
+  "original_bss_alignment": 16,
+  "layout": [
+    {
+      "index": 0,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 1,
+      "file_offset": 228,
+      "size": 3255744,
+      "executable": true,
+      "bss": false,
+      "address": 2162467172
+    },
+    {
+      "index": 2,
+      "file_offset": 3255972,
+      "size": 216,
+      "executable": false,
+      "bss": false,
+      "address": 2165722916
+    },
+    {
+      "index": 3,
+      "file_offset": 3256188,
+      "size": 12,
+      "executable": false,
+      "bss": false,
+      "address": 2165723132
+    },
+    {
+      "index": 4,
+      "file_offset": 3256200,
+      "size": 43288,
+      "executable": false,
+      "bss": false,
+      "address": 2165723144
+    },
+    {
+      "index": 5,
+      "file_offset": 3299488,
+      "size": 315792,
+      "executable": false,
+      "bss": false,
+      "address": 2165766432
+    },
+    {
+      "index": 6,
+      "file_offset": 0,
+      "size": 1692544,
+      "executable": false,
+      "bss": true,
+      "address": 2166082240
+    },
+    {
+      "index": 7,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 8,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 9,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 10,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 11,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 12,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 13,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 14,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 15,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 16,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 17,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    },
+    {
+      "index": 18,
+      "file_offset": 0,
+      "size": 0,
+      "executable": false,
+      "bss": false,
+      "address": 0
+    }
+  ],
+  "relocations": 95772,
+  "relocation_type_counts": {
+    "6": 14155,
+    "4": 16758,
+    "1": 25581,
+    "10": 39278
+  },
+  "halfword_patch_offsets_mod4": {
+    "2": 30913
+  },
+  "comparisons": [
+    {
+      "halfword_write_adjust": 0,
+      "text_sections": [
+        {
+          "section": 1,
+          "address": 2162467172,
+          "bytes": 3255744,
+          "expected_sha256": "05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0",
+          "observed_sha256": "05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0",
+          "mismatch_bytes": 0,
+          "first_mismatch_offsets": []
+        }
+      ],
+      "mismatch_bytes": 0
+    },
+    {
+      "halfword_write_adjust": 2,
+      "text_sections": [
+        {
+          "section": 1,
+          "address": 2162467172,
+          "bytes": 3255744,
+          "expected_sha256": "283ae7c36a21077c6f629c593f87166d08a69ff614c40e0921403e360f4cfe8e",
+          "observed_sha256": "05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0",
+          "mismatch_bytes": 121737,
+          "first_mismatch_offsets": [
+            154,
+            155,
+            156,
+            157,
+            170,
+            171,
+            172,
+            173,
+            190,
+            191,
+            192,
+            193,
+            206,
+            207,
+            208,
+            209
+          ]
+        }
+      ],
+      "mismatch_bytes": 121737
+    }
+  ],
+  "native_rel_built": false,
+  "limitation": "Read-only one-boot layout/text validation; no claim of a generic linker or native REL execution."
+}

@@ -1,0 +1,40 @@
+{
+  "package": "OpenMUA2 LOCAL01a Python launcher hotfix",
+  "scope": "Launcher only; LOCAL01 MG01 + FPC01 source baseline unchanged",
+  "source_zip": {
+    "name": "OpenMUA2_LOCAL01.zip",
+    "bytes": 232704874,
+    "sha256": "336a083091742bb74bd0f364504ac7ac5375afb69e898291982d9cc2b8473776"
+  },
+  "original_launcher_sha256": "cf890e9bfadfdc96056172930ae109c2e7c08fbf7ec4142e7b4504522bd3a9df",
+  "replacement_launcher_sha256": "12d5a3561a5e0fcde855f3013dcaede653e7dc7965f3b5282b163f39c698fc05",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "tests": {
+    "total_discovered": 58,
+    "passed": 53,
+    "skipped_native_windows": 5,
+    "failures": 0,
+    "errors": 0,
+    "existing_workspace_tests_passed": 40,
+    "portable_launcher_tests_passed": 13,
+    "log": "evidence/local01a/tests.txt"
+  },
+  "native_windows_cmd_executed": false,
+  "windows_build_executed": false,
+  "new_gameplay_test": false,
+  "production_file_changes": [
+    "OpenMUA2.cmd"
+  ],
+  "metadata_replaced": [
+    "FILE-MANIFEST.json"
+  ],
+  "new_documentation_and_tests": [
+    "docs/LOCAL01a-LAUNCHER-FIX.md",
+    "tests/test_python_launcher.py",
+    "evidence/local01a/VALIDATION.json",
+    "evidence/local01a/tests.txt"
+  ],
+  "expected_updated_manifest_file_count": 37435,
+  "development_note": "Initial static-test label splitting matched a goto substring; test corrected to match a line-start label. Initial run 1 assertion failure, 5 Windows skips. Final run 53 pass and 5 skips. No Windows success claimed."
+}
