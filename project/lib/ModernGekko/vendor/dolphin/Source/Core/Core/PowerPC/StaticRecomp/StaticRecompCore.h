@@ -184,6 +184,23 @@ private:
   };
   std::array<NativeExceptionSample, 8> m_native_exception_samples{};
   u32 m_native_exception_sample_count = 0;
+  struct DispatchTraceSample
+  {
+    u64 dispatch = 0;
+    u32 runtime_pc = 0;
+    u32 linked_pc = 0;
+    u32 result_pc = 0;
+    u32 lr = 0;
+    u32 ctr = 0;
+    u32 cr = 0;
+    u32 r3 = 0;
+    u32 r4 = 0;
+    u32 exception = 0;
+    s32 downcount = 0;
+  };
+  std::array<DispatchTraceSample, 32> m_dispatch_trace_samples{};
+  u32 m_dispatch_trace_next = 0;
+  u32 m_dispatch_trace_count = 0;
   u64 m_hook_fallback_instructions = 0;
   u64 m_timebase_cycle_remainder = 0;
   std::unordered_map<u32, u64> m_dispatch_samples;

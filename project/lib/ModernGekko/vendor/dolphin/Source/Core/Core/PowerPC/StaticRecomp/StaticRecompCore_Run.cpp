@@ -158,6 +158,25 @@ void StaticRecompCore::Run()
           m_module->dispatch(&m_guest, linked_dispatch_address);
           if (m_has_rel_modules)
             m_guest.pc = TranslateRelAddress(m_guest.pc);
+          if (m_collect_dispatch_samples)
+          {
+            auto& trace = m_dispatch_trace_samples[m_dispatch_trace_next];
+            trace.dispatch = m_native_dispatches;
+            trace.runtime_pc = runtime_dispatch_address;
+            trace.linked_pc = linked_dispatch_address;
+            trace.result_pc = m_guest.pc;
+            trace.lr = m_guest.lr;
+            trace.ctr = m_guest.ctr;
+            trace.cr = m_guest.cr;
+            trace.r3 = m_guest.gpr[3];
+            trace.r4 = m_guest.gpr[4];
+            trace.exception = m_guest.exception;
+            trace.downcount = m_guest.downcount;
+            m_dispatch_trace_next =
+                (m_dispatch_trace_next + 1) % static_cast<u32>(m_dispatch_trace_samples.size());
+            if (m_dispatch_trace_count < m_dispatch_trace_samples.size())
+              ++m_dispatch_trace_count;
+          }
           ++m_native_dispatches;
 
           if (do_ls)

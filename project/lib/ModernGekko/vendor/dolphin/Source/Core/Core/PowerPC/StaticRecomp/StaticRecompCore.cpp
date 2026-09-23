@@ -219,6 +219,25 @@ void StaticRecompCore::Shutdown()
                  dispatch_samples[i].first,
                  static_cast<unsigned long long>(dispatch_samples[i].second));
   }
+  if (m_dispatch_trace_count != 0)
+  {
+    const u32 first =
+        (m_dispatch_trace_next + static_cast<u32>(m_dispatch_trace_samples.size()) -
+         m_dispatch_trace_count) %
+        static_cast<u32>(m_dispatch_trace_samples.size());
+    for (u32 i = 0; i < m_dispatch_trace_count; ++i)
+    {
+      const auto& sample =
+          m_dispatch_trace_samples[(first + i) %
+                                   static_cast<u32>(m_dispatch_trace_samples.size())];
+      std::fprintf(stderr,
+                   "[staticrecomp] dispatch-tail[%u]: n=%llu runtime=%08x linked=%08x "
+                   "result=%08x lr=%08x ctr=%08x cr=%08x r3=%08x r4=%08x exc=%08x down=%d\n",
+                   i, static_cast<unsigned long long>(sample.dispatch), sample.runtime_pc,
+                   sample.linked_pc, sample.result_pc, sample.lr, sample.ctr, sample.cr,
+                   sample.r3, sample.r4, sample.exception, sample.downcount);
+    }
+  }
   for (u32 i = 0; i < m_native_exception_sample_count; ++i)
   {
     const auto& sample = m_native_exception_samples[i];

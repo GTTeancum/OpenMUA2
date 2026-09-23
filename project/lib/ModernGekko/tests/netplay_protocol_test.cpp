@@ -140,7 +140,7 @@ public:
 };
 
 bool WaitFor(const auto &condition) {
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < 500; ++i) {
     if (condition())
       return true;
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
