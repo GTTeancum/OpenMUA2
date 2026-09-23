@@ -3,7 +3,8 @@
 """Offline OpenMUA2 workspace, build, and backup commands. Python 3.11+.
 
 No downloads, installers, global Git configuration, implicit clean, or game writes.
-LOCAL01 is the recovered MG01 + FPC01 source baseline, not MR01 gameplay code.
+This workspace began from the LOCAL01 recovered source package; current validation
+state is tracked in docs/CURRENT-STATUS.md.
 """
 from __future__ import annotations
 import argparse
@@ -26,7 +27,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 GAME_ID = 'RMSE52'
-BASELINE = 'LOCAL01: recovered MG01 + FPC01; DOL-native / REL-fallback'
+BASELINE = 'CURRENT: reconstructed native DOL+REL source; see docs/CURRENT-STATUS.md'
 REL_AUDIT_PATH = 'docs/recovery/live-rel-audit.json'
 REL_PATH = 'files/Marvel-rev-fin-plf2.rel'
 MSVC_MODULE_OD_CHUNKS = {
@@ -35,13 +36,13 @@ MSVC_MODULE_OD_CHUNKS = {
 PRIVATE_EXT = {'.wbfs', '.wbf1', '.wbf2', '.wbf3', '.iso', '.gcm', '.rvz', '.wia',
                '.dol', '.rel', '.sav', '.raw', '.gci', '.pem', '.key', '.pfx'}
 CODE_DIRS = {'project', 'tools', 'tests', 'docs', 'configs', 'cmake', 'patches',
-             'locks', 'recovery', 'evidence', '.vscode'}
+             'locks', 'recovery', 'evidence', '.vscode', '.github'}
 ROOT_FILES = {'README.md', 'AGENTS.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md',
               '.gitignore', '.gitattributes', '.editorconfig', 'FILE-MANIFEST.json',
               'OpenMUA2.cmd', 'Setup.cmd', 'Build.cmd', 'Run.cmd', 'Snapshot.cmd',
               'Backup.cmd', 'openmua2.json', 'OpenMUA2.code-workspace'}
-BANNER = ('SOURCE RECOVERY BASELINE, NOT MR01: native REL integration and MR01\'s '
-          'later fixes are absent. See docs/CURRENT-STATUS.md.')
+BANNER = ('CURRENT RECONSTRUCTED SOURCE: native DOL+REL integration is present; '
+          'validation remains bounded. See docs/CURRENT-STATUS.md.')
 
 
 def sha256(path: Path) -> str:
@@ -674,7 +675,7 @@ def build(root: Path, options: argparse.Namespace) -> None:
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
                'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel)}
     write_json(within(root, '.local/receipts/build.json'), receipt)
-    print('\nLOCAL01 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
+    print('\nOpenMUA2 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
 
 def run_game(root: Path, options: argparse.Namespace) -> None:
