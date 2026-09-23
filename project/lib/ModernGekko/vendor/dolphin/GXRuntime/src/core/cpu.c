@@ -20,8 +20,9 @@
  * pre-images, so it can restore a pre-block memory view before re-running a
  * block on Dolphin's interpreter (correct read-modify-write comparison).
  * NULL and zero-cost unless installed; the chassis resolves the setter by name
- * via dlsym, so its absence simply disables lockstep. `offset` is the RAM byte
- * offset (into cpu->ram) about to be written, `size` the width in bytes. */
+ * via dlsym, so its absence simply disables lockstep. `offset` is a physical
+ * RAM journal key: MEM1 uses its byte offset from 0, while MEM2 uses
+ * PPC_MEM_JOURNAL_EXRAM_BASE plus its EXRAM byte offset. `size` is the width. */
 PPCMemWriteJournal g_mem_write_journal = NULL;
 void* g_mem_write_journal_user = NULL;
 #if defined(_MSC_VER)

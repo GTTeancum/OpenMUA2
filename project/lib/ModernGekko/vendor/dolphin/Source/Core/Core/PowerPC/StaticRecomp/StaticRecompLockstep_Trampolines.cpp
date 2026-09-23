@@ -24,6 +24,24 @@ bool LsHwAccessInScope(PowerPC::MMU& mmu, u32 ea)
 void StaticRecompLockstepVerifier::LsJournalTrampoline(u32 offset, u32 size, void* user)
 {
   auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);
+  if (offset >= PPC_MEM_JOURNAL_EXRAM_BASE)
+  {
+    auto& memory = verifier->m_core.m_system.GetMemory();
+    const u8* exram = memory.GetEXRAM();
+    const u32 exram_size = memory.GetExRamSizeReal();
+    if (!exram)
+      return;
+    const u32 base = offset - PPC_MEM_JOURNAL_EXRAM_BASE;
+    for (u32 i = 0; i < size; ++i)
+    {
+      const u32 off = base + i;
+      if (off >= exram_size)
+        break;
+      verifier->m_journal.ram_pre.emplace(offset + i, exram[off]);
+    }
+    return;
+  }
+
   const u8* ram = verifier->m_core.m_guest.ram;
   const u32 ram_size = verifier->m_core.m_guest.ram_size;
   for (u32 i = 0; i < size; ++i)
@@ -38,6 +56,24 @@ void StaticRecompLockstepVerifier::LsJournalTrampoline(u32 offset, u32 size, voi
 void StaticRecompLockstepVerifier::LsShadowJournalTrampoline(u32 offset, u32 size, void* user)
 {
   auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);
+  if (offset >= PPC_MEM_JOURNAL_EXRAM_BASE)
+  {
+    auto& memory = verifier->m_core.m_system.GetMemory();
+    const u8* exram = memory.GetEXRAM();
+    const u32 exram_size = memory.GetExRamSizeReal();
+    if (!exram)
+      return;
+    const u32 base = offset - PPC_MEM_JOURNAL_EXRAM_BASE;
+    for (u32 i = 0; i < size; ++i)
+    {
+      const u32 off = base + i;
+      if (off >= exram_size)
+        break;
+      verifier->m_journal.ram_shadow_pre.emplace(offset + i, exram[off]);
+    }
+    return;
+  }
+
   const u8* ram = verifier->m_core.m_guest.ram;
   const u32 ram_size = verifier->m_core.m_guest.ram_size;
   for (u32 i = 0; i < size; ++i)

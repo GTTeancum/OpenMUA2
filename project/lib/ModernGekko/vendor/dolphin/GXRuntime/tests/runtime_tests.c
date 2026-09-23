@@ -97,6 +97,17 @@ static unsigned g_cache_controls;
 static u16 g_last_spr;
 static u32 g_last_spr_value;
 static u8 g_last_cache_operation;
+static u32 g_mem_journal_offsets[4];
+static u32 g_mem_journal_sizes[4];
+static unsigned g_mem_journal_count;
+
+static void test_mem_journal(u32 offset, u32 size, void* user) {
+    assert(user == &g_mem_journal_count);
+    assert(g_mem_journal_count < 4u);
+    g_mem_journal_offsets[g_mem_journal_count] = offset;
+    g_mem_journal_sizes[g_mem_journal_count] = size;
+    g_mem_journal_count++;
+}
 
 static u32 test_spr_read(CPUState* cpu, u16 spr, u32 cia) {
     (void)cpu;
@@ -309,6 +320,32 @@ static bool mmio_write_test(void* user, CPUState* cpu, u32 ea, u8 size,
     g_mmio_write_hits++;
     g_mmio_last_write = value;
     return true;
+}
+
+static void test_mem_write_journal_regions(void) {
+    CPUState cpu = {0};
+    u8 ram[32] = {0};
+    u8 exram[32] = {0};
+    cpu.ram = ram;
+    cpu.ram_size = sizeof(ram);
+    cpu.exram = exram;
+    cpu.exram_size = sizeof(exram);
+
+    g_mem_journal_count = 0;
+    g_mem_write_journal = test_mem_journal;
+    g_mem_write_journal_user = &g_mem_journal_count;
+    mem_write32(&cpu, GC_RAM_BASE + 4u, 0x11223344u);
+    mem_write16(&cpu, 0x90000000u + 8u, 0xA1B2u);
+    g_mem_write_journal = NULL;
+    g_mem_write_journal_user = NULL;
+
+    assert(g_mem_journal_count == 2u);
+    assert(g_mem_journal_offsets[0] == 4u);
+    assert(g_mem_journal_sizes[0] == 4u);
+    assert(g_mem_journal_offsets[1] == PPC_MEM_JOURNAL_EXRAM_BASE + 8u);
+    assert(g_mem_journal_sizes[1] == 2u);
+    assert(mem_read32(&cpu, GC_RAM_BASE + 4u) == 0x11223344u);
+    assert(mem_read16(&cpu, 0x90000000u + 8u) == 0xA1B2u);
 }
 
 static void test_guest_memory(void) {
@@ -2433,6 +2470,7 @@ static void test_fma_helper_matches_instruction_path(void) {
 
 int main(void) {
     test_guest_memory();
+    test_mem_write_journal_regions();
     test_store_reservation();
     test_native_system_helpers();
     test_fma_helper_matches_instruction_path();
