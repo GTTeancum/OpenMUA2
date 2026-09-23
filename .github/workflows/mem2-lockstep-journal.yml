@@ -1,0 +1,148 @@
+name: MEM2 lockstep journal repair
+
+on:
+  push:
+    branches: [automation/mem2-lockstep-journal]
+    paths:
+      - ".github/workflows/mem2-lockstep-journal.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch-build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Apply focused MEM2 lockstep repair
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f'{path}: expected one match, found {count}')
+              text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8', newline='\n')
+
+          cpu_h = 'project/lib/ModernGekko/vendor/dolphin/GXRuntime/include/core/cpu.h'
+          replace_once(
+              cpu_h,
+              '''#define GC_MAIN_RAM_SIZE    (24 * 1024 * 1024)\n#define GC_RAM_BASE         0x80000000u\n#define GC_RAM_UNCACHED     0xC0000000u\n''',
+              '''#define GC_MAIN_RAM_SIZE    (24 * 1024 * 1024)\n#define GC_RAM_BASE         0x80000000u\n#define GC_RAM_UNCACHED     0xC0000000u\n\n/* Debug journal keys use physical RAM offsets: MEM1 starts at 0, MEM2 at 0x10000000. */\n#define PPC_MEM_JOURNAL_EXRAM_BASE 0x10000000u\n''')
+          replace_once(
+              cpu_h,
+              '''        if (offset <= cpu->exram_size - size) {\n            if (out_offset) *out_offset = (u32)-1;\n            return cpu->exram + offset;\n        }\n''',
+              '''        if (offset <= cpu->exram_size - size) {\n            if (out_offset) *out_offset = PPC_MEM_JOURNAL_EXRAM_BASE + offset;\n            return cpu->exram + offset;\n        }\n''')
+
+          cpu_c = 'project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c'
+          replace_once(
+              cpu_c,
+              ''' * NULL and zero-cost unless installed; the chassis resolves the setter by name\n * via dlsym, so its absence simply disables lockstep. `offset` is the RAM byte\n * offset (into cpu->ram) about to be written, `size` the width in bytes. */\n''',
+              ''' * NULL and zero-cost unless installed; the chassis resolves the setter by name\n * via dlsym, so its absence simply disables lockstep. `offset` is a physical\n * RAM journal key: MEM1 uses its byte offset from 0, while MEM2 uses\n * PPC_MEM_JOURNAL_EXRAM_BASE plus its EXRAM byte offset. `size` is the width. */\n''')
+
+          tramp = 'project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Trampolines.cpp'
+          replace_once(
+              tramp,
+              '''void StaticRecompLockstepVerifier::LsJournalTrampoline(u32 offset, u32 size, void* user)\n{\n  auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);\n  const u8* ram = verifier->m_core.m_guest.ram;\n  const u32 ram_size = verifier->m_core.m_guest.ram_size;\n  for (u32 i = 0; i < size; ++i)\n  {\n    const u32 off = offset + i;\n    if (off >= ram_size)\n      break;\n    verifier->m_journal.ram_pre.emplace(off, ram[off]);\n  }\n}\n''',
+              '''void StaticRecompLockstepVerifier::LsJournalTrampoline(u32 offset, u32 size, void* user)\n{\n  auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);\n  if (offset >= PPC_MEM_JOURNAL_EXRAM_BASE)\n  {\n    auto& memory = verifier->m_core.m_system.GetMemory();\n    const u8* exram = memory.GetEXRAM();\n    const u32 exram_size = memory.GetExRamSizeReal();\n    if (!exram)\n      return;\n    const u32 base = offset - PPC_MEM_JOURNAL_EXRAM_BASE;\n    for (u32 i = 0; i < size; ++i)\n    {\n      const u32 off = base + i;\n      if (off >= exram_size)\n        break;\n      verifier->m_journal.ram_pre.emplace(offset + i, exram[off]);\n    }\n    return;\n  }\n\n  const u8* ram = verifier->m_core.m_guest.ram;\n  const u32 ram_size = verifier->m_core.m_guest.ram_size;\n  for (u32 i = 0; i < size; ++i)\n  {\n    const u32 off = offset + i;\n    if (off >= ram_size)\n      break;\n    verifier->m_journal.ram_pre.emplace(off, ram[off]);\n  }\n}\n''')
+          replace_once(
+              tramp,
+              '''void StaticRecompLockstepVerifier::LsShadowJournalTrampoline(u32 offset, u32 size, void* user)\n{\n  auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);\n  const u8* ram = verifier->m_core.m_guest.ram;\n  const u32 ram_size = verifier->m_core.m_guest.ram_size;\n  for (u32 i = 0; i < size; ++i)\n  {\n    const u32 off = offset + i;\n    if (off >= ram_size)\n      break;\n    verifier->m_journal.ram_shadow_pre.emplace(off, ram[off]);\n  }\n}\n''',
+              '''void StaticRecompLockstepVerifier::LsShadowJournalTrampoline(u32 offset, u32 size, void* user)\n{\n  auto* verifier = static_cast<StaticRecompLockstepVerifier*>(user);\n  if (offset >= PPC_MEM_JOURNAL_EXRAM_BASE)\n  {\n    auto& memory = verifier->m_core.m_system.GetMemory();\n    const u8* exram = memory.GetEXRAM();\n    const u32 exram_size = memory.GetExRamSizeReal();\n    if (!exram)\n      return;\n    const u32 base = offset - PPC_MEM_JOURNAL_EXRAM_BASE;\n    for (u32 i = 0; i < size; ++i)\n    {\n      const u32 off = base + i;\n      if (off >= exram_size)\n        break;\n      verifier->m_journal.ram_shadow_pre.emplace(offset + i, exram[off]);\n    }\n    return;\n  }\n\n  const u8* ram = verifier->m_core.m_guest.ram;\n  const u32 ram_size = verifier->m_core.m_guest.ram_size;\n  for (u32 i = 0; i < size; ++i)\n  {\n    const u32 off = offset + i;\n    if (off >= ram_size)\n      break;\n    verifier->m_journal.ram_shadow_pre.emplace(off, ram[off]);\n  }\n}\n''')
+
+          mmu = 'project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/MMU_Tables.cpp'
+          replace_once(
+              mmu,
+              '''  if (m_memory.GetEXRAM() && (em_address >> 28) == 0x1 &&\n      (em_address & 0x0FFFFFFF) < m_memory.GetExRamSizeReal())\n  {\n    em_address &= 0x0FFFFFFF;\n\n    if (m_ppc_state.m_enable_dcache && !wi)\n''',
+              '''  if (m_memory.GetEXRAM() && (em_address >> 28) == 0x1 &&\n      (em_address & 0x0FFFFFFF) < m_memory.GetExRamSizeReal())\n  {\n    const u32 exram_offset = em_address & 0x0FFFFFFF;\n\n    // Lockstep uses the same RAM journal for MEM1 and MEM2. MEM2 keys live in\n    // their physical 0x10000000-based range so they cannot alias MEM1 offsets.\n    if constexpr (flag == XCheckTLBFlag::Write)\n    {\n      if (StaticRecompLockstep::g_ram_write_journal)\n        StaticRecompLockstep::g_ram_write_journal(\n            PPC_MEM_JOURNAL_EXRAM_BASE + exram_offset, size,\n            StaticRecompLockstep::g_ram_write_journal_user);\n    }\n\n    em_address = exram_offset;\n\n    if (m_ppc_state.m_enable_dcache && !wi)\n''')
+
+          check = 'project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Check.cpp'
+          replace_once(
+              check,
+              '''  u8* ram = m_core.m_guest.ram;\n  const u32 ram_size = m_core.m_guest.ram_size;\n  u8* const l1 = memory.GetL1Cache();\n  const u32 l1_size = memory.GetL1CacheSize();\n  u8* const vmem = memory.GetFakeVMEM();\n  const u32 vmem_size = memory.GetFakeVMemSize();\n''',
+              '''  u8* ram = m_core.m_guest.ram;\n  const u32 ram_size = m_core.m_guest.ram_size;\n  u8* const exram = memory.GetEXRAM();\n  const u32 exram_size = memory.GetExRamSizeReal();\n  u8* const l1 = memory.GetL1Cache();\n  const u32 l1_size = memory.GetL1CacheSize();\n  u8* const vmem = memory.GetFakeVMEM();\n  const u32 vmem_size = memory.GetFakeVMemSize();\n  const auto read_ram_journal_byte = [&](u32 key, u8 fallback) {\n    if (key >= PPC_MEM_JOURNAL_EXRAM_BASE)\n    {\n      const u32 off = key - PPC_MEM_JOURNAL_EXRAM_BASE;\n      return exram && off < exram_size ? exram[off] : fallback;\n    }\n    return ram && key < ram_size ? ram[key] : fallback;\n  };\n  const auto write_ram_journal_byte = [&](u32 key, u8 value) {\n    if (key >= PPC_MEM_JOURNAL_EXRAM_BASE)\n    {\n      const u32 off = key - PPC_MEM_JOURNAL_EXRAM_BASE;\n      if (exram && off < exram_size)\n        exram[off] = value;\n      return;\n    }\n    if (ram && key < ram_size)\n      ram[key] = value;\n  };\n''')
+          replace_once(
+              check,
+              '''  m_journal.ram_post.clear();\n  for (const auto& [off, pre] : m_journal.ram_pre)\n    m_journal.ram_post.emplace(off, off < ram_size ? ram[off] : pre);\n  for (const auto& [off, pre] : m_journal.ram_pre)\n    if (off < ram_size)\n      ram[off] = pre;\n''',
+              '''  m_journal.ram_post.clear();\n  for (const auto& [off, pre] : m_journal.ram_pre)\n    m_journal.ram_post.emplace(off, read_ram_journal_byte(off, pre));\n  for (const auto& [off, pre] : m_journal.ram_pre)\n    write_ram_journal_byte(off, pre);\n''')
+          replace_once(
+              check,
+              '''    for (const auto& [off, post] : m_journal.ram_post)\n    {\n      const u8 iv = (off < ram_size) ? ram[off] : post;\n      if (iv != post)\n        diff += fmt::format(" mem[{:#010x}]:N={:#04x},I={:#04x}", 0x80000000u + off, post, iv);\n    }\n''',
+              '''    for (const auto& [off, post] : m_journal.ram_post)\n    {\n      const u8 iv = read_ram_journal_byte(off, post);\n      if (iv != post)\n        diff += fmt::format(" mem[{:#010x}]:N={:#04x},I={:#04x}", 0x80000000u + off, post, iv);\n    }\n''')
+          replace_once(
+              check,
+              '''  for (const auto& [off, pre] : m_journal.ram_shadow_pre)\n    if (off < ram_size)\n      ram[off] = pre;\n  for (const auto& [off, post] : m_journal.ram_post)\n    if (off < ram_size)\n      ram[off] = post;\n''',
+              '''  for (const auto& [off, pre] : m_journal.ram_shadow_pre)\n    write_ram_journal_byte(off, pre);\n  for (const auto& [off, post] : m_journal.ram_post)\n    write_ram_journal_byte(off, post);\n''')
+
+          tests = 'project/lib/ModernGekko/vendor/dolphin/GXRuntime/tests/runtime_tests.c'
+          replace_once(
+              tests,
+              '''static u8 g_last_cache_operation;\n''',
+              '''static u8 g_last_cache_operation;\nstatic u32 g_mem_journal_offsets[4];\nstatic u32 g_mem_journal_sizes[4];\nstatic unsigned g_mem_journal_count;\n\nstatic void test_mem_journal(u32 offset, u32 size, void* user) {\n    assert(user == &g_mem_journal_count);\n    assert(g_mem_journal_count < 4u);\n    g_mem_journal_offsets[g_mem_journal_count] = offset;\n    g_mem_journal_sizes[g_mem_journal_count] = size;\n    g_mem_journal_count++;\n}\n''')
+          replace_once(
+              tests,
+              '''static void test_guest_memory(void) {\n''',
+              '''static void test_mem_write_journal_regions(void) {\n    CPUState cpu = {0};\n    u8 ram[32] = {0};\n    u8 exram[32] = {0};\n    cpu.ram = ram;\n    cpu.ram_size = sizeof(ram);\n    cpu.exram = exram;\n    cpu.exram_size = sizeof(exram);\n\n    g_mem_journal_count = 0;\n    g_mem_write_journal = test_mem_journal;\n    g_mem_write_journal_user = &g_mem_journal_count;\n    mem_write32(&cpu, GC_RAM_BASE + 4u, 0x11223344u);\n    mem_write16(&cpu, 0x90000000u + 8u, 0xA1B2u);\n    g_mem_write_journal = NULL;\n    g_mem_write_journal_user = NULL;\n\n    assert(g_mem_journal_count == 2u);\n    assert(g_mem_journal_offsets[0] == 4u);\n    assert(g_mem_journal_sizes[0] == 4u);\n    assert(g_mem_journal_offsets[1] == PPC_MEM_JOURNAL_EXRAM_BASE + 8u);\n    assert(g_mem_journal_sizes[1] == 2u);\n    assert(mem_read32(&cpu, GC_RAM_BASE + 4u) == 0x11223344u);\n    assert(mem_read16(&cpu, 0x90000000u + 8u) == 0xA1B2u);\n}\n\nstatic void test_guest_memory(void) {\n''')
+          replace_once(
+              tests,
+              '''int main(void) {\n    test_guest_memory();\n    test_store_reservation();\n''',
+              '''int main(void) {\n    test_guest_memory();\n    test_mem_write_journal_regions();\n    test_store_reservation();\n''')
+          PY
+
+      - name: Diff sanity
+        run: |
+          git diff --check
+          git diff --stat
+
+      - name: Configure GXRuntime
+        run: >-
+          cmake
+          -S project/lib/ModernGekko/vendor/dolphin/GXRuntime
+          -B build/gxruntime
+          -DCMAKE_BUILD_TYPE=Release
+          -DGXRUNTIME_ENABLE_AURORA=OFF
+          -DGXRUNTIME_ENABLE_AURORA_RECOMP=OFF
+
+      - name: Build and test GXRuntime
+        run: |
+          cmake --build build/gxruntime --config Release --parallel 2
+          ctest --test-dir build/gxruntime -C Release --output-on-failure
+
+      - name: Configure ModernGekko Linux runtime
+        run: >-
+          cmake
+          -S project/lib/ModernGekko
+          -B build/moderngekko
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DMODERNGEKKO_ENABLE_DOLPHIN_RUNTIME=ON
+          -DMODERNGEKKO_ENABLE_DOLPHIN_TESTS=OFF
+          -DUSE_SYSTEM_LIBS=OFF
+
+      - name: Build ModernGekko Linux runtime
+        run: cmake --build build/moderngekko --parallel 2
+
+      - name: Run ModernGekko tests
+        run: ctest --test-dir build/moderngekko --output-on-failure --timeout 90 -R '^moderngekko[.]'
+
+      - name: Commit validated source repair
+        run: |
+          git config user.name "OpenMUA2 Automation"
+          git config user.email "openmua2-automation@users.noreply.github.com"
+          git add \
+            project/lib/ModernGekko/vendor/dolphin/GXRuntime/include/core/cpu.h \
+            project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c \
+            project/lib/ModernGekko/vendor/dolphin/GXRuntime/tests/runtime_tests.c \
+            project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/MMU_Tables.cpp \
+            project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Trampolines.cpp \
+            project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Check.cpp
+          git commit -m "Journal MEM2 in lockstep verification"
+          git push origin HEAD:automation/mem2-lockstep-journal
