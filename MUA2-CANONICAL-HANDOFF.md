@@ -396,8 +396,7 @@ Runs on both Ubuntu and Windows.
 
 The first run at `3c4e5b40...` failed because the new overlap-regression fixture did not actually overlap the generated range. Commit `07fd13cc...` corrected the fixture.
 
-**At the moment this handoff was written, the corrected tooling CI run was still in progress.**
-A successor must check its final result before calling it passed.
+**The corrected tooling CI run at `07fd13cc...` completed successfully.**
 
 ### Focused Linux validation already performed for MEM2
 
@@ -558,7 +557,7 @@ Key progression, newest direction last:
 18. Regression tests added for those merged dispatch guards.
 19. Cross-platform Python tooling CI added.
 20. The first overlap fixture was found faulty; `07fd13cc...` corrected the fixture.
-21. At handoff creation, corrected tooling CI and the initial ModernGekko CI were still running and must be rechecked.
+21. Corrected tooling CI at `07fd13cc...` completed successfully; the initial ModernGekko CI was still running at handoff close and must be rechecked.
 
 ---
 
