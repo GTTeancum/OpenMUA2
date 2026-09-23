@@ -20,9 +20,20 @@ jobs:
       - name: Apply focused MEM2 lockstep repair
         run: python3 tools/apply_mem2_lockstep_patch.py
 
-      - name: Diff sanity
+      - name: Verify patch scope
+        shell: bash
         run: |
-          git diff --check --ignore-space-at-eol
+          expected=$(cat <<'EOF'
+          project/lib/ModernGekko/vendor/dolphin/GXRuntime/include/core/cpu.h
+          project/lib/ModernGekko/vendor/dolphin/GXRuntime/src/core/cpu.c
+          project/lib/ModernGekko/vendor/dolphin/GXRuntime/tests/runtime_tests.c
+          project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/MMU_Tables.cpp
+          project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Check.cpp
+          project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompLockstep_Trampolines.cpp
+          EOF
+          )
+          actual=$(git diff --name-only | sort)
+          test "$actual" = "$(printf '%s\n' "$expected" | sort)"
           git diff --stat
 
       - name: Configure GXRuntime
