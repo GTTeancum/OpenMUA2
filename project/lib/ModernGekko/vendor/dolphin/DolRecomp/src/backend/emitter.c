@@ -525,6 +525,28 @@ void emit_header_for_cpu(FILE* out, DolRecompCPU cpu) {
         "    return sh ? ((value << sh) | (value >> (32u - sh))) : value;\n"
         "}\n"
         "\n"
+        "#if defined(_MSC_VER)\n"
+        "#include <intrin.h>\n"
+        "#endif\n"
+        "static inline u32 dolrecomp_clz32(u32 value) {\n"
+        "    if (value == 0)\n"
+        "        return 32u;\n"
+        "#if defined(_MSC_VER)\n"
+        "    unsigned long index = 0;\n"
+        "    _BitScanReverse(&index, value);\n"
+        "    return 31u - (u32)index;\n"
+        "#elif defined(__GNUC__) || defined(__clang__)\n"
+        "    return (u32)__builtin_clz(value);\n"
+        "#else\n"
+        "    u32 n = 0;\n"
+        "    while ((value & 0x80000000u) == 0) {\n"
+        "        ++n;\n"
+        "        value <<= 1;\n"
+        "    }\n"
+        "    return n;\n"
+        "#endif\n"
+        "}\n"
+        "\n"
         // Preserve the PPC bit-level single conversion, including denormals.
         "static inline f64 dolrecomp_f32_from_bits(u32 bits) {\n"
         "    u64 x = bits;\n"
@@ -992,10 +1014,8 @@ static void emit_instruction_with_range(FILE* out, const PPCInst* inst,
 
     case PPC_OP_CNTLZW:
         fprintf(out, "    {\n");
-        fprintf(out, "        u32 v = ctx->gpr[%u];\n", inst->rS);
-        fprintf(out, "        u32 n = 0;\n");
-        fprintf(out, "        while (n < 32 && ((v & (0x80000000u >> n)) == 0)) n++;\n");
-        fprintf(out, "        ctx->gpr[%u] = n;\n", inst->rA);
+        fprintf(out, "        ctx->gpr[%u] = dolrecomp_clz32(ctx->gpr[%u]);\n",
+                inst->rA, inst->rS);
         emit_record_if_needed(out, inst, inst->rA);
         fprintf(out, "    }\n");
         break;
