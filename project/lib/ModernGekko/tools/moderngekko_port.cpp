@@ -658,7 +658,7 @@ std::optional<fs::path> Build(const char* argv0, const fs::path& root,
     else if (opt == "1")
       flags = "compile:/O1 /fp:strict";
     else
-      flags = "compile:/O2 /fp:strict";
+      flags = "compile:/O2 /Ob0 /fp:strict";
   }
 
   std::string pgo_compile_flags;

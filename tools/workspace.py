@@ -27,6 +27,9 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 GAME_ID = 'RMSE52'
 BASELINE = 'LOCAL01: recovered MG01 + FPC01; DOL-native / REL-fallback'
+MSVC_MODULE_OD_CHUNKS = {
+    GAME_ID: ['chunk_0201_text1_80326900.c'],
+}
 PRIVATE_EXT = {'.wbfs', '.wbf1', '.wbf2', '.wbf3', '.iso', '.gcm', '.rvz', '.wia',
                '.dol', '.rel', '.sav', '.raw', '.gci', '.pem', '.key', '.pfx'}
 CODE_DIRS = {'project', 'tools', 'tests', 'docs', 'configs', 'cmake', 'patches',
@@ -428,9 +431,18 @@ def cmake_configure(root: Path, source: Path, out: Path, options: argparse.Names
     logged(root, out.name + '-configure', args, env)
 
 
-def cmake_build(root: Path, out: Path, options: argparse.Namespace) -> None:
-    logged(root, out.name + '-build', ['cmake', '--build', out, '--config', options.config,
-                                     '--parallel', str(options.jobs)])
+def cmake_build(root: Path, out: Path, options: argparse.Namespace, retries: int = 0) -> None:
+    attempt = 0
+    while True:
+        try:
+            logged(root, out.name + '-build', ['cmake', '--build', out, '--config', options.config,
+                                             '--parallel', str(options.jobs)])
+            return
+        except RuntimeError:
+            attempt += 1
+            if attempt > retries:
+                raise
+            print(f'{out.name} build failed; retrying {attempt}/{retries} from Ninja state.', flush=True)
 
 
 def built_exe(directory: Path, name: str, config: str = 'Release') -> Path:
@@ -563,8 +575,10 @@ def build_module(root: Path, options: argparse.Namespace, generated: Path, game:
     cmake_configure(root, core / 'module-template', out, options,
                     ['-DGAME_ID=RMSE52', '-DGENERATED_DIR=' + str(generated),
                      '-DRECOMPCORE_MODULE_ENABLE_IPO=' + ('ON' if options.module_ipo else 'OFF'),
-                     '-DRECOMPCORE_MODULE_OPT_LEVEL=' + str(options.module_opt)], module=True)
-    cmake_build(root, out, options)
+                     '-DRECOMPCORE_MODULE_OPT_LEVEL=' + str(options.module_opt),
+                     '-DRECOMPCORE_MODULE_MSVC_OD_CHUNKS=' +
+                     ';'.join(MSVC_MODULE_OD_CHUNKS.get(GAME_ID, []))], module=True)
+    cmake_build(root, out, options, retries=getattr(options, 'module_build_retries', 0))
     module = out / ('gRMSE52_recomp.dll' if os.name == 'nt' else 'gRMSE52_recomp.so')
     if not module.is_file():
         raise ValueError('Expected native module was not produced: ' + str(module))
@@ -769,6 +783,7 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=0)
         s.add_argument('--module-ipo', action='store_true')
         s.add_argument('--module-suffix')
+        s.add_argument('--module-build-retries', type=int, default=0)
         s.add_argument('--wit', default=os.environ.get('WIT', 'wit'))
         s.add_argument('--image', help='Exact .wbfs filename at repository root (optional if unique)')
         s.add_argument('--sdk', help='Optional Linux-only private SDK root')

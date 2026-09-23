@@ -130,6 +130,8 @@ option(RECOMPCORE_MODULE_ENABLE_IPO "Enable Clang module interprocedural optimiz
 set(RECOMPCORE_MODULE_OPT_LEVEL "2" CACHE STRING
     "Optimization level for generated module translation units (0, 1, 2, or 3)")
 set_property(CACHE RECOMPCORE_MODULE_OPT_LEVEL PROPERTY STRINGS 0 1 2 3)
+set(RECOMPCORE_MODULE_MSVC_OD_CHUNKS "" CACHE STRING
+    "Semicolon-separated generated chunk filenames to compile with /Od under MSVC")
 if(NOT RECOMPCORE_MODULE_OPT_LEVEL MATCHES "^[0-3]$")
   message(FATAL_ERROR
     "RECOMPCORE_MODULE_OPT_LEVEL must be one of 0, 1, 2, or 3")
@@ -176,8 +178,14 @@ if(MSVC)
   elseif(RECOMPCORE_MODULE_OPT_LEVEL STREQUAL "1")
     target_compile_options(${MODULE_NAME} PRIVATE /O1 /fp:strict)
   else()
-    target_compile_options(${MODULE_NAME} PRIVATE /O2 /fp:strict)
+    target_compile_options(${MODULE_NAME} PRIVATE /O2 /Ob0 /fp:strict)
   endif()
+  foreach(_module_od_chunk IN LISTS RECOMPCORE_MODULE_MSVC_OD_CHUNKS)
+    set(_module_od_source "${GENERATED_DIR}/chunks/${_module_od_chunk}")
+    if(EXISTS "${_module_od_source}")
+      set_source_files_properties("${_module_od_source}" PROPERTIES COMPILE_OPTIONS /Od)
+    endif()
+  endforeach()
 elseif(CMAKE_C_COMPILER_ID MATCHES "Clang")
   target_compile_options(${MODULE_NAME} PRIVATE
     -O${RECOMPCORE_MODULE_OPT_LEVEL} -ffp-contract=off -fno-fast-math)
