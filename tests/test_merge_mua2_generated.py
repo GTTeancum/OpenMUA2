@@ -65,6 +65,13 @@ class MergeDispatchTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "overlapping generated code chunks"):
                 merge.emit_header(dol_header(), overlapping_rel, output)
 
+    def test_merged_dispatch_rejects_unaligned_chunks(self) -> None:
+        unaligned_rel = rel_header(0x80E4A166, 0x80E4A186)
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "generated.h"
+            with self.assertRaisesRegex(ValueError, "unaligned generated code chunk"):
+                merge.emit_header(dol_header(), unaligned_rel, output)
+
 
 if __name__ == "__main__":
     unittest.main()
