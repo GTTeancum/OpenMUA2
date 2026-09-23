@@ -59,7 +59,7 @@ class MergeDispatchTests(unittest.TestCase):
         )
 
     def test_merged_dispatch_rejects_overlapping_chunks(self) -> None:
-        overlapping_rel = rel_header(0x80001008, 0x80001018)
+        overlapping_rel = rel_header(0x80001008, 0x80001028)
         with tempfile.TemporaryDirectory() as td:
             output = Path(td) / "generated.h"
             with self.assertRaisesRegex(ValueError, "overlapping generated code chunks"):
