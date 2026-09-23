@@ -17,6 +17,28 @@ u32 ReadGuestBE32(const u8* bytes)
   return (static_cast<u32>(bytes[0]) << 24) | (static_cast<u32>(bytes[1]) << 16) |
          (static_cast<u32>(bytes[2]) << 8) | bytes[3];
 }
+
+const u8* ResolveGuestPointer(const u8* ram, u32 ram_size, u32 header_offset, u32 value,
+                              u32 fallback_relative_offset, u32 required_size)
+{
+  u64 physical = 0;
+  if (value == fallback_relative_offset)
+  {
+    physical = static_cast<u64>(header_offset) + fallback_relative_offset;
+  }
+  else if (value >= 0x80000000u)
+  {
+    physical = static_cast<u64>(value - 0x80000000u);
+  }
+  else
+  {
+    physical = value;
+  }
+
+  if (physical > ram_size || required_size > ram_size - physical)
+    return nullptr;
+  return ram + physical;
+}
 }
 
 void StaticRecompCore::RefreshRelSections()
@@ -28,18 +50,22 @@ void StaticRecompCore::RefreshRelSections()
   for (u32 module_index = 0; module_index < m_module->num_rel_modules; ++module_index)
   {
     const StaticRecompRelModule& module = m_module->rel_modules[module_index];
-    const u64 table_end = static_cast<u64>(module.section_info_offset) +
-                          static_cast<u64>(module.section_count) * 8;
-    if (table_end > m_guest.ram_size)
+    const u64 table_size = static_cast<u64>(module.section_count) * 8;
+    if (table_size > m_guest.ram_size)
       continue;
-    for (u32 candidate = 0; static_cast<u64>(candidate) + table_end <= m_guest.ram_size;
+    for (u32 candidate = 0; static_cast<u64>(candidate) + 0x40u <= m_guest.ram_size;
          candidate += 4)
     {
       const u8* header = m_guest.ram + candidate;
       if (ReadGuestBE32(header) != module.module_id ||
           ReadGuestBE32(header + 0x0c) != module.section_count ||
-          ReadGuestBE32(header + 0x10) != module.section_info_offset ||
           ReadGuestBE32(header + 0x1c) != module.version)
+        continue;
+      const u32 table_field = ReadGuestBE32(header + 0x10);
+      const u8* section_table =
+          ResolveGuestPointer(m_guest.ram, m_guest.ram_size, candidate, table_field,
+                              module.section_info_offset, static_cast<u32>(table_size));
+      if (!section_table)
         continue;
 
       std::vector<ActiveRelSection> candidate_sections;
@@ -47,7 +73,7 @@ void StaticRecompCore::RefreshRelSections()
       for (u32 section_index = 0; section_index < module.num_sections; ++section_index)
       {
         const StaticRecompRelSection& section = module.sections[section_index];
-        const u8* entry = header + module.section_info_offset + section.section_index * 8;
+        const u8* entry = section_table + section.section_index * 8;
         u32 runtime_start = ReadGuestBE32(entry) & ~1u;
         const u32 runtime_size = ReadGuestBE32(entry + 4);
         if (runtime_size != section.size || runtime_start == 0)
