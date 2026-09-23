@@ -98,6 +98,11 @@ def copy_chunks(src: Path, dst: Path) -> list[str]:
 def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
     prelude, prefix, footer = split_header(dol_header)
     chunks = sorted(chunk_ranges(dol_header) + chunk_ranges(rel_header))
+    for index, (start, end) in enumerate(chunks):
+        if start >= end:
+            raise ValueError(f"invalid generated code chunk 0x{start:08X}-0x{end:08X}")
+        if index and start < chunks[index - 1][1]:
+            raise ValueError("overlapping generated code chunks")
     prototypes = "\n".join(f"void func_{start:08X}(CPUState* ctx);" for start, _ in chunks)
     table = [
         "typedef struct DolRecompDispatchEntry {",
@@ -114,6 +119,7 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
     table.extend(
         [
             "    };",
+            "    if ((address & 3u) != 0u) return NULL;",
             "    u32 lo = 0;",
             "    u32 hi = (u32)(sizeof(chunks) / sizeof(chunks[0]));",
             "    while (lo < hi) {",
