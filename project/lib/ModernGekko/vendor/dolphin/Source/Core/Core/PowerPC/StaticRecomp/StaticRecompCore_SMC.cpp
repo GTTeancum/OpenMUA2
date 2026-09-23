@@ -7,6 +7,7 @@
 #include "Core/PowerPC/JitInterface.h"
 #include "Common/Logging/Log.h"
 #include <algorithm>
+#include <cstdlib>
 #include <cstdio>
 
 namespace
@@ -89,6 +90,20 @@ void StaticRecompCore::RefreshRelSections()
     return;
   m_active_rel_sections = std::move(discovered);
   ++m_rel_mapping_generation;
+  if (std::getenv("STATICRECOMP_REL_TRACE"))
+  {
+    std::fprintf(stderr, "[staticrecomp] rel-map generation=%llu sections=%zu\n",
+                 static_cast<unsigned long long>(m_rel_mapping_generation),
+                 m_active_rel_sections.size());
+    for (const ActiveRelSection& section : m_active_rel_sections)
+    {
+      std::fprintf(stderr,
+                   "[staticrecomp] rel-section module=%u section=%u linked=%08x runtime=%08x "
+                   "size=%08x\n",
+                   section.module_id, section.section_index, section.linked_start,
+                   section.runtime_start, section.size);
+    }
+  }
   for (u32 i = 0; i < m_chunk_rel_sections.size(); ++i)
   {
     if (m_chunk_rel_sections[i] < 0)

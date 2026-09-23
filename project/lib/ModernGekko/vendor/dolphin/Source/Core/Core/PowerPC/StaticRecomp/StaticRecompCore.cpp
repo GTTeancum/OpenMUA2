@@ -219,6 +219,15 @@ void StaticRecompCore::Shutdown()
                  dispatch_samples[i].first,
                  static_cast<unsigned long long>(dispatch_samples[i].second));
   }
+  for (u32 i = 0; i < m_native_exception_sample_count; ++i)
+  {
+    const auto& sample = m_native_exception_samples[i];
+    std::fprintf(stderr,
+                 "[staticrecomp] native-exception[%u]: pc=%08x lr=%08x srr0=%08x "
+                 "srr1=%08x msr=%08x program=%08x\n",
+                 i, sample.pc, sample.lr, sample.srr0, sample.srr1, sample.msr,
+                 sample.program_exception);
+  }
   NOTICE_LOG_FMT(POWERPC,
                  "StaticRecomp: shutdown. native_dispatches={} fallback_steps={} "
                  "native_exceptions={} hook_fallback_instructions={} smc_failed_chunks={} "

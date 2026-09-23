@@ -27,6 +27,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 GAME_ID = 'RMSE52'
 BASELINE = 'LOCAL01: recovered MG01 + FPC01; DOL-native / REL-fallback'
+REL_AUDIT_PATH = 'docs/recovery/live-rel-audit.json'
+REL_PATH = 'files/Marvel-rev-fin-plf2.rel'
 MSVC_MODULE_OD_CHUNKS = {
     GAME_ID: ['chunk_0201_text1_80326900.c'],
 }
@@ -501,12 +503,74 @@ def extract_game(root: Path, options: argparse.Namespace, recompiler: Path) -> P
 
 
 def generate(root: Path, options: argparse.Namespace, recompiler: Path, game: Path) -> Path:
-    out = within(root, '.local/generated-mg01')
+    dol = game / 'sys/main.dol'
+    key = hashlib.sha256()
+    for path in (recompiler, dol, within(root, 'tools/generate_dol_mg01.py')):
+        key.update(sha256(path).encode('ascii'))
+        key.update(b'\0')
+    out = within(root, '.local/generated-mg01-' + key.hexdigest()[:12])
     # The guarded historical generator refuses to overwrite edits or mismatched receipts.
     logged(root, 'generate-dol', [sys.executable, root / 'tools/generate_dol_mg01.py',
-                                '--recompiler', recompiler, '--dol', game / 'sys/main.dol',
+                                '--recompiler', recompiler, '--dol', dol,
                                 '--output', out, '--jobs', str(options.jobs)])
     return out / 'generated'
+
+
+def rel_layout_bases(root: Path) -> tuple[int, int]:
+    audit = json.loads(within(root, REL_AUDIT_PATH).read_text(encoding='utf-8'))
+    rel_base = int(audit['observed_rel_base'])
+    bss = [section for section in audit['layout'] if section.get('bss') and int(section['size'])]
+    if len(bss) != 1:
+        raise ValueError('Expected exactly one audited non-empty REL BSS section.')
+    return rel_base, int(bss[0]['address'])
+
+
+def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Path,
+                        game: Path, dol_generated: Path) -> Path:
+    rel = game / REL_PATH
+    audit_path = within(root, REL_AUDIT_PATH)
+    merger = within(root, 'tools/merge_mua2_generated.py')
+    rel_base, bss_base = rel_layout_bases(root)
+    key = hashlib.sha256()
+    for path in (recompiler, rel, audit_path, merger):
+        key.update(sha256(path).encode('ascii'))
+        key.update(b'\0')
+    key.update(f'{rel_base:08X}:{bss_base:08X}'.encode('ascii'))
+    token = key.hexdigest()[:12]
+    rel_root = within(root, f'.local/generated-rel-mg01-{token}')
+    combined = within(root, f'.local/generated-combined-mg01-rel-{token}')
+    receipt = within(root, f'.local/receipts/generated-native-rel-{token}.json')
+    expected = {
+        'schema': 1,
+        'rel_base': rel_base,
+        'rel_bss_base': bss_base,
+        'recompiler_sha256': sha256(recompiler),
+        'rel_sha256': sha256(rel),
+        'rel_audit_sha256': sha256(audit_path),
+        'merger_sha256': sha256(merger),
+    }
+    if receipt.is_file():
+        saved = json.loads(receipt.read_text(encoding='utf-8'))
+        if all(saved.get(name) == value for name, value in expected.items()):
+            if (combined / 'generated.h').is_file() and (combined / 'rel_metadata.json').is_file():
+                print('Reusing generated DOL+REL C from matching native REL receipt.')
+                return combined
+    if combined.exists() and any(combined.iterdir()):
+        raise ValueError('Existing native REL generated output has no matching receipt: ' + str(combined))
+    if rel_root.exists() and any(rel_root.iterdir()):
+        raise ValueError('Existing REL generated output has no matching receipt: ' + str(rel_root))
+    logged(root, 'generate-rel',
+           [recompiler, '--rel-base', f'0x{rel_base:08X}', '--rel-bss-base', f'0x{bss_base:08X}',
+            '--cpu', 'broadway', '--backend', 'c', rel, GAME_ID, rel_root])
+    logged(root, 'merge-dol-rel-generated',
+           [sys.executable, merger, '--dol-generated', dol_generated, '--rel-generated', rel_root / 'generated',
+            '--rel-audit', audit_path, '--rel-file', rel, '--main-dol', game / 'sys/main.dol',
+            '--output', combined])
+    expected['created_utc'] = stamp()
+    expected['rel_root'] = rel_root.relative_to(root).as_posix()
+    expected['combined'] = combined.relative_to(root).as_posix()
+    write_json(receipt, expected)
+    return combined
 
 
 def build_runtime(root: Path, options: argparse.Namespace) -> Path:
@@ -527,15 +591,16 @@ def build_runtime(root: Path, options: argparse.Namespace) -> Path:
 
 def module_build_name(options: argparse.Namespace) -> str:
     suffix = getattr(options, 'module_suffix', None)
+    rel = '-rel' if getattr(options, 'native_rel', False) else ''
     if suffix:
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', suffix):
             raise ValueError('--module-suffix may only contain letters, numbers, dot, underscore, and dash')
-        return 'module-mg01-' + suffix
+        return 'module-mg01' + rel + '-' + suffix
     if getattr(options, 'module_ipo', False):
-        return f'module-mg01-o{options.module_opt}-ipo'
+        return f'module-mg01{rel}-o{options.module_opt}-ipo'
     if options.module_opt:
-        return f'module-mg01-o{options.module_opt}'
-    return 'module-mg01'
+        return f'module-mg01{rel}-o{options.module_opt}'
+    return 'module-mg01' + rel
 
 
 def stage_runtime_sys_resources(root: Path, runtime_build: Path) -> None:
@@ -587,7 +652,10 @@ def build_module(root: Path, options: argparse.Namespace, generated: Path, game:
                     ['-DRECOMPCORE_SOURCE=' + str(core)], module=True)
     cmake_build(root, audit_dir, options)
     audit_exe = built_exe(audit_dir, 'openmua2-verify-module', options.config)
-    logged(root, 'module-abi-hashes', [audit_exe, module, game / 'sys/main.dol'])
+    audit_args = [audit_exe, module, game / 'sys/main.dol']
+    if (generated / 'rel_metadata.json').is_file():
+        audit_args.append(generated)
+    logged(root, 'module-abi-hashes', audit_args)
     return module
 
 
@@ -596,13 +664,15 @@ def build(root: Path, options: argparse.Namespace) -> None:
     recompiler = build_recompiler(root, options)
     game = extract_game(root, options, recompiler)
     generated = generate(root, options, recompiler, game)
+    if options.native_rel:
+        generated = generate_native_rel(root, options, recompiler, game, generated)
     runner = build_runtime(root, options)
     module = build_module(root, options, generated, game)
     receipt = {'schema': 1, 'baseline': BASELINE, 'created_utc': stamp(),
                'platform': platform.platform(), 'game': game.relative_to(root).as_posix(),
                'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
-               'gameplay_verified': False, 'native_rel_integrated': False}
+               'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel)}
     write_json(within(root, '.local/receipts/build.json'), receipt)
     print('\nLOCAL01 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
@@ -784,6 +854,8 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--module-ipo', action='store_true')
         s.add_argument('--module-suffix')
         s.add_argument('--module-build-retries', type=int, default=0)
+        s.add_argument('--native-rel', action='store_true',
+                       help='Generate and package the audited RMSE52 gameplay REL as native code.')
         s.add_argument('--wit', default=os.environ.get('WIT', 'wit'))
         s.add_argument('--image', help='Exact .wbfs filename at repository root (optional if unique)')
         s.add_argument('--sdk', help='Optional Linux-only private SDK root')
@@ -822,7 +894,10 @@ def main(argv: list[str] | None = None) -> int:
     elif action in ('extract', 'generate'):
         doctor(ROOT, options)
         tool = build_recompiler(ROOT, options); game = extract_game(ROOT, options, tool)
-        if action == 'generate': generate(ROOT, options, tool, game)
+        if action == 'generate':
+            generated = generate(ROOT, options, tool, game)
+            if options.native_rel:
+                generate_native_rel(ROOT, options, tool, game, generated)
     elif action == 'build': build(ROOT, options)
     elif action == 'run': run_game(ROOT, options)
     elif action == 'benchmark': benchmark(ROOT, options)

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <array>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -172,6 +173,17 @@ private:
   u64 m_native_dispatches = 0;
   u64 m_fallback_steps = 0;
   u64 m_native_exceptions = 0;
+  struct NativeExceptionSample
+  {
+    u32 pc = 0;
+    u32 lr = 0;
+    u32 srr0 = 0;
+    u32 srr1 = 0;
+    u32 msr = 0;
+    u32 program_exception = 0;
+  };
+  std::array<NativeExceptionSample, 8> m_native_exception_samples{};
+  u32 m_native_exception_sample_count = 0;
   u64 m_hook_fallback_instructions = 0;
   u64 m_timebase_cycle_remainder = 0;
   std::unordered_map<u32, u64> m_dispatch_samples;

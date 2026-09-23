@@ -194,6 +194,16 @@ void StaticRecompCore::Run()
           {
             // DolRecomp's runtime already redirected pc/msr/srr to the guest
             // exception vector; the flag only signals that it happened.
+            if (m_native_exception_sample_count < m_native_exception_samples.size())
+            {
+              auto& sample = m_native_exception_samples[m_native_exception_sample_count++];
+              sample.pc = m_guest.pc;
+              sample.lr = m_guest.lr;
+              sample.srr0 = m_guest.srr0;
+              sample.srr1 = m_guest.srr1;
+              sample.msr = m_guest.msr;
+              sample.program_exception = m_guest.program_exception;
+            }
             m_guest.exception = 0;
             m_guest.program_exception = 0;
             ++m_native_exceptions;
