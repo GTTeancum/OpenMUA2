@@ -1,0 +1,114 @@
+name: ModernGekko CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "project/lib/ModernGekko/**"
+      - ".github/workflows/moderngekko-ci.yml"
+  pull_request:
+    paths:
+      - "project/lib/ModernGekko/**"
+      - ".github/workflows/moderngekko-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  standalone-tests:
+    name: Standalone tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: >-
+          cmake
+          -S project/lib/ModernGekko
+          -B build/moderngekko
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build standalone tests
+        shell: bash
+        run: |
+          targets="
+            moderngekko_launcher_savestates_test
+            moderngekko_dol_patch_test
+            moderngekko_frontend_config_test
+            moderngekko_frontend_config_gamecube_test
+            moderngekko_pgo_support_test
+            moderngekko_port_command_line_test
+          "
+          for target in $targets; do
+            cmake --build build/moderngekko --config Release --target "$target" --parallel 2
+          done
+
+      - name: Test
+        run: >-
+          ctest
+          --test-dir build/moderngekko
+          -C Release
+          --output-on-failure
+          -R "moderngekko\.(launcher_savestates|dol_patch|frontend_config|pgo_support|port_command_line)"
+
+  full-build:
+    name: Full build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build build-essential pkg-config \
+            libevdev-dev libudev-dev libgtk-3-dev libsystemd-dev \
+            libbluetooth-dev libasound2-dev libpulse-dev libgl1-mesa-dev \
+            libxrandr-dev libxi-dev
+
+      - name: Install Windows dependencies
+        if: runner.os == 'Windows'
+        run: choco install ninja --no-progress -y
+
+      - name: Configure MSVC environment
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure
+        run: >-
+          cmake
+          -S project/lib/ModernGekko
+          -B build/moderngekko
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build/moderngekko --parallel 2
+
+      - name: Test
+        run: >-
+          ctest
+          --test-dir build/moderngekko
+          -C Release
+          --output-on-failure
+          --timeout 300
+          -E "fullbench|fuzzer|zstreamtest"
