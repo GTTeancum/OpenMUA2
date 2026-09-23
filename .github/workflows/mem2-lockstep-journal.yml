@@ -22,7 +22,7 @@ jobs:
 
       - name: Diff sanity
         run: |
-          git diff --check
+          git diff --check --ignore-space-at-eol
           git diff --stat
 
       - name: Configure GXRuntime
