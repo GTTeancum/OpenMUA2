@@ -100,7 +100,7 @@ int main() {
   }
 #else
   if (!generated.contains("Buttons/A = `Button A`\n") ||
-      !generated.contains("Buttons/B = `Trigger R`\n") ||
+      !generated.contains("Buttons/B = `Button B` | `Trigger R`\n") ||
       !generated.contains("Buttons/1 = `Button X`\n") ||
       !generated.contains("Buttons/2 = `Button Y`\n") ||
       !generated.contains("Buttons/Home = \n") ||

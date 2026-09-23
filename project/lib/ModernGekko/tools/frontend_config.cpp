@@ -404,7 +404,7 @@ bool GenerateControllerConfig(const fs::path &user_directory,
       continue;
     output << "Device = " << controllers[i] << '\n'
            << "Buttons/A = `Button A`\n"
-              "Buttons/B = `Trigger R`\n"
+              "Buttons/B = `Button B` | `Trigger R`\n"
               "Buttons/1 = `Button X`\n"
               "Buttons/2 = `Button Y`\n"
               "Buttons/- = Back\n"
