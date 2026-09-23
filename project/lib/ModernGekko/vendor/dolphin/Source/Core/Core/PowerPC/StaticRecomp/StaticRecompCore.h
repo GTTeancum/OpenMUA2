@@ -201,6 +201,19 @@ private:
   std::array<DispatchTraceSample, 32> m_dispatch_trace_samples{};
   u32 m_dispatch_trace_next = 0;
   u32 m_dispatch_trace_count = 0;
+  struct JitFallbackSample
+  {
+    u64 run = 0;
+    u32 pc = 0;
+    u32 lr = 0;
+    u32 ctr = 0;
+    u32 cr = 0;
+    u32 exceptions = 0;
+    s32 downcount = 0;
+  };
+  std::array<JitFallbackSample, 16> m_jit_fallback_samples{};
+  u32 m_jit_fallback_sample_count = 0;
+  u64 m_jit_fallback_runs = 0;
   u64 m_hook_fallback_instructions = 0;
   u64 m_timebase_cycle_remainder = 0;
   std::unordered_map<u32, u64> m_dispatch_samples;

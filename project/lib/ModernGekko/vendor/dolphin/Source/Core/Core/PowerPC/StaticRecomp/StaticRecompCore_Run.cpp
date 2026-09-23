@@ -165,10 +165,24 @@ void StaticRecompCore::Run()
                     static_cast<u32>(code[2]) << 8 | code[3];
     return (raw & 0xFC0007FEu) == 0x7C000124u;
   };
+  const auto record_jit_fallback = [&]() {
+    ++m_jit_fallback_runs;
+    if (m_jit_fallback_sample_count >= m_jit_fallback_samples.size())
+      return;
+    auto& sample = m_jit_fallback_samples[m_jit_fallback_sample_count++];
+    sample.run = m_jit_fallback_runs;
+    sample.pc = ppc.pc;
+    sample.lr = ppc.spr[SPR_LR];
+    sample.ctr = ppc.spr[SPR_CTR];
+    sample.cr = ppc.cr.Get();
+    sample.exceptions = ppc.Exceptions;
+    sample.downcount = ppc.downcount;
+  };
   m_module_active = m_module && (initial_game_id.empty() || initial_game_id == m_module->game_id);
 
   if (!m_module_active && m_fallback_jit && !m_guest.host_call)
   {
+    record_jit_fallback();
     m_fallback_jit->Run();
     return;
   }
@@ -342,6 +356,7 @@ void StaticRecompCore::Run()
         }
         else if (m_fallback_jit)
         {
+          record_jit_fallback();
           m_fallback_jit->Run();
         }
         else

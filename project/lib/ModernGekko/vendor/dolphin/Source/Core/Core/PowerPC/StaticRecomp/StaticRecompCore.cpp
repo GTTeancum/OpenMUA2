@@ -203,12 +203,14 @@ void StaticRecompCore::Shutdown()
   g_static_recomp_core = nullptr;
   std::fprintf(stderr,
                "[staticrecomp] shutdown: native=%llu fallback=%llu native_exc=%llu hook_fb=%llu "
-               "smc_failed=%u verifications=%llu reverify_events=%llu bursts=%llu cycles=%llu\n",
+               "smc_failed=%u verifications=%llu reverify_events=%llu bursts=%llu cycles=%llu "
+               "jit_runs=%llu\n",
                (unsigned long long)m_native_dispatches, (unsigned long long)m_fallback_steps,
                (unsigned long long)m_native_exceptions,
                (unsigned long long)m_hook_fallback_instructions, m_failed_chunks,
                (unsigned long long)m_verifications, (unsigned long long)m_reverify_events,
-               (unsigned long long)m_bursts, (unsigned long long)m_charged_cycles);
+               (unsigned long long)m_bursts, (unsigned long long)m_charged_cycles,
+               (unsigned long long)m_jit_fallback_runs);
   std::vector<std::pair<u32, u64>> dispatch_samples(m_dispatch_samples.begin(),
                                                     m_dispatch_samples.end());
   std::sort(dispatch_samples.begin(), dispatch_samples.end(),
@@ -246,6 +248,15 @@ void StaticRecompCore::Shutdown()
                  "srr1=%08x msr=%08x program=%08x\n",
                  i, sample.pc, sample.lr, sample.srr0, sample.srr1, sample.msr,
                  sample.program_exception);
+  }
+  for (u32 i = 0; i < m_jit_fallback_sample_count; ++i)
+  {
+    const auto& sample = m_jit_fallback_samples[i];
+    std::fprintf(stderr,
+                 "[staticrecomp] jit-fallback[%u]: n=%llu pc=%08x lr=%08x ctr=%08x cr=%08x "
+                 "exceptions=%08x down=%d\n",
+                 i, static_cast<unsigned long long>(sample.run), sample.pc, sample.lr,
+                 sample.ctr, sample.cr, sample.exceptions, sample.downcount);
   }
   NOTICE_LOG_FMT(POWERPC,
                  "StaticRecomp: shutdown. native_dispatches={} fallback_steps={} "
