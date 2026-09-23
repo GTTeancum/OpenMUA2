@@ -735,6 +735,23 @@ def benchmark(root: Path, options: argparse.Namespace) -> None:
     print('Benchmark written to ' + str(out))
 
 
+def controller_diagnostics(root: Path, options: argparse.Namespace) -> None:
+    print(BANNER)
+    record_path = within(root, '.local/receipts/build.json')
+    if not record_path.is_file():
+        raise ValueError('No successful local build receipt. Run Build.cmd first.')
+    record = json.loads(record_path.read_text())
+    runner = within(root, record['runner'])
+    if not runner.is_file() or sha256(runner) != record['runner_sha256']:
+        raise ValueError('Build output changed after verification; rebuild/verify before controller diagnostics: ' +
+                         str(runner))
+    args = [runner, '--controller-diagnostics',
+            '--controller-diagnostics-seconds', str(options.seconds)]
+    if options.rumble:
+        args.append('--controller-diagnostics-rumble')
+    logged(root, 'controller-diagnostics', args)
+
+
 def make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest='action', required=True)
@@ -765,6 +782,9 @@ def make_parser() -> argparse.ArgumentParser:
     s.add_argument('--audio')
     s.add_argument('--headless', action='store_true')
     s.add_argument('--user-dir')
+    s = sub.add_parser('controller-diagnostics')
+    s.add_argument('--seconds', type=float, default=5.0)
+    s.add_argument('--rumble', action='store_true')
     return p
 
 
@@ -791,6 +811,7 @@ def main(argv: list[str] | None = None) -> int:
     elif action == 'build': build(ROOT, options)
     elif action == 'run': run_game(ROOT, options)
     elif action == 'benchmark': benchmark(ROOT, options)
+    elif action == 'controller-diagnostics': controller_diagnostics(ROOT, options)
     return 0
 
 

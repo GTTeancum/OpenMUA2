@@ -7,6 +7,8 @@
 
 #include "Common/StringUtil.h"
 
+#include <SDL3/SDL.h>
+
 #include <charconv>
 #include <chrono>
 #include <csignal>
@@ -17,14 +19,19 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #if defined(_WIN32)
 // For the affinity/priority setup in main(). WIN32_LEAN_AND_MEAN keeps the
 // winsock and GDI surface out of a translation unit that only needs the
 // processor-topology and process calls.
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <windows.h>
 #endif
 
@@ -48,12 +55,140 @@ void Usage() {
                "       [--graphics <backend>] [--audio <backend>]\n"
                "       [--mods <directory>] [--no-mods]\n"
                "       [--wayland] [-X11] [--headless] [--allow-interpreter]\n"
+               "       [--controller-diagnostics] [--controller-diagnostics-seconds <n>]\n"
+               "       [--controller-diagnostics-rumble]\n"
                "       [--netplay-host | --netplay-join <host>] "
                "[--netplay-port <port>]\n"
                "       [--nickname <name>] [--buffer <auto|1-20>] "
                "[--controller <device>]...\n"
                "       With no --game, boots the path in "
                "<user-dir>/default-game.txt.\n";
+}
+
+struct ControllerDiagnosticsOptions {
+  bool enabled = false;
+  bool rumble = false;
+  double seconds = 5.0;
+};
+
+struct ControllerOption {
+  std::string label;
+  std::string device;
+  SDL_JoystickID joystick_id = 0;
+  bool gamepad = false;
+};
+
+std::vector<ControllerOption> EnumerateControllers() {
+  std::vector<ControllerOption> result;
+  std::unordered_map<std::string, int> device_ids;
+  int count = 0;
+  SDL_JoystickID *joystick_ids = SDL_GetJoysticks(&count);
+  for (int i = 0; i < count; ++i) {
+    const SDL_JoystickID joystick_id = joystick_ids[i];
+    const bool gamepad = SDL_IsGamepad(joystick_id);
+    const char *name_value =
+        gamepad ? SDL_GetGamepadNameForID(joystick_id)
+                : SDL_GetJoystickNameForID(joystick_id);
+    const std::string name =
+        name_value && *name_value ? name_value : "Unknown Controller";
+    const int device_id = device_ids[name]++;
+    ControllerOption option;
+    option.label = device_id == 0 ? name : name + " (" + std::to_string(device_id + 1) + ")";
+    option.device = "SDL/" + std::to_string(device_id) + "/" + name;
+    option.joystick_id = joystick_id;
+    option.gamepad = gamepad;
+    result.emplace_back(std::move(option));
+  }
+  SDL_free(joystick_ids);
+  return result;
+}
+
+int RunControllerDiagnostics(const ControllerDiagnosticsOptions &options) {
+  if (!SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC)) {
+    std::cerr << "controller diagnostics: SDL_Init failed: " << SDL_GetError() << '\n';
+    return 1;
+  }
+
+  const auto controllers = EnumerateControllers();
+  std::cout << "controller diagnostics: joystick_count=" << controllers.size() << '\n';
+  for (std::size_t i = 0; i < controllers.size(); ++i) {
+    const ControllerOption &controller = controllers[i];
+    std::cout << "controller[" << i << "]: device=\"" << controller.device
+              << "\" label=\"" << controller.label << "\" gamepad="
+              << (controller.gamepad ? "true" : "false") << '\n';
+  }
+
+  if (controllers.empty()) {
+    SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
+    return 0;
+  }
+
+  const ControllerOption *selected = nullptr;
+  for (const ControllerOption &controller : controllers) {
+    if (controller.gamepad) {
+      selected = &controller;
+      break;
+    }
+  }
+  if (!selected) {
+    std::cout << "controller diagnostics: no SDL gamepad-compatible controller found\n";
+    SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
+    return 0;
+  }
+
+  SDL_Gamepad *gamepad = SDL_OpenGamepad(selected->joystick_id);
+  if (!gamepad) {
+    std::cerr << "controller diagnostics: SDL_OpenGamepad failed: " << SDL_GetError() << '\n';
+    SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
+    return 1;
+  }
+
+  char *mapping = SDL_GetGamepadMapping(gamepad);
+  std::cout << "controller diagnostics: selected=\"" << selected->device << "\"\n";
+  std::cout << "controller diagnostics: mapping=\""
+            << (mapping && *mapping ? mapping : "<none>") << "\"\n";
+  SDL_free(mapping);
+
+  if (options.rumble) {
+    const bool rumble_ok = SDL_RumbleGamepad(gamepad, 0x4000, 0x6000, 250);
+    std::cout << "controller diagnostics: rumble="
+              << (rumble_ok ? "requested" : SDL_GetError()) << '\n';
+  }
+
+  std::cout << "controller diagnostics: sampling_seconds=" << options.seconds << '\n';
+  std::vector<Sint16> last_axes(SDL_GAMEPAD_AXIS_COUNT);
+  std::vector<bool> last_buttons(SDL_GAMEPAD_BUTTON_COUNT);
+  const auto start = std::chrono::steady_clock::now();
+  while (std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() <
+         options.seconds) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+    }
+    SDL_UpdateGamepads();
+    for (int axis = 0; axis < SDL_GAMEPAD_AXIS_COUNT; ++axis) {
+      const auto sdl_axis = static_cast<SDL_GamepadAxis>(axis);
+      const Sint16 value = SDL_GetGamepadAxis(gamepad, sdl_axis);
+      if (std::abs(static_cast<int>(value) - static_cast<int>(last_axes[axis])) > 4096) {
+        last_axes[axis] = value;
+        std::cout << "axis " << SDL_GetGamepadStringForAxis(sdl_axis)
+                  << '=' << value << '\n';
+      }
+    }
+    for (int button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; ++button) {
+      const auto sdl_button = static_cast<SDL_GamepadButton>(button);
+      const bool pressed = SDL_GetGamepadButton(gamepad, sdl_button);
+      if (pressed != last_buttons[button]) {
+        last_buttons[button] = pressed;
+        std::cout << "button " << SDL_GetGamepadStringForButton(sdl_button)
+                  << '=' << (pressed ? "down" : "up") << '\n';
+      }
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+  }
+
+  SDL_CloseGamepad(gamepad);
+  SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);
+  return 0;
 }
 
 std::filesystem::path
@@ -148,6 +283,7 @@ int RunMain(int argc, char **argv) {
   std::string netplay_nickname;
   std::string netplay_buffer;
   std::vector<std::string> netplay_controllers;
+  ControllerDiagnosticsOptions controller_diagnostics;
   for (int i = 1; i < argc; ++i) {
     const std::string arg = argv[i];
     const auto value = [&](const char *option) -> const char * {
@@ -197,6 +333,23 @@ int RunMain(int argc, char **argv) {
       config.headless = true;
     else if (arg == "--allow-interpreter")
       config.allow_interpreter = true;
+    else if (arg == "--controller-diagnostics")
+      controller_diagnostics.enabled = true;
+    else if (arg == "--controller-diagnostics-rumble")
+      controller_diagnostics.rumble = true;
+    else if (arg == "--controller-diagnostics-seconds") {
+      const std::string seconds_value = value("--controller-diagnostics-seconds");
+      const auto parsed = std::from_chars(
+          seconds_value.data(), seconds_value.data() + seconds_value.size(),
+          controller_diagnostics.seconds);
+      if (parsed.ec != std::errc{} ||
+          parsed.ptr != seconds_value.data() + seconds_value.size() ||
+          controller_diagnostics.seconds < 0.0 ||
+          controller_diagnostics.seconds > 120.0) {
+        std::cerr << "--controller-diagnostics-seconds must be between 0 and 120\n";
+        return 2;
+      }
+    }
     else if (arg == "--netplay-host")
       netplay_role = moderngekko::frontend::NetplayRole::Host;
     else if (arg == "--netplay-join") {
@@ -229,6 +382,8 @@ int RunMain(int argc, char **argv) {
       return 2;
     }
   }
+  if (controller_diagnostics.enabled)
+    return RunControllerDiagnostics(controller_diagnostics);
   if (config.game_root.empty())
     config.game_root =
         ReadDefaultGame(config.user_directory, executable_directory);
