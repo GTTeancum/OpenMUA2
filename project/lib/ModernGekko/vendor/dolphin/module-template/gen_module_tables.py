@@ -6,6 +6,7 @@ the original per-chunk address guards and DolRecomp's compact offset-table
 dispatch runs are supported. SMC candidate ranges come from generated_smc.txt,
 so the module ABI tables can never drift from a DolRecomp regen.
 """
+import json
 import re
 import sys
 from pathlib import Path
@@ -23,8 +24,8 @@ def fnv1a64(data: bytes) -> int:
     return h
 
 
-def load_dol_text(dol_path: Path):
-    """Return a function mapping a guest address range to the DOL's bytes."""
+def load_original_text(generated_dir: Path, dol_path: Path):
+    """Return a function mapping a guest address range to source text bytes."""
     dol = dol_path.read_bytes()
 
     def be32(off: int) -> int:
@@ -37,15 +38,36 @@ def load_dol_text(dol_path: Path):
         size = be32(0x90 + i * 4)
         if file_off and address and size:
             sections.append((address, size, file_off))
+    rel_modules = []
+    rel_metadata = generated_dir / "rel_metadata.json"
+    if rel_metadata.exists():
+        metadata = json.loads(rel_metadata.read_text())
+        for module in metadata.get("modules", []):
+            rel_sections = []
+            for section in module.get("sections", []):
+                section_bytes = generated_dir / section["bytes"]
+                rel_sections.append(
+                    (
+                        int(section["linked_start"]),
+                        int(section["size"]),
+                        section_bytes.read_bytes(),
+                    )
+                )
+            rel_modules.append((module, rel_sections))
 
     def read_range(start: int, end: int) -> bytes:
         for address, size, file_off in sections:
             if address <= start and end <= address + size:
                 lo = file_off + (start - address)
                 return dol[lo : lo + (end - start)]
+        for _, rel_sections in rel_modules:
+            for address, size, data in rel_sections:
+                if address <= start and end <= address + size:
+                    lo = start - address
+                    return data[lo : lo + (end - start)]
         raise ValueError(f"range [0x{start:08X},0x{end:08X}) not inside one DOL section")
 
-    return read_range
+    return read_range, [module for module, _ in rel_modules]
 
 
 def main() -> int:
@@ -68,6 +90,11 @@ def main() -> int:
     ):
         start = int(base, 16)
         code_ranges.add((start, start + int(span, 16)))
+    for start, end in re.findall(
+        r"\{\s*(0x[0-9A-Fa-f]+)u,\s*(0x[0-9A-Fa-f]+)u,\s*func_[0-9A-Fa-f]{8}\s*\}",
+        header,
+    ):
+        code_ranges.add((int(start, 16), int(end, 16)))
     if not code_ranges:
         print("error: no coverage ranges found in", generated_h, file=sys.stderr)
         return 1
@@ -126,11 +153,44 @@ def main() -> int:
         f.write(f"#define MODULE_CHUNK_RANGE_COUNT {len(chunk_ranges)}u\n")
         # FNV-1a 64 of each chunk's original text, so the chassis can verify
         # that guest RAM still holds the code this module was compiled from.
-        read_range = load_dol_text(dol_path)
+        read_range, rel_modules = load_original_text(generated_h.parent, dol_path)
         f.write("static const u64 s_chunk_hashes[] = {\n")
         for a, b in chunk_ranges:
             f.write(f"    0x{fnv1a64(read_range(a, b)):016X}u,\n")
         f.write("};\n")
+        if rel_modules:
+            for module_index, module in enumerate(rel_modules):
+                f.write(
+                    f"static const StaticRecompRelSection "
+                    f"s_rel_sections_{module_index}[] = {{\n"
+                )
+                for section in module["sections"]:
+                    f.write(
+                        "    {"
+                        f"{int(section['module_id'])}u, "
+                        f"{int(section['section_index'])}u, "
+                        f"0x{int(section['linked_start']):08X}u, "
+                        f"0x{int(section['size']):08X}u"
+                        "},\n"
+                    )
+                f.write("};\n")
+            f.write("static const StaticRecompRelModule s_rel_modules[] = {\n")
+            for module_index, module in enumerate(rel_modules):
+                f.write(
+                    "    {"
+                    f"{int(module['module_id'])}u, "
+                    f"{int(module['version'])}u, "
+                    f"{int(module['section_count'])}u, "
+                    f"0x{int(module['section_info_offset']):08X}u, "
+                    f"0x{int(module['file_size']):08X}u, "
+                    f"s_rel_sections_{module_index}, "
+                    f"{len(module['sections'])}u"
+                    "},\n"
+                )
+            f.write("};\n")
+            f.write(f"#define MODULE_REL_MODULE_COUNT {len(rel_modules)}u\n")
+        else:
+            f.write("#define MODULE_REL_MODULE_COUNT 0u\n")
     print(
         f"module_tables.inc: {len(code_ranges)} code ranges, "
         f"{len(smc_ranges)} smc ranges, {len(chunk_ranges)} chunk ranges (hashed)"
