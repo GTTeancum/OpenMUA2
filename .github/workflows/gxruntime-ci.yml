@@ -1,0 +1,45 @@
+name: GXRuntime CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "project/lib/ModernGekko/vendor/dolphin/GXRuntime/**"
+      - ".github/workflows/gxruntime-ci.yml"
+  pull_request:
+    paths:
+      - "project/lib/ModernGekko/vendor/dolphin/GXRuntime/**"
+      - ".github/workflows/gxruntime-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gxruntime-tests:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: >-
+          cmake
+          -S project/lib/ModernGekko/vendor/dolphin/GXRuntime
+          -B build/gxruntime
+          -DCMAKE_BUILD_TYPE=Release
+          -DGXRUNTIME_ENABLE_AURORA=OFF
+          -DGXRUNTIME_ENABLE_AURORA_RECOMP=OFF
+
+      - name: Build
+        run: cmake --build build/gxruntime --config Release --parallel 2
+
+      - name: Test
+        run: ctest --test-dir build/gxruntime -C Release --output-on-failure

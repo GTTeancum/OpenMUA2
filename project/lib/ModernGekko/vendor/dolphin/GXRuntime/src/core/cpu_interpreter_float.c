@@ -262,86 +262,6 @@ unsigned leading_zeroes_u64(u64 value) {
     return count;
 }
 
-f64 force_25_bit(f64 value) {
-    u64 bits = f64_bits(value);
-    u64 fraction = bits & 0x000FFFFFFFFFFFFFull;
-    u64 keep_mask = 0xFFFFFFFFF8000000ull;
-    u64 round = 0x0000000008000000ull;
-
-    if ((bits & 0x7FF0000000000000ull) == 0 && fraction != 0) {
-        unsigned shift = leading_zeroes_u64(fraction) - 11;
-        if (shift < 28) {
-            keep_mask = ~((1ull << (27 - shift)) - 1);
-            round >>= shift;
-        } else {
-            keep_mask = ~0ull;
-            round = 0;
-        }
-    }
-
-    bits = (bits & keep_mask) + (bits & round);
-    return f64_value(bits);
-}
-
-bool ppc_fma(CPUState* cpu, f64 a, f64 c, f64 b, bool single,
-             bool subtract, bool negative, f64* output) {
-    f64 addend = subtract ? -b : b;
-    f64 result;
-
-    if (!single) {
-        result = fma(a, c, addend);
-    } else {
-        f64 rounded_c = force_25_bit(c);
-        result = fma(a, rounded_c, addend);
-        u64 bits = f64_bits(result);
-        if ((bits & 0x000000001FFFFFFFull) == 0x0000000010000000ull) {
-            f64 a_prime = addend - result;
-            f64 b_prime = result + a_prime;
-            f64 error = fma(a, rounded_c, a_prime) + (addend - b_prime);
-            if (error != 0.0) {
-                if ((error > 0.0) == (result > 0.0)) bits++;
-                else bits--;
-                result = f64_value(bits);
-            }
-        }
-        result = (f64)(f32)result;
-    }
-
-    if (isnan(result)) {
-        u32 invalid = 0;
-        if (is_snan(a) || is_snan(b) || is_snan(c))
-            invalid |= 0x01000000u;
-
-        clear_fifr(cpu);
-        if (isnan(a)) {
-            result = f64_value(f64_bits(a) | 0x0008000000000000ull);
-        } else if (isnan(b)) {
-            result = f64_value(f64_bits(b) | 0x0008000000000000ull);
-        } else if (isnan(c)) {
-            result = f64_value(f64_bits(c) | 0x0008000000000000ull);
-        } else {
-            bool invalid_multiply = (a == 0.0 && isinf(c)) ||
-                                    (isinf(a) && c == 0.0);
-            invalid |= invalid_multiply ? 0x00100000u : 0x00800000u;
-            result = f64_value(0x7FF8000000000000ull);
-        }
-
-        if (invalid) {
-            set_fp_exception(cpu, invalid);
-            if (cpu->fpscr & 0x80u)
-                return false;
-        }
-    } else if (isinf(a) || isinf(b) || isinf(c)) {
-        clear_fifr(cpu);
-    }
-
-    if (negative && !isnan(result))
-        result = -result;
-    set_fprf(cpu, single ? classify_f32((f32)result) : classify_f64(result));
-    *output = result;
-    return true;
-}
-
 f64 make_quiet(f64 value) {
     return f64_value(f64_bits(value) | 0x0008000000000000ull);
 }
@@ -525,6 +445,30 @@ FPRes ni_madd_msub(CPUState* cpu, f64 a, f64 c, f64 b, bool sub, bool single) {
 
 bool fp_invalid_gated(const CPUState* cpu, const FPRes* res) {
     return (cpu->fpscr & FPSCR_VE_BIT) != 0 && (res->exception & FPSCR_VX_ANY_MASK) != 0;
+}
+
+bool ppc_fma(CPUState* cpu, f64 a, f64 c, f64 b, bool single,
+             bool subtract, bool negative, f64* output) {
+    FPRes product = ni_madd_msub(cpu, a, c, b, subtract, single);
+    if (fp_invalid_gated(cpu, &product))
+        return false;
+
+    if (single) {
+        f32 tmp = force_single(cpu, product.value);
+        f32 result = (negative && !isnan(tmp)) ? -tmp : tmp;
+        if (!subtract && !negative) {
+            cpu->fpscr = (cpu->fpscr & ~(FPSCR_FI_BIT | FPSCR_FR_BIT)) |
+                         ((product.value != (f64)tmp) ? FPSCR_FI_BIT : 0u);
+        }
+        set_fprf(cpu, classify_f32(result));
+        *output = (f64)result;
+    } else {
+        f64 tmp = force_double(cpu, product.value);
+        f64 result = (negative && !isnan(tmp)) ? -tmp : tmp;
+        set_fprf(cpu, classify_f64(result));
+        *output = result;
+    }
+    return true;
 }
 
 void fp_write_single(CPUState* cpu, u8 d, f32 rounded) {

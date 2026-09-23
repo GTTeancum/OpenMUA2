@@ -2310,10 +2310,132 @@ static void test_native_system_helpers(void) {
     cpu_free(&cpu);
 }
 
+#define TEST_FPSCR_FR 0x00040000u
+#define TEST_FPSCR_FI 0x00020000u
+#define TEST_FPSCR_VE 0x00000080u
+#define TEST_FPSCR_NI 0x00000004u
+
+static u64 test_f64_bits(f64 value) {
+    u64 bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static f64 test_f64_from_bits(u64 bits) {
+    f64 value;
+    memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+static u32 test_f32_bits(f32 value) {
+    u32 bits;
+    memcpy(&bits, &value, sizeof(bits));
+    return bits;
+}
+
+static f32 test_f32_from_bits(u32 bits) {
+    f32 value;
+    memcpy(&value, &bits, sizeof(value));
+    return value;
+}
+
+static void compare_fma_helper_case(f64 a, f64 c, f64 b, bool single,
+                                    bool subtract, bool negative, u32 fpscr) {
+    const f64 sentinel = test_f64_from_bits(0x412E848000000001ull);
+    CPUState helper = {0};
+    CPUState op = {0};
+
+    helper.fpscr = fpscr;
+    ppc_fpscr_control_updated(&helper);
+    f64 output = sentinel;
+    bool helper_wrote = ppc_fma(&helper, a, c, b, single, subtract, negative,
+                                &output);
+
+    op.fpscr = fpscr;
+    op.fpr[1] = a;
+    op.fpr[2] = b;
+    op.fpr[3] = c;
+    op.fpr[4] = sentinel;
+    op.ps1[4] = sentinel;
+    ppc_fpscr_control_updated(&op);
+    ppc_fmadd_op(&op, 4, 1, 3, 2, single, subtract, negative);
+
+    bool op_wrote = test_f64_bits(op.fpr[4]) != test_f64_bits(sentinel);
+    assert(helper_wrote == op_wrote);
+    assert(helper.fpscr == op.fpscr);
+    if (helper_wrote) {
+        assert(test_f64_bits(output) == test_f64_bits(op.fpr[4]));
+        if (single)
+            assert(test_f64_bits(op.ps1[4]) == test_f64_bits(op.fpr[4]));
+    }
+}
+
+static void test_fma_helper_matches_instruction_path(void) {
+    const f64 inf = test_f64_from_bits(0x7FF0000000000000ull);
+    const f64 qnan_a = test_f64_from_bits(0x7FF8123456789ABCull);
+    const f64 qnan_b = test_f64_from_bits(0x7FF823456789ABCDull);
+    const f64 qnan_c = test_f64_from_bits(0x7FF83456789ABCDEull);
+    const f64 snan = test_f64_from_bits(0x7FF0000000000001ull);
+    const f64 subnormal = test_f64_from_bits(0x0000000000000001ull);
+    const f64 tie_a = (f64)test_f32_from_bits(0x42480000u);
+    const f64 tie_c = (f64)test_f32_from_bits(0xBC88CC38u);
+    const f64 tie_b = (f64)test_f32_from_bits(0x1B1C72A0u);
+    const f64 cases[][3] = {
+        {1.0, 1.0, 1.0e-8},
+        {tie_a, tie_c, tie_b},
+        {-0.0, 1.0, 0.0},
+        {0.0, inf, 1.0},
+        {inf, 1.0, -inf},
+        {qnan_a, 2.0, 3.0},
+        {2.0, 3.0, qnan_b},
+        {2.0, qnan_c, 3.0},
+        {snan, 1.0, 2.0},
+        {1.5, 1.0, subnormal},
+    };
+    const u32 fifr_seed[] = {
+        0u, TEST_FPSCR_FI, TEST_FPSCR_FR, TEST_FPSCR_FI | TEST_FPSCR_FR,
+    };
+
+    for (u32 rn = 0; rn < 4; ++rn) {
+        for (u32 ni = 0; ni < 2; ++ni) {
+            for (u32 ve = 0; ve < 2; ++ve) {
+                for (u32 seed = 0; seed < 4; ++seed) {
+                    u32 fpscr = rn | (ni ? TEST_FPSCR_NI : 0u) |
+                                (ve ? TEST_FPSCR_VE : 0u) | fifr_seed[seed] |
+                                0x0000A000u;
+                    for (u32 single = 0; single < 2; ++single) {
+                        for (u32 subtract = 0; subtract < 2; ++subtract) {
+                            for (u32 negative = 0; negative < 2; ++negative) {
+                                for (u32 i = 0; i < sizeof(cases) / sizeof(cases[0]); ++i) {
+                                    compare_fma_helper_case(
+                                        cases[i][0], cases[i][1], cases[i][2],
+                                        single != 0, subtract != 0, negative != 0, fpscr);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    CPUState tie = {0};
+    ppc_fpscr_control_updated(&tie);
+    f64 tie_result = 0.0;
+    assert(ppc_fma(&tie, tie_a, tie_c, tie_b, true, false, false, &tie_result));
+    assert(test_f32_bits((f32)tie_result) == 0xBF55BF17u);
+    assert((tie.fpscr & TEST_FPSCR_FI) != 0);
+    assert((tie.fpscr & TEST_FPSCR_FR) == 0);
+
+    CPUState reset = {0};
+    ppc_fpscr_control_updated(&reset);
+}
+
 int main(void) {
     test_guest_memory();
     test_store_reservation();
     test_native_system_helpers();
+    test_fma_helper_matches_instruction_path();
     test_savestate_roundtrip();
     test_gx_recomp_modules();
     test_gx_recomp_all_module_replay();
