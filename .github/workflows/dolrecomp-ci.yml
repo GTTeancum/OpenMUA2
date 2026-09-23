@@ -1,0 +1,45 @@
+name: DolRecomp CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "project/lib/DolRecomp/**"
+      - "project/lib/ModernGekko/vendor/dolphin/DolRecomp/**"
+      - ".github/workflows/dolrecomp-ci.yml"
+  pull_request:
+    paths:
+      - "project/lib/DolRecomp/**"
+      - "project/lib/ModernGekko/vendor/dolphin/DolRecomp/**"
+      - ".github/workflows/dolrecomp-ci.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dolrecomp-tests:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: >-
+          cmake
+          -S project/lib/DolRecomp
+          -B build/dolrecomp
+          -DDOLRECOMP_ENABLE_LLVM=OFF
+
+      - name: Build
+        run: cmake --build build/dolrecomp --config Release --parallel 2
+
+      - name: Test
+        run: ctest --test-dir build/dolrecomp -C Release --output-on-failure
