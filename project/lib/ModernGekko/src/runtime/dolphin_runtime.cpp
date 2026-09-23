@@ -803,6 +803,8 @@ RuntimeRunResult Runtime::Run() {
           AutomationLoop(*this, *m_impl, std::move(stop_token));
         });
   }
+  const bool shutdown_trace =
+      std::getenv("MODERNGEKKO_RUNTIME_SHUTDOWN_TRACE") != nullptr;
   std::jthread title_thread;
   if (!m_impl->config.headless && m_impl->config.show_fps_in_title) {
     title_thread = std::jthread([](std::stop_token stop_token) {
@@ -813,22 +815,38 @@ RuntimeRunResult Runtime::Run() {
       }
     });
   }
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: entering platform main loop\n");
   m_impl->platform->MainLoop();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: platform main loop exited\n");
   title_thread.request_stop();
   if (title_thread.joinable())
     title_thread.join();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: saving window geometry\n");
   m_impl->platform->SaveWindowGeometry();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: stopping automation\n");
   StopAutomation();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: stopping core\n");
   Core::Stop(Core::System::GetInstance());
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: shutting down core\n");
   Core::Shutdown(Core::System::GetInstance());
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: core shutdown complete\n");
   m_impl->booted = false;
   m_impl->running = false;
   return {};
 }
 
 void Runtime::RequestStop() {
+  if (std::getenv("MODERNGEKKO_RUNTIME_SHUTDOWN_TRACE") != nullptr)
+    std::fprintf(stderr, "[moderngekko] runtime: stop requested\n");
   if (m_impl && m_impl->platform)
-    m_impl->platform->RequestShutdown();
+    m_impl->platform->Stop();
 }
 
 std::optional<RuntimeError> Runtime::Pause() {

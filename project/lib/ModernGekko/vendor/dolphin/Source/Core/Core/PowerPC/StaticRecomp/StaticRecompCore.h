@@ -157,6 +157,8 @@ private:
   // Keep Dolphin's MSR-derived state (translation mode, feature flags) in step
   // with the guest MSR before any MMU access or exception delivery.
   void PropagateGuestMSR();
+  static void IncrementSample(std::unordered_map<u32, u64>& samples, u32 key);
+  static void IncrementSample(std::unordered_map<u64, u64>& samples, u64 key);
 
   std::unique_ptr<StaticRecompLockstep::StaticRecompLockstepVerifier> m_lockstep_verifier;
 

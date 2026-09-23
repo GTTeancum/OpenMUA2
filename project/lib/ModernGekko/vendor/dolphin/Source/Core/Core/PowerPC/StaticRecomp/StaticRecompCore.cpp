@@ -36,6 +36,8 @@ u32 StaticRecompShouldYieldAt(u32 address)
 
 namespace
 {
+constexpr std::size_t MAX_FALLBACK_SAMPLE_KEYS = 8192;
+
 bool RangesAreSorted(const StaticRecompRange* ranges, u32 count)
 {
   if (!ranges || count == 0)
@@ -111,6 +113,30 @@ bool RelModulesValid(const StaticRecompModuleDesc& desc)
 bool StaticRecompCore::IsModuleActive() const
 {
   return m_module_active;
+}
+
+void StaticRecompCore::IncrementSample(std::unordered_map<u32, u64>& samples, u32 key)
+{
+  const auto existing = samples.find(key);
+  if (existing != samples.end())
+  {
+    ++existing->second;
+    return;
+  }
+  if (samples.size() < MAX_FALLBACK_SAMPLE_KEYS)
+    samples.emplace(key, 1);
+}
+
+void StaticRecompCore::IncrementSample(std::unordered_map<u64, u64>& samples, u64 key)
+{
+  const auto existing = samples.find(key);
+  if (existing != samples.end())
+  {
+    ++existing->second;
+    return;
+  }
+  if (samples.size() < MAX_FALLBACK_SAMPLE_KEYS)
+    samples.emplace(key, 1);
 }
 
 bool StaticRecompCore::IsHostCallAddress(u32 address) const

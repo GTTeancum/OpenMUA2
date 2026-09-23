@@ -369,8 +369,8 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
   ++core->m_hook_fallback_instructions;
   if (core->m_collect_fallback_samples)
   {
-    ++core->m_hook_fallback_pc_samples[cia];
-    ++core->m_hook_fallback_instruction_samples[(static_cast<u64>(cia) << 32) | raw];
+    IncrementSample(core->m_hook_fallback_pc_samples, cia);
+    IncrementSample(core->m_hook_fallback_instruction_samples, (static_cast<u64>(cia) << 32) | raw);
   }
 
   // Lockstep: a block that fell back to the interpreter for an unmodeled
@@ -417,8 +417,9 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
   ++core->m_hook_fallback_slow_instructions;
   if (core->m_collect_fallback_samples)
   {
-    ++core->m_hook_fallback_slow_pc_samples[cia];
-    ++core->m_hook_fallback_slow_instruction_samples[(static_cast<u64>(cia) << 32) | raw];
+    IncrementSample(core->m_hook_fallback_slow_pc_samples, cia);
+    IncrementSample(core->m_hook_fallback_slow_instruction_samples,
+                    (static_cast<u64>(cia) << 32) | raw);
   }
   core->SyncOut();
   ppc.pc = cia;
