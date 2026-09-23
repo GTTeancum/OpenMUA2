@@ -136,7 +136,9 @@ bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_add
   if (resolve_active())
     return true;
   const int direct_index = GetAddressLookupIndex(runtime_address);
-  if (direct_index >= 0 && direct_index < static_cast<int>(m_chunk_lookup_table.size()))
+  if (direct_index < 0)
+    return false;
+  if (direct_index < static_cast<int>(m_chunk_lookup_table.size()))
   {
     const int chunk = m_chunk_lookup_table[direct_index];
     if (chunk >= 0 && m_chunk_rel_sections[chunk] < 0)
