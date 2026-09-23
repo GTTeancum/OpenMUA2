@@ -101,6 +101,8 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
     for index, (start, end) in enumerate(chunks):
         if start >= end:
             raise ValueError(f"invalid generated code chunk 0x{start:08X}-0x{end:08X}")
+        if (start & 3) != 0 or (end & 3) != 0:
+            raise ValueError(f"unaligned generated code chunk 0x{start:08X}-0x{end:08X}")
         if index and start < chunks[index - 1][1]:
             raise ValueError("overlapping generated code chunks")
     prototypes = "\n".join(f"void func_{start:08X}(CPUState* ctx);" for start, _ in chunks)
