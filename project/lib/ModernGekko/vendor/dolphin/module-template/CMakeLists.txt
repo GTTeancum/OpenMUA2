@@ -134,7 +134,18 @@ if(NOT RECOMPCORE_MODULE_OPT_LEVEL MATCHES "^[0-3]$")
   message(FATAL_ERROR
     "RECOMPCORE_MODULE_OPT_LEVEL must be one of 0, 1, 2, or 3")
 endif()
-if(RECOMPCORE_MODULE_ENABLE_IPO AND CMAKE_C_COMPILER_ID MATCHES "Clang")
+if(MSVC)
+  foreach(_module_config RELEASE RELWITHDEBINFO MINSIZEREL)
+    foreach(_module_flag_var CMAKE_C_FLAGS_${_module_config})
+      string(REGEX REPLACE "(^| )[/-]O[0-2dDxX]( |$)" " "
+             "${_module_flag_var}" "${${_module_flag_var}}")
+      string(REGEX REPLACE "(^| )[/-]Ob[0-2]( |$)" " "
+             "${_module_flag_var}" "${${_module_flag_var}}")
+      string(STRIP "${${_module_flag_var}}" "${_module_flag_var}")
+    endforeach()
+  endforeach()
+endif()
+if(RECOMPCORE_MODULE_ENABLE_IPO)
   include(CheckIPOSupported)
   # moderngekko-port configures with CMAKE_NINJA_FORCE_RESPONSE_FILE=1, which the
   # module needs: it links thousands of chunk objects and the command line does
@@ -162,6 +173,8 @@ endif()
 if(MSVC)
   if(RECOMPCORE_MODULE_OPT_LEVEL STREQUAL "0")
     target_compile_options(${MODULE_NAME} PRIVATE /Od /fp:strict)
+  elseif(RECOMPCORE_MODULE_OPT_LEVEL STREQUAL "1")
+    target_compile_options(${MODULE_NAME} PRIVATE /O1 /fp:strict)
   else()
     target_compile_options(${MODULE_NAME} PRIVATE /O2 /fp:strict)
   endif()

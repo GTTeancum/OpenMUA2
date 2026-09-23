@@ -20,6 +20,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 import zipfile
 
@@ -506,17 +507,62 @@ def build_runtime(root: Path, options: argparse.Namespace) -> Path:
         extra.append('-DMODERNGEKKO_FRONTEND_SDK=' + str(Path(options.sdk).resolve()))
     cmake_configure(root, root / 'project/lib/ModernGekko', out, options, extra)
     cmake_build(root, out, options)
+    stage_runtime_sys_resources(root, out)
     logged(root, 'runtime-tests', ['ctest', '--test-dir', out, '-C', options.config,
                                   '--output-on-failure', '--timeout', '90', '-R', '^moderngekko[.]'])
     return built_exe(out, 'moderngekko-run', options.config)
 
 
+def module_build_name(options: argparse.Namespace) -> str:
+    suffix = getattr(options, 'module_suffix', None)
+    if suffix:
+        if not re.fullmatch(r'[A-Za-z0-9_.-]+', suffix):
+            raise ValueError('--module-suffix may only contain letters, numbers, dot, underscore, and dash')
+        return 'module-mg01-' + suffix
+    if getattr(options, 'module_ipo', False):
+        return f'module-mg01-o{options.module_opt}-ipo'
+    if options.module_opt:
+        return f'module-mg01-o{options.module_opt}'
+    return 'module-mg01'
+
+
+def stage_runtime_sys_resources(root: Path, runtime_build: Path) -> None:
+    target = runtime_build / 'Sys' / 'GC'
+    target.mkdir(parents=True, exist_ok=True)
+    source_roots = [
+        root / '.local/runtime-resources/Sys/GC',
+        root / 'project/lib/ModernGekko/vendor/dolphin/Data/Sys/GC',
+    ]
+    staged: dict[str, str] = {}
+    missing: list[str] = []
+    for name in ('font_western.bin', 'font_japanese.bin'):
+        destination = target / name
+        source = next((candidate / name for candidate in source_roots
+                       if (candidate / name).is_file()), None)
+        if source:
+            if not destination.is_file() or sha256(destination) != sha256(source):
+                shutil.copy2(source, destination)
+            staged[name] = str(source.relative_to(root))
+        elif destination.is_file():
+            staged[name] = str(destination.relative_to(root))
+        else:
+            missing.append(name)
+    if missing:
+        raise RuntimeError(
+            'Missing Dolphin Sys/GC font resources: ' + ', '.join(missing) +
+            '. Place locally sourced copies under .local/runtime-resources/Sys/GC; '
+            'the build will stage them automatically from there.')
+    write_json(root / '.local/receipts/runtime-sys-resources.json',
+               {'schema': 1, 'created_utc': stamp(), 'target': str(target.relative_to(root)),
+                'resources': staged})
+
+
 def build_module(root: Path, options: argparse.Namespace, generated: Path, game: Path) -> Path:
     core = root / 'project/lib/ModernGekko/vendor/dolphin'
-    out = build_base(root) / 'module-mg01'
+    out = build_base(root) / module_build_name(options)
     cmake_configure(root, core / 'module-template', out, options,
                     ['-DGAME_ID=RMSE52', '-DGENERATED_DIR=' + str(generated),
-                     '-DRECOMPCORE_MODULE_ENABLE_IPO=OFF',
+                     '-DRECOMPCORE_MODULE_ENABLE_IPO=' + ('ON' if options.module_ipo else 'OFF'),
                      '-DRECOMPCORE_MODULE_OPT_LEVEL=' + str(options.module_opt)], module=True)
     cmake_build(root, out, options)
     module = out / ('gRMSE52_recomp.dll' if os.name == 'nt' else 'gRMSE52_recomp.so')
@@ -568,6 +614,127 @@ def run_game(root: Path, options: argparse.Namespace) -> None:
     logged(root, 'runtime-session', args)
 
 
+def parse_status_file(path: Path) -> dict[str, str]:
+    result: dict[str, str] = {}
+    try:
+        for line in path.read_text(encoding='utf-8', errors='replace').splitlines():
+            key, separator, value = line.partition('=')
+            if separator:
+                result[key] = value
+    except FileNotFoundError:
+        pass
+    return result
+
+
+def benchmark(root: Path, options: argparse.Namespace) -> None:
+    print(BANNER)
+    record_path = within(root, '.local/receipts/build.json')
+    if not record_path.is_file():
+        raise ValueError('No successful local build receipt. Run Build.cmd first.')
+    record = json.loads(record_path.read_text())
+    runner = within(root, record['runner'])
+    module = within(root, record['module'])
+    for p, key in [(runner, 'runner_sha256'), (module, 'module_sha256')]:
+        if not p.is_file() or sha256(p) != record[key]:
+            raise ValueError('Build output changed after verification; rebuild/verify before benchmarking: ' + str(p))
+    game = within(root, record['game'])
+    game_audit(root, game)
+    user = within(root, options.user_dir or '.local/user')
+    user.mkdir(parents=True, exist_ok=True)
+    token = stamp() + '-benchmark'
+    automation = within(root, '.local/automation/' + token)
+    for child in ('commands', 'processed', 'failed'):
+        (automation / child).mkdir(parents=True, exist_ok=True)
+    logfile = within(root, '.local/logs/' + token + '.log')
+    args = [str(runner), '--game', str(game), '--module', str(module), '--user-dir', str(user),
+            '--automation-dir', str(automation)]
+    if options.graphics:
+        args += ['--graphics', options.graphics]
+    if options.audio:
+        args += ['--audio', options.audio]
+    if options.headless:
+        args += ['--headless']
+    print('\n' + subprocess.list2cmdline(args), flush=True)
+    samples: list[dict[str, object]] = []
+    started = time.monotonic()
+    ready_at: float | None = None
+    deadline = started + options.timeout
+    with logfile.open('x', encoding='utf-8', newline='\n') as log:
+        child = subprocess.Popen(args, cwd=root, stdout=log, stderr=subprocess.STDOUT,
+                                 text=True, encoding='utf-8', errors='replace')
+        try:
+            while time.monotonic() < deadline:
+                if child.poll() is not None:
+                    raise RuntimeError(f'benchmark runtime exited early with code {child.returncode}; log: {logfile}')
+                status = parse_status_file(automation / 'status.txt')
+                now = time.monotonic()
+                if status.get('booted') == '1' and status.get('state') == 'running':
+                    if ready_at is None:
+                        ready_at = now
+                    if now - ready_at >= options.warmup:
+                        sample: dict[str, object] = {'elapsed': now - ready_at}
+                        for key in ('fps', 'vps', 'speed', 'frame_count', 'present_count'):
+                            if key in status:
+                                try:
+                                    sample[key] = float(status[key])
+                                except ValueError:
+                                    sample[key] = status[key]
+                        samples.append(sample)
+                        if now - ready_at >= options.warmup + options.seconds:
+                            break
+                time.sleep(options.interval)
+            else:
+                raise RuntimeError('benchmark timed out waiting for enough runtime samples')
+        finally:
+            stop_file = automation / 'commands' / '999-stop.txt'
+            stop_file.write_text('command=stop\n', encoding='utf-8', newline='\n')
+            try:
+                child.wait(timeout=15)
+            except subprocess.TimeoutExpired:
+                child.terminate()
+                try:
+                    child.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    child.wait()
+    fps_values = [float(sample['fps']) for sample in samples if isinstance(sample.get('fps'), float)]
+    speed_values = [float(sample['speed']) for sample in samples if isinstance(sample.get('speed'), float)]
+    frame_values = [float(sample['frame_count']) for sample in samples
+                    if isinstance(sample.get('frame_count'), float)]
+    duration = samples[-1]['elapsed'] - samples[0]['elapsed'] if len(samples) >= 2 else 0.0
+    guest_fps = ((frame_values[-1] - frame_values[0]) / duration
+                 if len(frame_values) >= 2 and duration > 0 else None)
+    result = {
+        'schema': 1,
+        'created_utc': stamp(),
+        'baseline': BASELINE,
+        'runner': record['runner'],
+        'module': record['module'],
+        'module_sha256': record['module_sha256'],
+        'headless': options.headless,
+        'graphics': options.graphics,
+        'audio': options.audio,
+        'warmup_seconds': options.warmup,
+        'sample_seconds': options.seconds,
+        'sample_count': len(samples),
+        'fps_avg': sum(fps_values) / len(fps_values) if fps_values else None,
+        'fps_min': min(fps_values) if fps_values else None,
+        'fps_max': max(fps_values) if fps_values else None,
+        'speed_avg': sum(speed_values) / len(speed_values) if speed_values else None,
+        'guest_frame_fps': guest_fps,
+        'samples': samples,
+        'log': str(logfile.relative_to(root)),
+        'automation_dir': str(automation.relative_to(root)),
+        'returncode': child.returncode,
+    }
+    out = within(root, '.local/benchmarks/' + token + '.json')
+    write_json(out, result)
+    print(json.dumps({k: result[k] for k in ('fps_avg', 'fps_min', 'fps_max', 'speed_avg',
+                                             'guest_frame_fps', 'sample_count', 'log')},
+                     indent=2))
+    print('Benchmark written to ' + str(out))
+
+
 def make_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest='action', required=True)
@@ -583,10 +750,21 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--cxx', default=os.environ.get('CXX', 'cl' if os.name == 'nt' else 'g++'))
         s.add_argument('--module-cc', default='cl' if os.name == 'nt' else ('clang' if shutil.which('clang') else 'gcc'))
         s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=0)
+        s.add_argument('--module-ipo', action='store_true')
+        s.add_argument('--module-suffix')
         s.add_argument('--wit', default=os.environ.get('WIT', 'wit'))
         s.add_argument('--image', help='Exact .wbfs filename at repository root (optional if unique)')
         s.add_argument('--sdk', help='Optional Linux-only private SDK root')
     s = sub.add_parser('run'); s.add_argument('--graphics'); s.add_argument('--audio')
+    s = sub.add_parser('benchmark')
+    s.add_argument('--seconds', type=float, default=20.0)
+    s.add_argument('--warmup', type=float, default=5.0)
+    s.add_argument('--interval', type=float, default=0.5)
+    s.add_argument('--timeout', type=float, default=90.0)
+    s.add_argument('--graphics')
+    s.add_argument('--audio')
+    s.add_argument('--headless', action='store_true')
+    s.add_argument('--user-dir')
     return p
 
 
@@ -612,6 +790,7 @@ def main(argv: list[str] | None = None) -> int:
         if action == 'generate': generate(ROOT, options, tool, game)
     elif action == 'build': build(ROOT, options)
     elif action == 'run': run_game(ROOT, options)
+    elif action == 'benchmark': benchmark(ROOT, options)
     return 0
 
 
