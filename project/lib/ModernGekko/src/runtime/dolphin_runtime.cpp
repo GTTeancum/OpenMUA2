@@ -715,13 +715,23 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
 }
 
 Runtime::~Runtime() {
+  const bool shutdown_trace =
+      std::getenv("MODERNGEKKO_RUNTIME_SHUTDOWN_TRACE") != nullptr;
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: destructor begin\n");
   RequestStop();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: destructor stopping automation\n");
   StopAutomation();
   if (m_impl->booted) {
+    if (shutdown_trace)
+      std::fprintf(stderr, "[moderngekko] runtime: destructor stopping booted core\n");
     Core::Stop(Core::System::GetInstance());
     Core::Shutdown(Core::System::GetInstance());
   }
   if (m_impl->automation_registered) {
+    if (shutdown_trace)
+      std::fprintf(stderr, "[moderngekko] runtime: unregistering automation input\n");
     for (int port = 0; port < 4; ++port)
     {
       ciface::Touch::UnregisterGameCubeInputOverrider(port);
@@ -730,15 +740,29 @@ Runtime::~Runtime() {
     m_impl->automation_registered = false;
   }
   m_impl->state_hook = {};
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: destroying platform\n");
+  {
+    std::lock_guard lock(s_runtime_mutex);
+    s_platform = nullptr;
+  }
+  m_impl->platform.reset();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: shutting down controllers\n");
   if (m_impl->controllers_initialized)
     UICommon::ShutdownControllers();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: shutting down UICommon\n");
   if (m_impl->ui_initialized)
     UICommon::Shutdown();
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: clearing globals\n");
   std::lock_guard lock(s_runtime_mutex);
-  s_platform = nullptr;
   s_window_title.clear();
   s_show_fps_in_title = true;
   s_runtime_active = false;
+  if (shutdown_trace)
+    std::fprintf(stderr, "[moderngekko] runtime: destructor complete\n");
 }
 
 void Runtime::StopAutomation() {
