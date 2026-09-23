@@ -167,6 +167,8 @@ void StaticRecompCore::Run()
   };
   const auto record_jit_fallback = [&]() {
     ++m_jit_fallback_runs;
+    if (m_collect_fallback_samples)
+      ++m_jit_fallback_pc_samples[ppc.pc];
     if (m_jit_fallback_sample_count >= m_jit_fallback_samples.size())
       return;
     auto& sample = m_jit_fallback_samples[m_jit_fallback_sample_count++];

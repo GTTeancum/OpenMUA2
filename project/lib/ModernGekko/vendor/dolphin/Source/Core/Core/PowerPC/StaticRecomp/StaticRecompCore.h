@@ -216,6 +216,13 @@ private:
   u32 m_jit_fallback_sample_count = 0;
   u64 m_jit_fallback_runs = 0;
   u64 m_hook_fallback_instructions = 0;
+  u64 m_hook_fallback_fast_cache_instructions = 0;
+  u64 m_hook_fallback_slow_instructions = 0;
+  std::unordered_map<u32, u64> m_jit_fallback_pc_samples;
+  std::unordered_map<u32, u64> m_hook_fallback_pc_samples;
+  std::unordered_map<u64, u64> m_hook_fallback_instruction_samples;
+  std::unordered_map<u32, u64> m_hook_fallback_slow_pc_samples;
+  std::unordered_map<u64, u64> m_hook_fallback_slow_instruction_samples;
   u64 m_timebase_cycle_remainder = 0;
   std::unordered_map<u32, u64> m_dispatch_samples;
   u64 m_bursts = 0;          // SyncIn..SyncOut native runs (diagnostic)
@@ -253,6 +260,7 @@ private:
   mutable u32 m_last_chunk_index = 0;
 
   bool m_collect_dispatch_samples = false;
+  bool m_collect_fallback_samples = false;
   bool m_has_rel_modules = false;
   u32 m_idle_pc = 0;
 };

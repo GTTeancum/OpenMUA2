@@ -148,6 +148,7 @@ void StaticRecompCore::Init()
   g_static_recomp_core = this;
   RefreshConfig();
   m_collect_dispatch_samples = std::getenv("STATICRECOMP_DISPATCH_SAMPLES") != nullptr;
+  m_collect_fallback_samples = std::getenv("STATICRECOMP_FALLBACK_SAMPLES") != nullptr;
   const char* fallback_override = std::getenv("STATICRECOMP_FALLBACK_RANGES");
   std::istringstream fallback_ranges(fallback_override ? fallback_override :
                                                          Config::Get(Config::MAIN_STATICRECOMP_FALLBACK_RANGES));
@@ -203,11 +204,13 @@ void StaticRecompCore::Shutdown()
   g_static_recomp_core = nullptr;
   std::fprintf(stderr,
                "[staticrecomp] shutdown: native=%llu fallback=%llu native_exc=%llu hook_fb=%llu "
-               "smc_failed=%u verifications=%llu reverify_events=%llu bursts=%llu cycles=%llu "
-               "jit_runs=%llu\n",
+               "hook_fast=%llu hook_slow=%llu smc_failed=%u verifications=%llu "
+               "reverify_events=%llu bursts=%llu cycles=%llu jit_runs=%llu\n",
                (unsigned long long)m_native_dispatches, (unsigned long long)m_fallback_steps,
                (unsigned long long)m_native_exceptions,
-               (unsigned long long)m_hook_fallback_instructions, m_failed_chunks,
+               (unsigned long long)m_hook_fallback_instructions,
+               (unsigned long long)m_hook_fallback_fast_cache_instructions,
+               (unsigned long long)m_hook_fallback_slow_instructions, m_failed_chunks,
                (unsigned long long)m_verifications, (unsigned long long)m_reverify_events,
                (unsigned long long)m_bursts, (unsigned long long)m_charged_cycles,
                (unsigned long long)m_jit_fallback_runs);
@@ -220,6 +223,64 @@ void StaticRecompCore::Shutdown()
     std::fprintf(stderr, "[staticrecomp] dispatch-site pc=%08x samples=%llu\n",
                  dispatch_samples[i].first,
                  static_cast<unsigned long long>(dispatch_samples[i].second));
+  }
+  std::vector<std::pair<u32, u64>> jit_fallback_pc_samples(m_jit_fallback_pc_samples.begin(),
+                                                           m_jit_fallback_pc_samples.end());
+  std::sort(jit_fallback_pc_samples.begin(), jit_fallback_pc_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0; i < std::min<std::size_t>(jit_fallback_pc_samples.size(), 16); ++i)
+  {
+    std::fprintf(stderr, "[staticrecomp] jit-fallback-pc pc=%08x samples=%llu\n",
+                 jit_fallback_pc_samples[i].first,
+                 static_cast<unsigned long long>(jit_fallback_pc_samples[i].second));
+  }
+  std::vector<std::pair<u32, u64>> hook_fallback_pc_samples(m_hook_fallback_pc_samples.begin(),
+                                                            m_hook_fallback_pc_samples.end());
+  std::sort(hook_fallback_pc_samples.begin(), hook_fallback_pc_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0; i < std::min<std::size_t>(hook_fallback_pc_samples.size(), 16); ++i)
+  {
+    std::fprintf(stderr, "[staticrecomp] hook-fallback-pc pc=%08x samples=%llu\n",
+                 hook_fallback_pc_samples[i].first,
+                 static_cast<unsigned long long>(hook_fallback_pc_samples[i].second));
+  }
+  std::vector<std::pair<u64, u64>> hook_fallback_instruction_samples(
+      m_hook_fallback_instruction_samples.begin(), m_hook_fallback_instruction_samples.end());
+  std::sort(hook_fallback_instruction_samples.begin(), hook_fallback_instruction_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0; i < std::min<std::size_t>(hook_fallback_instruction_samples.size(), 16);
+       ++i)
+  {
+    const u64 key = hook_fallback_instruction_samples[i].first;
+    std::fprintf(stderr,
+                 "[staticrecomp] hook-fallback-instruction pc=%08x raw=%08x samples=%llu\n",
+                 static_cast<u32>(key >> 32), static_cast<u32>(key),
+                 static_cast<unsigned long long>(hook_fallback_instruction_samples[i].second));
+  }
+  std::vector<std::pair<u32, u64>> hook_fallback_slow_pc_samples(
+      m_hook_fallback_slow_pc_samples.begin(), m_hook_fallback_slow_pc_samples.end());
+  std::sort(hook_fallback_slow_pc_samples.begin(), hook_fallback_slow_pc_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0; i < std::min<std::size_t>(hook_fallback_slow_pc_samples.size(), 16); ++i)
+  {
+    std::fprintf(stderr, "[staticrecomp] hook-fallback-slow-pc pc=%08x samples=%llu\n",
+                 hook_fallback_slow_pc_samples[i].first,
+                 static_cast<unsigned long long>(hook_fallback_slow_pc_samples[i].second));
+  }
+  std::vector<std::pair<u64, u64>> hook_fallback_slow_instruction_samples(
+      m_hook_fallback_slow_instruction_samples.begin(),
+      m_hook_fallback_slow_instruction_samples.end());
+  std::sort(hook_fallback_slow_instruction_samples.begin(),
+            hook_fallback_slow_instruction_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0;
+       i < std::min<std::size_t>(hook_fallback_slow_instruction_samples.size(), 16); ++i)
+  {
+    const u64 key = hook_fallback_slow_instruction_samples[i].first;
+    std::fprintf(stderr,
+                 "[staticrecomp] hook-fallback-slow-instruction pc=%08x raw=%08x samples=%llu\n",
+                 static_cast<u32>(key >> 32), static_cast<u32>(key),
+                 static_cast<unsigned long long>(hook_fallback_slow_instruction_samples[i].second));
   }
   if (m_dispatch_trace_count != 0)
   {

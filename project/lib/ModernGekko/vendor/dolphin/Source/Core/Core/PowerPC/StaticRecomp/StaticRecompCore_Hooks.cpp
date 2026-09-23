@@ -367,6 +367,11 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
   auto* core = static_cast<StaticRecompCore*>(cpu->external_user_data);
   cia = core->TranslateRelAddress(cia);
   ++core->m_hook_fallback_instructions;
+  if (core->m_collect_fallback_samples)
+  {
+    ++core->m_hook_fallback_pc_samples[cia];
+    ++core->m_hook_fallback_instruction_samples[(static_cast<u64>(cia) << 32) | raw];
+  }
 
   // Lockstep: a block that fell back to the interpreter for an unmodeled
   // instruction (DMA mtspr, cache op, ...) performed side effects not captured
@@ -401,6 +406,7 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
       // here (icbi 4, dcbf/dcbst/dcbi 5); their emitted block cost is zero.
       ppc.downcount -= (xo == 982u) ? 4 : 5;
       cpu->pc = cia + 4u;
+      ++core->m_hook_fallback_fast_cache_instructions;
       return;
     }
   }
@@ -408,6 +414,12 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
   // The recompiled segment resumes via the dispatcher at the PC this leaves
   // behind, so this must execute exactly the instruction at cia via
   // Dolphin's interpreter and hand the register state back.
+  ++core->m_hook_fallback_slow_instructions;
+  if (core->m_collect_fallback_samples)
+  {
+    ++core->m_hook_fallback_slow_pc_samples[cia];
+    ++core->m_hook_fallback_slow_instruction_samples[(static_cast<u64>(cia) << 32) | raw];
+  }
   core->SyncOut();
   ppc.pc = cia;
   ppc.npc = cia + 4;
