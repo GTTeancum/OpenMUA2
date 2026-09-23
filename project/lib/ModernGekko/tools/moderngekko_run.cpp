@@ -158,6 +158,9 @@ int RunControllerDiagnostics(const ControllerDiagnosticsOptions &options) {
   std::cout << "controller diagnostics: sampling_seconds=" << options.seconds << '\n';
   std::vector<Sint16> last_axes(SDL_GAMEPAD_AXIS_COUNT);
   std::vector<bool> last_buttons(SDL_GAMEPAD_BUTTON_COUNT);
+  std::vector<bool> seen_axes(SDL_GAMEPAD_AXIS_COUNT);
+  std::vector<bool> seen_buttons(SDL_GAMEPAD_BUTTON_COUNT);
+  bool guide_seen = false;
   const auto start = std::chrono::steady_clock::now();
   while (std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() <
          options.seconds) {
@@ -168,6 +171,8 @@ int RunControllerDiagnostics(const ControllerDiagnosticsOptions &options) {
     for (int axis = 0; axis < SDL_GAMEPAD_AXIS_COUNT; ++axis) {
       const auto sdl_axis = static_cast<SDL_GamepadAxis>(axis);
       const Sint16 value = SDL_GetGamepadAxis(gamepad, sdl_axis);
+      if (std::abs(static_cast<int>(value)) > 16384)
+        seen_axes[axis] = true;
       if (std::abs(static_cast<int>(value) - static_cast<int>(last_axes[axis])) > 4096) {
         last_axes[axis] = value;
         std::cout << "axis " << SDL_GetGamepadStringForAxis(sdl_axis)
@@ -177,6 +182,11 @@ int RunControllerDiagnostics(const ControllerDiagnosticsOptions &options) {
     for (int button = 0; button < SDL_GAMEPAD_BUTTON_COUNT; ++button) {
       const auto sdl_button = static_cast<SDL_GamepadButton>(button);
       const bool pressed = SDL_GetGamepadButton(gamepad, sdl_button);
+      if (pressed) {
+        seen_buttons[button] = true;
+        if (sdl_button == SDL_GAMEPAD_BUTTON_GUIDE)
+          guide_seen = true;
+      }
       if (pressed != last_buttons[button]) {
         last_buttons[button] = pressed;
         std::cout << "button " << SDL_GetGamepadStringForButton(sdl_button)
@@ -185,6 +195,38 @@ int RunControllerDiagnostics(const ControllerDiagnosticsOptions &options) {
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
   }
+
+  const auto print_axis = [&](const char *label, SDL_GamepadAxis axis) {
+    std::cout << "controller diagnostics: expected-axis " << label << '='
+              << (seen_axes[axis] ? "seen" : "missing") << '\n';
+  };
+  const auto print_button = [&](const char *label, SDL_GamepadButton button) {
+    std::cout << "controller diagnostics: expected-button " << label << '='
+              << (seen_buttons[button] ? "seen" : "missing") << '\n';
+  };
+  print_axis("Left Stick X", SDL_GAMEPAD_AXIS_LEFTX);
+  print_axis("Left Stick Y", SDL_GAMEPAD_AXIS_LEFTY);
+  print_axis("Right Stick X", SDL_GAMEPAD_AXIS_RIGHTX);
+  print_axis("Right Stick Y", SDL_GAMEPAD_AXIS_RIGHTY);
+  print_axis("LT", SDL_GAMEPAD_AXIS_LEFT_TRIGGER);
+  print_axis("RT", SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
+  print_button("A", SDL_GAMEPAD_BUTTON_SOUTH);
+  print_button("B", SDL_GAMEPAD_BUTTON_EAST);
+  print_button("X", SDL_GAMEPAD_BUTTON_WEST);
+  print_button("Y", SDL_GAMEPAD_BUTTON_NORTH);
+  print_button("LB", SDL_GAMEPAD_BUTTON_LEFT_SHOULDER);
+  print_button("RB", SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER);
+  print_button("Start", SDL_GAMEPAD_BUTTON_START);
+  print_button("Back/View", SDL_GAMEPAD_BUTTON_BACK);
+  print_button("D-pad Up", SDL_GAMEPAD_BUTTON_DPAD_UP);
+  print_button("D-pad Down", SDL_GAMEPAD_BUTTON_DPAD_DOWN);
+  print_button("D-pad Left", SDL_GAMEPAD_BUTTON_DPAD_LEFT);
+  print_button("D-pad Right", SDL_GAMEPAD_BUTTON_DPAD_RIGHT);
+  print_button("Left Stick Click", SDL_GAMEPAD_BUTTON_LEFT_STICK);
+  print_button("Right Stick Click", SDL_GAMEPAD_BUTTON_RIGHT_STICK);
+  std::cout << "controller diagnostics: ignored-button Guide/Home="
+            << (guide_seen ? "seen-unmapped" : "not-pressed")
+            << " (Wii Close Game is intentionally not bound)\n";
 
   SDL_CloseGamepad(gamepad);
   SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC);

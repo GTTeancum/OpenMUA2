@@ -12,9 +12,13 @@
 #include "Core/Config/ConfigManager.h"
 #include "Core/HW/SystemTimers.h"
 
+#include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 namespace
 {
@@ -46,6 +50,57 @@ FilePtr OpenDispatchTrace()
   }
   return file;
 }
+
+class DispatchProfiler
+{
+public:
+  DispatchProfiler() : m_enabled(std::getenv("STATICRECOMP_PROFILE_DISPATCH") != nullptr) {}
+
+  bool Enabled() const { return m_enabled; }
+
+  void Record(u32 pc, std::chrono::steady_clock::duration elapsed)
+  {
+    if (!m_enabled)
+      return;
+    auto& sample = m_samples[pc];
+    ++sample.count;
+    sample.nanos +=
+        std::chrono::duration_cast<std::chrono::nanoseconds>(elapsed).count();
+  }
+
+  void Print() const
+  {
+    if (!m_enabled)
+      return;
+
+    std::vector<std::pair<u32, Sample>> sorted(m_samples.begin(), m_samples.end());
+    std::sort(sorted.begin(), sorted.end(), [](const auto& lhs, const auto& rhs) {
+      return lhs.second.nanos > rhs.second.nanos;
+    });
+    const std::size_t limit = std::min<std::size_t>(sorted.size(), 24);
+    for (std::size_t i = 0; i < limit; ++i)
+    {
+      const auto& [pc, sample] = sorted[i];
+      std::fprintf(stderr,
+                   "[staticrecomp] dispatch-time pc=%08x count=%llu wall_ms=%.3f avg_ns=%.1f\n",
+                   pc, static_cast<unsigned long long>(sample.count),
+                   static_cast<double>(sample.nanos) / 1000000.0,
+                   sample.count == 0 ? 0.0 :
+                                       static_cast<double>(sample.nanos) /
+                                           static_cast<double>(sample.count));
+    }
+  }
+
+private:
+  struct Sample
+  {
+    u64 count = 0;
+    u64 nanos = 0;
+  };
+
+  bool m_enabled = false;
+  std::unordered_map<u32, Sample> m_samples;
+};
 }
 
 void StaticRecompCore::Run()
@@ -57,6 +112,7 @@ void StaticRecompCore::Run()
   auto& memory = m_system.GetMemory();
   const CPU::State* state_ptr = m_system.GetCPU().GetStatePtr();
   FilePtr dispatch_trace = OpenDispatchTrace();
+  DispatchProfiler dispatch_profiler;
 
   m_guest.ram = memory.GetRAM();
   m_guest.ram_size = memory.GetRamSizeReal();
@@ -155,7 +211,15 @@ void StaticRecompCore::Run()
           if (m_has_rel_modules)
             ResolveNativeAddress(runtime_dispatch_address, &linked_dispatch_address, nullptr);
           m_guest.pc = linked_dispatch_address;
+          const auto dispatch_start = dispatch_profiler.Enabled() ?
+                                          std::chrono::steady_clock::now() :
+                                          std::chrono::steady_clock::time_point{};
           m_module->dispatch(&m_guest, linked_dispatch_address);
+          if (dispatch_profiler.Enabled())
+          {
+            dispatch_profiler.Record(runtime_dispatch_address,
+                                     std::chrono::steady_clock::now() - dispatch_start);
+          }
           if (m_has_rel_modules)
             m_guest.pc = TranslateRelAddress(m_guest.pc);
           if (m_collect_dispatch_samples)
@@ -293,6 +357,7 @@ void StaticRecompCore::Run()
       }
     } while (ppc.downcount > 0 && *state_ptr == CPU::State::Running);
   }
+  dispatch_profiler.Print();
 }
 
 void StaticRecompCore::SingleStep()
