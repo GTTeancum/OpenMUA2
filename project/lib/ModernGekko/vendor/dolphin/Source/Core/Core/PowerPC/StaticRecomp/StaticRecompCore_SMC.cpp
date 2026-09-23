@@ -116,7 +116,7 @@ void StaticRecompCore::RefreshRelSections()
 }
 
 bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_address,
-                                            u32* rel_section_index)
+                                            u32* rel_section_index, bool allow_refresh)
 {
   const auto resolve_active = [&]() {
     for (u32 i = 0; i < m_active_rel_sections.size(); ++i)
@@ -147,6 +147,8 @@ bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_add
       return true;
     }
   }
+  if (!allow_refresh)
+    return false;
   RefreshRelSections();
   return resolve_active();
 }
@@ -355,7 +357,7 @@ void StaticRecompCore::OnICacheInvalidate(u32 address, u32 length)
   if (!m_module_active || length == 0)
     return;
   u32 linked_address = address;
-  ResolveNativeAddress(address, &linked_address, nullptr);
+  ResolveNativeAddress(address, &linked_address, nullptr, false);
   address = linked_address;
   const u32 last = address + (length - 1u);
 
