@@ -84,10 +84,31 @@ void StaticRecompLockstepVerifier::LockstepCheck(u32 entry_pc, u32 end_pc, const
   auto& memory = m_core.m_system.GetMemory();
   u8* ram = m_core.m_guest.ram;
   const u32 ram_size = m_core.m_guest.ram_size;
+  u8* const exram = memory.GetEXRAM();
+  const u32 exram_size = memory.GetExRamSizeReal();
   u8* const l1 = memory.GetL1Cache();
   const u32 l1_size = memory.GetL1CacheSize();
   u8* const vmem = memory.GetFakeVMEM();
   const u32 vmem_size = memory.GetFakeVMemSize();
+  const auto read_ram_journal_byte = [&](u32 key, u8 fallback) {
+    if (key >= PPC_MEM_JOURNAL_EXRAM_BASE)
+    {
+      const u32 off = key - PPC_MEM_JOURNAL_EXRAM_BASE;
+      return exram && off < exram_size ? exram[off] : fallback;
+    }
+    return ram && key < ram_size ? ram[key] : fallback;
+  };
+  const auto write_ram_journal_byte = [&](u32 key, u8 value) {
+    if (key >= PPC_MEM_JOURNAL_EXRAM_BASE)
+    {
+      const u32 off = key - PPC_MEM_JOURNAL_EXRAM_BASE;
+      if (exram && off < exram_size)
+        exram[off] = value;
+      return;
+    }
+    if (ram && key < ram_size)
+      ram[key] = value;
+  };
 
   const s64 native_charge = -m_core.m_guest.downcount;
   if (native_charge <= 0)
@@ -98,10 +119,9 @@ void StaticRecompLockstepVerifier::LockstepCheck(u32 entry_pc, u32 end_pc, const
 
   m_journal.ram_post.clear();
   for (const auto& [off, pre] : m_journal.ram_pre)
-    m_journal.ram_post.emplace(off, off < ram_size ? ram[off] : pre);
+    m_journal.ram_post.emplace(off, read_ram_journal_byte(off, pre));
   for (const auto& [off, pre] : m_journal.ram_pre)
-    if (off < ram_size)
-      ram[off] = pre;
+    write_ram_journal_byte(off, pre);
 
   m_journal.lc_post.clear();
   if (l1)
@@ -255,7 +275,7 @@ void StaticRecompLockstepVerifier::LockstepCheck(u32 entry_pc, u32 end_pc, const
 
     for (const auto& [off, post] : m_journal.ram_post)
     {
-      const u8 iv = (off < ram_size) ? ram[off] : post;
+      const u8 iv = read_ram_journal_byte(off, post);
       if (iv != post)
         diff += fmt::format(" mem[{:#010x}]:N={:#04x},I={:#04x}", 0x80000000u + off, post, iv);
     }
@@ -340,11 +360,9 @@ void StaticRecompLockstepVerifier::LockstepCheck(u32 entry_pc, u32 end_pc, const
   }
 
   for (const auto& [off, pre] : m_journal.ram_shadow_pre)
-    if (off < ram_size)
-      ram[off] = pre;
+    write_ram_journal_byte(off, pre);
   for (const auto& [off, post] : m_journal.ram_post)
-    if (off < ram_size)
-      ram[off] = post;
+    write_ram_journal_byte(off, post);
 
   if (l1)
   {

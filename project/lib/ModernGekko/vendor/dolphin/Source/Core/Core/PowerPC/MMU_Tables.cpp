@@ -377,7 +377,19 @@ void MMU::WriteToHardware(u32 em_address, const u32 data, const u32 size)
   if (m_memory.GetEXRAM() && (em_address >> 28) == 0x1 &&
       (em_address & 0x0FFFFFFF) < m_memory.GetExRamSizeReal())
   {
-    em_address &= 0x0FFFFFFF;
+    const u32 exram_offset = em_address & 0x0FFFFFFF;
+
+    // Lockstep uses the same RAM journal for MEM1 and MEM2. MEM2 keys live in
+    // their physical 0x10000000-based range so they cannot alias MEM1 offsets.
+    if constexpr (flag == XCheckTLBFlag::Write)
+    {
+      if (StaticRecompLockstep::g_ram_write_journal)
+        StaticRecompLockstep::g_ram_write_journal(
+            PPC_MEM_JOURNAL_EXRAM_BASE + exram_offset, size,
+            StaticRecompLockstep::g_ram_write_journal_user);
+    }
+
+    em_address = exram_offset;
 
     if (m_ppc_state.m_enable_dcache && !wi)
     {

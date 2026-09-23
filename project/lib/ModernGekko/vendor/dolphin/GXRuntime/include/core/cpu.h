@@ -42,6 +42,9 @@ extern "C" {
 #define GC_RAM_BASE         0x80000000u
 #define GC_RAM_UNCACHED     0xC0000000u
 
+/* Debug journal keys use physical RAM offsets: MEM1 starts at 0, MEM2 at 0x10000000. */
+#define PPC_MEM_JOURNAL_EXRAM_BASE 0x10000000u
+
 #define PPC_EXC_PROGRAM        0x00000001u
 #define PPC_EXC_DSI            0x00000002u
 #define PPC_EXC_ALIGNMENT      0x00000004u
@@ -178,7 +181,7 @@ static GXRUNTIME_ALWAYS_INLINE u8* get_ram_ptr(CPUState* cpu, u32 addr, u32 size
     if (cpu->exram) {
         u32 offset = masked_addr - 0x90000000u;
         if (offset <= cpu->exram_size - size) {
-            if (out_offset) *out_offset = (u32)-1;
+            if (out_offset) *out_offset = PPC_MEM_JOURNAL_EXRAM_BASE + offset;
             return cpu->exram + offset;
         }
     }
