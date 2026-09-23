@@ -138,6 +138,10 @@ int main(int argc, char** argv) {
     }
 
     if (input_is_directory) {
+        if (opts.rel_bss_base_set) {
+            fprintf(stderr, "error: --rel-bss-base is only valid for single REL input\n");
+            return 1;
+        }
         if (has_c_extension(output_arg ? output_arg : "")) {
             fprintf(stderr, "error: REL directory output must be a directory\n");
             return 1;
@@ -158,7 +162,8 @@ int main(int argc, char** argv) {
 
     if (rel_mode) {
         RELFile rel;
-        if (!rel_load(&rel, input_path, rel_start_base))
+        RELLoadOptions rel_options = { opts.rel_bss_base_set, opts.rel_bss_base };
+        if (!rel_load_with_options(&rel, input_path, rel_start_base, &rel_options))
             return 1;
 
         rel_print_info(&rel, game_name);

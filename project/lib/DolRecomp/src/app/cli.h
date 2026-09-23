@@ -22,11 +22,13 @@ typedef struct {
     DolRecompBackend backend;
     u32 jobs;
     u32 rel_base;
+    u32 rel_bss_base;
     u32 partition_instructions;
     u64 partition_seed;
     int gamecube_mode;
     int cpu_explicit;
     int rel_base_set;
+    int rel_bss_base_set;
     int setup_mode;
     int show_help;
     int fast_semantics;

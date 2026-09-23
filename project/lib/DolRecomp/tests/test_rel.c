@@ -202,6 +202,65 @@ static int test_unaligned_text_rejected(void) {
     return 1;
 }
 
+static int test_section_alignment_applies_to_module_base(void) {
+    const char* path = "test_module_alignment.rel";
+    CHECK(write_sample_rel(path, 1, R_PPC_ADDR32, 2, 0, 8),
+          "failed to write sample REL");
+
+    FILE* file = fopen(path, "r+b");
+    CHECK(file != NULL, "failed to reopen sample REL");
+    CHECK(fseek(file, 0x58, SEEK_SET) == 0, "failed to seek sample REL section");
+    u8 text_offset[4] = {0, 0, 1, 5};
+    CHECK(fwrite(text_offset, 1, sizeof(text_offset), file) == sizeof(text_offset),
+          "failed to write sample REL text offset");
+    CHECK(fseek(file, 0x40, SEEK_SET) == 0, "failed to seek sample REL");
+    u8 align8[4] = {0, 0, 0, 8};
+    CHECK(fwrite(align8, 1, sizeof(align8), file) == sizeof(align8),
+          "failed to write sample REL alignment");
+    CHECK(fclose(file) == 0, "failed to close sample REL");
+
+    RELFile rel;
+    CHECK(rel_load(&rel, path, 0x80500000u),
+          "module-aligned REL with unaligned text section was rejected");
+    CHECK(rel.sections[1].address == 0x80500104u,
+          "unexpected aligned sample text address");
+    rel_free(&rel);
+
+    int rejected = rel_load(&rel, path, 0x80500004u);
+    if (rejected)
+        rel_free(&rel);
+    remove(path);
+    CHECK(!rejected, "misaligned REL module base should be rejected");
+    return 1;
+}
+
+static int test_explicit_bss_base(void) {
+    const char* path = "test_explicit_bss.rel";
+    CHECK(write_sample_rel(path, 1, R_PPC_ADDR32, 2, 0, 8),
+          "failed to write sample REL");
+
+    FILE* file = fopen(path, "r+b");
+    CHECK(file != NULL, "failed to reopen sample REL");
+    CHECK(fseek(file, 0x60, SEEK_SET) == 0, "failed to seek sample REL BSS section");
+    u8 bss_offset[4] = {0, 0, 0, 0};
+    CHECK(fwrite(bss_offset, 1, sizeof(bss_offset), file) == sizeof(bss_offset),
+          "failed to write sample REL BSS section");
+    CHECK(fclose(file) == 0, "failed to close sample REL");
+
+    RELFile rel;
+    RELLoadOptions options = { true, 0x811BCAC0u };
+    CHECK(rel_load_with_options(&rel, path, 0x80500000u, &options),
+          "failed to load sample REL with explicit BSS base");
+    CHECK(rel.sections[2].address == 0x811BCAC0u,
+          "explicit BSS base was not applied");
+    CHECK(read_be32(rel.sections[1].data) == 0x811BCAC0u,
+          "relocation did not use explicit BSS base");
+
+    rel_free(&rel);
+    remove(path);
+    return 1;
+}
+
 int main(void) {
     int ok = 1;
     ok &= test_self_relocation();
@@ -210,6 +269,8 @@ int main(void) {
     ok &= test_external_import_rejected();
     ok &= test_external_import_with_map();
     ok &= test_unaligned_text_rejected();
+    ok &= test_section_alignment_applies_to_module_base();
+    ok &= test_explicit_bss_base();
 
     if (!ok)
         return 1;

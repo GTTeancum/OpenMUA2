@@ -382,7 +382,9 @@ bool rel_apply_relocations(RELFile* rel, const RELModuleMap* modules) {
     return true;
 }
 
-bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
+bool rel_load_image_with_options(RELFile* rel, const char* path,
+                                 u32 base_address,
+                                 const RELLoadOptions* options) {
     memset(rel, 0, sizeof(*rel));
 
     if ((base_address & 3u) != 0) {
@@ -412,6 +414,12 @@ bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
     u32 bss_alignment = rel->file_size >= 0x48 ? read_be32(h + 0x44) : 4;
     rel->base_address = base_address;
 
+    if (section_alignment > 1 && (base_address % section_alignment) != 0) {
+        fprintf(stderr, "error: REL base address does not satisfy module alignment\n");
+        rel_free(rel);
+        return false;
+    }
+
     if (rel->section_count == 0 ||
         rel->section_count > REL_MAX_SECTION_COUNT ||
         !range_fits(section_info_offset,
@@ -431,7 +439,9 @@ bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
 
     int ok = 1;
     u32 bss_start;
-    if (!add_u32_checked(base_address, rel->file_size, &bss_start)) {
+    if (options && options->bss_address_set) {
+        bss_start = options->bss_address;
+    } else if (!add_u32_checked(base_address, rel->file_size, &bss_start)) {
         fprintf(stderr, "error: REL BSS address overflow\n");
         rel_free(rel);
         return false;
@@ -499,13 +509,6 @@ bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
             rel_free(rel);
             return false;
         }
-        if (section_alignment > 1 && executable &&
-            (section->address % section_alignment) != 0) {
-            fprintf(stderr, "error: REL executable section %u is not aligned\n", i);
-            rel_free(rel);
-            return false;
-        }
-
         section->owned_data = (u8*)malloc(size);
         if (!section->owned_data) {
             fprintf(stderr, "error: out of memory\n");
@@ -543,8 +546,13 @@ bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
     return true;
 }
 
-bool rel_load(RELFile* rel, const char* path, u32 base_address) {
-    if (!rel_load_image(rel, path, base_address))
+bool rel_load_image(RELFile* rel, const char* path, u32 base_address) {
+    return rel_load_image_with_options(rel, path, base_address, NULL);
+}
+
+bool rel_load_with_options(RELFile* rel, const char* path, u32 base_address,
+                           const RELLoadOptions* options) {
+    if (!rel_load_image_with_options(rel, path, base_address, options))
         return false;
 
     RELModuleMapEntry self_entry = { rel->module_id, rel };
@@ -555,6 +563,10 @@ bool rel_load(RELFile* rel, const char* path, u32 base_address) {
     }
 
     return true;
+}
+
+bool rel_load(RELFile* rel, const char* path, u32 base_address) {
+    return rel_load_with_options(rel, path, base_address, NULL);
 }
 
 void rel_free(RELFile* rel) {

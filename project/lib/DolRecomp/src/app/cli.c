@@ -26,6 +26,7 @@ void print_usage(const char* argv0) {
     fprintf(stderr, "  --partition-seed <n>           Stable partition naming seed\n");
     fprintf(stderr, "  --gamecube                     GameCube mode (no title ID required)\n");
     fprintf(stderr, "  --rel-base <addr>              Override first virtual load address for REL codegen\n");
+    fprintf(stderr, "  --rel-bss-base <addr>          Override BSS virtual address for single REL codegen\n");
     fprintf(stderr, "  --map <path>                   Load optional function names from a linker MAP\n");
     fprintf(stderr, "  --setup                        Download titles database and optionally install wit\n");
     fprintf(stderr, "\n");
@@ -422,6 +423,24 @@ int parse_cli(int argc, char** argv, CliOptions* opts) {
             if (!parse_u32_arg(arg + 11, "--rel-base", &opts->rel_base))
                 return 0;
             opts->rel_base_set = 1;
+            continue;
+        }
+
+        if (strcmp(arg, "--rel-bss-base") == 0) {
+            if (i + 1 >= argc) {
+                fprintf(stderr, "error: --rel-bss-base needs an address\n");
+                return 0;
+            }
+            if (!parse_u32_arg(argv[++i], "--rel-bss-base", &opts->rel_bss_base))
+                return 0;
+            opts->rel_bss_base_set = 1;
+            continue;
+        }
+
+        if (strncmp(arg, "--rel-bss-base=", 15) == 0) {
+            if (!parse_u32_arg(arg + 15, "--rel-bss-base", &opts->rel_bss_base))
+                return 0;
+            opts->rel_bss_base_set = 1;
             continue;
         }
 

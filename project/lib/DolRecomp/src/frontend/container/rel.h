@@ -47,8 +47,18 @@ typedef struct {
     u32 count;
 } RELModuleMap;
 
+typedef struct {
+    bool bss_address_set;
+    u32 bss_address;
+} RELLoadOptions;
+
 bool rel_load(RELFile* rel, const char* path, u32 base_address);
 bool rel_load_image(RELFile* rel, const char* path, u32 base_address);
+bool rel_load_with_options(RELFile* rel, const char* path, u32 base_address,
+                           const RELLoadOptions* options);
+bool rel_load_image_with_options(RELFile* rel, const char* path,
+                                 u32 base_address,
+                                 const RELLoadOptions* options);
 bool rel_apply_relocations(RELFile* rel, const RELModuleMap* modules);
 void rel_free(RELFile* rel);
 void rel_print_info(const RELFile* rel, const char* game_name);
