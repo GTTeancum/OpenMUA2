@@ -181,9 +181,9 @@ static int relocation_target(const RELFile* rel, const RELModuleMap* modules,
     return section_address_at(rel, section_index, symbol_offset, target);
 }
 
-static int require_patch_range(const RELSection* section, u32 offset) {
+static int require_patch_range(const RELSection* section, u32 offset, u32 width) {
     if (!section_has_file_data(section) || offset > section->size ||
-        section->size - offset < 4) {
+        section->size - offset < width) {
         fprintf(stderr, "error: REL relocation patch is outside section %u\n",
                 section->index);
         return 0;
@@ -205,43 +205,61 @@ static int apply_relocation(RELSection* section, u32 offset, u32 patch_address,
     if (type == R_PPC_NONE)
         return 1;
 
-    if (!require_patch_range(section, offset))
-        return 0;
-
-    u8* patch = section->owned_data + offset;
-    u32 word = read_be32(patch);
-
     switch (type) {
-    case R_PPC_ADDR32:
+    case R_PPC_ADDR32: {
+        if (!require_patch_range(section, offset, 4))
+            return 0;
+        u8* patch = section->owned_data + offset;
         write_be32(patch, target);
         return 1;
-    case R_PPC_ADDR24:
+    }
+    case R_PPC_ADDR24: {
+        if (!require_patch_range(section, offset, 4))
+            return 0;
+        u8* patch = section->owned_data + offset;
+        u32 word = read_be32(patch);
         if ((target & 3u) != 0) {
             fprintf(stderr, "error: REL ADDR24 target is not aligned\n");
             return 0;
         }
         write_be32(patch, (word & 0xFC000003u) | (target & 0x03FFFFFCu));
         return 1;
+    }
     case R_PPC_ADDR16:
     case R_PPC_ADDR16_LO:
-        write_be16(patch + 2, (u16)target);
+        if (!require_patch_range(section, offset, 2))
+            return 0;
+        write_be16(section->owned_data + offset, (u16)target);
         return 1;
     case R_PPC_ADDR16_HI:
-        write_be16(patch + 2, (u16)(target >> 16));
+        if (!require_patch_range(section, offset, 2))
+            return 0;
+        write_be16(section->owned_data + offset, (u16)(target >> 16));
         return 1;
     case R_PPC_ADDR16_HA:
-        write_be16(patch + 2, (u16)((target + 0x8000u) >> 16));
+        if (!require_patch_range(section, offset, 2))
+            return 0;
+        write_be16(section->owned_data + offset, (u16)((target + 0x8000u) >> 16));
         return 1;
     case R_PPC_ADDR14:
     case R_PPC_ADDR14_BRTAKEN:
-    case R_PPC_ADDR14_BRNTAKEN:
+    case R_PPC_ADDR14_BRNTAKEN: {
+        if (!require_patch_range(section, offset, 4))
+            return 0;
+        u8* patch = section->owned_data + offset;
+        u32 word = read_be32(patch);
         if ((target & 3u) != 0) {
             fprintf(stderr, "error: REL ADDR14 target is not aligned\n");
             return 0;
         }
         write_be32(patch, (word & 0xFFFF0003u) | (target & 0x0000FFFCu));
         return 1;
+    }
     case R_PPC_REL24: {
+        if (!require_patch_range(section, offset, 4))
+            return 0;
+        u8* patch = section->owned_data + offset;
+        u32 word = read_be32(patch);
         s64 delta = (s64)(s32)(target - patch_address);
         if (!check_rel_delta(delta, -0x02000000ll, 0x01FFFFFCll, "REL24"))
             return 0;
@@ -249,6 +267,10 @@ static int apply_relocation(RELSection* section, u32 offset, u32 patch_address,
         return 1;
     }
     case R_PPC_REL14: {
+        if (!require_patch_range(section, offset, 4))
+            return 0;
+        u8* patch = section->owned_data + offset;
+        u32 word = read_be32(patch);
         s64 delta = (s64)(s32)(target - patch_address);
         if (!check_rel_delta(delta, -0x8000ll, 0x7FFCll, "REL14"))
             return 0;

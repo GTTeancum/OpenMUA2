@@ -13,6 +13,7 @@
 
 enum {
     R_PPC_ADDR32 = 1,
+    R_PPC_ADDR16_LO = 4,
     R_PPC_REL24 = 10,
     R_DOLPHIN_SECTION = 202,
     R_DOLPHIN_END = 203,
@@ -113,6 +114,31 @@ static int test_dol_rel24_relocation(void) {
     return 1;
 }
 
+static int test_addr16_offset_targets_immediate_halfword(void) {
+    const char* path = "test_addr16_halfword.rel";
+    CHECK(write_sample_rel(path, 1, R_PPC_ADDR16_LO, 2, 0, 8),
+          "failed to write sample REL");
+
+    RELFile rel;
+    CHECK(rel_load_image(&rel, path, 0x80500000u),
+          "failed to load sample REL image");
+
+    u8* reloc = rel.file_data + rel.relocation_offset + 8;
+    write_be16(reloc, 2);
+
+    RELModuleMapEntry self_entry = { rel.module_id, &rel };
+    RELModuleMap map = { &self_entry, 1 };
+    CHECK(rel_apply_relocations(&rel, &map),
+          "failed to apply sample REL relocations");
+
+    CHECK(read_be32(rel.sections[1].data) == 0x00000108u,
+          "ADDR16_LO relocation did not patch the immediate halfword");
+
+    rel_free(&rel);
+    remove(path);
+    return 1;
+}
+
 static int test_external_import_rejected(void) {
     const char* path = "test_external.rel";
     CHECK(write_sample_rel(path, 2, R_PPC_ADDR32, 2, 0, 8),
@@ -180,6 +206,7 @@ int main(void) {
     int ok = 1;
     ok &= test_self_relocation();
     ok &= test_dol_rel24_relocation();
+    ok &= test_addr16_offset_targets_immediate_halfword();
     ok &= test_external_import_rejected();
     ok &= test_external_import_with_map();
     ok &= test_unaligned_text_rejected();
