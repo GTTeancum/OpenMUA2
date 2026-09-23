@@ -1,29 +1,40 @@
-# Current status — LOCAL01
+# Current status — GitHub main
 
-September 22, 2026. **Recovered source workspace, not a restored MR01 gameplay checkpoint.**
+September 23, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
-## Actually included
+## Current reconstructed source
 
-All 42 pinned repository/submodule entries from the returned dependency collector are materialized under `project/`. Their 41 unique transport archives and all three original upload parts were hash-verified before restoration. Recursive submodules are now ordinary vendored directories in a single local Git repository. `locks/SOURCE_SNAPSHOT.json` preserves original revisions, URLs and archive hashes; `locks/SOURCE_TRANSFORMATIONS.json` records all packaging changes.
+The repository still originates from the recoverable MG01 + FPC01 workspace, but the following missing pieces have now been reimplemented from the retained source/evidence and committed as new work rather than presented as recovered MR01 bytes:
 
-Five recovered production files differ from the pristine source: the three MG01 Linux include/EGL CMake fixes and FPC01's corrected `fctiw` FI/FR masks in both DolRecomp copies. `patches/LOCAL01-recovered-production.patch` is the corresponding cumulative diff. No REL, MEM2, verifier-boundary, FPCC or FMA behavior was recreated from prose and presented as previously tested code.
+- Native DOL + REL packaging and runtime eligibility are present. RMSE52's absolute linked REL section-table pointer is accepted with guest-RAM bounds checks, and native REL code remains protected by the existing chunk-hash / SMC verification path. Different or modified code is not made native merely to advance boot.
+- DolRecomp emits `dcbf`, `dcbst`, `dcbi` and `icbi` through the dedicated cache-control hook instead of the generic instruction-fallback callback. The Dolphin cache invalidation semantics and generated cycle accounting remain intact.
+- The generated scalar FMA helper has been repaired to use the same instruction-shaped arithmetic/rounding path as the runtime floating-point implementation. Targeted regression coverage compares result bits, FPSCR state and write/no-write behavior across rounding/NI/VE/FI/FR cases and edge values.
+- The lockstep checker contains local-loop boundary alignment: when native execution yields back at an inlined loop header, the interpreter shadow continues until it has performed the native charged work rather than comparing different loop iterations at the same PC.
+- The runtime floating compare path preserves the fifth FPRF classification bit while replacing only FPCC, with a targeted runtime regression.
+- MEM2 is now included in lockstep memory journaling/restoration. MEM1 and MEM2 use disjoint physical journal keys; native and interpreter MMU writes feed the same diagnostic journal, the shadow receives the pre-block image, and the native post-image is restored afterward.
 
-The DOL-only generator is retained from MG01 and expects 325 chunks. Its code hashes, ABI and extracted input hashes remain checked. Fallback remains enabled for the REL and modified/uncovered DOL code. The real extracted `sys/main.dol` must never be replaced by a merged code-generation reference.
+## Fresh validation of current work
 
-## What is missing
+For the MEM2 repair, a focused Linux validation workflow first applied only the six intended source-file changes, configured/built GXRuntime, ran its tests, configured/built the ModernGekko Linux runtime and ran the ModernGekko tests. Every step completed successfully before the source repair was integrated into `main` as commit `26334ad651567bf098401f781d1189e5f75c296c` (`Journal MEM2 in lockstep verification`).
 
-The MG02 and MR01 ZIPs were not found in the accessible workspace or searched Library. Their reports, screenshots and validation receipts survived; those files cannot reconstruct source bytes, native modules or diagnostic states. **Do not request either missing assistant-generated ZIP from the user or claim it is included here.**
+After that integration, the normal GXRuntime matrix completed successfully on both `ubuntu-latest` and `windows-latest`. This is useful Windows portability coverage for the shared runtime change, but it is **not** a full Windows ModernGekko build and is not a Windows game execution test.
 
-MR01 described a cumulative 31-file overlay, native REL integration, shadow MEM2 isolation, local-loop boundary alignment, a reference floating-compare correction and a multiply-add helper repair. Those changes must be recovered as actual files or implemented and tested anew. The reported 11,832 passing MR01 live comparisons and gameplay sessions are historical, not tests of LOCAL01.
+The earlier current-source commits also include cross-platform DolRecomp CI for the cache-control generator change and cross-platform GXRuntime CI for the FMA/runtime changes.
 
-## Validation scope
+## Validation boundary
 
-Fresh LOCAL01 checks are in `../evidence/local01/VALIDATION.json`. They cover local workspace/Git/backup behavior, the retained patch guard, Linux DolRecomp compilation/CTests, regeneration of all 325 DOL chunks and a newly built module audit against the actual retained MG01 binary. That audit is not a newly built game module or a boot test. Generated chunks were compared byte-for-byte with retained MG01 output.
+No fresh RMSE52 WBFS boot/gameplay session has been run from GitHub CI after the latest cache-control, FMA and MEM2 changes because the proprietary game image is intentionally not in the repository. Historical MR01 gameplay and the 11,832-comparison differential pass remain useful evidence and reproduction targets, but they are **not** treated as fresh validation of current `main`.
 
-No fresh full runtime build, new full native module compilation, Windows build/execution, WBFS extraction, hardware controller, audio, save/reload or gameplay test was performed as part of this source packaging task. Extraction publication/error tests use fixtures; real game generation uses the retained original DOL. The original gameplay reports must not override these boundaries.
+The latest recorded live native-REL benchmark predates the direct cache-control generator change: it advanced game frames but remained far below the 30 FPS target. A speedup from the later source changes must be measured rather than inferred.
+
+No new claim is made here for a complete level, long-session stability, multiplayer, audible audio, game-owned save/reload, physical-controller gameplay, or a full Windows game build/execution.
 
 ## Immediate priorities
 
-First establish and commit a local build log without changing the pinned baseline. Then restore/reimplement native REL support with the exact observed linked layout and relocation replay. Reconstruct the missing verifier repairs before using Wii live differential checks. Repair and test the FMA helper independently, regenerate/rebuild, and only then repeat actual boot, movement/combat and save/reload tests. See `RECOVERY-PLAN.md`.
+1. Rebuild the exact RMSE52 native module/runtime from current `main` on the local game workspace and run a fresh baseline benchmark. This will measure the real effect of keeping cache-control operations inside native bursts.
+2. Run a bounded current-main lockstep window on the opening gameplay route so MEM2 restoration, loop-boundary alignment, floating compare and FMA behavior are exercised together against the reference interpreter.
+3. Preserve any divergence as a failure and reduce it to a focused regression. Do not whitelist mismatches, mask FPSCR state, disable chunk hashes/SMC protection, or change game timing to make a test pass.
+4. Once correctness is re-established on the current build, profile native dispatch/exception/JIT and cache-invalidation costs again using fresh measurements rather than the pre-cache-control benchmark.
+5. Keep Linux as the active development path while continuing to keep shared source/build code portable; a full Windows ModernGekko/game build remains a separate validation milestone.
 
-This source handoff is designed to stop remote workspace loss from also losing future edits: all delivered source is local and editable, and snapshot/backup commands do not depend on a service or remote repository.
+The original extracted `sys/main.dol` remains the boot source. Any merged/generated DOL/REL reference is code-generation material only and must never replace the game's real boot DOL.
