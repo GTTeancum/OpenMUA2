@@ -177,6 +177,16 @@ int main(int argc, char** argv) {
     if (!emit_function(out, paired_merge, 2, BASE + 0x1070))
         return 1;
 
+    PPCInst cache_control[6];
+    cache_control[0] = ppc_decode(0x7C03206Cu, BASE + 0x1078);
+    cache_control[1] = ppc_decode(0x7C0320ACu, BASE + 0x107C);
+    cache_control[2] = ppc_decode(0x7C0323ACu, BASE + 0x1080);
+    cache_control[3] = ppc_decode(0x7C0327ACu, BASE + 0x1084);
+    cache_control[4] = ppc_decode(0x38630001u, BASE + 0x1088);
+    cache_control[5] = ppc_decode(0x4E800020u, BASE + 0x108C);
+    if (!emit_function(out, cache_control, 6, BASE + 0x1078))
+        return 1;
+
     FunctionList funcs = {0};
     if (!function_list_add(&funcs, BASE, BASE + (u32)count * 4u) ||
         !function_list_add(&funcs, BASE + 0x1000, BASE + 0x100C) ||
@@ -187,7 +197,8 @@ int main(int argc, char** argv) {
         !function_list_add(&funcs, BASE + 0x1040, BASE + 0x1058) ||
         !function_list_add(&funcs, BASE + 0x1060, BASE + 0x1068) ||
         !function_list_add(&funcs, BASE + 0x1068, BASE + 0x1070) ||
-        !function_list_add(&funcs, BASE + 0x1070, BASE + 0x1078)) {
+        !function_list_add(&funcs, BASE + 0x1070, BASE + 0x1078) ||
+        !function_list_add(&funcs, BASE + 0x1078, BASE + 0x1090)) {
         function_list_free(&funcs);
         free(insts);
         if (out != stdout) fclose(out);

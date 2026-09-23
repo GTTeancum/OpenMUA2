@@ -328,20 +328,51 @@ void StaticRecompCore::HookSPRWrite(CPUState* cpu, u16 spr, u32 value, u32 cia)
 void StaticRecompCore::HookCacheControl(CPUState* cpu, u8 operation, u32 ea, u32 cia)
 {
   auto* core = static_cast<StaticRecompCore*>(cpu->external_user_data);
+  // Generated REL code supplies a linked CIA. Exception state needs the
+  // runtime CIA, while a normal generated-code yield must remain linked so
+  // Run() can perform its usual linked-to-runtime translation on return.
+  const u32 linked_cia = cia;
+  const u32 runtime_cia = core->TranslateRelAddress(cia);
   ea = core->TranslateRelAddress(ea);
   core->PropagateGuestMSR();
+
+  // The old generic instruction-fallback path handled this before entering
+  // Dolphin's interpreter. Keep the same semantics on the direct hook path.
+  if (operation == PPC_CACHE_DCBI && (cpu->msr & 0x4000u) != 0)
+  {
+    ppc_program_exception(cpu, PPC_PROGRAM_PRIV, runtime_cia);
+    return;
+  }
+
+  // Cache-control side effects are not represented in the lockstep RAM/MMIO
+  // journal. Preserve the old verifier behavior and do not replay such a
+  // native block against the shadow interpreter.
+  if (core->m_lockstep_verifier->m_ls_journaling)
+    core->m_lockstep_verifier->m_ls_fallback_seen = true;
+
+  const u64 reverify_before = core->m_reverify_events;
+  const auto finish_cache_control = [&]() {
+    // Static-recomp chunk verification is invalidation-driven. If this cache
+    // operation demoted any native chunk, end the generated burst at the next
+    // linked instruction so the dispatcher re-verifies before native resume.
+    if (core->m_reverify_events != reverify_before)
+      cpu->pc = linked_cia + 4u;
+  };
+
   auto& ppc = core->m_system.GetPPCState();
   auto& mmu = core->m_system.GetMMU();
 
   if (operation == PPC_CACHE_ICBI)
   {
     ppc.iCache.Invalidate(core->m_system.GetMemory(), core->m_system.GetJitInterface(), ea);
+    finish_cache_control();
     return;
   }
 
   if (!ppc.m_enable_dcache)
   {
     core->m_system.GetJitInterface().InvalidateICacheLine(ea);
+    finish_cache_control();
     return;
   }
 
@@ -357,9 +388,10 @@ void StaticRecompCore::HookCacheControl(CPUState* cpu, u8 operation, u32 ea, u32
     mmu.InvalidateDCacheLine(ea);
     break;
   default:
-    ppc_program_exception(cpu, PPC_PROGRAM_ILLEGAL, cia);
+    ppc_program_exception(cpu, PPC_PROGRAM_ILLEGAL, runtime_cia);
     break;
   }
+  finish_cache_control();
 }
 
 void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)

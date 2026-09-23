@@ -9,6 +9,24 @@ void func_80004040(CPUState* ctx);
 void func_80004060(CPUState* ctx);
 void func_80004068(CPUState* ctx);
 void func_80004070(CPUState* ctx);
+void func_80004078(CPUState* ctx);
+
+static u32 cache_calls;
+static u8 cache_operations[4];
+static u32 cache_addresses[4];
+static u32 cache_cias[4];
+static u8 cache_yield_operation = 0xFFu;
+
+static void record_cache_control(CPUState* cpu, u8 operation, u32 ea, u32 cia) {
+    if (cache_calls < 4) {
+        cache_operations[cache_calls] = operation;
+        cache_addresses[cache_calls] = ea;
+        cache_cias[cache_calls] = cia;
+    }
+    cache_calls++;
+    if (operation == cache_yield_operation)
+        cpu->pc = cia + 4u;
+}
 
 static u64 bits_of(f64 value) {
     u64 bits;
@@ -92,6 +110,56 @@ int main(void) {
                 compare_ok, record_ok, merge_ok, cpu.fpscr, cpu.cr);
     }
 
+    cache_calls = 0;
+    memset(cache_operations, 0, sizeof(cache_operations));
+    memset(cache_addresses, 0, sizeof(cache_addresses));
+    memset(cache_cias, 0, sizeof(cache_cias));
+    cache_yield_operation = 0xFFu;
+    cpu.cache_control = record_cache_control;
+    cpu.msr = 0;
+    cpu.exception = 0;
+    cpu.program_exception = 0;
+    cpu.gpr[3] = 0x80001000u;
+    cpu.gpr[4] = 0x20u;
+    cpu.pc = 0x80004078u;
+    cpu.lr = 0x81234564u;
+    cpu.downcount = 0;
+    func_80004078(&cpu);
+    int cache_ok =
+        cpu.pc == cpu.lr && cpu.gpr[3] == 0x80001001u &&
+        cpu.downcount == -21 && cache_calls == 4 &&
+        cache_operations[0] == PPC_CACHE_DCBST &&
+        cache_operations[1] == PPC_CACHE_DCBF &&
+        cache_operations[2] == PPC_CACHE_DCBI &&
+        cache_operations[3] == PPC_CACHE_ICBI;
+    for (u32 i = 0; i < 4; ++i) {
+        cache_ok = cache_ok && cache_addresses[i] == 0x80001020u &&
+                   cache_cias[i] == 0x80004078u + i * 4u;
+    }
+
+    cache_calls = 0;
+    cache_yield_operation = PPC_CACHE_DCBF;
+    cpu.exception = 0;
+    cpu.program_exception = 0;
+    cpu.gpr[3] = 0x80001000u;
+    cpu.gpr[4] = 0x20u;
+    cpu.pc = 0x80004078u;
+    cpu.lr = 0x81234564u;
+    cpu.downcount = 0;
+    func_80004078(&cpu);
+    int cache_yield_ok =
+        cpu.pc == 0x80004080u && cpu.gpr[3] == 0x80001000u &&
+        cpu.downcount == -10 && cache_calls == 2 &&
+        cache_operations[0] == PPC_CACHE_DCBST &&
+        cache_operations[1] == PPC_CACHE_DCBF;
+    if (!cache_ok || !cache_yield_ok) {
+        fprintf(stderr,
+                "cache ok=%d yield=%d pc=%08X r3=%08X downcount=%lld calls=%u\n",
+                cache_ok, cache_yield_ok, cpu.pc, cpu.gpr[3],
+                (long long)cpu.downcount, cache_calls);
+    }
+
     cpu_free(&cpu);
-    return !(integer_ok && memory_ok && compare_ok && record_ok && merge_ok);
+    return !(integer_ok && memory_ok && compare_ok && record_ok && merge_ok &&
+             cache_ok && cache_yield_ok);
 }

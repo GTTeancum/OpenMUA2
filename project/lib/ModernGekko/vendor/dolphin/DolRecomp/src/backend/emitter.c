@@ -1630,11 +1630,25 @@ static void emit_instruction_with_range(FILE* out, const PPCInst* inst,
     case PPC_OP_DCBST:
     case PPC_OP_DCBF:
     case PPC_OP_DCBI:
-    case PPC_OP_ICBI:
-        fprintf(out, "    ppc_fallback_instruction(ctx, 0x%08Xu, 0x%08Xu);\n",
-                inst->raw, inst->address);
-        fprintf(out, "    return;\n");
+    case PPC_OP_ICBI: {
+        const char* operation =
+            inst->op == PPC_OP_DCBST ? "PPC_CACHE_DCBST" :
+            inst->op == PPC_OP_DCBF ? "PPC_CACHE_DCBF" :
+            inst->op == PPC_OP_DCBI ? "PPC_CACHE_DCBI" : "PPC_CACHE_ICBI";
+        fprintf(out, "    {\n        u32 ea = ");
+        emit_xform_ea(out, inst->rA, inst->rB, false);
+        fprintf(out, ";\n        if (ctx->cache_control) {\n");
+        fprintf(out, "            u32 cache_pc = ctx->pc;\n");
+        fprintf(out, "            ctx->cache_control(ctx, %s, ea, 0x%08Xu);\n",
+                operation, inst->address);
+        fprintf(out, "            if (ctx->exception || ctx->pc != cache_pc) return;\n");
+        fprintf(out, "        } else {\n");
+        fprintf(out, "            ppc_cache_control(ctx, %s, ea, 0x%08Xu);\n",
+                operation, inst->address);
+        fprintf(out, "            if (ctx->exception) return;\n");
+        fprintf(out, "        }\n    }\n");
         break;
+    }
 
     case PPC_OP_DCBTST:
     case PPC_OP_DCBT:

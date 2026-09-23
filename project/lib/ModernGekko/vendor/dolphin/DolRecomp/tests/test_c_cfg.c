@@ -102,10 +102,39 @@ static void test_memory_loop(void) {
     c_function_cfg_destroy(&cfg);
 }
 
+static void test_cache_control_blocks(void) {
+    static const u32 words[] = {
+        0x7C03206Cu, // dcbst r3,r4
+        0x7C0320ACu, // dcbf  r3,r4
+        0x7C0323ACu, // dcbi  r3,r4
+        0x7C0327ACu, // icbi  r3,r4
+        0x38630001u, // addi  r3,r3,1
+        0x4E800020u, // blr
+    };
+    PPCInst insts[sizeof(words) / sizeof(words[0])];
+    for (u32 i = 0; i < sizeof(words) / sizeof(words[0]); ++i)
+        insts[i] = ppc_decode(words[i], BASE + i * 4u);
+
+    CFunctionCFG cfg;
+    check(c_function_cfg_build(&cfg, insts, 6, BASE), "build cache-control CFG");
+    check(insts[0].op == PPC_OP_DCBST && insts[1].op == PPC_OP_DCBF &&
+              insts[2].op == PPC_OP_DCBI && insts[3].op == PPC_OP_ICBI,
+          "decode cache-control instructions");
+    check(cfg.leaders[0] && cfg.leaders[1] && cfg.leaders[2] &&
+              cfg.leaders[3] && cfg.leaders[4],
+          "keep cache-control cycle boundaries");
+    check(cfg.block_cycles[0] == 5 && cfg.block_cycles[1] == 5 &&
+              cfg.block_cycles[2] == 5 && cfg.block_cycles[3] == 4 &&
+              cfg.block_cycles[4] == 2,
+          "charge cache-control blocks with Dolphin instruction costs");
+    c_function_cfg_destroy(&cfg);
+}
+
 int main(void) {
     test_integer_loop();
     test_timebase_loop();
     test_local_call();
     test_memory_loop();
+    test_cache_control_blocks();
     return failures != 0;
 }
