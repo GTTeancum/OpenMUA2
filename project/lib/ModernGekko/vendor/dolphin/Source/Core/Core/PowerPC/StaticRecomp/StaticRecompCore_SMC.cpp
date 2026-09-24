@@ -260,15 +260,19 @@ int StaticRecompCore::ChunkIndexOf(u32 address)
   return m_chunk_lookup_table[idx];
 }
 
-bool StaticRecompCore::FastDispatchableAt(u32 address)
+bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index)
 {
   if (IsForcedFallbackAddress(address))
     return false;
   const int index = ChunkIndexOf(address);
-  return index >= 0 && m_chunk_state[index] == CHUNK_VERIFIED;
+  if (index < 0 || m_chunk_state[index] != CHUNK_VERIFIED)
+    return false;
+  if (chunk_index)
+    *chunk_index = static_cast<u32>(index);
+  return true;
 }
 
-bool StaticRecompCore::DispatchableAt(u32 address)
+bool StaticRecompCore::DispatchableAt(u32 address, u32* chunk_index)
 {
   if (IsForcedFallbackAddress(address))
     return false;
@@ -277,7 +281,11 @@ bool StaticRecompCore::DispatchableAt(u32 address)
     return false;
   if (m_chunk_state[index] == CHUNK_UNVERIFIED)
     VerifyChunk(static_cast<u32>(index));
-  return m_chunk_state[index] == CHUNK_VERIFIED;
+  if (m_chunk_state[index] != CHUNK_VERIFIED)
+    return false;
+  if (chunk_index)
+    *chunk_index = static_cast<u32>(index);
+  return true;
 }
 
 bool StaticRecompCore::IsForcedFallbackAddress(u32 address) const
