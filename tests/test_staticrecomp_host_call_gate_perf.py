@@ -41,8 +41,19 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
         run = RUN.read_text(encoding="utf-8")
 
         self.assertIn(
-            "m_guest.host_call && ChunkContainsHostCall(chunk_index) && "
-            "IsHostCallAddress(address)",
+            "const u8 state = m_chunk_host_call_state[chunk_index];",
+            run,
+        )
+        self.assertIn(
+            "return state == 0 ? ChunkContainsHostCall(chunk_index) : state == 2;",
+            run,
+        )
+        self.assertIn(
+            "m_guest.host_call && chunk_contains_host_call(chunk_index) &&",
+            run,
+        )
+        self.assertNotIn(
+            "m_guest.host_call && ChunkContainsHostCall(chunk_index)",
             run,
         )
         self.assertIn(
