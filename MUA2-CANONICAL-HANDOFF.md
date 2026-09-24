@@ -145,13 +145,13 @@ Diff size:
 OpenMUA2 tooling run `36038408893`:
 
 - Ubuntu Python tests: **PASS**
-- Windows Python tests: `in_progress`, Run tooling tests
+- Windows Python tests: **PASS**
 
 ModernGekko run `36038408875`:
 
-- Standalone Ubuntu: `in_progress`, Configure
+- Standalone Ubuntu: **PASS**
 - Standalone Windows: `in_progress`, Configure
-- Full Ubuntu: `in_progress`, Configure
+- Full Ubuntu: `in_progress`, Build
 - Full Windows: `in_progress`, Configure
 
 No CI failure has appeared.
@@ -211,5 +211,5 @@ Changes this turn:
 - Implemented the cached host-call-state fast path.
 - Added regression coverage for known cached state plus lazy unknown-state fallback.
 - Opened PR #20.
-- PR #20 CI started; Ubuntu tooling already PASS, remaining jobs are running.
+- PR #20 tooling PASS on Windows and Ubuntu; ModernGekko standalone Ubuntu PASS; remaining ModernGekko jobs are running.
 - No RMSE52 game-side run occurred.
