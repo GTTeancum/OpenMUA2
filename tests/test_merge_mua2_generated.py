@@ -180,6 +180,13 @@ class MergeDispatchTests(unittest.TestCase):
         self.assertIn(
             "u32 hi = dolrecomp_merged_page_end[page];", text
         )
+        self.assertIn("if (hi == lo) return NULL;", text)
+        self.assertIn("if (hi == lo + 1u) {", text)
+        self.assertIn(
+            "return address >= chunk->start && address < chunk->end ? chunk->fn : NULL;",
+            text,
+        )
+        self.assertLess(text.index("if (hi == lo + 1u) {"), text.index("while (lo < hi) {"))
         self.assertNotIn("u32 lo = 0;", text)
 
     def test_page_index_leaves_uncovered_pages_empty(self) -> None:
