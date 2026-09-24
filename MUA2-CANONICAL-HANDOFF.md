@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` (`Require exact REL audit source`)  
+**Source state summarized through:** `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` (`Verify replayed REL text against live audit`)  
 **Date:** 2026-09-23
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -87,6 +87,10 @@ Native code remains under chunk-hash/SMC verification. Different or modified gue
 `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` — `Require exact REL audit source`
 
 `tools/merge_mua2_generated.py` now refuses to emit REL metadata unless the retained live audit reports `LIVE_TEXT_MATCH` and the supplied REL's SHA-256 exactly matches the audit's `source_rel_sha256`. This prevents a stale audit from being paired with changed REL bytes before native metadata is emitted.
+
+`eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` — `Verify replayed REL text against live audit`
+
+After relocation replay, the merge tool now also requires the zero-adjust live comparison to be exact, validates matching expected/observed text SHA-256 values, and verifies the replayed executable text bytes against that retained live hash before emitting native REL metadata. A relocation-replay regression that produces the wrong bytes at the correct size is rejected.
 
 ### Cache-control codegen
 
@@ -209,6 +213,8 @@ The resulting tooling run completed successfully on both Ubuntu and Windows. The
 
 Tooling Actions run `35938476536` for `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` completed successfully on both `ubuntu-latest` and `windows-latest`. The added regression accepts the exact audited REL bytes, rejects changed REL bytes by SHA-256, and rejects a non-`LIVE_TEXT_MATCH` audit status.
 
+Pull-request tooling Actions run `35939460805` for the replayed-text audit guard completed successfully on both `ubuntu-latest` and `windows-latest` before merge to `main` as `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771`. The integration regression accepts correctly replayed text and rejects same-size wrong replay bytes, inconsistent expected/observed audit hashes, and nonzero text mismatch counts.
+
 ### What is still not freshly validated
 
 Do not claim from current `main` without a real run:
@@ -284,20 +290,23 @@ Useful deeper documents:
 
 Latest main actually inspected before this handoff edit:
 
-- `145100e8a9a1d54a2bfd27622a9d7631720b0a44` — `Record exact REL audit source guard`
+- `675d5d51505fa366602135900746f4c653a5c44f` — `Record replayed REL text audit guard`
 
 Changes made this turn:
 
-- Started from the uploaded handoff, then inspected GitHub `main` and found it had already advanced through `666c13fae41877812762db3ea0c19df8b868fce2`; the newer repository state was treated as authoritative.
-- Identified a native-eligibility gap in REL packaging: the merge tool replayed whatever REL file it was given without proving that those bytes were the exact source validated by `docs/recovery/live-rel-audit.json`.
-- `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` updates `tools/merge_mua2_generated.py` to require audit status `LIVE_TEXT_MATCH`, validate a well-formed `source_rel_sha256`, and require the supplied REL bytes to match that SHA-256 before relocation replay / REL metadata emission.
-- The same commit adds `test_rel_metadata_requires_exact_live_audited_rel` in `tests/test_merge_mua2_generated.py`, covering exact-byte acceptance, changed-byte rejection, and non-matching audit-status rejection.
-- `145100e8a9a1d54a2bfd27622a9d7631720b0a44` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
+- Read the uploaded canonical handoff, then inspected current GitHub `main`; it had advanced one handoff-only commit to `1974b2dd42df5c961822a2b7811c85fa932441c0`, which was treated as authoritative.
+- With proprietary RMSE52 execution unavailable here, continued only source-level correctness work as required by the project rules.
+- Identified a REL packaging correctness hole: relocation replay output was checked for expected length but not against the retained live-text SHA-256, so a replay regression could theoretically emit wrong native REL text of the correct size.
+- Opened PR #1 from `chatgpt/verify-replayed-rel-text-20260923`. The production change adds `verify_replayed_rel_text()`, requires the zero-adjust comparison to report no mismatches, validates the expected/observed text hashes, and requires the replayed bytes to hash to the retained live result before metadata emission.
+- Added `test_rel_metadata_replayed_text_must_match_live_audit_hash` with a synthetic REL/audit fixture covering correct replay acceptance, same-size wrong replay rejection, inconsistent audit hashes, and a nonzero section mismatch count.
+- PR tooling Actions run `35939460805` passed on both Ubuntu and Windows.
+- Squash-merged PR #1 to `main` as `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` (`Verify replayed REL text against live audit`).
+- `675d5d51505fa366602135900746f4c653a5c44f` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
 - This canonical handoff was refreshed after those changes.
 
 Tests actually run/observed:
 
-- GitHub Actions run `35938476536` for `2a86452d...`: PASS.
+- GitHub Actions run `35939460805`: PASS.
 - `Python tests (ubuntu-latest)`: PASS.
 - `Python tests (windows-latest)`: PASS.
 - No proprietary RMSE52 game-side test was run in this environment.
@@ -308,8 +317,8 @@ Game-side validation:
 
 Windows portability:
 
-- The production change is portable Python using `hashlib`, `re`, and `pathlib`.
-- The exact source/test commit passed the tooling suite on `windows-latest`.
+- The production change is portable Python using existing standard-library dependencies.
+- The full project tooling test suite for the PR passed on `windows-latest`.
 
 Failures/rejected experiments:
 
@@ -322,4 +331,4 @@ Current blocker:
 
 Next exact step:
 
-- On the local RMSE52 workspace, build current `main` and perform the native-module audit first. Confirm the exact audited REL hash guard accepts the real target REL while chunk hashes/SMC and REL eligibility remain enabled; then run the fresh benchmark and bounded lockstep window.
+- On the local RMSE52 workspace, build current `main` and perform the native-module audit first. Confirm the exact-source and replayed-text audit guards accept the real target REL while chunk hashes/SMC and REL eligibility remain enabled; then run the fresh benchmark and bounded lockstep window.
