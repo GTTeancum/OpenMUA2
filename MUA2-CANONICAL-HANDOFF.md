@@ -182,13 +182,16 @@ Validation state:
 
 What happened:
 
-- Re-read canonical `main`; latest observed `main` commit at the end of this turn is `e2040493438bd53cb458776427995e05ebaec016`.
-- Re-checked PR #24 head `09b9195bd245f466d9c913ab7b7742d7845043f0`; OpenMUA2 tooling run `36071914753` remains green.
-- Inspected ModernGekko run `36071914841` at job level:
-  - standalone Windows: PASS;
-  - standalone Ubuntu: PASS;
-  - full Windows: still compiling in `Build`;
-  - full Ubuntu: still compiling in `Build`.
-- No current-head failure appeared, but the required full-build gate was not complete, so PR #24 was intentionally **not merged**.
-- No additional performance patch was started in parallel; the next turn should finish this integration gate first.
+- Resumed exactly at the PR #24 integration gate.
+- Re-checked head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
+- OpenMUA2 tooling run `36071914753` remains **PASS**.
+- ModernGekko run `36071914841` remains **IN PROGRESS**:
+  - standalone Windows: **PASS**;
+  - standalone Ubuntu: **PASS**;
+  - full Windows: still in `Build`;
+  - full Ubuntu: still in `Build`.
+- The in-progress job-log endpoint returned no usable live log, so there is no evidence of a compile failure to fix yet.
+- Verified PR #24 still exists and branch `perf/reuse-linked-continuation-result` is still present.
+- PR #24 remains intentionally **unmerged** until both full build/test jobs complete successfully.
+- No second performance patch was started on top of an unmerged PR.
 - No RMSE52 game-side run occurred.
