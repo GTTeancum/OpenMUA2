@@ -76,6 +76,8 @@ Performance PR #20 was merged as `5b87d08b8f6e4daff2ca64bab75d67632ec28721`. It 
 
 Performance PR #21 was merged as `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5`. It adds dedicated generated chassis dispatch helpers that skip the duplicate `ppc_host_call()` probe already handled by StaticRecomp, while preserving replacement dispatch and physical MEM1 alias fallback; normal/indirect generated dispatch remains host-call-aware. OpenMUA2 tooling run `36042200541`, DolRecomp run `36042200581`, and ModernGekko run `36042200621` all passed on Ubuntu and Windows, including full ModernGekko MSVC/Ninja integration.
 
+Performance PR #22 was merged as `dc43d362d425134222d00aa02dd4dbec99fcf222`. It removes the redundant explicit `m_module_active` check from the native burst back-edge because `fast_native_continue()` already rejects inactive modules on both the REL/forced-fallback and direct lookup paths. OpenMUA2 tooling run `36047001104` and ModernGekko run `36047001119` passed on Ubuntu and Windows, including full MSVC/Ninja integration.
+
 The earlier current-source commits also include cross-platform DolRecomp CI for the cache-control generator change and cross-platform GXRuntime CI for the FMA/runtime changes.
 
 ## Validation boundary
@@ -91,7 +93,7 @@ No new claim is made here for a complete level, long-session stability, multipla
 1. Build the current `O2 + indexed` native module/runtime against the exact RMSE52 image and benchmark the same route on Windows and Linux wherever the local game workspace is available.
 2. A/B `--dispatch-lookup indexed` against `--dispatch-lookup linear` with the same compiler, optimization level, route, warmup, graphics/audio settings, and sample window. Keep both raw results.
 3. Profile native-dispatch/chassis overhead on the faster baseline: dispatch count, hottest dispatch PCs, burst length, host-call checks, REL address translation, native exceptions, and JIT fallback. Ordinary/merged dispatch lookup, host-feature selection, clean-chunk host-call probing, and duplicate runtime→linked resolution have now been reduced, so measure after these changes.
-4. Optimize shared generated/native transfer paths that benefit MSVC and GCC/Clang together. Same-section REL translation is fast-pathed in both directions, empty forced-fallback scans are removed, cached host-call state is read directly, and duplicate generated host-call chassis probes are removed. The next source-level focus should come from the remaining per-block burst-loop work or cross-section/cross-chunk transfer overhead rather than another already-inlineable generated helper.
+4. Optimize shared generated/native transfer paths that benefit MSVC and GCC/Clang together. Same-section REL translation is fast-pathed in both directions, empty forced-fallback scans are removed, cached host-call state is read directly, duplicate generated host-call chassis probes are removed, and the redundant module-active burst back-edge branch is gone. The next source-level focus should come from the remaining per-block burst-loop work or cross-section/cross-chunk transfer overhead rather than another already-inlineable generated helper.
 5. Rebuild and re-measure on both platforms after each accepted performance change. Do not infer a speedup from source structure or CI.
 6. Defer additional lockstep/correctness expansion until performance work reaches a useful plateau or a concrete failure blocks further performance measurement. Existing correctness/SMC/audit guards stay enabled.
 
