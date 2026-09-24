@@ -175,19 +175,37 @@ Do not claim any of these from current `main` without a real game-side run:
 
 Latest `main` inspected before this handoff update:
 
-- `f98a4a47754002fc74532cc88cbfe9d8f775ebd4` — `Update MUA2 handoff for pending REL section hint`
+- `8fac9453858010326e0f7641355bd4e3b6ca3e94` — `Condense MUA2 handoff and record PR17 CI gate`
 
-This turn made **no source-code changes**. It only checked PR #17 CI and updated the handoff/delivery rule.
+This was a **CI-gate-only short turn**. No source code was changed.
 
-Observed this turn:
+PR #17 state:
 
-- Tooling Windows: PASS
-- Tooling Ubuntu: PASS
-- ModernGekko standalone Windows: PASS
-- ModernGekko standalone Ubuntu: PASS
-- ModernGekko full Windows: still building
-- ModernGekko full Ubuntu: still building
-- PR #17 remains open/unmerged
-- No RMSE52 game-side run was performed
+- PR: #17 — `Reuse REL section for return translation`
+- Branch: `perf/rel-runtime-section-hint`
+- Head: `5aff006a6d8949c4692dce68b4127627c0829300`
+- State: OPEN / UNMERGED
 
-Handoff delivery requirement is now explicitly: **attach the Markdown file every turn**.
+Validation observed this turn:
+
+- OpenMUA2 tooling run `36026447896`: completed **PASS**
+  - Ubuntu Python tests: PASS
+  - Windows Python tests: PASS
+- ModernGekko run `36026447968`:
+  - Standalone Ubuntu: PASS
+  - Standalone Windows: PASS
+  - Full Ubuntu: still `in_progress`, Build step
+  - Full Windows: still `in_progress`, Build step
+- No failed CI job has appeared.
+- No RMSE52 game-side run occurred.
+
+Current blocker:
+
+- PR #17 cannot merge until both full ModernGekko jobs finish successfully.
+
+Next exact short turn:
+
+1. Inspect current `main`.
+2. Re-check ModernGekko run `36026447968`.
+3. If both full jobs PASS, merge PR #17, update `docs/CURRENT-STATUS.md`, update/attach this handoff, stop.
+4. If either fails, keep PR #17 unmerged, fix only that failure, rerun validation, update/attach this handoff, stop.
