@@ -150,23 +150,6 @@ Because the recent source cleanups have removed many obvious per-block calls/bra
 ## Next exact turn
 
 1. Inspect current `main`.
-2. Check PR #23 and workflow runs `36055136834` / `36055136817`.
-3. If required CI jobs PASS:
-   - merge PR #23,
-   - update `docs/CURRENT-STATUS.md`,
-   - investigate one next genuinely recurring transfer cost (prefer linked-result preservation or profiling evidence over another trivial branch),
-   - update/attach this handoff,
-   - stop.
-4. If CI fails:
-   - leave PR #23 unmerged,
-   - fix only the failing issue,
-   - rerun validation,
-   - update/attach this handoff,
-   - stop.
-
-## Next exact turn
-
-1. Inspect current `main`.
 2. Continue the linked-result-preservation investigation above.
 3. If the invariants can be proven from source and targeted regression coverage, implement one focused PR that preserves the linked result across host-side runtime-PC work and uses it for continuation lookup.
 4. If those invariants cannot be proven safely, do not force the optimization; record the blocker and wait for fresh RMSE52 profiling evidence.
