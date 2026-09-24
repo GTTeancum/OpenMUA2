@@ -47,59 +47,51 @@ Key accepted performance commits:
 - `af7938bdb63d4530ea43a6ba445800fc4171a153` — reuse runtime→linked PC between eligibility and dispatch.
 - `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — same-section linked→runtime REL hint.
 - `7a9cdc0165257ec19301972785150e4961f7f65e` — same-section runtime→linked continuation hint.
-- `12a75b2db225678368be5e2b6340218ba2aafa2f` — skip empty forced-fallback range scans.
+- `12a75b2db225678368be5e2b6340218ba2aafa2f` — skip empty forced-fallback range scans in native eligibility.
 - `5b87d08b8f6e4daff2ca64bab75d67632ec28721` — read cached host-call chunk state directly in the burst path.
-- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — generated chassis-only dispatch skips duplicate host-call dispatch while preserving replacements and physical alias fallback.
+- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — chassis-only generated dispatch skips duplicate host-call dispatch.
+- `dc43d362d425134222d00aa02dd4dbec99fcf222` — remove redundant explicit module-active check from the native burst back-edge.
 
-Other important accepted correctness/runtime commits:
+Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
-- `67d75dc63455b47e34159fefae4ed39fca5e5efc` — absolute linked REL section-table support.
-- `770db1089526cae9d0fc1b48fbd65c760e75efe6` — cache-control ops remain in native bursts.
-- `7e0b48660f90e93e7333eaf4a127c3afb7b9ceb6` — scalar FMA semantics repair.
-- `26334ad651567bf098401f781d1189e5f75c296c` — MEM2 lockstep journaling/restoration.
-- `46091e1a2394e052f116838727471cbed974aa2d` — merged DOL+REL dispatch eligibility guards.
+## Latest accepted work — PR #22
 
-## Latest accepted work — PR #21
-
-PR #21 `Skip duplicate chassis host-call dispatch` is **MERGED**.
+PR #22 `Remove redundant module-active burst check` is **MERGED**.
 
 Merge commit:
 
-- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5`
+- `dc43d362d425134222d00aa02dd4dbec99fcf222`
 
 Behavior:
 
-- Generator emits chassis-only dispatch helpers.
-- Chassis-only helpers preserve replacement dispatch and physical MEM1 alias fallback.
-- Chassis-only helpers skip `ppc_host_call()` because StaticRecomp already rejected host-call PCs.
-- Normal/generated indirect dispatch remains host-call-aware.
-- Baseline and x86-64-v3 chassis descriptors bind directly to the chassis-only helper.
+- Removes the explicit `m_module_active &&` from the native burst back-edge.
+- `fast_native_continue()` already rejects inactive modules on both paths:
+  - REL/forced-fallback path: `FastDispatchableAt() -> ChunkIndexOf()` rejects `!m_module_active`.
+  - direct lookup path: rejects `!m_module_active || m_chunk_lookup_table.empty()`.
+- Host-call, downcount, CPU-state, exception, timing, and dispatchability behavior remain unchanged.
 
 Validation:
 
-- OpenMUA2 tooling run `36042200541`: PASS on Ubuntu + Windows.
-- DolRecomp run `36042200581`: PASS on Ubuntu + Windows.
-- ModernGekko run `36042200621`: standalone + full build/test PASS on Ubuntu + Windows, including MSVC/Ninja.
+- OpenMUA2 tooling run `36047001104`: PASS on Ubuntu + Windows.
+- ModernGekko run `36047001119`: standalone + full build/test PASS on Ubuntu + Windows, including MSVC/Ninja.
 
-Status doc updated in:
+Status doc:
 
-- `34991fac838de555642b48a93ff177c04c9c1ee3` — `Record merged chassis host-call dispatch fast path`
+- `039782520c25933f7c6653797332bd7e8d0715cd` — `Record merged module-active burst cleanup`
 
-## Current pending work — PR #22
+## Current pending work — PR #23
 
-**PR:** #22 — `Remove redundant module-active burst check`  
-**Branch:** `perf/remove-redundant-module-active-backedge`  
-**Head:** `99878e7dabbafc7554c40312121eab02463c01e7`  
+**PR:** #23 — `Skip empty forced-fallback scan in interpreter path`  
+**Branch:** `perf/skip-empty-fallback-interpreter-scan`  
+**Head:** `0732b54cd91c465213b79255db5a45c6c7684ed2`  
 **State:** OPEN / UNMERGED
 
 Focused behavior:
 
-- Removes the explicit `m_module_active &&` from the native burst back-edge.
-- This is redundant because every `fast_native_continue()` path already rejects an inactive module:
-  - REL/forced-fallback path reaches `FastDispatchableAt() -> ChunkIndexOf()`, whose first guard rejects `!m_module_active`.
-  - direct lookup path checks `!m_module_active || m_chunk_lookup_table.empty()` before table lookup.
-- Timing, exception, host-call, downcount, CPU-state, and dispatchability conditions remain unchanged.
-- Regression pins the single module-active gate and both underlying inactive-module guards.
+- Extends the accepted PR #19 empty-range short circuit to the interpreter/fallback branch in `Run()`.
+- When `m_forced_fallback_ranges` is empty, the fallback path no longer calls `IsForcedFallbackAddress(ppc.pc)`.
+- When ranges exist, the exact prior forced-fallback behavior is preserved.
+- No native dispatch, REL, SMC, host-call, timing, or exception semantics change.
 
 Files changed:
 
@@ -108,26 +100,26 @@ Files changed:
 
 Diff size:
 
-- runtime: 1 addition / 2 deletions
-- regression: 22 additions
+- runtime: 3 changed lines
+- regression: 13 additions
 
-## PR #22 validation state
+## PR #23 validation state
 
-OpenMUA2 tooling run `36047001104`:
+OpenMUA2 tooling run `36055136834`:
 
-- Ubuntu: **PASS**
-- Windows: **PASS**
+- Ubuntu: `in_progress`
+- Windows: `in_progress` (Checkout at last observation)
 
-ModernGekko run `36047001119`:
+ModernGekko run `36055136817`:
 
 - Standalone Ubuntu: `in_progress` (Configure)
-- Full Ubuntu: `in_progress` (Configure)
-- Standalone Windows: `in_progress` (Configure)
-- Full Windows: `in_progress` (Configure)
+- Full Ubuntu: `in_progress` (Install Linux dependencies)
+- Standalone Windows: `in_progress` (Checkout)
+- Full Windows: `in_progress` (Checkout)
 
 No CI failure has appeared.
 
-PR #22 must remain unmerged until required Windows/Ubuntu validation completes.
+PR #23 must remain unmerged until required Windows/Ubuntu validation completes.
 
 ## Historical RMSE52 performance boundary
 
@@ -147,37 +139,29 @@ This proves native REL progression, **not current performance**.
 
 ## Current blockers
 
-1. **Immediate integration gate:** PR #22 CI must complete successfully.
+1. **Immediate integration gate:** PR #23 CI must complete successfully.
 2. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current-main FPS cannot be measured here.
 
-## Not freshly validated
+## Next performance direction
 
-Do not claim current:
+After PR #23, avoid another speculative micro-cleanup unless the source evidence is strong. The remaining meaningful work is increasingly in:
 
-- current FPS/speed
-- complete boot/title/menu
-- opening gameplay/combat
-- complete level
-- long-session stability
-- multiplayer
-- audio/controller correctness
-- save/reload across restart
-- full Windows game execution
-- fresh large lockstep total
-- crash-free/glitch-free completion
+- cross-section/cross-chunk transfer overhead;
+- preserving the generated linked result across the post-dispatch runtime translation so continuation can avoid a linked→runtime→linked round trip, if that can be proven safe across REL section changes and physical aliases;
+- or fresh profiling from the actual RMSE52 route when the proprietary workspace is available.
 
 ## Next exact turn
 
 1. Inspect current `main`.
-2. Check PR #22 and workflow runs `36047001104` / `36047001119`.
+2. Check PR #23 and workflow runs `36055136834` / `36055136817`.
 3. If required CI jobs PASS:
-   - merge PR #22,
+   - merge PR #23,
    - update `docs/CURRENT-STATUS.md`,
-   - inspect one next genuinely recurring burst/chassis cost,
+   - investigate one next genuinely recurring transfer cost (prefer linked-result preservation or profiling evidence over another trivial branch),
    - update/attach this handoff,
    - stop.
 4. If CI fails:
-   - leave PR #22 unmerged,
+   - leave PR #23 unmerged,
    - fix only the failing issue,
    - rerun validation,
    - update/attach this handoff,
@@ -185,20 +169,15 @@ Do not claim current:
 
 ## Last turn update — 2026-09-24
 
-Latest source/status commits produced or observed this turn:
-
-- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — PR #21 merged
-- `34991fac838de555642b48a93ff177c04c9c1ee3` — current status updated for PR #21
-
 What happened:
 
-- Reconciled parallel work and found PR #21 pending.
-- Confirmed PR #21 tooling, DolRecomp, and full ModernGekko CI PASS on Windows + Ubuntu.
-- Merged PR #21.
-- Updated `docs/CURRENT-STATUS.md`.
-- Inspected the remaining burst loop and verified the explicit `m_module_active` back-edge check was redundant with `fast_native_continue()`.
-- Implemented the single-branch cleanup on a new branch.
-- Added targeted source regression coverage.
-- Opened PR #22.
-- PR #22 tooling PASS on Windows and Ubuntu; all four ModernGekko jobs are in progress at Configure; no failure observed.
+- Reconciled substantial parallel progress: PR #20 and PR #21 were already merged and fully validated.
+- PR #22 tooling and full ModernGekko CI were fully green on Windows + Ubuntu.
+- Merged PR #22 as `dc43d362d425134222d00aa02dd4dbec99fcf222`.
+- Updated `docs/CURRENT-STATUS.md` as `039782520c25933f7c6653797332bd7e8d0715cd`.
+- Inspected the remaining burst/fallback path.
+- Implemented the empty forced-fallback-range short circuit in the interpreter/fallback path.
+- Added a targeted regression.
+- Opened PR #23.
+- PR #23 CI started; no failure observed.
 - No RMSE52 game-side run occurred.
