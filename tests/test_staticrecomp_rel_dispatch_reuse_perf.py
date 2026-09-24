@@ -167,7 +167,7 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         smc = SMC.read_text(encoding="utf-8")
 
         self.assertIn(
-            "} while (fast_native_continue(m_guest.pc, &linked_dispatch_address,",
+            "} while (fast_native_continue(m_guest.pc, linked_result_address,",
             run,
         )
         self.assertNotIn(
