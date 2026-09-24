@@ -51,6 +51,7 @@ Key accepted performance commits:
 - `5b87d08b8f6e4daff2ca64bab75d67632ec28721` — read cached host-call chunk state directly in the burst path.
 - `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — chassis-only generated dispatch skips duplicate host-call dispatch.
 - `dc43d362d425134222d00aa02dd4dbec99fcf222` — remove redundant explicit module-active check from the native burst back-edge.
+- `20dd90851c3a2625ddb973f8850e2494bb33ca9f` — skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
@@ -79,47 +80,29 @@ Status doc:
 
 - `039782520c25933f7c6653797332bd7e8d0715cd` — `Record merged module-active burst cleanup`
 
-## Current pending work — PR #23
+## Latest accepted work — PR #23
 
-**PR:** #23 — `Skip empty forced-fallback scan in interpreter path`  
-**Branch:** `perf/skip-empty-fallback-interpreter-scan`  
-**Head:** `0732b54cd91c465213b79255db5a45c6c7684ed2`  
-**State:** OPEN / UNMERGED
+PR #23 `Skip empty forced-fallback scan in interpreter path` is **MERGED**.
 
-Focused behavior:
+Merge commit:
 
-- Extends the accepted PR #19 empty-range short circuit to the interpreter/fallback branch in `Run()`.
+- `20dd90851c3a2625ddb973f8850e2494bb33ca9f`
+
+Behavior:
+
+- Extends PR #19's empty forced-fallback-range short circuit to the interpreter/fallback branch in `Run()`.
 - When `m_forced_fallback_ranges` is empty, the fallback path no longer calls `IsForcedFallbackAddress(ppc.pc)`.
-- When ranges exist, the exact prior forced-fallback behavior is preserved.
-- No native dispatch, REL, SMC, host-call, timing, or exception semantics change.
+- Configured forced-fallback ranges retain the exact prior behavior.
+- Native dispatch, REL, SMC, host-call, timing, and exception semantics are unchanged.
 
-Files changed:
+Validation:
 
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
-- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
+- OpenMUA2 tooling run `36055136834`: PASS on Ubuntu + Windows.
+- ModernGekko run `36055136817`: standalone + full build/test PASS on Ubuntu + Windows, including MSVC/Ninja.
 
-Diff size:
+Status doc:
 
-- runtime: 3 changed lines
-- regression: 13 additions
-
-## PR #23 validation state
-
-OpenMUA2 tooling run `36055136834`:
-
-- Ubuntu: **PASS**
-- Windows: **PASS**
-
-ModernGekko run `36055136817`:
-
-- Standalone Ubuntu: `in_progress` (Configure)
-- Full Ubuntu: `in_progress` (Configure)
-- Standalone Windows: `in_progress` (Configure)
-- Full Windows: `in_progress` (Configure)
-
-No CI failure has appeared.
-
-PR #23 must remain unmerged until required Windows/Ubuntu validation completes.
+- `2de1dee811932d3d010dc606abf02cb7ab749769` — `Record merged interpreter fallback fast path`
 
 ## Historical RMSE52 performance boundary
 
@@ -139,16 +122,30 @@ This proves native REL progression, **not current performance**.
 
 ## Current blockers
 
-1. **Immediate integration gate:** PR #23 CI must complete successfully.
-2. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current-main FPS cannot be measured here.
+1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current-main FPS cannot be measured here.
+2. There is no pending source-integration PR at the end of this turn.
 
-## Next performance direction
+## Next performance direction — investigated, not yet changed
 
-After PR #23, avoid another speculative micro-cleanup unless the source evidence is strong. The remaining meaningful work is increasingly in:
+The next genuinely recurring transfer cost is the post-dispatch linked→runtime→linked round trip before burst continuation.
 
-- cross-section/cross-chunk transfer overhead;
-- preserving the generated linked result across the post-dispatch runtime translation so continuation can avoid a linked→runtime→linked round trip, if that can be proven safe across REL section changes and physical aliases;
-- or fresh profiling from the actual RMSE52 route when the proprietary workspace is available.
+Current source behavior:
+
+1. Generated dispatch returns a **linked** PC in `m_guest.pc`.
+2. `TranslateRelAddress()` converts it to the runtime PC for tracing, lockstep, idle-loop, exception and host-side checks.
+3. `fast_native_continue()` then calls dispatchability, which converts that runtime PC back to linked form before the next generated dispatch.
+
+A future optimization could preserve the generated linked result in a separate local while keeping `m_guest.pc` in runtime form for all host-side semantics, then use the preserved linked result for the continuation chunk lookup.
+
+Do **not** implement that blindly. Before changing it, prove all of the following:
+
+- lockstep verification cannot legitimately replace the post-dispatch PC before continuation;
+- exception/interrupt handling cannot require a different linked result;
+- REL section refresh/unload/relocation semantics remain equivalent;
+- physical aliases and DOL/REL cross-section transfers still take the correct fallback;
+- forced-fallback and exact host-call checks continue to use the runtime address.
+
+Because the recent source cleanups have removed many obvious per-block calls/branches, prefer this transfer optimization only if the invariants above can be pinned by targeted tests. Otherwise the next meaningful step is fresh RMSE52 profiling rather than another speculative micro-cleanup.
 
 ## Next exact turn
 
@@ -167,17 +164,23 @@ After PR #23, avoid another speculative micro-cleanup unless the source evidence
    - update/attach this handoff,
    - stop.
 
+## Next exact turn
+
+1. Inspect current `main`.
+2. Continue the linked-result-preservation investigation above.
+3. If the invariants can be proven from source and targeted regression coverage, implement one focused PR that preserves the linked result across host-side runtime-PC work and uses it for continuation lookup.
+4. If those invariants cannot be proven safely, do not force the optimization; record the blocker and wait for fresh RMSE52 profiling evidence.
+5. Update/attach this handoff and stop.
+
 ## Last turn update — 2026-09-24
 
 What happened:
 
-- Reconciled substantial parallel progress: PR #20 and PR #21 were already merged and fully validated.
-- PR #22 tooling and full ModernGekko CI were fully green on Windows + Ubuntu.
-- Merged PR #22 as `dc43d362d425134222d00aa02dd4dbec99fcf222`.
-- Updated `docs/CURRENT-STATUS.md` as `039782520c25933f7c6653797332bd7e8d0715cd`.
-- Inspected the remaining burst/fallback path.
-- Implemented the empty forced-fallback-range short circuit in the interpreter/fallback path.
-- Added a targeted regression.
-- Opened PR #23.
-- PR #23 tooling PASS on Windows + Ubuntu; all four ModernGekko jobs are in progress at Configure; no failure observed.
+- Reconciled parallel progress through PR #23.
+- PR #23 tooling and all four ModernGekko jobs were fully green on Windows + Ubuntu.
+- Merged PR #23 as `20dd90851c3a2625ddb973f8850e2494bb33ca9f`.
+- Updated `docs/CURRENT-STATUS.md` as `2de1dee811932d3d010dc606abf02cb7ab749769`.
+- Inspected the remaining native burst transfer path.
+- Confirmed the next recurring cost is a linked→runtime translation after generated dispatch followed by runtime→linked resolution for continuation.
+- Did not implement linked-result preservation yet because lockstep, exception/interrupt, REL refresh, physical-alias, and cross-section invariants must be proven first.
 - No RMSE52 game-side run occurred.
