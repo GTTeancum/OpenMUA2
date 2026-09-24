@@ -18,6 +18,21 @@ static const char* feature_expression(DolLLVMTargetProfile profile) {
 
 static void emit_dispatch(FILE* out, const char* suffix) {
     fprintf(out,
+            "\nstatic inline int dolrecomp_call_chassis%s(CPUState* ctx, u32 address) {\n"
+            "    u32 alias;\n"
+            "    DolRecompFunction fn;\n"
+            "    ctx->pc = address;\n"
+            "    if (dolrecomp_dispatch_replacement(ctx, address)) return 1;\n"
+            "    fn = dolrecomp_find_original%s(address);\n"
+            "    if (fn) { fn(ctx); return 1; }\n"
+            "    if (dolrecomp_physical_pc_alias(ctx, address, &alias)) {\n"
+            "        ctx->pc = alias;\n"
+            "        if (dolrecomp_dispatch_replacement(ctx, alias)) return 1;\n"
+            "        fn = dolrecomp_find_original%s(alias);\n"
+            "        if (fn) { fn(ctx); return 1; }\n"
+            "    }\n"
+            "    return 0;\n"
+            "}\n"
             "\nstatic inline int dolrecomp_call%s(CPUState* ctx, u32 address) {\n"
             "    u32 alias;\n"
             "    ctx->pc = address;\n"
@@ -44,7 +59,7 @@ static void emit_dispatch(FILE* out, const char* suffix) {
             "    }\n"
             "    return 1;\n"
             "}\n",
-            suffix, suffix, suffix, suffix, suffix);
+            suffix, suffix, suffix, suffix, suffix, suffix, suffix, suffix);
 }
 
 void emit_llvm_variant_table(FILE* out, const FunctionList* functions,

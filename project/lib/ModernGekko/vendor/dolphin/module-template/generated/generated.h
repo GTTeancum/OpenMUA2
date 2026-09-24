@@ -296,8 +296,7 @@ void func_816DBFE0(CPUState* ctx);
 
 typedef void (*DolRecompFunction)(CPUState* ctx);
 
-static inline int dolrecomp_call(CPUState* ctx, u32 address) {
-    if (ppc_host_call(ctx, address)) return 1;
+static inline int dolrecomp_call_chassis(CPUState* ctx, u32 address) {
     // DolRecomp constant-time chunk dispatch.
     if (address >= 0x80003400u && address < 0x80003800u && ((address - 0x80003400u) & 3u) == 0u) {
         func_80003400(ctx);
@@ -547,6 +546,11 @@ static inline int dolrecomp_call(CPUState* ctx, u32 address) {
         return 1;
     }
     return 0;
+}
+
+static inline int dolrecomp_call(CPUState* ctx, u32 address) {
+    if (ppc_host_call(ctx, address)) return 1;
+    return dolrecomp_call_chassis(ctx, address);
 }
 
 static inline int dolrecomp_run_blocks(CPUState* ctx, u32 max_blocks) {

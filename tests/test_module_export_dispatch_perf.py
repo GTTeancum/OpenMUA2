@@ -7,6 +7,8 @@ MODULE_EXPORT = (
     ROOT
     / "project/lib/ModernGekko/vendor/dolphin/module-template/module_export.c"
 )
+DOLRECOMP_DISPATCH = ROOT / "project/lib/DolRecomp/src/backend/dispatch.c"
+DOLRECOMP_VARIANTS = ROOT / "project/lib/DolRecomp/src/backend/variant_output.c"
 
 
 class ModuleExportDispatchPerfTests(unittest.TestCase):
@@ -47,8 +49,16 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
         )
         get_module = text[export:]
 
-        self.assertIn("return dolrecomp_call(ctx, address);", text[baseline:v3])
         self.assertIn(
+            "return dolrecomp_call_chassis(ctx, address);",
+            text[baseline:v3],
+        )
+        self.assertIn(
+            "return dolrecomp_call_chassis__x86_64_v3(ctx, address);",
+            text[v3:export],
+        )
+        self.assertNotIn("return dolrecomp_call(ctx, address);", text[baseline:v3])
+        self.assertNotIn(
             "return dolrecomp_call__x86_64_v3(ctx, address);",
             text[v3:export],
         )
@@ -57,6 +67,36 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
         self.assertIn("return &s_desc_x86_64_v3;", get_module)
         self.assertIn("return &s_desc_baseline;", get_module)
         self.assertNotIn("selected_dispatch(ctx, address)", text[baseline:export])
+
+    def test_chassis_helpers_preserve_non_host_dispatch_behavior(self) -> None:
+        dispatch = DOLRECOMP_DISPATCH.read_text(encoding="utf-8")
+        variants = DOLRECOMP_VARIANTS.read_text(encoding="utf-8")
+
+        chassis = dispatch.index(
+            'static inline int dolrecomp_call_chassis(CPUState* ctx, u32 address)'
+        )
+        public = dispatch.index(
+            'static inline int dolrecomp_call(CPUState* ctx, u32 address)',
+            chassis,
+        )
+        chassis_body = dispatch[chassis:public]
+        self.assertIn("dolrecomp_dispatch_replacement(ctx, address)", chassis_body)
+        self.assertIn("dolrecomp_call_original(ctx, address)", chassis_body)
+        self.assertIn("dolrecomp_physical_pc_alias(ctx, address, &alias)", chassis_body)
+        self.assertNotIn("ppc_host_call", chassis_body)
+
+        self.assertIn(
+            '"\\nstatic inline int dolrecomp_call_chassis%s(CPUState* ctx, u32 address) {\\n"',
+            variants,
+        )
+        self.assertIn(
+            '"        fn = dolrecomp_find_original%s(alias);\\n"',
+            variants,
+        )
+        self.assertIn(
+            '"    if (ctx->host_call && ppc_host_call(ctx, address)) return 1;\\n"',
+            variants,
+        )
 
 
 if __name__ == "__main__":
