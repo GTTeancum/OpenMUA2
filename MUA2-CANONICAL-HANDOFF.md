@@ -10,10 +10,10 @@
 - GitHub `main` is authoritative. Inspect current `main` before every change.
 - **Multiplatform performance is the active priority.** Correctness expansion comes later unless a concrete failure blocks performance work.
 - Preserve SMC/hash/audit/REL eligibility/verification protections.
-- Use **moderately short turns** because resume-stream failures occur: one focused implementation/merge plus validation and a small next-step investigation is acceptable; do not batch several independent changes.
+- Use **moderately short turns** because resume-stream failures occur: one focused implementation/merge plus validation is appropriate; do not batch unrelated optimizations.
 - At the end of **every turn**, update this file, commit it to `main`, and attach `MUA2-CANONICAL-HANDOFF.md` in chat.
 - Never fabricate build, game, controller, save, audio, or performance results.
-- Never commit RMSE52 proprietary game data, extracted game files, generated proprietary translation output, saves, logs, screenshots, or RAM captures.
+- Never commit RMSE52 proprietary game data, extracted files, generated proprietary translation output, saves, logs, screenshots, or RAM captures.
 
 ## Important locations
 
@@ -34,7 +34,7 @@
 
 Native DOL and native REL execution are present. SMC/chunk-hash protection remains enabled.
 
-Key accepted commits:
+Key accepted performance/correctness commits:
 
 - `67d75dc63455b47e34159fefae4ed39fca5e5efc` — absolute linked REL section-table support.
 - `770db1089526cae9d0fc1b48fbd65c760e75efe6` — cache-control ops stay in native bursts.
@@ -50,79 +50,109 @@ Key accepted commits:
 - `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — reuse module-load v3 choice for indirect dispatch.
 - `2776fa0a3e80136495a32552b9d909e16dcfcd5e` — gate exact host-call probes by cached chunk coverage.
 - `af7938bdb63d4530ea43a6ba445800fc4171a153` — reuse runtime→linked PC resolution across eligibility and dispatch.
-- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — fast-path same-section linked→runtime REL return translation using the active section index; cross-section/DOL returns retain the full scan.
+- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — fast-path same-section linked→runtime REL return translation.
 
-Observed historical RMSE52 REL facts:
+## Historical RMSE52 boundary
+
+Observed retained facts:
 
 - module ID `1`
 - REL version `3`
 - header around `0x80E4A080`
 - linked text around `0x80E4A164`
 - accepted native REL text coverage `3,255,744` bytes
-- one live REL module discovered
 - historical accepted run advanced real game frames
 
-Do not treat historical gameplay as fresh current-main validation.
+Historical performance, predating recent optimizations:
 
-## Performance boundary
+- reported FPS ~`10.319`
+- guest-frame FPS ~`2.062`
+- speed ~`0.1404`
+- native dispatches `174,476,293`
+- native exceptions `5,959`
+- hook fallback `1,299,055`
+- hook fast cache `1,295,291`
+- hook slow `3,764`
+- JIT fallback runs `11,023`
 
-The retained native-REL benchmark predates the recent optimizations:
+Do not claim current FPS improvement until the actual RMSE52 route is rerun.
 
-- reported FPS: ~`10.319`
-- guest-frame FPS: ~`2.062`
-- speed: ~`0.1404`
-- native dispatches: `174,476,293`
-- native exceptions: `5,959`
-- hook fallback: `1,299,055`
-- hook fast cache: `1,295,291`
-- hook slow: `3,764`
-- JIT fallback runs: `11,023`
+## Latest accepted work — PR #17
 
-This proves native REL progression, **not acceptable current performance**. No FPS improvement may be claimed until RMSE52 is rerun.
-
-## Latest accepted performance work — PR #17
-
-PR #17 `Reuse REL section for return translation` is **MERGED**.
-
-Merge commit:
+PR #17 `Reuse REL section for return translation` is merged as:
 
 - `7b7e412f671039e1d29e2cdff7b2e51509bc046e`
 
-Behavior:
+Validation:
 
-- Dispatchability carries the active REL section index alongside the already-carried linked PC.
-- Native-burst entry and continuation carry that section index into the dispatch iteration.
-- `TranslateRelAddress(linked_address, rel_section_hint)` checks the hinted section first.
-- Same-section returns translate with a bounds check + arithmetic instead of scanning all active REL sections.
-- Cross-section and DOL returns fall back to the existing full `ResolveRuntimeAddress()` scan.
-- Non-REL path uses sentinel `0xffffffffu`.
-- REL refresh, chunk verification, forced fallback, host-call gating, and prior runtime→linked reuse remain intact.
+- OpenMUA2 tooling run `36026447896`: PASS on Ubuntu and Windows.
+- ModernGekko run `36026447968`: standalone + full build/test PASS on Ubuntu and Windows.
+- Windows full build used MSVC/Ninja.
 
-PR #17 validation:
+`docs/CURRENT-STATUS.md` was updated in:
 
-OpenMUA2 tooling run `36026447896`:
+- `bccc38eb90bd822beca965773e3d849d79e8eb18`
+
+## Current pending work — PR #18
+
+**PR:** #18 — `Reuse REL section for native continuation lookup`  
+**Branch:** `perf/rel-native-section-hint`  
+**Head:** `26fbbf169146d950a6fbd9bd13d63a7eaf70cd6d`  
+**State:** OPEN / UNMERGED
+
+Focused behavior:
+
+- Adds an optional `rel_section_hint` to runtime→linked native address resolution.
+- On burst continuation, the previous active REL section index is used as the first runtime-range check.
+- Same-section continuation can therefore map runtime→linked directly instead of linearly scanning every active REL section.
+- Hint miss preserves the existing full active-section scan.
+- Direct DOL lookup remains after the active REL scan.
+- `RefreshRelSections()` remains the final fallback when allowed.
+- Initial dispatch and callers without a hint retain the old behavior through the default sentinel `0xffffffffu`.
+- PR #17's linked→runtime same-section fast path is unchanged.
+
+Files changed in PR #18:
+
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
+- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
+- `tests/test_staticrecomp_host_call_gate_perf.py`
+
+Implementation details:
+
+- `ResolveNativeAddress(..., rel_section_hint)` factors a `resolve_section(i)` helper.
+- It checks `rel_section_hint` first when valid.
+- On a miss, it scans all other active sections, then performs the original direct-DOL lookup, then the original refresh-and-rescan fallback.
+- `ChunkIndexOf`, `FastDispatchableAt`, and `DispatchableAt` carry the optional hint.
+- `fast_native_continue()` snapshots the current section index as the hint before the call overwrites the output section index.
+
+## PR #18 validation state
+
+OpenMUA2 tooling Actions run `36030032034`:
 
 - Ubuntu Python tests: **PASS**
-- Windows Python tests: **PASS**
+- Windows Python tests: `in_progress` at end of turn; it had reached post-checkout cleanup after the tooling test step.
 
-ModernGekko run `36026447968`:
+ModernGekko Actions run `36030032243`:
 
-- Standalone Ubuntu: **PASS**
-- Standalone Windows: **PASS**
-- Full build/test Ubuntu: **PASS**
-- Full build/test Windows: **PASS**
+- Standalone Ubuntu: `in_progress`, Configure step.
+- Standalone Windows: `in_progress`, Configure step.
+- Full Ubuntu: `in_progress`, Install Linux dependencies.
+- Full Windows: `in_progress`, Configure step.
 
-The Windows full job is the MSVC/Ninja integration path and compiles the changed StaticRecomp runtime.
+No CI failure has appeared.
 
-Current status document updated in:
+One combined workflow-status query timed out once; separate workflow queries succeeded. This was a connector timeout, not a CI failure.
 
-- `bccc38eb90bd822beca965773e3d849d79e8eb18` — `Record merged same-section REL return fast path`
+## Current blockers
 
-## Current blocker
+1. **Immediate integration gate:** PR #18 CI must finish. Do not merge until required Windows/Ubuntu jobs are green.
+2. **Game-performance gate:** this environment still lacks the proprietary RMSE52 workspace/image, so no current-main FPS can be measured here.
 
-Fresh game-side performance measurement is still blocked because this environment does not have the proprietary RMSE52 workspace/image.
+## Not freshly validated
 
-No fresh claim is made for:
+Do not claim current:
 
 - current FPS/speed
 - complete boot/title/menu
@@ -136,49 +166,33 @@ No fresh claim is made for:
 - fresh large lockstep total
 - crash-free/glitch-free completion
 
-## Next performance target — investigated, not yet changed
-
-The next hot path is the **continuation-side runtime→linked REL lookup**.
-
-Current behavior after PR #17:
-
-1. A native block returns a linked PC.
-2. Same-section linked→runtime translation is now fast-pathed.
-3. Before the next native block, `FastDispatchableAt()` → `ChunkIndexOf()` → `ResolveNativeAddress()` still linearly scans `m_active_rel_sections` to convert that runtime PC back to linked form.
-
-Recommended next change:
-
-- pass the previously active REL section index into `ResolveNativeAddress()` as a hint;
-- check that section's **runtime** range first;
-- if the runtime PC is still in that section, compute linked PC directly;
-- on a hint miss, preserve the existing full active-section scan, direct-DOL lookup, and `RefreshRelSections()` fallback;
-- do not allow the hint to bypass REL refresh or cross-section/DOL behavior.
-
-This is the reverse counterpart to merged PR #17 and should remove the remaining same-section linear section scan on burst continuation.
-
-## Next exact moderately-short turn
+## Next exact turn
 
 1. Inspect current `main`.
-2. Implement only the runtime→linked same-section hint described above.
-3. Add/update targeted source regression coverage.
-4. Open a focused PR.
-5. Observe tooling plus initial ModernGekko CI state; do not wait indefinitely if full integration jobs are still compiling.
-6. Update/attach this handoff and stop.
+2. Check PR #18 head and workflow runs `36030032034` / `36030032243`.
+3. If all required CI jobs PASS:
+   - merge PR #18,
+   - update `docs/CURRENT-STATUS.md`,
+   - investigate the next single dispatch/chassis hotspot,
+   - update/attach this handoff,
+   - stop.
+4. If CI fails:
+   - keep PR #18 unmerged,
+   - fix only the failing issue,
+   - rerun validation,
+   - update/attach this handoff,
+   - stop.
 
 ## Last turn update — 2026-09-24
 
-Latest source/status commits produced or observed this turn:
+Latest `main` inspected at turn start:
 
-- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — PR #17 merged: `Reuse REL section for return translation`
-- `bccc38eb90bd822beca965773e3d849d79e8eb18` — `Record merged same-section REL return fast path`
+- `6af73016d480b94ca286402e0b524e67ecb2d34c` — `Update MUA2 handoff after PR17 merge`
 
-What happened:
+Changes this turn:
 
-- Waited for the two full PR #17 integration builds rather than ending at the initial CI gate.
-- Full Windows integration: PASS.
-- Full Ubuntu integration: PASS.
-- Merged PR #17.
-- Updated `docs/CURRENT-STATUS.md`.
-- Investigated the next hotspot and confirmed continuation-side `ResolveNativeAddress()` still scans all active REL sections; a safe same-section runtime-range hint can precede that scan without altering fallback/refresh semantics.
-- No additional source optimization was stacked after PR #17.
+- Implemented the reverse same-section REL hint for continuation-side runtime→linked resolution.
+- Opened PR #18.
+- Added/updated targeted source regressions.
+- Did not merge PR #18 because CI is still running.
 - No RMSE52 game-side run occurred.
