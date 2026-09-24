@@ -121,9 +121,9 @@ void StaticRecompCore::Run()
   InitLookupTable(m_guest.ram_size, m_guest.exram_size);
   const bool lockstep_enabled = m_lockstep_verifier->IsEnabled();
   const auto fast_dispatchable_at = [this](u32 address, u32* chunk_index,
-                                             u32* linked_address) {
+                                             u32* linked_address, u32* rel_section_index) {
     if (m_has_rel_modules || !m_forced_fallback_ranges.empty())
-      return FastDispatchableAt(address, chunk_index, linked_address);
+      return FastDispatchableAt(address, chunk_index, linked_address, rel_section_index);
     if (!m_module_active || m_chunk_lookup_table.empty())
       return false;
 
@@ -145,14 +145,17 @@ void StaticRecompCore::Run()
       *chunk_index = static_cast<u32>(chunk);
     if (linked_address)
       *linked_address = address;
+    if (rel_section_index)
+      *rel_section_index = 0xffffffffu;
     return true;
   };
   const auto host_call_at = [this](u32 address, u32 chunk_index) {
     return m_guest.host_call && ChunkContainsHostCall(chunk_index) && IsHostCallAddress(address);
   };
-  const auto fast_native_continue = [&](u32 address, u32* linked_address) {
+  const auto fast_native_continue = [&](u32 address, u32* linked_address,
+                                         u32* rel_section_index) {
     u32 chunk_index = 0;
-    return fast_dispatchable_at(address, &chunk_index, linked_address) &&
+    return fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index) &&
            !host_call_at(address, chunk_index);
   };
 
@@ -216,8 +219,10 @@ void StaticRecompCore::Run()
       // FP-unavailable exception themselves (ppc_fp_available).
       u32 entry_chunk_index = 0;
       u32 linked_dispatch_address = ppc.pc;
+      u32 dispatch_rel_section = 0xffffffffu;
       if (m_module_active &&
-          DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address) &&
+          DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,
+                         &dispatch_rel_section) &&
           !host_call_at(ppc.pc, entry_chunk_index))
       {
         SyncIn();
@@ -252,7 +257,7 @@ void StaticRecompCore::Run()
                                      std::chrono::steady_clock::now() - dispatch_start);
           }
           if (m_has_rel_modules)
-            m_guest.pc = TranslateRelAddress(m_guest.pc);
+            m_guest.pc = TranslateRelAddress(m_guest.pc, dispatch_rel_section);
           if (m_collect_dispatch_samples)
           {
             auto& trace = m_dispatch_trace_samples[m_dispatch_trace_next];
@@ -327,7 +332,9 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (m_module_active && fast_native_continue(m_guest.pc, &linked_dispatch_address) &&
+        } while (m_module_active &&
+                 fast_native_continue(m_guest.pc, &linked_dispatch_address,
+                                      &dispatch_rel_section) &&
                  ppc.downcount > 0 && *state_ptr == CPU::State::Running);
         SyncOut();
         if ((ppc.Exceptions & SYNC_EXCEPTION_MASK) != 0)
