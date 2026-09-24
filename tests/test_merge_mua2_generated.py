@@ -123,7 +123,17 @@ class MergeDispatchTests(unittest.TestCase):
                 (output / "rel_text_section_1.bin").read_bytes(), text_bytes
             )
 
-            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = "0" * 64
+            wrong_hash = hashlib.sha256(b"wrong-live-text").hexdigest()
+            audit["comparisons"][0]["text_sections"][0]["expected_sha256"] = wrong_hash
+            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = wrong_hash
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            with self.assertRaisesRegex(
+                ValueError, "replayed REL text SHA-256 does not match audited live text"
+            ):
+                merge.emit_rel_metadata(audit_path, rel_path, output)
+
+            audit["comparisons"][0]["text_sections"][0]["expected_sha256"] = text_hash
+            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = wrong_hash
             audit_path.write_text(json.dumps(audit), encoding="utf-8")
             with self.assertRaisesRegex(
                 ValueError, "expected and observed text hashes differ"
