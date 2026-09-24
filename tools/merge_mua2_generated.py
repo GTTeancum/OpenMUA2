@@ -188,6 +188,11 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
                 "    if (page >= DOLRECOMP_MERGED_PAGE_COUNT) return NULL;",
                 "    u32 lo = dolrecomp_merged_page_first[page];",
                 "    u32 hi = dolrecomp_merged_page_end[page];",
+                "    if (hi == lo) return NULL;",
+                "    if (hi == lo + 1u) {",
+                "        const DolRecompDispatchEntry* chunk = &dolrecomp_merged_chunks[lo];",
+                "        return address >= chunk->start && address < chunk->end ? chunk->fn : NULL;",
+                "    }",
             ]
         )
     else:
