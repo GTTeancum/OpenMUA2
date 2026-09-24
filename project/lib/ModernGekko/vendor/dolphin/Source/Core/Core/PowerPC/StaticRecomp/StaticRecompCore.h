@@ -129,6 +129,8 @@ private:
   void OnICacheInvalidate(u32 address, u32 length);
   int ChunkIndexOf(u32 address, u32* linked_address = nullptr,
                    u32* rel_section_index = nullptr, u32 rel_section_hint = 0xffffffffu);
+  bool FastDispatchableLinkedAt(u32 runtime_address, u32 linked_address,
+                                u32 rel_section_index, u32* chunk_index = nullptr);
   bool IsForcedFallbackAddress(u32 address) const;
   bool ChunkContainsHostCall(u32 index) const;
   void VerifyChunk(u32 index);
@@ -136,7 +138,8 @@ private:
                             bool allow_refresh = true,
                             u32 rel_section_hint = 0xffffffffu);
   bool ResolveRuntimeAddress(u32 linked_address, u32* runtime_address) const;
-  u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu);
+  u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu,
+                          u32* resolved_rel_section_index = nullptr);
   void RefreshRelSections();
 
   static void SetPPCStateFromGuestState(const CPUState& s, PowerPC::PowerPCState& ppc);
