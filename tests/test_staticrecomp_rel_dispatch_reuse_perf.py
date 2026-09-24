@@ -143,6 +143,19 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             smc,
         )
 
+    def test_interpreter_fallback_skips_empty_forced_range_scan(self) -> None:
+        run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
+
+        self.assertIn(
+            "if (m_module_active && !m_forced_fallback_ranges.empty() &&\n"
+            "            IsForcedFallbackAddress(ppc.pc))",
+            run,
+        )
+        self.assertNotIn(
+            "if (m_module_active && IsForcedFallbackAddress(ppc.pc))",
+            run,
+        )
+
     def test_burst_backedge_does_not_duplicate_module_active_check(self) -> None:
         run = RUN.read_text(encoding="utf-8")
         smc = SMC.read_text(encoding="utf-8")
