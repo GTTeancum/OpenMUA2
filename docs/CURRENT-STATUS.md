@@ -28,9 +28,10 @@ Current performance baseline on `main`:
 - explicit A/B control: `--dispatch-lookup indexed|linear`
 - build receipts record `module_opt` and `dispatch_lookup`
 - DOL and REL generation cache identities include the dispatch mode
+- combined DOL+REL dispatch now uses a 4 KiB guest-page index to narrow each lookup before binary search (`bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`)
 - no current-main game-side speedup is claimed until the proprietary RMSE52 route is measured
 
-Historical profiling showed very high native-dispatch counts and concentrated time in tiny runtime/cross-chunk entries. The next optimization work should therefore attack shared dispatch/chassis overhead and generated cross-chunk transfer costs before revisiting lower-volume correctness work.
+Historical profiling showed very high native-dispatch counts and concentrated time in tiny runtime/cross-chunk entries. The first two performance changes therefore reduce generated lookup cost in both the ordinary DolRecomp path and the merged native DOL+REL path. The next optimization work should attack remaining shared chassis/cross-chunk transfer overhead before revisiting lower-volume correctness work.
 
 ## Fresh validation of current work
 
@@ -48,6 +49,8 @@ Pull-request tooling Actions run `35939460805` for the replayed-text guard passe
 
 Performance PR #2 (`a6328f40bb0c98a58c8f50e52a30d4da55390b7e`) was validated before merge by OpenMUA2 tooling run `35940341273` and DolRecomp run `35940341449`: both Ubuntu and Windows jobs passed. ModernGekko run `35940341332` had both standalone Windows and Ubuntu tests passing at merge time; its two larger full build/test jobs were still compiling and are not counted here as completed results.
 
+Performance PR #3 (`bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`) page-indexes the combined native DOL+REL dispatcher. OpenMUA2 tooling run `35941158719` passed on both Ubuntu and Windows before merge. Its tests cover page-index emission, empty uncovered pages, alignment, overlap rejection, and the existing dispatch-hole invariant.
+
 The earlier current-source commits also include cross-platform DolRecomp CI for the cache-control generator change and cross-platform GXRuntime CI for the FMA/runtime changes.
 
 ## Validation boundary
@@ -62,8 +65,8 @@ No new claim is made here for a complete level, long-session stability, multipla
 
 1. Build the current `O2 + indexed` native module/runtime against the exact RMSE52 image and benchmark the same route on Windows and Linux wherever the local game workspace is available.
 2. A/B `--dispatch-lookup indexed` against `--dispatch-lookup linear` with the same compiler, optimization level, route, warmup, graphics/audio settings, and sample window. Keep both raw results.
-3. Profile native-dispatch/chassis overhead on the faster baseline: dispatch count, hottest dispatch PCs, burst length, host-call checks, REL address translation, native exceptions, and JIT fallback.
-4. Optimize shared generated/native transfer paths that benefit MSVC and GCC/Clang together, especially high-frequency cross-chunk/tail/indirect transfers and avoidable chassis round trips.
+3. Profile native-dispatch/chassis overhead on the faster baseline: dispatch count, hottest dispatch PCs, burst length, host-call checks, REL address translation, native exceptions, and JIT fallback. The ordinary and combined dispatch lookups are now indexed, so remaining cost should be measured after these changes.
+4. Optimize shared generated/native transfer paths that benefit MSVC and GCC/Clang together, especially high-frequency cross-chunk/tail/indirect transfers, host-call checks, and avoidable chassis round trips.
 5. Rebuild and re-measure on both platforms after each accepted performance change. Do not infer a speedup from source structure or CI.
 6. Defer additional lockstep/correctness expansion until performance work reaches a useful plateau or a concrete failure blocks further performance measurement. Existing correctness/SMC/audit guards stay enabled.
 
