@@ -142,7 +142,8 @@ void StaticRecompCore::Run()
     if (chunk < 0 || m_chunk_state[chunk] != CHUNK_VERIFIED)
       return false;
     if (chunk_index)
-      *chunk_index = static_cast<u32>(chunk);    if (linked_address)
+      *chunk_index = static_cast<u32>(chunk);
+    if (linked_address)
       *linked_address = address;
     if (rel_section_index)
       *rel_section_index = 0xffffffffu;
