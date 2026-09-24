@@ -17,6 +17,10 @@ from pathlib import Path
 
 
 PROTO_RE = re.compile(r"void func_([0-9A-Fa-f]{8})\(CPUState\* ctx\);")
+DISPATCH_PAGE_SHIFT = 12
+DISPATCH_PAGE_SIZE = 1 << DISPATCH_PAGE_SHIFT
+DISPATCH_PAGE_MASK = DISPATCH_PAGE_SIZE - 1
+DISPATCH_MAX_INDEX_PAGES = 65536
 RANGE_RE = re.compile(
     r"u32\s+offset\s*=\s*address\s*-\s*(0x[0-9A-Fa-f]+)u\s*;\s*"
     r"if\s*\(\s*offset\s*<\s*(0x[0-9A-Fa-f]+)u"
@@ -96,6 +100,33 @@ def copy_chunks(src: Path, dst: Path) -> list[str]:
     return names
 
 
+def build_dispatch_page_index(
+    chunks: list[tuple[int, int]],
+) -> tuple[int, list[int], list[int]] | None:
+    if not chunks:
+        return None
+    base = chunks[0][0] & ~DISPATCH_PAGE_MASK
+    limit = (chunks[-1][1] + DISPATCH_PAGE_MASK) & ~DISPATCH_PAGE_MASK
+    page_count = (limit - base) >> DISPATCH_PAGE_SHIFT
+    if page_count <= 0 or page_count > DISPATCH_MAX_INDEX_PAGES:
+        return None
+
+    page_first: list[int] = []
+    page_end: list[int] = []
+    first = 0
+    for page in range(page_count):
+        page_start = base + page * DISPATCH_PAGE_SIZE
+        page_limit = page_start + DISPATCH_PAGE_SIZE
+        while first < len(chunks) and chunks[first][1] <= page_start:
+            first += 1
+        end = first
+        while end < len(chunks) and chunks[end][0] < page_limit:
+            end += 1
+        page_first.append(first)
+        page_end.append(end)
+    return base, page_first, page_end
+
+
 def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
     prelude, prefix, footer = split_header(dol_header)
     chunks = sorted(chunk_ranges(dol_header) + chunk_ranges(rel_header))
@@ -107,6 +138,7 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
         if index and start < chunks[index - 1][1]:
             raise ValueError("overlapping generated code chunks")
     prototypes = "\n".join(f"void func_{start:08X}(CPUState* ctx);" for start, _ in chunks)
+    page_index = build_dispatch_page_index(chunks)
     table = [
         "typedef struct DolRecompDispatchEntry {",
         "    u32 start;",
@@ -114,25 +146,69 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
         "    DolRecompFunction fn;",
         "} DolRecompDispatchEntry;",
         "",
-        "static inline DolRecompFunction dolrecomp_find_original(u32 address) {",
-        "    static const DolRecompDispatchEntry chunks[] = {",
     ]
-    for start, end in chunks:
-        table.append(f"        {{0x{start:08X}u, 0x{end:08X}u, func_{start:08X}}},")
+
+    if page_index is not None:
+        page_base, page_first, page_end = page_index
+        table.extend(
+            [
+                f"#define DOLRECOMP_MERGED_PAGE_BASE 0x{page_base:08X}u",
+                f"#define DOLRECOMP_MERGED_PAGE_SHIFT {DISPATCH_PAGE_SHIFT}u",
+                f"#define DOLRECOMP_MERGED_PAGE_COUNT {len(page_first)}u",
+                "",
+            ]
+        )
+
     table.extend(
         [
-            "    };",
-            "    if ((address & 3u) != 0u) return NULL;",
-            "    u32 lo = 0;",
-            "    u32 hi = (u32)(sizeof(chunks) / sizeof(chunks[0]));",
+            "static inline DolRecompFunction dolrecomp_find_original(u32 address) {",
+            "    static const DolRecompDispatchEntry dolrecomp_merged_chunks[] = {",
+        ]
+    )
+    for start, end in chunks:
+        table.append(f"        {{0x{start:08X}u, 0x{end:08X}u, func_{start:08X}}},")
+    table.append("    };")
+
+    if page_index is not None:
+        table.append(
+            "    static const u32 dolrecomp_merged_page_first[DOLRECOMP_MERGED_PAGE_COUNT] = {"
+        )
+        table.extend(f"        {value}u," for value in page_first)
+        table.append("    };")
+        table.append(
+            "    static const u32 dolrecomp_merged_page_end[DOLRECOMP_MERGED_PAGE_COUNT] = {"
+        )
+        table.extend(f"        {value}u," for value in page_end)
+        table.extend(
+            [
+                "    };",
+                "    if ((address & 3u) != 0u) return NULL;",
+                "    if (address < DOLRECOMP_MERGED_PAGE_BASE) return NULL;",
+                "    u32 page = (address - DOLRECOMP_MERGED_PAGE_BASE) >> DOLRECOMP_MERGED_PAGE_SHIFT;",
+                "    if (page >= DOLRECOMP_MERGED_PAGE_COUNT) return NULL;",
+                "    u32 lo = dolrecomp_merged_page_first[page];",
+                "    u32 hi = dolrecomp_merged_page_end[page];",
+            ]
+        )
+    else:
+        table.extend(
+            [
+                "    if ((address & 3u) != 0u) return NULL;",
+                "    u32 lo = 0;",
+                "    u32 hi = (u32)(sizeof(dolrecomp_merged_chunks) / sizeof(dolrecomp_merged_chunks[0]));",
+            ]
+        )
+
+    table.extend(
+        [
             "    while (lo < hi) {",
             "        u32 mid = lo + (hi - lo) / 2u;",
-            "        if (address < chunks[mid].start) {",
+            "        if (address < dolrecomp_merged_chunks[mid].start) {",
             "            hi = mid;",
-            "        } else if (address >= chunks[mid].end) {",
+            "        } else if (address >= dolrecomp_merged_chunks[mid].end) {",
             "            lo = mid + 1u;",
             "        } else {",
-            "            return chunks[mid].fn;",
+            "            return dolrecomp_merged_chunks[mid].fn;",
             "        }",
             "    }",
             "    return NULL;",
