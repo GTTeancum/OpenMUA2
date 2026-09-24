@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `6c300ade6247ab2e5227b1068a751f093d9b95c8` (`Refresh current CI and dispatch validation`)  
+**Source state summarized through:** `2b5faecb809af8452dba768f1bb505ba570cd4ef` (`Record merged dispatch alignment guard`)  
 **Date:** 2026-09-23
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -120,13 +120,15 @@ The verifier journals MEM1 and MEM2 with disjoint physical keys, captures native
 
 `tools/merge_mua2_generated.py` rejects overlapping generated chunks and preserves 4-byte instruction alignment in merged binary-search dispatch.
 
-Regression commits:
+Regression / guard commits:
 
 - `2490b3c408441ad26c10abc4586b7e086f5af3d9` — eligibility guards
 - `07fd13cca74370c8f27bb291ac30267a028de120` — corrected overlap fixture
 - `67db5f86875f6e40dca4f70b65fce63996a251ad` — proves an uncovered guest-address hole between generated DOL/REL ranges remains non-native
+- `b777ddbe0d2c556fc00ee632bd273d0c1ee13621` — rejects unaligned generated chunk boundaries before merged dispatch emission
+- `5e7fc98e09f53c33f6c383682973af8824889d13` — regression for unaligned generated chunk rejection
 
-The new gap regression changes no native execution behavior; it pins an existing eligibility invariant so future merge-tool changes cannot silently bridge ungenerated guest code.
+The gap regression changes no native execution behavior; it pins an existing eligibility invariant so future merge-tool changes cannot silently bridge ungenerated guest code. The alignment guard closes a separate metadata hole: a malformed unaligned generated function/chunk boundary can no longer cause an aligned guest PC to enter the wrong native chunk.
 
 ### Runtime shutdown/platform teardown
 
@@ -199,7 +201,7 @@ Workflow `.github/workflows/tooling-ci.yml` runs `python -m unittest discover -s
 
 `67db5f86875f6e40dca4f70b65fce63996a251ad` added `tests/test_merge_mua2_dispatch_holes.py`.
 
-The resulting tooling run completed successfully on both Ubuntu and Windows.
+The resulting tooling run completed successfully on both Ubuntu and Windows. The later tooling run for `5e7fc98e09f53c33f6c383682973af8824889d13` also completed successfully on both `ubuntu-latest` and `windows-latest`, covering the new unaligned-chunk rejection regression.
 
 ### What is still not freshly validated
 
@@ -276,36 +278,41 @@ Useful deeper documents:
 
 Latest main actually inspected before this handoff edit:
 
-- `6c300ade6247ab2e5227b1068a751f093d9b95c8` — `Refresh current CI and dispatch validation`
+- `2b5faecb809af8452dba768f1bb505ba570cd4ef` — `Record merged dispatch alignment guard`
 
 Changes made this turn:
 
-- Added `tests/test_merge_mua2_dispatch_holes.py` in commit `67db5f86875f6e40dca4f70b65fce63996a251ad`.
-- The regression verifies that a gap between generated DOL and REL ranges is not bridged into merged native dispatch eligibility.
-- Updated `docs/CURRENT-STATUS.md` in `6c300ade6247ab2e5227b1068a751f093d9b95c8` with current CI facts and the new dispatch-gap regression.
-- Replaced the stale long-form canonical handoff with this current compact self-contained handoff to reduce transfer/context failure risk while retaining the development state and blocker.
+- Inspected current `main` rather than relying on the older uploaded handoff; the repository had already advanced through `da67363...`.
+- `b777ddbe0d2c556fc00ee632bd273d0c1ee13621` updates `tools/merge_mua2_generated.py` so merged native dispatch generation rejects any generated chunk whose start or end is not 4-byte aligned.
+- `5e7fc98e09f53c33f6c383682973af8824889d13` adds `test_merged_dispatch_rejects_unaligned_chunks` to `tests/test_merge_mua2_generated.py`.
+- `2b5faecb809af8452dba768f1bb505ba570cd4ef` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
+- This canonical handoff was refreshed in the same turn.
 
 Tests actually run/observed:
 
-- ModernGekko GitHub Actions run for `c1eeb1a2...`: PASS. Full build/test and standalone tests passed on both Ubuntu and Windows.
-- OpenMUA2 tooling CI for `67db5f86...`: PASS on Ubuntu and Windows. The workflow ran `python -m unittest discover -s tests -v`.
+- GitHub Actions run `35936262261` for `5e7fc98e...`: PASS.
+- `Python tests (ubuntu-latest)`: PASS.
+- `Python tests (windows-latest)`: PASS.
+- The workflow executed the repository tooling test suite via the existing tooling CI configuration.
 
 Game-side validation:
 
-- Not run. This execution environment has no RMSE52 proprietary workspace. No gameplay or performance claim was made.
+- Not run. This execution environment still has no proprietary RMSE52 workspace, so no boot/gameplay/performance claim was made.
 
 Windows portability:
 
-- No source behavior change was introduced this turn. The new Python regression passed on `windows-latest`; the previously pending full ModernGekko Windows/MSVC CI was confirmed passing.
+- The production change is portable Python only.
+- The exact regression commit passed the project tooling suite on `windows-latest`.
 
 Failures/rejected experiments:
 
-- None this turn. A direct container clone attempt was unavailable because the isolated container had no external DNS/network access; GitHub connector state and Actions were used instead.
+- No code or test failures this turn.
+- The commit-status / PR-oriented workflow wrappers exposed no push-run result for the new commit; the repository Actions runs API was then queried directly and showed the completed successful tooling run.
 
 Current blocker:
 
-- Fresh current-main RMSE52 build/audit/benchmark/lockstep execution requires access to the local proprietary game workspace.
+- Fresh current-main RMSE52 build/audit/benchmark/lockstep execution still requires access to the local proprietary game workspace.
 
 Next exact step:
 
-- On the next run, if proprietary execution is still unavailable, inspect current `main` and add only another narrowly justified source-level correctness/portability regression; otherwise perform the fresh RMSE52 build/audit baseline first.
+- Perform the fresh RMSE52 current-main build and native-module audit first when the local game workspace is available; preserve chunk hashes/SMC and REL eligibility checks exactly as-is.
