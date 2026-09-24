@@ -46,19 +46,19 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
             run,
         )
         self.assertIn(
-            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address)", run
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,", run
         )
         self.assertIn("!host_call_at(ppc.pc, entry_chunk_index)", run)
         self.assertIn(
-            "fast_dispatchable_at(address, &chunk_index, linked_address)", run
+            "fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index)", run
         )
         self.assertIn("!host_call_at(address, chunk_index)", run)
         self.assertIn(
-            "fast_native_continue(m_guest.pc, &linked_dispatch_address)", run
+            "fast_native_continue(m_guest.pc, &linked_dispatch_address,", run
         )
 
         native_entry = run.index(
-            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address)"
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,"
         )
         sync_in = run.index("SyncIn();", native_entry)
         self.assertNotIn(

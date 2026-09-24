@@ -27,35 +27,35 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         smc = SMC.read_text(encoding="utf-8")
 
         self.assertIn(
-            "int ChunkIndexOf(u32 address, u32* linked_address = nullptr);",
+            "int ChunkIndexOf(u32 address, u32* linked_address = nullptr,",
             header,
         )
         self.assertIn(
-            "int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out)",
+            "int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out,",
             smc,
         )
         self.assertIn(
-            "ResolveNativeAddress(address, &linked_address, nullptr)",
+            "ResolveNativeAddress(address, &linked_address, rel_section_index)",
             smc,
         )
         self.assertIn("*linked_address_out = linked_address;", smc)
-        self.assertIn("ChunkIndexOf(address, linked_address)", smc)
+        self.assertIn("ChunkIndexOf(address, linked_address, rel_section_index)", smc)
 
     def test_native_burst_reuses_resolution_from_dispatchability(self) -> None:
         run = RUN.read_text(encoding="utf-8")
 
         self.assertIn("u32 linked_dispatch_address = ppc.pc;", run)
         self.assertIn(
-            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address)",
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,",
             run,
         )
         self.assertIn("m_guest.pc = linked_dispatch_address;", run)
         self.assertIn(
-            "fast_native_continue(m_guest.pc, &linked_dispatch_address)",
+            "fast_native_continue(m_guest.pc, &linked_dispatch_address,",
             run,
         )
         self.assertIn(
-            "fast_dispatchable_at(address, &chunk_index, linked_address)",
+            "fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index)",
             run,
         )
         self.assertNotIn(
@@ -65,7 +65,32 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
 
         # Linked->runtime translation after dispatch remains intact; this change
         # only removes the duplicate runtime->linked lookup.
-        self.assertIn("m_guest.pc = TranslateRelAddress(m_guest.pc);", run)
+        self.assertIn(
+            "m_guest.pc = TranslateRelAddress(m_guest.pc, dispatch_rel_section_index);",
+            run,
+        )
+
+    def test_same_section_return_translation_uses_hint_before_full_scan(self) -> None:
+        header = HEADER.read_text(encoding="utf-8")
+        smc = SMC.read_text(encoding="utf-8")
+        run = RUN.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu);",
+            header,
+        )
+        self.assertIn("if (rel_section_hint < m_active_rel_sections.size())", smc)
+        self.assertIn(
+            "const ActiveRelSection& section = m_active_rel_sections[rel_section_hint];",
+            smc,
+        )
+        self.assertIn(
+            "return section.runtime_start + (linked_address - section.linked_start);",
+            smc,
+        )
+        self.assertIn("ResolveRuntimeAddress(linked_address, &runtime_address);", smc)
+        self.assertIn("u32 dispatch_rel_section_index = 0xffffffffu;", run)
+        self.assertIn("&dispatch_rel_section_index", run)
 
 
 if __name__ == "__main__":
