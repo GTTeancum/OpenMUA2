@@ -682,8 +682,17 @@ bool ModManager::HostCallRangeContains(std::uint32_t start, std::uint32_t end,
 }
 
 bool ModManager::HostCallActive(void *user_data) {
-  return user_data &&
-         static_cast<ModManager *>(user_data)->HasGuestInterception();
+  if (!user_data)
+    return false;
+  auto *manager = static_cast<ModManager *>(user_data);
+  if (manager->HasGuestInterception())
+    return true;
+
+  // A callback-only mod still needs one host dispatch so runtime_start can
+  // fire. Once that event has been delivered, no guest-address interception
+  // means the static recomp hot path can disable host dispatch entirely.
+  return !manager->m_impl->runtime_started &&
+         manager->m_impl->callbacks.contains(EventKey("*", "runtime_start"));
 }
 
 std::uint64_t ModManager::HostCallGeneration(void *user_data) {
