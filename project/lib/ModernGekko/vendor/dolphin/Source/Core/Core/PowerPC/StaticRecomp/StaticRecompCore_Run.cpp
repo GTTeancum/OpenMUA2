@@ -343,8 +343,7 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (m_module_active &&
-                 fast_native_continue(m_guest.pc, &linked_dispatch_address,
+        } while (fast_native_continue(m_guest.pc, &linked_dispatch_address,
                                       &dispatch_rel_section_index) &&
                  ppc.downcount > 0 && *state_ptr == CPU::State::Running);
         SyncOut();

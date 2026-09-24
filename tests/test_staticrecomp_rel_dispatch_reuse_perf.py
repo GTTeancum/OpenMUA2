@@ -143,6 +143,28 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             smc,
         )
 
+    def test_burst_backedge_does_not_duplicate_module_active_check(self) -> None:
+        run = RUN.read_text(encoding="utf-8")
+        smc = SMC.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "} while (fast_native_continue(m_guest.pc, &linked_dispatch_address,",
+            run,
+        )
+        self.assertNotIn(
+            "} while (m_module_active &&\n                 fast_native_continue(",
+            run.replace("\r\n", "\n"),
+        )
+        # Every fast continuation path already rejects an inactive module.
+        self.assertIn(
+            "if (!m_module_active || m_chunk_lookup_table.empty())",
+            run,
+        )
+        self.assertIn(
+            "if (!m_module_active || m_chunk_lookup_table.empty())",
+            smc,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
