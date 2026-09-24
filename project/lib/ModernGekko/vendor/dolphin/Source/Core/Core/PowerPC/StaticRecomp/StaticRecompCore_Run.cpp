@@ -161,9 +161,19 @@ void StaticRecompCore::Run()
     return m_guest.host_call && chunk_contains_host_call(chunk_index) &&
            IsHostCallAddress(address);
   };
-  const auto fast_native_continue = [&](u32 address, u32* linked_address,
+  const auto fast_native_continue = [&](u32 address, u32 preserved_linked_address,
+                                          bool preserved_linked_valid, u32* linked_address,
                                           u32* rel_section_index) {
     u32 chunk_index = 0;
+    if (preserved_linked_valid && rel_section_index &&
+        FastDispatchableLinkedAt(address, preserved_linked_address, *rel_section_index,
+                                 &chunk_index))
+    {
+      if (linked_address)
+        *linked_address = preserved_linked_address;
+      return !host_call_at(address, chunk_index);
+    }
+
     const u32 rel_section_hint = rel_section_index ? *rel_section_index : 0xffffffffu;
     return fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index,
                                 rel_section_hint) &&
@@ -230,6 +240,8 @@ void StaticRecompCore::Run()
       // FP-unavailable exception themselves (ppc_fp_available).
       u32 entry_chunk_index = 0;
       u32 linked_dispatch_address = ppc.pc;
+      u32 linked_result_address = linked_dispatch_address;
+      bool linked_result_reusable = false;
       u32 dispatch_rel_section_index = 0xffffffffu;
       if (m_module_active &&
           DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,
@@ -267,8 +279,18 @@ void StaticRecompCore::Run()
             dispatch_profiler.Record(runtime_dispatch_address,
                                      std::chrono::steady_clock::now() - dispatch_start);
           }
+          linked_result_address = m_guest.pc;
           if (m_has_rel_modules)
-            m_guest.pc = TranslateRelAddress(m_guest.pc, dispatch_rel_section_index);
+          {
+            m_guest.pc = TranslateRelAddress(linked_result_address, dispatch_rel_section_index,
+                                             &dispatch_rel_section_index);
+            linked_result_reusable = !do_ls;
+          }
+          else
+          {
+            dispatch_rel_section_index = 0xffffffffu;
+            linked_result_reusable = false;
+          }
           if (m_collect_dispatch_samples)
           {
             auto& trace = m_dispatch_trace_samples[m_dispatch_trace_next];
@@ -322,6 +344,7 @@ void StaticRecompCore::Run()
           // prevent guest busy-wait loops from spinning on a stale timebase.
           if (m_guest.exception)
           {
+            linked_result_reusable = false;
             // DolRecomp's runtime already redirected pc/msr/srr to the guest
             // exception vector; the flag only signals that it happened.
             if (m_native_exception_sample_count < m_native_exception_samples.size())
@@ -343,7 +366,8 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (fast_native_continue(m_guest.pc, &linked_dispatch_address,
+        } while (fast_native_continue(m_guest.pc, linked_result_address,
+                                      linked_result_reusable, &linked_dispatch_address,
                                       &dispatch_rel_section_index) &&
                  ppc.downcount > 0 && *state_ptr == CPU::State::Running);
         SyncOut();
