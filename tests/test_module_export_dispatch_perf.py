@@ -38,6 +38,23 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
         self.assertNotIn("host_has_x86_64_v3()", body)
         self.assertIn("return dolrecomp_call__x86_64_v3(ctx, address);", body)
 
+    def test_chassis_dispatch_skips_public_policy_on_normal_module_build(self) -> None:
+        text = MODULE_EXPORT.read_text(encoding="utf-8")
+        baseline = text.index("static int chassis_dispatch_baseline")
+        v3 = text.index("static int chassis_dispatch_x86_64_v3")
+        state_loaded = text.index("static void chassis_on_state_loaded")
+        baseline_body = text[baseline:v3]
+        v3_body = text[v3:state_loaded]
+
+        self.assertIn("dolrecomp_find_original(address)", baseline_body)
+        self.assertIn("dolrecomp_find_original__x86_64_v3(address)", v3_body)
+        self.assertIn("#if defined(DOLRECOMP_ENABLE_REPLACEMENTS)", baseline_body)
+        self.assertIn("#if defined(DOLRECOMP_ENABLE_REPLACEMENTS)", v3_body)
+        self.assertNotIn("ctx->host_call", baseline_body)
+        self.assertNotIn("ctx->host_call", v3_body)
+        self.assertNotIn("dolrecomp_physical_pc_alias", baseline_body)
+        self.assertNotIn("dolrecomp_physical_pc_alias", v3_body)
+
     def test_chassis_dispatch_variant_is_bound_at_module_load(self) -> None:
         text = MODULE_EXPORT.read_text(encoding="utf-8")
         baseline = text.index("static int chassis_dispatch_baseline")
