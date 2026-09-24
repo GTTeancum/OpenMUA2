@@ -53,9 +53,11 @@ public:
   void SingleStep() override;
   bool IsModuleActive() const;
   bool DispatchableAt(u32 address, u32* chunk_index = nullptr,
-                      u32* linked_address = nullptr, u32* rel_section_index = nullptr);
+                      u32* linked_address = nullptr, u32* rel_section_index = nullptr,
+                      u32 rel_section_hint = 0xffffffffu);
   bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr,
-                          u32* linked_address = nullptr, u32* rel_section_index = nullptr);
+                          u32* linked_address = nullptr, u32* rel_section_index = nullptr,
+                          u32 rel_section_hint = 0xffffffffu);
   bool IsHostCallAddress(u32 address) const;
   bool ShouldYieldAt(u32 address);
 
@@ -126,12 +128,13 @@ private:
 
   void OnICacheInvalidate(u32 address, u32 length);
   int ChunkIndexOf(u32 address, u32* linked_address = nullptr,
-                   u32* rel_section_index = nullptr);
+                   u32* rel_section_index = nullptr, u32 rel_section_hint = 0xffffffffu);
   bool IsForcedFallbackAddress(u32 address) const;
   bool ChunkContainsHostCall(u32 index) const;
   void VerifyChunk(u32 index);
   bool ResolveNativeAddress(u32 runtime_address, u32* linked_address, u32* rel_section_index,
-                            bool allow_refresh = true);
+                            bool allow_refresh = true,
+                            u32 rel_section_hint = 0xffffffffu);
   bool ResolveRuntimeAddress(u32 linked_address, u32* runtime_address) const;
   u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu);
   void RefreshRelSections();

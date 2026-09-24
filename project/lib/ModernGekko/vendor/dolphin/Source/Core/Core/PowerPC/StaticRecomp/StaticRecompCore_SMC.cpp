@@ -142,20 +142,32 @@ void StaticRecompCore::RefreshRelSections()
 }
 
 bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_address,
-                                            u32* rel_section_index, bool allow_refresh)
+                                            u32* rel_section_index, bool allow_refresh,
+                                            u32 rel_section_hint)
 {
+  const auto resolve_section = [&](u32 i) {
+    const ActiveRelSection& section = m_active_rel_sections[i];
+    if (runtime_address < section.runtime_start ||
+        static_cast<u64>(runtime_address) >=
+            static_cast<u64>(section.runtime_start) + section.size)
+    {
+      return false;
+    }
+
+    *linked_address = section.linked_start + (runtime_address - section.runtime_start);
+    if (rel_section_index)
+      *rel_section_index = i;
+    return true;
+  };
   const auto resolve_active = [&]() {
+    if (rel_section_hint < m_active_rel_sections.size() && resolve_section(rel_section_hint))
+      return true;
     for (u32 i = 0; i < m_active_rel_sections.size(); ++i)
     {
-      const ActiveRelSection& section = m_active_rel_sections[i];
-      if (runtime_address >= section.runtime_start &&
-          static_cast<u64>(runtime_address) < static_cast<u64>(section.runtime_start) + section.size)
-      {
-        *linked_address = section.linked_start + (runtime_address - section.runtime_start);
-        if (rel_section_index)
-          *rel_section_index = i;
+      if (i == rel_section_hint)
+        continue;
+      if (resolve_section(i))
         return true;
-      }
     }
     return false;
   };
@@ -256,13 +268,14 @@ void StaticRecompCore::InitLookupTable(u32 ram_size, u32 exram_size)
 }
 
 int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out,
-                                   u32* rel_section_index)
+                                   u32* rel_section_index, u32 rel_section_hint)
 {
   if (!m_module_active || m_chunk_lookup_table.empty())
     return -1;
 
   u32 linked_address = address;
-  if (!ResolveNativeAddress(address, &linked_address, rel_section_index))
+  if (!ResolveNativeAddress(address, &linked_address, rel_section_index, true,
+                            rel_section_hint))
     return -1;
   int idx = GetAddressLookupIndex(linked_address);
   if (idx < 0 || idx >= static_cast<int>(m_chunk_lookup_table.size()))
@@ -277,11 +290,12 @@ int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out,
 }
 
 bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* linked_address,
-                                          u32* rel_section_index)
+                                          u32* rel_section_index, u32 rel_section_hint)
 {
   if (IsForcedFallbackAddress(address))
     return false;
-  const int index = ChunkIndexOf(address, linked_address, rel_section_index);
+  const int index =
+      ChunkIndexOf(address, linked_address, rel_section_index, rel_section_hint);
   if (index < 0 || m_chunk_state[index] != CHUNK_VERIFIED)
     return false;
   if (chunk_index)
@@ -290,11 +304,12 @@ bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* li
 }
 
 bool StaticRecompCore::DispatchableAt(u32 address, u32* chunk_index, u32* linked_address,
-                                      u32* rel_section_index)
+                                      u32* rel_section_index, u32 rel_section_hint)
 {
   if (IsForcedFallbackAddress(address))
     return false;
-  const int index = ChunkIndexOf(address, linked_address, rel_section_index);
+  const int index =
+      ChunkIndexOf(address, linked_address, rel_section_index, rel_section_hint);
   if (index < 0)
     return false;
   if (m_chunk_state[index] == CHUNK_UNVERIFIED)

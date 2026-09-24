@@ -121,9 +121,11 @@ void StaticRecompCore::Run()
   InitLookupTable(m_guest.ram_size, m_guest.exram_size);
   const bool lockstep_enabled = m_lockstep_verifier->IsEnabled();
   const auto fast_dispatchable_at = [this](u32 address, u32* chunk_index,
-                                             u32* linked_address, u32* rel_section_index) {
+                                             u32* linked_address, u32* rel_section_index,
+                                             u32 rel_section_hint) {
     if (m_has_rel_modules || !m_forced_fallback_ranges.empty())
-      return FastDispatchableAt(address, chunk_index, linked_address, rel_section_index);
+      return FastDispatchableAt(address, chunk_index, linked_address, rel_section_index,
+                                rel_section_hint);
     if (!m_module_active || m_chunk_lookup_table.empty())
       return false;
 
@@ -155,7 +157,9 @@ void StaticRecompCore::Run()
   const auto fast_native_continue = [&](u32 address, u32* linked_address,
                                           u32* rel_section_index) {
     u32 chunk_index = 0;
-    return fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index) &&
+    const u32 rel_section_hint = rel_section_index ? *rel_section_index : 0xffffffffu;
+    return fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index,
+                                rel_section_hint) &&
            !host_call_at(address, chunk_index);
   };
 
