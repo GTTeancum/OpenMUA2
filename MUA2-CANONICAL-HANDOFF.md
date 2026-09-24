@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` (`Make indexed O2 builds the multiplatform performance default`)  
+**Source state summarized through:** `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` (`Page-index merged DOL REL native dispatch`)  
 **Date:** 2026-09-23
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -103,8 +103,9 @@ This is the current default performance configuration for both Windows and Linux
 - explicit comparison mode: `--dispatch-lookup linear`
 - DOL and REL generation cache identities include the dispatch mode
 - build receipts record `module_opt` and `dispatch_lookup`
+- combined native DOL+REL lookup is page-indexed as of `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`
 
-DolRecomp's indexed dispatcher uses its existing page/run lookup rather than the older linear range chain. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route.
+DolRecomp's indexed dispatcher uses its existing page/run lookup rather than the older linear range chain. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route. The merge tool now also emits a 4 KiB guest-page index for the combined DOL+REL module, narrowing its binary search to chunks overlapping the current page rather than the full merged chunk table.
 
 **Priority directive:** performance is now the focus. Existing SMC/hash/audit/correctness guards stay enabled, but do not spend turns expanding lockstep or correctness coverage unless a concrete failure prevents further performance measurement or execution. Correctness expansion comes later.
 
@@ -239,6 +240,12 @@ Performance PR #2 was merged as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`. Its 
 - DolRecomp run `35940341449`: PASS configure/build/test on Ubuntu and Windows.
 - ModernGekko run `35940341332`: standalone tests PASS on Ubuntu and Windows. The two full build/test jobs were still compiling when this handoff was updated; do not record them as passed unless a later turn observes completion.
 
+Performance PR #3 / commit `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`:
+
+- OpenMUA2 tooling run `35941158719`: PASS on Ubuntu.
+- OpenMUA2 tooling run `35941158719`: PASS on Windows.
+- The merged-dispatch tests cover the page-indexed path, uncovered-page gaps, instruction alignment, overlap rejection, and existing native-eligibility holes.
+
 ### What is still not freshly validated
 
 Do not claim from current `main` without a real run:
@@ -314,53 +321,55 @@ Useful deeper documents:
 
 Latest main actually inspected before this handoff edit:
 
-- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` — `Switch OpenMUA2 priority to multiplatform performance`
+- `f7773f8e259d2eda672fa3b7dae6ac8404421cdf` — `Record page-indexed merged dispatch performance work`
 
 User priority change:
 
 - The user explicitly changed the project focus to **multiplatform performance** and said correctness comes later.
 - Existing correctness/SMC/hash/audit guards remain in place, but future turns must not default back to correctness expansion. Performance work on shared Windows/Linux paths is the primary objective.
 
-Changes made this turn:
+Performance changes made this turn:
 
-- Inspected current `main` and historical profiling/runtime paths after the priority change.
-- Confirmed historical performance is dominated by very high native dispatch counts / hot tiny runtime and cross-chunk entries rather than a reason to expand correctness work first.
-- Found DolRecomp already had a page-indexed dispatcher but defaulted to the older linear lookup.
-- Found the OpenMUA2 workspace defaulted native module optimization to `O0`.
-- PR #2 changed DolRecomp's default generated dispatcher to `indexed` in both the primary and vendored copies while preserving explicit `linear` mode.
-- Workspace defaults are now `--module-opt 2` and `--dispatch-lookup indexed`.
-- DOL and native-REL generation explicitly propagate the selected dispatch mode, include it in generation cache identities, and record it in receipts so A/B tests cannot accidentally reuse mismatched generated output.
-- Added/updated dispatch and workspace tests for the indexed default and linear A/B path.
-- Squash-merged PR #2 to `main` as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`.
-- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` rewrites `docs/CURRENT-STATUS.md` around the new multiplatform-performance priority.
-- This canonical handoff was refreshed after the priority switch.
+- Inspected historical performance data and current generated/runtime dispatch paths.
+- Confirmed historical bottleneck evidence points at extremely high native-dispatch/chassis traffic and hot tiny runtime/cross-chunk entries.
+- PR #2 changed DolRecomp's default generated lookup from `linear` to its existing page-indexed implementation in both the primary and vendored copies.
+- Workspace defaults changed from module `O0` to `O2`, and `--dispatch-lookup indexed|linear` was added for controlled A/B measurement.
+- DOL and native-REL generation now propagate the selected dispatch mode, separate generation cache identities by mode, and record `module_opt` / `dispatch_lookup` in build receipts.
+- PR #2 was squash-merged as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`.
+- After that merge, identified that `tools/merge_mua2_generated.py` still replaced the DOL/REL dispatchers with an all-chunk binary search, which meant the combined gameplay-REL module would not receive the full indexed-dispatch benefit.
+- PR #3 adds a 4 KiB guest-page index to the merged DOL+REL dispatcher. Each lookup now binary-searches only chunks overlapping the current page. Address spans above the index cap retain the old all-chunk fallback.
+- During PR #3 review, corrected an initial table placement that could have duplicated dispatch data into every generated translation unit; chunk/page tables remain local statics inside the inline lookup helper.
+- PR #3 was squash-merged as `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`.
+- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` switches `docs/CURRENT-STATUS.md` to the performance-first directive.
+- `f7773f8e259d2eda672fa3b7dae6ac8404421cdf` records the second merged-dispatch performance optimization and its CI results.
+- This canonical handoff was refreshed after both performance changes.
 
 Tests/CI actually observed:
 
-- OpenMUA2 tooling Actions run `35940341273`: PASS on `ubuntu-latest`.
-- OpenMUA2 tooling Actions run `35940341273`: PASS on `windows-latest`.
-- DolRecomp Actions run `35940341449`: PASS configure/build/test on `ubuntu-latest`.
-- DolRecomp Actions run `35940341449`: PASS configure/build/test on `windows-latest`.
-- ModernGekko Actions run `35940341332`: standalone tests PASS on `ubuntu-latest`.
-- ModernGekko Actions run `35940341332`: standalone tests PASS on `windows-latest`.
-- At the time of this handoff edit, the ModernGekko full build/test jobs for Ubuntu and Windows were still in progress; no PASS claim is made for those two jobs.
+- OpenMUA2 tooling run `35940341273`: PASS on Ubuntu and Windows for PR #2.
+- DolRecomp run `35940341449`: PASS configure/build/test on Ubuntu and Windows for PR #2.
+- ModernGekko run `35940341332`: standalone tests PASS on Ubuntu and Windows for PR #2.
+- At the time of this handoff edit, ModernGekko run `35940341332` full build/test jobs for Ubuntu and Windows were still in progress; no PASS claim is made for those two jobs.
+- OpenMUA2 tooling run `35941158719`: PASS on Ubuntu and Windows for PR #3.
 - No proprietary RMSE52 game-side benchmark was run in this environment.
 
 Performance result boundary:
 
-- The source/configuration is now performance-first, but **no new game FPS or speed gain is claimed yet**. The exact RMSE52 benchmark is required to quantify indexed vs linear and the new O2 baseline.
+- Source/configuration is now performance-first and both ordinary and combined native dispatch paths are indexed, but **no new game FPS or speed gain is claimed yet**. The exact RMSE52 benchmark is required to quantify the changes.
 
 Windows/Linux portability:
 
-- The indexed-dispatch implementation and workspace plumbing passed their direct CI coverage on both Windows and Ubuntu.
-- Both ModernGekko standalone platform jobs also passed.
-- The optimization uses portable generated C and Python environment/cache plumbing; no platform-specific fast path was introduced.
+- PR #2's tooling and DolRecomp configure/build/test passed on both Windows and Ubuntu.
+- PR #2's ModernGekko standalone tests passed on both platforms.
+- PR #3's tooling suite passed on both platforms.
+- Both performance changes use portable generated C/Python and do not introduce platform-specific assembly or compiler-only behavior.
 
 Failures/rejected experiments:
 
 - No performance source/test failure occurred this turn.
+- An initial PR #3 implementation placed dispatch arrays at generated-header file scope; this was corrected before merge to avoid possible per-translation-unit data duplication/module bloat.
 - Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
-- No correctness expansion was pursued after the user changed priority.
+- No new correctness expansion was pursued after the user changed priority.
 
 Current blocker:
 
@@ -368,4 +377,5 @@ Current blocker:
 
 Next exact step:
 
-- On the RMSE52 workspace, build the new default `O2 + indexed` configuration, benchmark it on the standard route, immediately A/B against `O2 + linear`, and profile dispatch/chassis overhead on the faster result. The next source optimization should target shared high-frequency dispatch/cross-chunk transfer overhead for both Windows and Linux, not new correctness coverage.
+- On the RMSE52 workspace, build the current `O2 + indexed` default and benchmark the standard route. Immediately A/B against `O2 + linear` with all other settings fixed. Then profile remaining dispatch/chassis overhead on the faster configuration now that both ordinary and combined lookup paths are indexed.
+- The next source optimization should target shared high-frequency chassis/cross-chunk costs—especially tail/indirect transfers, host-call checks, or other avoidable round trips—for both Windows and Linux. Do not switch back to correctness expansion unless a concrete failure blocks performance measurement.
