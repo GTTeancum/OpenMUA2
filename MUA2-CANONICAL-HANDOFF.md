@@ -107,15 +107,15 @@ Diff size:
 
 OpenMUA2 tooling run `36055136834`:
 
-- Ubuntu: `in_progress`
-- Windows: `in_progress` (Checkout at last observation)
+- Ubuntu: **PASS**
+- Windows: **PASS**
 
 ModernGekko run `36055136817`:
 
 - Standalone Ubuntu: `in_progress` (Configure)
-- Full Ubuntu: `in_progress` (Install Linux dependencies)
-- Standalone Windows: `in_progress` (Checkout)
-- Full Windows: `in_progress` (Checkout)
+- Full Ubuntu: `in_progress` (Configure)
+- Standalone Windows: `in_progress` (Configure)
+- Full Windows: `in_progress` (Configure)
 
 No CI failure has appeared.
 
@@ -179,5 +179,5 @@ What happened:
 - Implemented the empty forced-fallback-range short circuit in the interpreter/fallback path.
 - Added a targeted regression.
 - Opened PR #23.
-- PR #23 CI started; no failure observed.
+- PR #23 tooling PASS on Windows + Ubuntu; all four ModernGekko jobs are in progress at Configure; no failure observed.
 - No RMSE52 game-side run occurred.
