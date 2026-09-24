@@ -192,6 +192,7 @@ void StaticRecompCore::Run()
   while (*state_ptr == CPU::State::Running)
   {
     core_timing.Advance();
+    RefreshHostCallActivity();
     const std::string current_game_id = SConfig::GetInstance().GetGameID();
     m_module_active = m_module && (current_game_id.empty() || current_game_id == m_module->game_id);
 
