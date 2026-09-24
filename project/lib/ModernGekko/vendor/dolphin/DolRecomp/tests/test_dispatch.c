@@ -93,14 +93,20 @@ int main(void) {
           "emits original lookup helper");
     check(strstr(code, "dolrecomp_call_original") != NULL,
           "emits original call helper");
+    check(strstr(code, "dolrecomp_page_first[DOLRECOMP_LOOKUP_PAGES]") != NULL &&
+          strstr(code, "run = dolrecomp_page_first[page];") != NULL,
+          "default lookup uses page-indexed dispatch");
+    check(strstr(code, "#define DOLRECOMP_LOOKUP_RUNS 2u") != NULL &&
+          strstr(code, "#define DOLRECOMP_LOOKUP_BASE 0x80003000u") != NULL &&
+          strstr(code, "#define DOLRECOMP_LOOKUP_PAGES 2u") != NULL,
+          "default indexed lookup covers exactly the emitted code");
     check(strstr(code, "func_80003000,") != NULL &&
           strstr(code, "func_80003040,") != NULL &&
           strstr(code, "func_80003080,") != NULL &&
-          strstr(code, "return func_80004000;") != NULL,
-          "original lookup covers generated chunks");
-    check(strstr(code, "static const DolRecompFunction chunk_functions[]") != NULL &&
-          strstr(code, "return chunk_functions[offset / 0x00000040u];") != NULL,
-          "contiguous chunks use indexed dispatch");
+          strstr(code, "func_80004000,") != NULL,
+          "default indexed chunk table covers generated chunks");
+    check(strstr(code, "if (address >= 0x80003000u && address < 0x80003040u") == NULL,
+          "default indexed lookup removes the linear range chain");
     check(strstr(code, "dolrecomp_find_original__x86_64_v3") != NULL &&
           strstr(code, "func_80003000__x86_64_v3,") != NULL &&
           strstr(code, "func_80003040__x86_64_v3,") != NULL &&
@@ -125,40 +131,29 @@ int main(void) {
 
     free(code);
 
-    // DOLRECOMP_DISPATCH_LOOKUP=indexed. The linear chain is O(chunks) on an
-    // irregular plan and that confounded E008; the indexed form must replace
-    // it without changing which chunk an address resolves to.
-    if (set_lookup_mode("indexed")) {
-        char* indexed = emit_dispatch_to_string();
-        if (!indexed) {
-            check(0, "indexed: emit dispatch helpers");
+    // Linear lookup remains available for controlled A/B performance tests and
+    // as a fallback for unusual generated layouts.
+    if (set_lookup_mode("linear")) {
+        char* linear = emit_dispatch_to_string();
+        if (!linear) {
+            check(0, "linear: emit dispatch helpers");
         } else {
-            check(strstr(indexed, "dolrecomp_page_first[DOLRECOMP_LOOKUP_PAGES]") != NULL &&
-                  strstr(indexed, "run = dolrecomp_page_first[page];") != NULL,
-                  "indexed: page index selects the run window");
-            check(strstr(indexed, "if (address >= 0x80003000u && address < 0x80003040u") == NULL,
-                  "indexed: no linear range-test chain remains");
-            check(strstr(indexed, "#define DOLRECOMP_LOOKUP_RUNS 2u") != NULL,
-                  "indexed: collapses the contiguous chunks into one run");
-            // 0x80003000..0x800040a0 spans two 4 KiB pages plus the boundary page.
-            check(strstr(indexed, "#define DOLRECOMP_LOOKUP_BASE 0x80003000u") != NULL &&
-                  strstr(indexed, "#define DOLRECOMP_LOOKUP_PAGES 2u") != NULL,
-                  "indexed: page table covers exactly the emitted code");
-            check(strstr(indexed, "func_80003000,") != NULL &&
-                  strstr(indexed, "func_80003040,") != NULL &&
-                  strstr(indexed, "func_80003080,") != NULL &&
-                  strstr(indexed, "func_80004000,") != NULL,
-                  "indexed: chunk table covers generated chunks");
-            check(strstr(indexed, "if ((offset & 3u) != 0u) return NULL;") != NULL,
-                  "indexed: keeps the instruction-alignment check");
-            check(strstr(indexed, "ctx->pc = address;") != NULL &&
-                  strstr(indexed, "dolrecomp_physical_pc_alias") != NULL,
-                  "indexed: leaves the rest of the dispatcher alone");
-            free(indexed);
+            check(strstr(linear, "dolrecomp_page_first[DOLRECOMP_LOOKUP_PAGES]") == NULL,
+                  "linear: page index is disabled");
+            check(strstr(linear,
+                         "if (address >= 0x80004000u && address < 0x80004020u") != NULL,
+                  "linear: isolated chunks use direct range tests");
+            check(strstr(linear, "static const DolRecompFunction chunk_functions[]") != NULL &&
+                  strstr(linear, "return chunk_functions[offset / 0x00000040u];") != NULL,
+                  "linear: contiguous equal-stride chunks still use a compact table");
+            check(strstr(linear, "ctx->pc = address;") != NULL &&
+                  strstr(linear, "dolrecomp_physical_pc_alias") != NULL,
+                  "linear: leaves the rest of the dispatcher alone");
+            free(linear);
         }
         set_lookup_mode(NULL);
     } else {
-        check(0, "indexed: set DOLRECOMP_DISPATCH_LOOKUP");
+        check(0, "linear: set DOLRECOMP_DISPATCH_LOOKUP");
     }
 
     printf("DISPATCH,total,%d passed %d failed\n", pass_count, fail_count);
