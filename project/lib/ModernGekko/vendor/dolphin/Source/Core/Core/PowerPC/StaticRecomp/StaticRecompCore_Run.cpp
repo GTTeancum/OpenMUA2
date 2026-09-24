@@ -120,9 +120,10 @@ void StaticRecompCore::Run()
   m_guest.exram_size = memory.GetExRamSizeReal();
   InitLookupTable(m_guest.ram_size, m_guest.exram_size);
   const bool lockstep_enabled = m_lockstep_verifier->IsEnabled();
-  const auto fast_dispatchable_at = [this](u32 address, u32* chunk_index) {
+  const auto fast_dispatchable_at = [this](u32 address, u32* chunk_index,
+                                             u32* linked_address) {
     if (m_has_rel_modules || !m_forced_fallback_ranges.empty())
-      return FastDispatchableAt(address, chunk_index);
+      return FastDispatchableAt(address, chunk_index, linked_address);
     if (!m_module_active || m_chunk_lookup_table.empty())
       return false;
 
@@ -142,14 +143,17 @@ void StaticRecompCore::Run()
       return false;
     if (chunk_index)
       *chunk_index = static_cast<u32>(chunk);
+    if (linked_address)
+      *linked_address = address;
     return true;
   };
   const auto host_call_at = [this](u32 address, u32 chunk_index) {
     return m_guest.host_call && ChunkContainsHostCall(chunk_index) && IsHostCallAddress(address);
   };
-  const auto fast_native_continue = [&](u32 address) {
+  const auto fast_native_continue = [&](u32 address, u32* linked_address) {
     u32 chunk_index = 0;
-    return fast_dispatchable_at(address, &chunk_index) && !host_call_at(address, chunk_index);
+    return fast_dispatchable_at(address, &chunk_index, linked_address) &&
+           !host_call_at(address, chunk_index);
   };
 
   const std::string initial_game_id = SConfig::GetInstance().GetGameID();
@@ -211,7 +215,9 @@ void StaticRecompCore::Run()
       // MSR.FP needs no gate here: generated FPU instructions raise the
       // FP-unavailable exception themselves (ppc_fp_available).
       u32 entry_chunk_index = 0;
-      if (m_module_active && DispatchableAt(ppc.pc, &entry_chunk_index) &&
+      u32 linked_dispatch_address = ppc.pc;
+      if (m_module_active &&
+          DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address) &&
           !host_call_at(ppc.pc, entry_chunk_index))
       {
         SyncIn();
@@ -235,9 +241,6 @@ void StaticRecompCore::Run()
           if (m_collect_dispatch_samples && (m_native_dispatches & 4095u) == 0)
             ++m_dispatch_samples[m_guest.pc];
           const u32 runtime_dispatch_address = m_guest.pc;
-          u32 linked_dispatch_address = runtime_dispatch_address;
-          if (m_has_rel_modules)
-            ResolveNativeAddress(runtime_dispatch_address, &linked_dispatch_address, nullptr);
           m_guest.pc = linked_dispatch_address;
           const auto dispatch_start = dispatch_profiler.Enabled() ?
                                           std::chrono::steady_clock::now() :
@@ -324,8 +327,8 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (m_module_active && fast_native_continue(m_guest.pc) && ppc.downcount > 0 &&
-                 *state_ptr == CPU::State::Running);
+        } while (m_module_active && fast_native_continue(m_guest.pc, &linked_dispatch_address) &&
+                 ppc.downcount > 0 && *state_ptr == CPU::State::Running);
         SyncOut();
         if ((ppc.Exceptions & SYNC_EXCEPTION_MASK) != 0)
           power_pc.CheckExceptions();
