@@ -115,15 +115,15 @@ Diff size:
 
 OpenMUA2 tooling run `36047001104`:
 
-- Ubuntu: `in_progress` (Checkout at last observation)
-- Windows: `in_progress` (Checkout at last observation)
+- Ubuntu: **PASS**
+- Windows: **PASS**
 
 ModernGekko run `36047001119`:
 
-- Standalone Ubuntu: `in_progress` (Checkout)
-- Full Ubuntu: `in_progress` (Checkout)
-- Standalone Windows: `in_progress` (Checkout)
-- Full Windows: queued at last observation
+- Standalone Ubuntu: `in_progress` (Configure)
+- Full Ubuntu: `in_progress` (Configure)
+- Standalone Windows: `in_progress` (Configure)
+- Full Windows: `in_progress` (Configure)
 
 No CI failure has appeared.
 
@@ -200,5 +200,5 @@ What happened:
 - Implemented the single-branch cleanup on a new branch.
 - Added targeted source regression coverage.
 - Opened PR #22.
-- PR #22 CI started; no failure observed.
+- PR #22 tooling PASS on Windows and Ubuntu; all four ModernGekko jobs are in progress at Configure; no failure observed.
 - No RMSE52 game-side run occurred.
