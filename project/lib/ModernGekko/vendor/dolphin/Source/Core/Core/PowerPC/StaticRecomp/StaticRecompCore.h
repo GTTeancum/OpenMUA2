@@ -258,9 +258,8 @@ private:
   void InitLookupTable(u32 ram_size, u32 exram_size);
 
   // Dispatch locality: most control transfers stay inside one chunk, so the
-  // last hit short-circuits the chunk binary search on the hot path.
+  // last non-REL hit can bypass even the O(1) instruction lookup-table access.
   mutable u32 m_last_chunk_index = 0;
-
   bool m_collect_dispatch_samples = false;
   bool m_collect_fallback_samples = false;
   bool m_has_rel_modules = false;
