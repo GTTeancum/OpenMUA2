@@ -366,10 +366,10 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (fast_native_continue(m_guest.pc, linked_result_address,
+        } while (ppc.downcount > 0 && *state_ptr == CPU::State::Running &&
+                 fast_native_continue(m_guest.pc, linked_result_address,
                                       linked_result_reusable, &linked_dispatch_address,
-                                      &dispatch_rel_section_index) &&
-                 ppc.downcount > 0 && *state_ptr == CPU::State::Running);
+                                      &dispatch_rel_section_index));
         SyncOut();
         if ((ppc.Exceptions & SYNC_EXCEPTION_MASK) != 0)
           power_pc.CheckExceptions();
