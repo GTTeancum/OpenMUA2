@@ -52,6 +52,7 @@ Key accepted performance commits:
 - `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — chassis-only generated dispatch skips duplicate host-call dispatch.
 - `dc43d362d425134222d00aa02dd4dbec99fcf222` — remove redundant explicit module-active check from the native burst back-edge.
 - `20dd90851c3a2625ddb973f8850e2494bb33ca9f` — skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
+- `de411096f5986980ac58e1f3a7373d8f5351dc67` — reuse generated linked results across eligible native burst continuations.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
@@ -120,76 +121,67 @@ Historical accepted native-REL run, predating recent optimizations:
 
 This proves native REL progression, **not current performance**.
 
-## Current pending work — PR #24
+## Latest accepted work — PR #24
 
-**PR:** #24 — `Reuse generated linked result on burst continuation`  
-**Branch:** `perf/reuse-linked-continuation-result`  
-**Head:** `09b9195bd245f466d9c913ab7b7742d7845043f0`  
-**State:** OPEN / UNMERGED
+PR #24 `Reuse generated linked result on burst continuation` is **MERGED**.
 
-Focused behavior:
+Merge commit:
+
+- `de411096f5986980ac58e1f3a7373d8f5351dc67`
+
+Behavior:
 
 - Preserves the linked PC returned by generated dispatch while keeping `m_guest.pc` in runtime form for host-side semantics.
-- `TranslateRelAddress()` now reports the active REL section selected during linked→runtime translation.
-- A new `FastDispatchableLinkedAt()` path uses the preserved linked result for the next verified chunk lookup, avoiding the normal runtime→linked conversion when its invariants hold.
-- Forced-fallback and exact host-call checks still use the runtime address.
+- `TranslateRelAddress()` reports the active REL section selected during linked→runtime translation.
+- `FastDispatchableLinkedAt()` uses a preserved linked result for the next verified chunk lookup when its invariants hold, avoiding the normal runtime→linked conversion.
+- Forced-fallback and exact host-call checks remain on the runtime address.
 - REL chunks must still belong to the resolved active REL section; DOL chunks require the non-REL sentinel.
-- Lockstep-checked blocks and native exception returns explicitly disable preserved-result reuse.
-- Any direct-linked eligibility miss falls back to the existing `FastDispatchableAt() -> ResolveNativeAddress() -> RefreshRelSections()` path, preserving REL refresh/cross-section/alias behavior.
+- Lockstep-checked blocks and native exception returns disable preserved-result reuse.
+- Any direct-linked eligibility miss falls back to `FastDispatchableAt() -> ResolveNativeAddress() -> RefreshRelSections()`.
 
-Files changed:
+Validation:
 
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
-- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
-- `tests/test_staticrecomp_host_call_gate_perf.py`
-
-Validation state:
-
-- First tooling run on head `9830dcdf...` failed only because one pre-existing source-string regression still expected the old `fast_native_continue()` call shape. The runtime code itself was not implicated by that failure.
-- The stale regression was fixed in head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
 - OpenMUA2 tooling run `36071914753`: **PASS on Ubuntu + Windows**.
-- ModernGekko run `36071914841`: **still IN PROGRESS at the end of this turn**.
-  - Run started at `2026-09-24T23:16:45Z`; this is a normal fresh full-build duration, not evidence of a stall.
-  - `Standalone tests (windows-latest)`: **PASS**.
-  - `Standalone tests (ubuntu-latest)`: **PASS**.
-  - `Full build and test (windows-latest)`: still in the `Build` step; configure/setup succeeded and no failure has appeared.
-  - `Full build and test (ubuntu-latest)`: still in the `Build` step; configure/setup succeeded and no failure has appeared.
-- PR #24 remains unmerged until both full build/test jobs complete successfully.
+- ModernGekko run `36071914841`: **PASS all four jobs**:
+  - standalone Windows: PASS;
+  - standalone Ubuntu: PASS;
+  - full Windows build/test: PASS;
+  - full Ubuntu build/test: PASS.
+- No RMSE52 game-side FPS claim is made from CI.
+
+Status doc:
+
+- `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` — `Record merged linked continuation fast path`
 
 ## Current blockers
 
-1. **Immediate integration gate:** PR #24 requires current-head ModernGekko Windows/Ubuntu validation before merge.
-2. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
+1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
+2. There is no current source/CI integration blocker after PR #24.
 
 ## Next exact turn
 
-1. Inspect current `main` and PR #24 head.
-2. Check ModernGekko run `36071914841`.
-3. If standalone + full build/test PASS on Ubuntu + Windows:
-   - merge PR #24,
-   - update `docs/CURRENT-STATUS.md`,
-   - update/attach this handoff,
-   - stop.
-4. If any current-head job fails:
-   - keep PR #24 unmerged,
-   - fix only that failure,
-   - rerun validation,
-   - update/attach this handoff,
-   - stop.
+1. Inspect current `main` after PR #24 and the status/handoff commits.
+2. Implement one focused multiplatform performance change at the native burst back-edge:
+   - current order calls `fast_native_continue(...)` before checking `ppc.downcount > 0` and `*state_ptr == CPU::State::Running`;
+   - reorder the cheap termination checks ahead of `fast_native_continue()` so a burst that must already exit does not perform another chunk/REL/host-call eligibility probe.
+3. Before accepting the change, prove the skipped continuation probe has no required end-of-burst side effect:
+   - any lazy host-call-state discovery can safely occur on the next eligible entry;
+   - any REL refresh/resolution can safely occur on the next entry;
+   - forced-fallback, exception, timing, and CPU-state behavior remain unchanged.
+4. Add a focused source regression pinning the cheap-check-first back-edge order.
+5. Run OpenMUA2 tooling CI and ModernGekko Windows/Ubuntu validation; merge only if green.
+6. Update/attach this handoff and stop.
+7. Do not claim FPS improvement without a fresh RMSE52 benchmark.
 
 ## Last turn update — 2026-09-24
 
 What happened:
 
-- Resumed at the PR #24 integration gate and re-checked head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
-- OpenMUA2 tooling run `36071914753` remains **PASS**.
-- ModernGekko run `36071914841` remains **IN PROGRESS**.
-- Direct run metadata shows it started at `2026-09-24T23:16:45Z`; the two full builds are only several minutes into compilation and are not considered stalled.
-- Standalone Windows and Ubuntu jobs remain **PASS**.
-- Full Windows and Ubuntu jobs remain in `Build` with successful setup/configure and no failure.
-- PR #24 remains intentionally **unmerged** until both full jobs complete and test successfully.
-- CI was not cancelled or restarted because there is no failure/stall evidence.
-- No parallel performance patch was started.
+- Stayed on the PR #24 integration gate until the full matrix completed rather than ending another short turn mid-build.
+- OpenMUA2 tooling run `36071914753`: PASS on Ubuntu + Windows.
+- ModernGekko run `36071914841`: PASS all four jobs, including full MSVC/Ninja Windows and full Ubuntu build/test.
+- Merged PR #24 as `de411096f5986980ac58e1f3a7373d8f5351dc67`.
+- Updated `docs/CURRENT-STATUS.md` in `1256b9ff7e59dd48750fdc93ebcfec63a900ab22`.
+- While CI was running, inspected the remaining native burst back-edge and identified the next source-level candidate: check `ppc.downcount` and CPU running state before `fast_native_continue()` so an already-terminating burst skips one eligibility/REL/host-call probe.
+- No second runtime patch was started before PR #24 cleared.
 - No RMSE52 game-side run occurred.
