@@ -65,7 +65,7 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
         )
         self.assertIn("!host_call_at(address, chunk_index)", run)
         self.assertIn(
-            "fast_native_continue(m_guest.pc, &linked_dispatch_address,", run
+            "fast_native_continue(m_guest.pc, linked_result_address,", run
         )
 
         native_entry = run.index(
