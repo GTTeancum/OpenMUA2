@@ -183,6 +183,20 @@ const ModernGekkoModDesc missing_descriptor = {
 }
 
 int main() {
+  // StaticRecomp must keep the host-call path alive long enough to deliver the
+  // one-time runtime_start event, then be able to retire it completely when
+  // there are no guest patches/hooks to intercept.
+  moderngekko::ModManager idle_manager;
+  CPUState idle_state{};
+  const auto idle_generation =
+      moderngekko::ModManager::HostCallGeneration(&idle_manager);
+  if (!moderngekko::ModManager::HostCallActive(&idle_manager))
+    return 24;
+  if (moderngekko::ModManager::HostCall(&idle_state, 0x80000000u, &idle_manager))
+    return 25;
+  if (moderngekko::ModManager::HostCallActive(&idle_manager) ||
+      moderngekko::ModManager::HostCallGeneration(&idle_manager) == idle_generation)
+    return 26;
   moderngekko::ModManager manager;
   const auto initial_generation = manager.InterceptionGeneration();
   const std::vector<moderngekko::ModSource> sources = {
@@ -194,6 +208,9 @@ int main() {
   if (!loaded || loaded.loaded.size() != 2u)
     return 1;
   if (!manager.HasGuestInterception() ||
+      !moderngekko::ModManager::HostCallActive(&manager) ||
+      moderngekko::ModManager::HostCallGeneration(&manager) !=
+          manager.InterceptionGeneration() ||
       manager.InterceptionGeneration() == initial_generation || loads != 1)
     return 21;
   if (loaded.loaded[0].id != "base_mod" ||
