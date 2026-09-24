@@ -132,6 +132,7 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
     FunctionRange* sorted = NULL;
     u32* run_first = NULL;
     u32* page_first = NULL;
+    u32* page_end = NULL;
     u32 sorted_count = 0;
     u32 run_count = 0;
     u32 page_count;
@@ -179,9 +180,11 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
     view.capacity = sorted_count;
     run_first = (u32*)malloc((sorted_count + 1u) * sizeof(*run_first));
     page_first = (u32*)malloc(page_count * sizeof(*page_first));
-    if (!run_first || !page_first) {
+    page_end = (u32*)malloc(page_count * sizeof(*page_end));
+    if (!run_first || !page_first || !page_end) {
         free(run_first);
         free(page_first);
+        free(page_end);
         free(sorted);
         return 0;
     }
@@ -196,22 +199,20 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
         u32 run = 0;
         for (u32 page = 0; page < page_count; page++) {
             u32 page_start = base + (page << DISPATCH_PAGE_SHIFT);
+            u32 page_limit = page_start + (1u << DISPATCH_PAGE_SHIFT);
+            u32 end;
             while (run < run_count &&
                    sorted[run_first[run + 1u] - 1u].end <= page_start)
                 run++;
             page_first[page] = run;
+            end = run;
+            while (end < run_count &&
+                   sorted[run_first[end]].start < page_limit)
+                end++;
+            page_end[page] = end;
+            if (end - run > max_per_page)
+                max_per_page = end - run;
         }
-    }
-
-    for (u32 page = 0; page < page_count; page++) {
-        u32 page_end = base + ((page + 1u) << DISPATCH_PAGE_SHIFT);
-        u32 here = 0;
-        for (u32 run = page_first[page];
-             run < run_count && sorted[run_first[run]].start < page_end;
-             run++)
-            here++;
-        if (here > max_per_page)
-            max_per_page = here;
     }
 
     fprintf(out, "\n#define DOLRECOMP_LOOKUP_RUNS %uu\n", run_count);
@@ -266,10 +267,18 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
     fprintf(out, "};\n");
 
     fprintf(out,
+            "\nstatic const u32 dolrecomp_page_end[DOLRECOMP_LOOKUP_PAGES] "
+            "DOLRECOMP_UNUSED = {\n");
+    for (u32 i = 0; i < page_count; i++)
+        fprintf(out, "    %uu,\n", page_end[i]);
+    fprintf(out, "};\n");
+
+    fprintf(out,
             "\nstatic inline DolRecompFunction "
             "dolrecomp_find_original(u32 address) {\n");
     fprintf(out, "    u32 page;\n");
     fprintf(out, "    u32 run;\n");
+    fprintf(out, "    u32 end;\n");
     fprintf(out, "    u32 offset;\n");
     fprintf(out, "    if (address < DOLRECOMP_LOOKUP_BASE) return NULL;\n");
     fprintf(out,
@@ -277,12 +286,24 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
             "DOLRECOMP_LOOKUP_PAGE_SHIFT;\n");
     fprintf(out, "    if (page >= DOLRECOMP_LOOKUP_PAGES) return NULL;\n");
     fprintf(out, "    run = dolrecomp_page_first[page];\n");
+    fprintf(out, "    end = dolrecomp_page_end[page];\n");
+    fprintf(out, "    if (end == run) return NULL;\n");
+    fprintf(out, "    if (end == run + 1u) {\n");
     fprintf(out,
-            "    while (run < DOLRECOMP_LOOKUP_RUNS && "
-            "dolrecomp_run_end[run] <= address) run++;\n");
+            "        if (address < dolrecomp_run_start[run] || "
+            "address >= dolrecomp_run_end[run]) return NULL;\n");
+    fprintf(out, "        offset = address - dolrecomp_run_start[run];\n");
+    fprintf(out, "        if ((offset & 3u) != 0u) return NULL;\n");
     fprintf(out,
-            "    if (run >= DOLRECOMP_LOOKUP_RUNS || "
-            "address < dolrecomp_run_start[run]) return NULL;\n");
+            "        return dolrecomp_run_chunks[dolrecomp_run_base[run] + "
+            "offset / dolrecomp_run_stride[run]];\n");
+    fprintf(out, "    }\n");
+    fprintf(out,
+            "    while (run < end && dolrecomp_run_end[run] <= address) "
+            "run++;\n");
+    fprintf(out,
+            "    if (run >= end || address < dolrecomp_run_start[run]) "
+            "return NULL;\n");
     fprintf(out, "    offset = address - dolrecomp_run_start[run];\n");
     fprintf(out, "    if ((offset & 3u) != 0u) return NULL;\n");
     fprintf(out,
@@ -297,6 +318,7 @@ static int emit_lookup_indexed(FILE* out, const FunctionList* funcs) {
 
     free(run_first);
     free(page_first);
+    free(page_end);
     free(sorted);
     return 1;
 }
