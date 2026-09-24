@@ -89,13 +89,36 @@ void dolrecomp_indirect_dispatch(CPUState* ctx, u32 address)
 
 static int chassis_dispatch_baseline(CPUState* ctx, u32 address)
 {
+#if defined(DOLRECOMP_ENABLE_REPLACEMENTS)
+    // Replacement-enabled modules need the public dispatcher policy.
     return dolrecomp_call(ctx, address);
+#else
+    // StaticRecomp only calls the module after native eligibility and host-call
+    // routing have already accepted this effective address. Go straight to the
+    // generated original-code lookup instead of repeating host-call and physical
+    // alias policy in dolrecomp_call().
+    DolRecompFunction fn = dolrecomp_find_original(address);
+    if (!fn)
+        return 0;
+    ctx->pc = address;
+    fn(ctx);
+    return 1;
+#endif
 }
 
 #if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
 static int chassis_dispatch_x86_64_v3(CPUState* ctx, u32 address)
 {
+#if defined(DOLRECOMP_ENABLE_REPLACEMENTS)
     return dolrecomp_call__x86_64_v3(ctx, address);
+#else
+    DolRecompFunction fn = dolrecomp_find_original__x86_64_v3(address);
+    if (!fn)
+        return 0;
+    ctx->pc = address;
+    fn(ctx);
+    return 1;
+#endif
 }
 #endif
 static void chassis_on_state_loaded(CPUState* ctx)
