@@ -96,6 +96,15 @@ int main(void) {
     check(strstr(code, "dolrecomp_page_first[DOLRECOMP_LOOKUP_PAGES]") != NULL &&
           strstr(code, "run = dolrecomp_page_first[page];") != NULL,
           "default lookup uses page-indexed dispatch");
+    check(strstr(code, "dolrecomp_page_end[DOLRECOMP_LOOKUP_PAGES]") != NULL &&
+          strstr(code, "end = dolrecomp_page_end[page];") != NULL,
+          "indexed lookup bounds candidate runs to the current page");
+    check(strstr(code, "if (end == run) return NULL;") != NULL &&
+          strstr(code, "if (end == run + 1u)") != NULL,
+          "indexed lookup fast-paths empty and single-run pages");
+    check(strstr(code, "while (run < end && dolrecomp_run_end[run] <= address)") != NULL &&
+          strstr(code, "if (run >= end || address < dolrecomp_run_start[run])") != NULL,
+          "multi-run lookup cannot walk beyond the current page window");
     check(strstr(code, "#define DOLRECOMP_LOOKUP_RUNS 2u") != NULL &&
           strstr(code, "#define DOLRECOMP_LOOKUP_BASE 0x80003000u") != NULL &&
           strstr(code, "#define DOLRECOMP_LOOKUP_PAGES 2u") != NULL,
