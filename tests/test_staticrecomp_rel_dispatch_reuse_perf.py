@@ -35,11 +35,14 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             smc,
         )
         self.assertIn(
-            "ResolveNativeAddress(address, &linked_address, rel_section_index)",
+            "ResolveNativeAddress(address, &linked_address, rel_section_index, true,",
             smc,
         )
         self.assertIn("*linked_address_out = linked_address;", smc)
-        self.assertIn("ChunkIndexOf(address, linked_address, rel_section_index)", smc)
+        self.assertIn(
+            "ChunkIndexOf(address, linked_address, rel_section_index, rel_section_hint)",
+            smc,
+        )
 
     def test_native_burst_reuses_resolution_from_dispatchability(self) -> None:
         run = RUN.read_text(encoding="utf-8")
@@ -55,7 +58,7 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             run,
         )
         self.assertIn(
-            "fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index)",
+            "fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index,",
             run,
         )
         self.assertNotIn(
@@ -91,6 +94,37 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         self.assertIn("ResolveRuntimeAddress(linked_address, &runtime_address);", smc)
         self.assertIn("u32 dispatch_rel_section_index = 0xffffffffu;", run)
         self.assertIn("&dispatch_rel_section_index", run)
+
+    def test_same_section_native_resolution_uses_hint_before_full_scan(self) -> None:
+        header = HEADER.read_text(encoding="utf-8")
+        smc = SMC.read_text(encoding="utf-8")
+        run = RUN.read_text(encoding="utf-8")
+
+        self.assertIn(
+            "u32 rel_section_hint = 0xffffffffu);",
+            header,
+        )
+        self.assertIn(
+            "if (rel_section_hint < m_active_rel_sections.size() && "
+            "resolve_section(rel_section_hint))",
+            smc,
+        )
+        self.assertIn("if (i == rel_section_hint)", smc)
+        self.assertIn(
+            "ResolveNativeAddress(address, &linked_address, rel_section_index, true,",
+            smc,
+        )
+        self.assertIn(
+            "const u32 rel_section_hint = rel_section_index ? *rel_section_index : 0xffffffffu;",
+            run,
+        )
+        self.assertIn(
+            "rel_section_hint) &&",
+            run,
+        )
+        # Hint miss still retains the old refresh fallback.
+        self.assertIn("RefreshRelSections();", smc)
+        self.assertIn("return resolve_active();", smc)
 
 
 if __name__ == "__main__":
