@@ -3,14 +3,16 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` (`Page-index merged DOL REL native dispatch`)  
-**Date:** 2026-09-23
+**Source state summarized through:** `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` (`Fast-path single-chunk merged dispatch pages`)  
+**Date:** 2026-09-24
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
 >
-> At the end of every future development turn, update this file before reporting back. Record the latest `main` SHA actually inspected, code/document/test changes, tests/builds/CI/game runs actually performed and their real results, failures/rejected experiments, the exact blocker/next step, Windows portability status, and any new file/location a successor needs.
+> At the end of **every future development turn**, update this file **before reporting back**, commit the refreshed handoff to GitHub `main`, and **post/attach the refreshed `MUA2-CANONICAL-HANDOFF.md` in the chat** so the user can download it. A development turn is not complete until the updated handoff file has been posted in chat.
 >
-> A new chat should need only this file plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
+> Record the latest `main` SHA actually inspected, code/document/test changes, tests/builds/CI/game runs actually performed and their real results, failures/rejected experiments, the exact blocker/next step, Windows/Linux portability status, and any new file/location a successor needs.
+>
+> A new chat should need only the **posted copy of this file** plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
 
 ---
 
@@ -104,8 +106,9 @@ This is the current default performance configuration for both Windows and Linux
 - DOL and REL generation cache identities include the dispatch mode
 - build receipts record `module_opt` and `dispatch_lookup`
 - combined native DOL+REL lookup is page-indexed as of `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`
+- single-chunk merged-dispatch pages are fast-pathed as of `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6`: empty indexed pages return immediately, pages overlapping exactly one generated chunk skip the binary-search loop, and only multi-chunk boundary pages use the search loop
 
-DolRecomp's indexed dispatcher uses its existing page/run lookup rather than the older linear range chain. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route. The merge tool now also emits a 4 KiB guest-page index for the combined DOL+REL module, narrowing its binary search to chunks overlapping the current page rather than the full merged chunk table.
+DolRecomp's indexed dispatcher uses its existing page/run lookup rather than the older linear range chain. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route. The merge tool emits a 4 KiB guest-page index for the combined DOL+REL module, narrowing its binary search to chunks overlapping the current page rather than the full merged chunk table; the current `f4b7f991...` fast path avoids even that binary search on the common zero- or one-chunk page cases.
 
 **Priority directive:** performance is now the focus. Existing SMC/hash/audit/correctness guards stay enabled, but do not spend turns expanding lockstep or correctness coverage unless a concrete failure prevents further performance measurement or execution. Correctness expansion comes later.
 
@@ -317,65 +320,50 @@ Useful deeper documents:
 
 ---
 
-## 9. Last turn update — 2026-09-23
+## 9. Last turn update — 2026-09-24
 
-Latest main actually inspected before this handoff edit:
+Latest `main` actually inspected before this handoff edit:
 
-- `f7773f8e259d2eda672fa3b7dae6ac8404421cdf` — `Record page-indexed merged dispatch performance work`
+- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` — `Fast-path single-chunk merged dispatch pages`
 
-User priority change:
+User priority / workflow mandates:
 
-- The user explicitly changed the project focus to **multiplatform performance** and said correctness comes later.
-- Existing correctness/SMC/hash/audit guards remain in place, but future turns must not default back to correctness expansion. Performance work on shared Windows/Linux paths is the primary objective.
+- **Multiplatform performance remains the active project focus. Correctness expansion comes later.**
+- Existing correctness/SMC/hash/audit guards remain enabled, but future turns must not drift back into new correctness projects unless a concrete failure blocks performance measurement or execution.
+- **Mandatory handoff rule strengthened this turn:** at the end of every development turn, update this file, commit the refreshed copy to GitHub `main`, and post/attach the refreshed `MUA2-CANONICAL-HANDOFF.md` in chat. The turn is not complete until the file is posted.
 
-Performance changes made this turn:
+Current performance state:
 
-- Inspected historical performance data and current generated/runtime dispatch paths.
-- Confirmed historical bottleneck evidence points at extremely high native-dispatch/chassis traffic and hot tiny runtime/cross-chunk entries.
-- PR #2 changed DolRecomp's default generated lookup from `linear` to its existing page-indexed implementation in both the primary and vendored copies.
-- Workspace defaults changed from module `O0` to `O2`, and `--dispatch-lookup indexed|linear` was added for controlled A/B measurement.
-- DOL and native-REL generation now propagate the selected dispatch mode, separate generation cache identities by mode, and record `module_opt` / `dispatch_lookup` in build receipts.
-- PR #2 was squash-merged as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`.
-- After that merge, identified that `tools/merge_mua2_generated.py` still replaced the DOL/REL dispatchers with an all-chunk binary search, which meant the combined gameplay-REL module would not receive the full indexed-dispatch benefit.
-- PR #3 adds a 4 KiB guest-page index to the merged DOL+REL dispatcher. Each lookup now binary-searches only chunks overlapping the current page. Address spans above the index cap retain the old all-chunk fallback.
-- During PR #3 review, corrected an initial table placement that could have duplicated dispatch data into every generated translation unit; chunk/page tables remain local statics inside the inline lookup helper.
-- PR #3 was squash-merged as `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`.
-- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` switches `docs/CURRENT-STATUS.md` to the performance-first directive.
-- `f7773f8e259d2eda672fa3b7dae6ac8404421cdf` records the second merged-dispatch performance optimization and its CI results.
-- This canonical handoff was refreshed after both performance changes.
+- `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` made `O2 + indexed` the default native build configuration on Windows and Linux while preserving explicit `--dispatch-lookup linear` A/B control.
+- `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` added a 4 KiB guest-page index to the combined DOL+REL dispatcher so each lookup searches only chunks overlapping the current page.
+- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` further fast-paths the combined dispatcher: empty pages return immediately and pages overlapping exactly one generated chunk avoid the binary-search loop entirely; multi-chunk boundary pages retain the binary search.
+- No current-main FPS/speed improvement is claimed yet because the proprietary RMSE52 benchmark route has not been rerun from this environment.
 
 Tests/CI actually observed:
 
-- OpenMUA2 tooling run `35940341273`: PASS on Ubuntu and Windows for PR #2.
-- DolRecomp run `35940341449`: PASS configure/build/test on Ubuntu and Windows for PR #2.
-- ModernGekko run `35940341332`: standalone tests PASS on Ubuntu and Windows for PR #2.
-- At the time of this handoff edit, ModernGekko run `35940341332` full build/test jobs for Ubuntu and Windows were still in progress; no PASS claim is made for those two jobs.
-- OpenMUA2 tooling run `35941158719`: PASS on Ubuntu and Windows for PR #3.
+- PR #2 / `a6328f40...`: OpenMUA2 tooling PASS on Ubuntu and Windows; DolRecomp configure/build/test PASS on Ubuntu and Windows; ModernGekko standalone tests PASS on Ubuntu and Windows.
+- PR #3 / `bf2ecd76...`: OpenMUA2 tooling PASS on Ubuntu and Windows.
+- No associated GitHub Actions run for direct commit `f4b7f991...` was returned by the available commit-workflow lookup, so **no CI PASS claim is made for that commit in this handoff**.
 - No proprietary RMSE52 game-side benchmark was run in this environment.
-
-Performance result boundary:
-
-- Source/configuration is now performance-first and both ordinary and combined native dispatch paths are indexed, but **no new game FPS or speed gain is claimed yet**. The exact RMSE52 benchmark is required to quantify the changes.
 
 Windows/Linux portability:
 
-- PR #2's tooling and DolRecomp configure/build/test passed on both Windows and Ubuntu.
-- PR #2's ModernGekko standalone tests passed on both platforms.
-- PR #3's tooling suite passed on both platforms.
-- Both performance changes use portable generated C/Python and do not introduce platform-specific assembly or compiler-only behavior.
+- The accepted performance changes remain portable generated C/Python paths rather than platform-specific assembly.
+- Direct cross-platform tooling/DolRecomp validation for the earlier indexed-dispatch work passed on both Windows and Ubuntu.
+- `f4b7f991...` is a small generated-C dispatch fast path; platform CI for that exact direct commit has not been independently observed here.
 
 Failures/rejected experiments:
 
-- No performance source/test failure occurred this turn.
-- An initial PR #3 implementation placed dispatch arrays at generated-header file scope; this was corrected before merge to avoid possible per-translation-unit data duplication/module bloat.
+- No new performance failure was observed in this handoff-refresh turn.
 - Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
-- No new correctness expansion was pursued after the user changed priority.
 
 Current blocker:
 
-- Fresh RMSE52 game-side performance measurement is unavailable here because the proprietary game workspace is not present.
+- Fresh RMSE52 game-side performance measurement is unavailable in this environment because the proprietary game workspace is not present.
 
 Next exact step:
 
-- On the RMSE52 workspace, build the current `O2 + indexed` default and benchmark the standard route. Immediately A/B against `O2 + linear` with all other settings fixed. Then profile remaining dispatch/chassis overhead on the faster configuration now that both ordinary and combined lookup paths are indexed.
-- The next source optimization should target shared high-frequency chassis/cross-chunk costs—especially tail/indirect transfers, host-call checks, or other avoidable round trips—for both Windows and Linux. Do not switch back to correctness expansion unless a concrete failure blocks performance measurement.
+- On the RMSE52 workspace, build current `main` with the `O2 + indexed` default and benchmark the standard route. Immediately A/B against `O2 + linear` with all other settings fixed.
+- Profile remaining dispatch/chassis overhead on the faster configuration now that ordinary dispatch, merged DOL+REL page lookup, and single-chunk merged pages are all optimized.
+- Continue with shared Windows/Linux performance work—especially high-frequency tail/indirect transfers, host-call checks, REL translation, or other avoidable chassis round trips—rather than new correctness expansion.
+
