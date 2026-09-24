@@ -128,7 +128,7 @@ private:
   bool ChunkContainsHostCall(u32 index) const;
   void VerifyChunk(u32 index);
   bool ResolveNativeAddress(u32 runtime_address, u32* linked_address, u32* rel_section_index,
-                            bool allow_refresh = true);
+                            bool allow_refresh = true, int* chunk_index = nullptr);
   bool ResolveRuntimeAddress(u32 linked_address, u32* runtime_address) const;
   u32 TranslateRelAddress(u32 linked_address);
   void RefreshRelSections();
