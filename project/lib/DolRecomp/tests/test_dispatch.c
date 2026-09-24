@@ -98,14 +98,16 @@ int main(void) {
             strstr(code, "static inline int dolrecomp_call_chassis(CPUState*");
         const char* public_dispatch =
             strstr(code, "static inline int dolrecomp_call(CPUState*");
+        const char* replacement =
+            chassis ? strstr(chassis, "dolrecomp_dispatch_replacement(ctx, address)") : NULL;
+        const char* original =
+            chassis ? strstr(chassis, "dolrecomp_call_original(ctx, address)") : NULL;
         const char* host_call = chassis ? strstr(chassis, "ppc_host_call") : NULL;
         check(chassis != NULL && public_dispatch != NULL && chassis < public_dispatch,
               "emits chassis-only dispatcher before public dispatcher");
         check(chassis != NULL && public_dispatch != NULL &&
-                  strstr(chassis, "dolrecomp_dispatch_replacement(ctx, address)") <
-                      public_dispatch &&
-                  strstr(chassis, "dolrecomp_call_original(ctx, address)") <
-                      public_dispatch &&
+                  replacement != NULL && replacement < public_dispatch &&
+                  original != NULL && original < public_dispatch &&
                   (host_call == NULL || host_call >= public_dispatch),
               "chassis dispatcher preserves replacements and skips host calls");
     }
