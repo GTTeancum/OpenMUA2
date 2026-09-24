@@ -208,21 +208,39 @@ bool StaticRecompCore::ResolveRuntimeAddress(u32 linked_address, u32* runtime_ad
   return true;
 }
 
-u32 StaticRecompCore::TranslateRelAddress(u32 linked_address, u32 rel_section_hint)
+u32 StaticRecompCore::TranslateRelAddress(u32 linked_address, u32 rel_section_hint,
+                                          u32* resolved_rel_section_index)
 {
-  if (rel_section_hint < m_active_rel_sections.size())
-  {
-    const ActiveRelSection& section = m_active_rel_sections[rel_section_hint];
-    if (linked_address >= section.linked_start &&
-        static_cast<u64>(linked_address) < static_cast<u64>(section.linked_start) + section.size)
+  const auto translate_section = [&](u32 i, u32* runtime_address) {
+    const ActiveRelSection& section = m_active_rel_sections[i];
+    if (linked_address < section.linked_start ||
+        static_cast<u64>(linked_address) >=
+            static_cast<u64>(section.linked_start) + section.size)
     {
-      return section.runtime_start + (linked_address - section.linked_start);
+      return false;
     }
-  }
+    *runtime_address = section.runtime_start + (linked_address - section.linked_start);
+    if (resolved_rel_section_index)
+      *resolved_rel_section_index = i;
+    return true;
+  };
 
   u32 runtime_address = linked_address;
-  ResolveRuntimeAddress(linked_address, &runtime_address);
-  return runtime_address;
+  if (rel_section_hint < m_active_rel_sections.size() &&
+      translate_section(rel_section_hint, &runtime_address))
+  {
+    return runtime_address;
+  }
+  for (u32 i = 0; i < m_active_rel_sections.size(); ++i)
+  {
+    if (i == rel_section_hint)
+      continue;
+    if (translate_section(i, &runtime_address))
+      return runtime_address;
+  }
+  if (resolved_rel_section_index)
+    *resolved_rel_section_index = 0xffffffffu;
+  return linked_address;
 }
 
 int StaticRecompCore::GetAddressLookupIndex(u32 address) const
@@ -300,6 +318,43 @@ bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* li
     return false;
   if (chunk_index)
     *chunk_index = static_cast<u32>(index);
+  return true;
+}
+
+bool StaticRecompCore::FastDispatchableLinkedAt(u32 runtime_address, u32 linked_address,
+                                                u32 rel_section_index, u32* chunk_index)
+{
+  if (!m_module_active || m_chunk_lookup_table.empty())
+    return false;
+  if (!m_forced_fallback_ranges.empty() && IsForcedFallbackAddress(runtime_address))
+    return false;
+
+  const int lookup_index = GetAddressLookupIndex(linked_address);
+  if (lookup_index < 0 || lookup_index >= static_cast<int>(m_chunk_lookup_table.size()))
+    return false;
+  const int chunk = m_chunk_lookup_table[lookup_index];
+  if (chunk < 0 || m_chunk_state[chunk] != CHUNK_VERIFIED)
+    return false;
+
+  if (m_chunk_rel_sections[chunk] >= 0)
+  {
+    if (rel_section_index >= m_active_rel_sections.size())
+      return false;
+    const ActiveRelSection& section = m_active_rel_sections[rel_section_index];
+    const StaticRecompRange& range = m_module->chunk_ranges[chunk];
+    if (range.start < section.linked_start ||
+        static_cast<u64>(range.end) > static_cast<u64>(section.linked_start) + section.size)
+    {
+      return false;
+    }
+  }
+  else if (rel_section_index != 0xffffffffu)
+  {
+    return false;
+  }
+
+  if (chunk_index)
+    *chunk_index = static_cast<u32>(chunk);
   return true;
 }
 
