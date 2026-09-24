@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `ff91e39cb0f933a0d0cd67fbafc10f082a85af02` (`Record page-bounded indexed dispatch performance work`)  
+**Source state summarized through:** `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` (`Reuse module-load x86-64-v3 choice for indirect dispatch`)  
 **Date:** 2026-09-24
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -108,6 +108,9 @@ This is the current default performance configuration for both Windows and Linux
 - combined native DOL+REL lookup is page-indexed as of `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`
 - single-chunk merged-dispatch pages are fast-pathed as of `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6`: empty indexed pages return immediately, pages overlapping exactly one generated chunk skip the binary-search loop, and only multi-chunk boundary pages use the search loop
 - ordinary DolRecomp indexed dispatch is page-bounded as of `405b81de4136a7532e966218185a190f6eb9230d`: each 4 KiB page has an exact candidate-run `[first,end)` window, empty pages return immediately, single-run pages skip the scan, and multi-run scans cannot walk into a later page
+- x86-64-v3 feature detection is cached once per process as of `917a5d893087736a74566dbaf71de5f3989a6d90`
+- normal chassis dispatch is bound directly to baseline or x86-64-v3 at module load as of `4e677ac8491bc3b5256998ba3688893f61d07695`, removing host-feature selection from each normal native block
+- generated indirect dispatch reuses the module-load x86-64-v3 decision as of `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1`, so indirect guest transfers no longer re-enter the host-feature probe
 
 DolRecomp's indexed dispatcher uses its page/run lookup rather than the older linear range chain. The current `405b81de...` implementation also bounds that lookup to the runs overlapping the current guest page and fast-paths zero/one-run pages. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route. The merge tool emits a 4 KiB guest-page index for the combined DOL+REL module, narrowing its binary search to chunks overlapping the current page rather than the full merged chunk table; the current `f4b7f991...` fast path avoids even that binary search on the common zero- or one-chunk page cases.
 
@@ -255,7 +258,7 @@ Performance PR #9 / merge commit `405b81de4136a7532e966218185a190f6eb9230d`:
 - DolRecomp Actions run `36000036463`: PASS configure/build/test on Ubuntu and Windows.
 - The Ubuntu generated `c_execute` test compiled and executed an indexed case reporting 11 chunks in 6 runs across 2 pages, with up to 5 runs on a page; all 19 DolRecomp tests passed.
 - ModernGekko Actions run `36000035131`: standalone tests PASS on Ubuntu and Windows.
-- At handoff-update time, the two ModernGekko full build/test jobs were still in the Build step; do not count them as completed until a later turn observes their final conclusions.
+- ModernGekko Actions run `36000035131`: full build/test PASS on Ubuntu and Windows as subsequently observed; standalone tests also PASS on Ubuntu and Windows.
 
 ### What is still not freshly validated
 
@@ -332,7 +335,7 @@ Useful deeper documents:
 
 Latest `main` actually inspected before this handoff edit:
 
-- `ff91e39cb0f933a0d0cd67fbafc10f082a85af02` — `Record page-bounded indexed dispatch performance work`
+- `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — `Reuse module-load x86-64-v3 choice for indirect dispatch`
 
 User priority / workflow mandates:
 
@@ -340,49 +343,70 @@ User priority / workflow mandates:
 - Existing correctness/SMC/hash/audit guards remain enabled; do not drift into new correctness work unless a concrete failure blocks performance measurement or execution.
 - **Mandatory handoff rule:** every development turn must end with this file updated, committed to GitHub `main`, and posted/attached in chat. The turn is not complete until the refreshed file is posted.
 
+Current-main reconciliation this turn:
+
+- The previous PR #9 ModernGekko Actions run `36000035131` is now fully complete: full build/test PASS on Ubuntu and Windows, and standalone tests PASS on Ubuntu and Windows.
+- `main` had advanced after the prior handoff with three related dispatch-selection performance commits:
+  - `917a5d893087736a74566dbaf71de5f3989a6d90` — cache x86-64-v3 feature detection once per process.
+  - `4e677ac8491bc3b5256998ba3688893f61d07695` — bind the normal chassis descriptor directly to baseline or x86-64-v3 dispatch at module load.
+  - `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — reuse that module-load selection for generated indirect dispatch instead of re-entering host-feature probing.
+- Those commits are authoritative current `main` and were preserved; this turn did not duplicate or overwrite them.
+
 Changes made this turn:
 
-- Inspected current GitHub `main` first; it had advanced through `80735efeb5d701e7815c1194a96852d1644319dc` (`Mandate posting MUA2 handoff every turn`).
-- Created performance branch `perf/indexed-page-run-window` and PR #9.
-- Updated both DolRecomp copies:
-  - `project/lib/DolRecomp/src/backend/dispatch.c`
-  - `project/lib/ModernGekko/vendor/dolphin/DolRecomp/src/backend/dispatch.c`
-- The indexed dispatcher now emits an exact page-local candidate-run end table in addition to the first-run table.
-- Empty indexed pages return immediately.
-- Pages overlapping exactly one run skip the scan entirely.
-- Multi-run scans are bounded by the current page's candidate-run end and cannot walk into later pages.
-- Added matching generator regression checks in both DolRecomp test copies.
-- PR #9 was squash-merged as `405b81de4136a7532e966218185a190f6eb9230d`.
-- Updated `docs/CURRENT-STATUS.md` in `ff91e39cb0f933a0d0cd67fbafc10f082a85af02` with the new performance state and observed CI results.
-- No RMSE52 game image or proprietary derived data was added to Git.
+- Created branch `perf/gate-host-call-probes-by-chunk` from `5e6ad207...` and opened PR #13, `Gate native host-call probes by chunk`.
+- Updated:
+  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
+  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
+  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
+- `DispatchableAt` and `FastDispatchableAt` can now return the verified chunk index they already resolved.
+- The native burst loop uses the existing cached `ChunkContainsHostCall(chunk_index)` result before calling the exact-address `IsHostCallAddress(address)` callback.
+- Chunks known not to contain host calls therefore skip the per-block host-call address probe; chunks that may contain one retain the exact address-level check and behavior.
+- Added `tests/test_staticrecomp_host_call_gate_perf.py` to pin the verified-chunk plumbing and gated native-burst source path.
+- No proprietary RMSE52 game data or game-derived output was committed.
 
-Tests/CI actually observed:
+PR #13 / branch state:
 
-- DolRecomp Actions run `36000036463`: PASS on `ubuntu-latest` and `windows-latest`, including configure/build/test.
-- Ubuntu DolRecomp completed all 19 tests successfully; its generated `c_execute` case reported `11 chunks in 6 runs, 2 pages, at most 5 runs walked per lookup`, exercising the bounded multi-run generated path.
-- ModernGekko Actions run `36000035131`: standalone tests PASS on Ubuntu and Windows.
-- The ModernGekko full build/test jobs for Ubuntu and Windows were still in the Build step at the time this handoff was committed. Do **not** claim those two full jobs passed unless a later turn observes completion.
-- No proprietary RMSE52 game-side build, benchmark, FPS measurement, or gameplay run occurred in this environment.
+- Branch: `perf/gate-host-call-probes-by-chunk`
+- PR: `#13`
+- Current tested head: `76a99a8607052c0ad643aabec3853497c21e32a1`
+- The PR is intentionally **not merged yet** because this change touches `StaticRecompCore::Run()` and the two full ModernGekko builds have not finished.
+- Before this handoff-only main commit, the branch was 4 commits ahead / 0 behind `5e6ad207...` with only the intended three StaticRecomp files plus the new regression changed. A later turn must re-check current `main` before merging because this handoff commit itself advances `main`.
+
+Tests/CI actually observed for PR #13:
+
+- OpenMUA2 tooling Actions run `36003571111`: PASS on Ubuntu and Windows.
+- ModernGekko Actions run `36003570930`:
+  - Standalone tests — Ubuntu: PASS.
+  - Standalone tests — Windows: PASS.
+  - Full build and test — Ubuntu: still `in_progress`, Build step, at handoff-update time.
+  - Full build and test — Windows: still `in_progress`, Build step, at handoff-update time.
+- The standalone jobs do not compile the complete StaticRecomp core, which is why PR #13 was not merged merely on those results.
+- A live-log request for an in-progress full job returned GitHub's temporary log-blob 404; the job itself remained `in_progress`, so this is not recorded as a build failure.
+- No RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred in this environment.
 
 Windows/Linux portability:
 
-- The accepted change is portable generated C and C generator logic; no platform-specific assembly or POSIX-only runtime path was added.
-- The directly affected DolRecomp configure/build/test matrix passed on both MSVC/Windows and Ubuntu.
-- ModernGekko standalone validation passed on both Windows and Ubuntu.
+- PR #13 changes shared C++ only; it adds no platform-specific assembly or POSIX-only runtime dependency.
+- Source/tooling regressions pass on Windows and Ubuntu.
+- ModernGekko standalone tests pass on Windows and Ubuntu.
+- Full GCC/Clang and MSVC integration-build validation is still pending through run `36003570930`.
 
 Failures/rejected experiments:
 
-- No code/test failure was observed for PR #9.
-- A request for logs from the still-running ModernGekko full jobs temporarily returned a GitHub log-blob 404; the jobs themselves remained `in_progress`, so this was not treated as a build failure.
+- No code/test failure has been observed for PR #13 so far.
+- PR #13 remains pending solely because the full ModernGekko builds are long-running.
 - Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
 
-Current blocker:
+Current blockers:
 
-- Fresh RMSE52 game-side performance measurement remains unavailable in this environment because the proprietary game workspace is not present.
-- Therefore no FPS/speed improvement is claimed from `405b81de...`; it is a source-level dispatcher-overhead optimization with cross-platform CI validation only.
+- **Immediate source-integration gate:** PR #13 full ModernGekko build/test jobs must reach final conclusions before merge. If either fails, inspect that job and fix the branch rather than merging around it.
+- **Game-performance measurement gate:** fresh RMSE52 execution is still unavailable in this environment, so no FPS/speed improvement is claimed for the current dispatch work.
 
 Next exact step:
 
-- When the RMSE52 workspace is available, build current `main` with default `O2 + indexed`, benchmark the standard route, and immediately A/B against `O2 + linear` with all other settings fixed.
-- Capture native dispatch count/hot PCs, burst length, host-call check cost, REL translation cost, native exceptions, and JIT fallback on the faster baseline.
-- With ordinary and merged dispatch page lookup now optimized, continue shared Windows/Linux performance work on high-frequency cross-chunk/tail/indirect transfers, host-call checks, REL translation, and avoidable chassis round trips rather than expanding correctness coverage.
+1. Inspect current `main` first and inspect ModernGekko run `36003570930`.
+2. If both full Ubuntu and Windows jobs PASS, merge PR #13, update `docs/CURRENT-STATUS.md`, and refresh this handoff again with the merge SHA and final CI facts.
+3. If either full job fails, keep PR #13 unmerged, inspect its failing step/logs, fix the branch, and rerun CI.
+4. Once PR #13 is accepted, continue performance work rather than correctness expansion. The next source hotspot to investigate is the REL dispatch/address-translation path: current native bursts with REL support still resolve runtime→linked before dispatch and linked→runtime afterward, and the continuation eligibility path can repeat related lookup work.
+5. When the proprietary RMSE52 workspace is available, benchmark current `O2 + indexed` against `O2 + linear` on the standard route and collect native-dispatch/chassis/REL/host-call counters before claiming any speedup.
