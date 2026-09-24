@@ -154,17 +154,22 @@ bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_add
   if (m_rel_identity_mapping)
   {
     const int index = GetAddressLookupIndex(runtime_address);
-    if (index < 0 || index >= static_cast<int>(m_chunk_lookup_table.size()))
-      return false;
-    const int chunk = m_chunk_lookup_table[index];
-    if (chunk < 0)
-      return false;
-    *linked_address = runtime_address;
-    if (rel_section_index)
-      *rel_section_index = m_chunk_rel_sections[chunk] >= 0 ?
-                               static_cast<u32>(m_chunk_rel_sections[chunk]) :
-                               0xffffffffu;
-    return true;
+    if (index >= 0 && index < static_cast<int>(m_chunk_lookup_table.size()))
+    {
+      const int chunk = m_chunk_lookup_table[index];
+      if (chunk >= 0)
+      {
+        *linked_address = runtime_address;
+        if (rel_section_index)
+          *rel_section_index = m_chunk_rel_sections[chunk] >= 0 ?
+                                   static_cast<u32>(m_chunk_rel_sections[chunk]) :
+                                   0xffffffffu;
+        return true;
+      }
+    }
+    // A miss can mean the REL was unloaded or relinked. Keep the normal
+    // active-map/refresh path available so identity mode never pins stale
+    // runtime addresses.
   }
 
   const auto resolve_active = [&]() {
@@ -284,9 +289,14 @@ int StaticRecompCore::ChunkIndexOf(u32 address)
   if (m_rel_identity_mapping)
   {
     const int index = GetAddressLookupIndex(address);
-    if (index < 0 || index >= static_cast<int>(m_chunk_lookup_table.size()))
-      return -1;
-    return m_chunk_lookup_table[index];
+    if (index >= 0 && index < static_cast<int>(m_chunk_lookup_table.size()))
+    {
+      const int chunk = m_chunk_lookup_table[index];
+      if (chunk >= 0)
+        return chunk;
+    }
+    // A miss still goes through ResolveNativeAddress(), which can refresh a
+    // REL that was unloaded or moved after identity mapping was discovered.
   }
 
   u32 linked_address = address;
