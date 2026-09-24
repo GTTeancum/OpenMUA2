@@ -266,6 +266,7 @@ private:
   bool m_collect_dispatch_samples = false;
   bool m_collect_fallback_samples = false;
   bool m_has_rel_modules = false;
+  bool m_rel_identity_mapping = false;
   u32 m_idle_pc = 0;
 };
 
