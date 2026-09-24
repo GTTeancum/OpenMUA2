@@ -70,10 +70,13 @@ static int host_has_x86_64_v3(void)
 #endif
 }
 #endif
+#if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
+static int s_use_x86_64_v3 = 0;
+#endif
 static int selected_dispatch(CPUState* ctx, u32 address)
 {
 #if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
-    if (host_has_x86_64_v3())
+    if (s_use_x86_64_v3)
         return dolrecomp_call__x86_64_v3(ctx, address);
 #endif
     return dolrecomp_call(ctx, address);
@@ -148,9 +151,10 @@ static const StaticRecompModuleDesc s_desc_x86_64_v3 =
 RECOMP_MODULE_EXPORT const StaticRecompModuleDesc* staticrecomp_get_module(void)
 {
 #if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
-    // Bind the chassis to one dispatcher at module load. The hot native-block
-    // path then has no host-feature selection branch at all.
-    if (host_has_x86_64_v3())
+    // Bind the chassis to one dispatcher at module load. Generated indirect
+    // dispatch also reuses this decision instead of re-entering feature probing.
+    s_use_x86_64_v3 = host_has_x86_64_v3();
+    if (s_use_x86_64_v3)
         return &s_desc_x86_64_v3;
 #endif
     return &s_desc_baseline;
