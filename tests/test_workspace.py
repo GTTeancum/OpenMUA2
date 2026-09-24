@@ -43,7 +43,9 @@ class WorkspaceTests(unittest.TestCase):
         with redirect_stdout(io.StringIO()): w.setup(self.root)
     def options(self, **kw):
         return argparse.Namespace(cc=sys.executable, cxx=sys.executable, module_cc=sys.executable,
-            config='Release', jobs=2, module_opt=0, wit=sys.executable, image=kw.get('image'), sdk=None)
+            config='Release', jobs=2, module_opt=kw.get('module_opt', 2),
+            dispatch_lookup=kw.get('dispatch_lookup', 'indexed'),
+            wit=sys.executable, image=kw.get('image'), sdk=None)
     def image(self, name='Marvel Ultimate Alliance 2.wbfs'):
         p=self.root/name;p.write_bytes(b'WBFS'+bytes(512));return p
     def test_manifest_passes(self):
@@ -227,12 +229,34 @@ class WorkspaceTests(unittest.TestCase):
         self.image();game=self.root/'.local/game';game.mkdir(parents=True);(game/'keep').write_text('keep')
         with self.assertRaises(ValueError):w.extract_game(self.root,self.options(),Path(sys.executable))
         self.assertEqual((game/'keep').read_text(),'keep')
+    def test_generate_dispatch_lookup_is_explicit_and_cache_separated(self):
+        tools=self.root/'tools';tools.mkdir()
+        generator=tools/'generate_dol_mg01.py';generator.write_text('fixture\n')
+        recompiler=self.root/'dolrecomp';recompiler.write_text('fixture\n')
+        game=self.root/'.local/game';(game/'sys').mkdir(parents=True)
+        (game/'sys/main.dol').write_bytes(b'dol-fixture')
+
+        calls=[]
+        def fake_logged(*args,**kwargs):
+            calls.append((args,kwargs))
+
+        with patch.object(w,'logged',side_effect=fake_logged):
+            indexed=w.generate(self.root,self.options(dispatch_lookup='indexed'),recompiler,game)
+            linear=w.generate(self.root,self.options(dispatch_lookup='linear'),recompiler,game)
+
+        self.assertNotEqual(indexed.parent,linear.parent)
+        self.assertEqual(calls[0][1]['env']['DOLRECOMP_DISPATCH_LOOKUP'],'indexed')
+        self.assertEqual(calls[1][1]['env']['DOLRECOMP_DISPATCH_LOOKUP'],'linear')
+        self.assertIn('PATH',calls[0][1]['env'])
+
     def test_run_requires_verified_build_receipt(self):
         opts=argparse.Namespace(graphics=None,audio=None)
         with self.assertRaises(ValueError):w.run_game(self.root,opts)
-    def test_parser_defaults_conservative(self):
+    def test_parser_defaults_performance_focused(self):
         o=w.make_parser().parse_args(['build'])
-        self.assertEqual(o.jobs,2);self.assertEqual(o.module_opt,0)
+        self.assertEqual(o.jobs,2)
+        self.assertEqual(o.module_opt,2)
+        self.assertEqual(o.dispatch_lookup,'indexed')
     def test_write_json_replaces_only_destination(self):
         p=self.root/'new.json';w.write_json(p,{'a':1});w.write_json(p,{'a':2})
         self.assertEqual(json.loads(p.read_text()),{'a':2})
