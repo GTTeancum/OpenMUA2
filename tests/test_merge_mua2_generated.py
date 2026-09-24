@@ -157,13 +157,43 @@ class MergeDispatchTests(unittest.TestCase):
 
         guard = "if ((address & 3u) != 0u) return NULL;"
         self.assertIn(guard, text)
-        self.assertLess(text.index(guard), text.index("u32 lo = 0;"))
+        self.assertLess(text.index(guard), text.index("u32 page ="))
         self.assertIn(
             "{0x80001000u, 0x80001010u, func_80001000}", text
         )
         self.assertIn(
             "{0x80E4A164u, 0x80E4A174u, func_80E4A164}", text
         )
+
+    def test_merged_dispatch_uses_guest_page_index(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "generated.h"
+            merge.emit_header(dol_header(), rel_header(), output)
+            text = output.read_text(encoding="utf-8")
+
+        self.assertIn("#define DOLRECOMP_MERGED_PAGE_SHIFT 12u", text)
+        self.assertIn("dolrecomp_merged_page_first[DOLRECOMP_MERGED_PAGE_COUNT]", text)
+        self.assertIn("dolrecomp_merged_page_end[DOLRECOMP_MERGED_PAGE_COUNT]", text)
+        self.assertIn(
+            "u32 lo = dolrecomp_merged_page_first[page];", text
+        )
+        self.assertIn(
+            "u32 hi = dolrecomp_merged_page_end[page];", text
+        )
+        self.assertNotIn("u32 lo = 0;", text)
+
+    def test_page_index_leaves_uncovered_pages_empty(self) -> None:
+        chunks = [
+            (0x80001000, 0x80001010),
+            (0x80004000, 0x80004010),
+        ]
+        page_index = merge.build_dispatch_page_index(chunks)
+        self.assertIsNotNone(page_index)
+        assert page_index is not None
+        base, page_first, page_end = page_index
+        self.assertEqual(base, 0x80001000)
+        self.assertEqual(page_first, [0, 1, 1, 1])
+        self.assertEqual(page_end, [1, 1, 1, 2])
 
     def test_merged_dispatch_rejects_overlapping_chunks(self) -> None:
         overlapping_rel = rel_header(0x80001008, 0x80001028)
