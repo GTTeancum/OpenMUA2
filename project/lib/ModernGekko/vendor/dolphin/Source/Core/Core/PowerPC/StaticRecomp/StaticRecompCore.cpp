@@ -464,6 +464,7 @@ void StaticRecompCore::LoadModule()
     }
   }
   m_active_rel_sections.clear();
+  m_rel_identity_mapping = false;
   m_rel_mapping_generation = 0;
   m_failed_chunks = 0;
   m_lookup_ram_size = 0;
