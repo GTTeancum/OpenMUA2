@@ -12,14 +12,14 @@ typedef enum {
 
 static DispatchLookupMode dispatch_lookup_mode(void) {
     const char* configured = getenv("DOLRECOMP_DISPATCH_LOOKUP");
-    if (!configured || !configured[0] || !strcmp(configured, "linear"))
-        return DISPATCH_LOOKUP_LINEAR;
-    if (!strcmp(configured, "indexed"))
+    if (!configured || !configured[0] || !strcmp(configured, "indexed"))
         return DISPATCH_LOOKUP_INDEXED;
+    if (!strcmp(configured, "linear"))
+        return DISPATCH_LOOKUP_LINEAR;
     fprintf(stderr,
             "warning: DOLRECOMP_DISPATCH_LOOKUP must be linear|indexed; using "
-            "linear\n");
-    return DISPATCH_LOOKUP_LINEAR;
+            "indexed\n");
+    return DISPATCH_LOOKUP_INDEXED;
 }
 
 void emit_chunk_prototype(FILE* out, u32 func_addr) {
