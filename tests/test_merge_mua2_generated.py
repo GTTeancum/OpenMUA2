@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 from pathlib import Path
 import tempfile
@@ -42,6 +43,25 @@ static inline void test_range(u32 address) {{
 
 
 class MergeDispatchTests(unittest.TestCase):
+    def test_rel_metadata_requires_exact_live_audited_rel(self) -> None:
+        rel_data = b"synthetic-rel"
+        audit = {
+            "status": "LIVE_TEXT_MATCH",
+            "source_rel_sha256": hashlib.sha256(rel_data).hexdigest(),
+        }
+        with tempfile.TemporaryDirectory() as td:
+            rel_path = Path(td) / "module.rel"
+            rel_path.write_bytes(rel_data)
+            self.assertEqual(merge.read_audited_rel(audit, rel_path), rel_data)
+
+            rel_path.write_bytes(rel_data + b"-changed")
+            with self.assertRaisesRegex(ValueError, "does not match audited source"):
+                merge.read_audited_rel(audit, rel_path)
+
+            audit["status"] = "LIVE_TEXT_MISMATCH"
+            with self.assertRaisesRegex(ValueError, "does not report LIVE_TEXT_MATCH"):
+                merge.read_audited_rel(audit, rel_path)
+
     def test_merged_dispatch_preserves_instruction_alignment(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             output = Path(td) / "generated.h"

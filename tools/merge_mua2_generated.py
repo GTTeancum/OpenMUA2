@@ -8,6 +8,7 @@ source main.dol, plus REL metadata used by gen_module_tables.py.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -243,8 +244,24 @@ def replay_rel_text(rel_data: bytes, layout: list[dict[str, object]], module_id:
     }
 
 
+def read_audited_rel(audit: dict[str, object], rel_path: Path) -> bytes:
+    if audit.get("status") != "LIVE_TEXT_MATCH":
+        raise ValueError("REL audit does not report LIVE_TEXT_MATCH")
+    expected_hash = audit.get("source_rel_sha256")
+    if not isinstance(expected_hash, str) or re.fullmatch(
+        r"[0-9A-Fa-f]{64}", expected_hash
+    ) is None:
+        raise ValueError("REL audit has no valid source_rel_sha256")
+    rel_data = rel_path.read_bytes()
+    actual_hash = hashlib.sha256(rel_data).hexdigest()
+    if actual_hash.lower() != expected_hash.lower():
+        raise ValueError("REL file SHA-256 does not match audited source")
+    return rel_data
+
+
 def emit_rel_metadata(audit_path: Path, rel_path: Path, output: Path) -> None:
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
+    rel_data = read_audited_rel(audit, rel_path)
     comparison = next(
         item for item in audit["comparisons"] if item["halfword_write_adjust"] == 0
     )
@@ -253,7 +270,7 @@ def emit_rel_metadata(audit_path: Path, rel_path: Path, output: Path) -> None:
         raise ValueError("expected exactly one executable REL text section")
     rel_text = text_sections[0]
     layout = audit["layout"]
-    replayed = replay_rel_text(rel_path.read_bytes(), layout, audit["module_id"])
+    replayed = replay_rel_text(rel_data, layout, audit["module_id"])
     text_bytes = replayed[rel_text["section"]]
     if len(text_bytes) != rel_text["bytes"]:
         raise ValueError("replayed REL text size mismatch")
