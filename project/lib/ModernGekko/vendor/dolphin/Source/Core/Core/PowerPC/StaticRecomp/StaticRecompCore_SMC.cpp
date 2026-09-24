@@ -250,16 +250,44 @@ int StaticRecompCore::ChunkIndexOf(u32 address)
   if (!m_module_active || m_chunk_lookup_table.empty())
     return -1;
 
+  // DOL chunks use their runtime effective address directly. Keep the most
+  // recent DOL chunk as a locality hint, then use the O(1) lookup table before
+  // entering REL resolution. The old path called ResolveNativeAddress() first,
+  // which performed this same table lookup and then ChunkIndexOf() repeated it.
+  // Avoiding that duplicated work matters on the native dispatch hot path.
+  if (m_last_chunk_index < m_module->num_chunk_ranges &&
+      m_chunk_rel_sections[m_last_chunk_index] < 0)
+  {
+    const StaticRecompRange& last = m_module->chunk_ranges[m_last_chunk_index];
+    if (address >= last.start && address < last.end)
+      return static_cast<int>(m_last_chunk_index);
+  }
+
+  const int direct_idx = GetAddressLookupIndex(address);
+  if (direct_idx >= 0 && direct_idx < static_cast<int>(m_chunk_lookup_table.size()))
+  {
+    const int direct_chunk = m_chunk_lookup_table[direct_idx];
+    if (direct_chunk >= 0 && m_chunk_rel_sections[direct_chunk] < 0)
+    {
+      m_last_chunk_index = static_cast<u32>(direct_chunk);
+      return direct_chunk;
+    }
+  }
+
+  // Runtime REL addresses still need translation to their linked address
+  // before the shared chunk table can be indexed.
   u32 linked_address = address;
   if (!ResolveNativeAddress(address, &linked_address, nullptr))
     return -1;
-  int idx = GetAddressLookupIndex(linked_address);
+  const int idx = GetAddressLookupIndex(linked_address);
   if (idx < 0 || idx >= static_cast<int>(m_chunk_lookup_table.size()))
     return -1;
 
-  return m_chunk_lookup_table[idx];
+  const int chunk = m_chunk_lookup_table[idx];
+  if (chunk >= 0)
+    m_last_chunk_index = static_cast<u32>(chunk);
+  return chunk;
 }
-
 bool StaticRecompCore::FastDispatchableAt(u32 address)
 {
   if (IsForcedFallbackAddress(address))
