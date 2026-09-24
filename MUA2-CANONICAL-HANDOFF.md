@@ -8,11 +8,11 @@
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
 >
-> At the end of **every future development turn**, update this file **before reporting back**, commit the refreshed handoff to GitHub `main`, and **post/attach the refreshed `MUA2-CANONICAL-HANDOFF.md` in the chat** so the user can download it. A development turn is not complete until the updated handoff file has been posted in chat.
+> At the end of **every future development turn**, update this file **before reporting back**, commit the refreshed handoff to GitHub `main`, and **paste the full refreshed `MUA2-CANONICAL-HANDOFF.md` contents directly into the chat**. Do **not** satisfy this mandate with only a link or attachment. A development turn is not complete until the full handoff text has been posted in chat.
 >
 > Record the latest `main` SHA actually inspected, code/document/test changes, tests/builds/CI/game runs actually performed and their real results, failures/rejected experiments, the exact blocker/next step, Windows/Linux portability status, and any new file/location a successor needs.
 >
-> A new chat should need only the **posted copy of this file** plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
+> A new chat should need only the **full handoff text pasted directly in chat** plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
 
 ---
 
@@ -350,71 +350,68 @@ Useful deeper documents:
 
 Latest `main` actually inspected before this handoff edit:
 
-- `8e2baf16efb0022b8910ddefa0130843c1b7da0b` — `Record REL dispatch resolution reuse`
+- `711ae4541dc81fadf67ce0da1098f041cf048d39` — `Use shorter MUA2 development turns`
 
 User priority / workflow mandates:
 
-- **Short-turn workflow now required because resume-stream failures are occurring:** one focused change/investigation + its validation, then handoff update/post and stop.
-
+- **Short-turn workflow is mandatory because resume-stream failures are occurring:** one focused code change or investigation, its validation state, then update/post this handoff and stop.
+- **The full refreshed handoff text must be pasted directly into chat every turn. A link or attachment by itself does not satisfy the mandate.**
 - **Multiplatform performance remains the active project focus. Correctness expansion comes later.**
 - Existing correctness/SMC/hash/audit guards remain enabled; do not drift into new correctness work unless a concrete failure blocks performance measurement or execution.
-- **Mandatory handoff rule:** every development turn must end with this file updated, committed to GitHub `main`, and posted/attached in chat. The turn is not complete until the refreshed file is posted.
-- **Short-turn rule (2026-09-24):** because resume-stream failures are occurring, keep future development turns intentionally small: one focused code change or investigation, its validation/CI state, then update/post this handoff and stop. Do not batch multiple independent optimizations into one turn.
 
 Changes made this turn:
 
-- Inspected current GitHub `main` first; it was stable at `add931c83dec88567dc140b4861e7f37aed616a8` with no parallel work to reconcile.
-- Targeted the next performance hotspot identified by the prior handoff: duplicate REL runtime→linked resolution inside the hot native burst loop.
-- Created branch `perf/reuse-rel-dispatch-resolution` and PR #14 (`Reuse REL resolution across native dispatch`).
+- Inspected current GitHub `main`; no parallel source work had advanced past `711ae454...`.
+- Created branch `perf/rel-runtime-section-hint` and PR #17 (`Reuse REL section for return translation`).
+- Focused change only: optimize post-dispatch linked→runtime REL translation for the common same-section case.
 - Updated:
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
+  - `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
   - `tests/test_staticrecomp_host_call_gate_perf.py`
-  - added `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
-- `ChunkIndexOf`, `DispatchableAt`, and `FastDispatchableAt` can now return the linked PC produced by the authoritative `ResolveNativeAddress()` lookup they already perform.
-- Native-burst entry reuses that linked PC for the immediately following module dispatch rather than calling `ResolveNativeAddress()` again.
-- Burst continuation similarly resolves/validates the next runtime PC once, returns its linked PC, and carries it into the next dispatch iteration.
-- The post-dispatch `TranslateRelAddress()` path remains intact. This optimization does **not** keep a REL mapping decision beyond the dispatchability/continuation check that immediately precedes the dispatch.
-- Existing chunk verification, forced-fallback handling, REL refresh behavior, and host-call gating remain enabled.
-- PR #14 was squash-merged as `af7938bdb63d4530ea43a6ba445800fc4171a153`.
-- Updated `docs/CURRENT-STATUS.md` in `8e2baf16efb0022b8910ddefa0130843c1b7da0b`.
-- No proprietary RMSE52 game data or game-derived output was committed.
+- `ChunkIndexOf`, `DispatchableAt`, and `FastDispatchableAt` now optionally return the active REL section index alongside the already-carried linked PC.
+- Native-burst entry and continuation carry that section index into the dispatch iteration.
+- `TranslateRelAddress(linked_address, rel_section_hint)` now checks the hinted active REL section first. If the returned linked PC is still inside that section, it translates directly with one bounds check and arithmetic instead of scanning all active REL sections.
+- If the result leaves the hinted section, the code falls back to the existing `ResolveRuntimeAddress()` full scan. Cross-section and DOL returns therefore retain the old behavior.
+- The direct non-REL fast path writes the sentinel `0xffffffffu` as the section index.
+- REL refresh behavior, chunk verification, forced fallback, host-call gating, and the prior runtime→linked reuse remain intact.
+- PR #17 current head: `5aff006a6d8949c4692dce68b4127627c0829300`.
+- PR #17 is **not merged yet** in this short turn.
 
-Tests/CI actually observed:
+Validation actually observed:
 
-- OpenMUA2 tooling Actions run `36008961778`: PASS on `ubuntu-latest` and `windows-latest`.
-- ModernGekko Actions run `36008961830`:
-  - Standalone tests — Ubuntu: PASS.
-  - Standalone tests — Windows: PASS.
-  - Full build and test — Ubuntu: PASS.
-  - Full build and test — Windows: PASS.
-- The Windows full job used the MSVC environment + Ninja path and compiled the changed StaticRecomp core as part of the full runtime.
-- The new source regression specifically rejects reintroduction of `ResolveNativeAddress(runtime_dispatch_address, &linked_dispatch_address, nullptr)` in the dispatch body while requiring the linked PC to be carried from dispatchability and continuation.
-- No RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred in this environment.
+- OpenMUA2 tooling Actions run `36026447896`:
+  - Ubuntu Python tests: **PASS**.
+  - Windows Python tests: still `in_progress` in `Run tooling tests` at handoff-update time.
+- ModernGekko Actions run `36026447968`:
+  - Full build/test — Windows: `in_progress`, Configure step.
+  - Standalone tests — Windows: `in_progress`, Configure step.
+  - Standalone tests — Ubuntu: `in_progress`, Configure step.
+  - Full build/test — Ubuntu: `in_progress`, Install Linux dependencies step.
+- No failed CI job had appeared when this handoff was updated.
+- No proprietary RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred in this environment.
 
 Windows/Linux portability:
 
-- PR #14 is shared C++ only; it adds no platform-specific assembly and no POSIX-only runtime dependency.
-- Tooling regressions pass on Windows and Ubuntu.
-- Full ModernGekko integration build/test passes on Windows/MSVC and Ubuntu.
-- This is source/build portability validation, **not** a full Windows game execution result.
+- PR #17 is shared C++ plus Python source regressions; it adds no platform-specific assembly and no POSIX-only runtime dependency.
+- Ubuntu tooling has already passed.
+- Windows tooling and the ModernGekko Windows/Ubuntu matrix remain pending; do **not** merge PR #17 until the relevant final conclusions are observed.
 
 Failures/rejected experiments:
 
-- No code/test failure was observed for PR #14.
-- GitHub's live log-blob endpoint returned a temporary 404 while full jobs were in progress; the jobs themselves remained healthy and later passed.
+- No code/test failure observed in this turn.
+- One edit attempt failed locally before a GitHub write because of mixed line endings in the source replacement target; no repository file was changed by that failed attempt. The edit was reapplied using the exact file line endings and committed correctly afterward.
 - Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
 
 Current blocker:
 
-- Fresh proprietary RMSE52 game-side execution remains unavailable in this environment, so no FPS/speed improvement is claimed for `af7938bd...` or the other recent dispatch optimizations.
-- The native-dispatch hot path now avoids duplicate runtime→linked resolution between eligibility and dispatch. Remaining REL work is primarily post-dispatch linked→runtime/cross-section translation plus any repeated lookup associated with cross-chunk/indirect transfers.
+- Immediate integration gate: PR #17 CI must finish. If all required Windows/Ubuntu jobs pass, merge PR #17 in the next short turn; if any fail, fix only that failure.
+- Game-performance measurement remains blocked by the absence of a fresh proprietary RMSE52 workspace in this environment, so no FPS/speedup claim is made.
 
 Next exact step:
 
-1. Inspect current `main` first because parallel work may have advanced it.
-2. Continue **performance work**, not correctness expansion.
-3. Investigate the post-dispatch linked→runtime path in `StaticRecompCore_SMC.cpp` / `StaticRecompCore_Run.cpp`. A promising direction is to fast-path the common case where the dispatched REL block returns to the same active REL section, while retaining full section lookup for cross-section/DOL transfers and retaining REL refresh correctness.
-4. Keep Windows and Ubuntu full-build validation for any change touching the StaticRecomp runtime loop.
-5. When the proprietary RMSE52 workspace is available, benchmark current `O2 + indexed` against `O2 + linear` on the standard route and collect native-dispatch count/hot PCs, burst length, host-call checks, REL translation cost, native exceptions, and JIT fallback before claiming any speedup.
+1. Start the next turn by inspecting current `main` and PR #17 head `5aff006a...`.
+2. Read final conclusions for tooling run `36026447896` and ModernGekko run `36026447968`.
+3. If the required jobs pass, merge PR #17, update `docs/CURRENT-STATUS.md`, refresh this handoff, paste the full handoff directly into chat, and stop.
+4. If any required job fails, keep PR #17 unmerged, fix only that failure, rerun validation, refresh/paste the handoff, and stop.
