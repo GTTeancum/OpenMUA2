@@ -259,12 +259,32 @@ def read_audited_rel(audit: dict[str, object], rel_path: Path) -> bytes:
     return rel_data
 
 
+def verify_replayed_rel_text(rel_text: dict[str, object], text_bytes: bytes) -> None:
+    if rel_text.get("mismatch_bytes") != 0:
+        raise ValueError("REL audit text section is not an exact live match")
+    expected_hash = rel_text.get("expected_sha256")
+    observed_hash = rel_text.get("observed_sha256")
+    for label, value in (
+        ("expected_sha256", expected_hash),
+        ("observed_sha256", observed_hash),
+    ):
+        if not isinstance(value, str) or re.fullmatch(r"[0-9A-Fa-f]{64}", value) is None:
+            raise ValueError(f"REL audit text section has no valid {label}")
+    if expected_hash.lower() != observed_hash.lower():
+        raise ValueError("REL audit expected and observed text hashes differ")
+    actual_hash = hashlib.sha256(text_bytes).hexdigest()
+    if actual_hash != observed_hash.lower():
+        raise ValueError("replayed REL text SHA-256 does not match audited live text")
+
+
 def emit_rel_metadata(audit_path: Path, rel_path: Path, output: Path) -> None:
     audit = json.loads(audit_path.read_text(encoding="utf-8"))
     rel_data = read_audited_rel(audit, rel_path)
     comparison = next(
         item for item in audit["comparisons"] if item["halfword_write_adjust"] == 0
     )
+    if comparison.get("mismatch_bytes") != 0:
+        raise ValueError("REL audit zero-adjust comparison is not an exact live match")
     text_sections = [row for row in comparison["text_sections"] if row["bytes"]]
     if len(text_sections) != 1:
         raise ValueError("expected exactly one executable REL text section")
@@ -274,6 +294,7 @@ def emit_rel_metadata(audit_path: Path, rel_path: Path, output: Path) -> None:
     text_bytes = replayed[rel_text["section"]]
     if len(text_bytes) != rel_text["bytes"]:
         raise ValueError("replayed REL text size mismatch")
+    verify_replayed_rel_text(rel_text, text_bytes)
     metadata = {
         "schema": 1,
         "modules": [

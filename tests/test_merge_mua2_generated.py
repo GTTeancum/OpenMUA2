@@ -1,4 +1,5 @@
 import hashlib
+import json
 import importlib.util
 from pathlib import Path
 import tempfile
@@ -61,6 +62,92 @@ class MergeDispatchTests(unittest.TestCase):
             audit["status"] = "LIVE_TEXT_MISMATCH"
             with self.assertRaisesRegex(ValueError, "does not report LIVE_TEXT_MATCH"):
                 merge.read_audited_rel(audit, rel_path)
+
+    def test_rel_metadata_replayed_text_must_match_live_audit_hash(self) -> None:
+        text_bytes = b"\x12\x34\x56\x78"
+        rel_data = bytearray(0x54)
+        rel_data[0x50:0x54] = text_bytes
+        linked_start = 0x80E4A164
+        text_hash = hashlib.sha256(text_bytes).hexdigest()
+        audit = {
+            "status": "LIVE_TEXT_MATCH",
+            "source_rel_sha256": hashlib.sha256(rel_data).hexdigest(),
+            "module_id": 1,
+            "layout": [
+                {
+                    "index": 0,
+                    "file_offset": 0,
+                    "size": 0,
+                    "executable": False,
+                    "bss": False,
+                    "address": 0,
+                },
+                {
+                    "index": 1,
+                    "file_offset": 0x50,
+                    "size": len(text_bytes),
+                    "executable": True,
+                    "bss": False,
+                    "address": linked_start,
+                },
+            ],
+            "comparisons": [
+                {
+                    "halfword_write_adjust": 0,
+                    "mismatch_bytes": 0,
+                    "text_sections": [
+                        {
+                            "section": 1,
+                            "address": linked_start,
+                            "bytes": len(text_bytes),
+                            "expected_sha256": text_hash,
+                            "observed_sha256": text_hash,
+                            "mismatch_bytes": 0,
+                        }
+                    ],
+                }
+            ],
+        }
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            rel_path = root / "module.rel"
+            audit_path = root / "audit.json"
+            output = root / "out"
+            output.mkdir()
+            rel_path.write_bytes(rel_data)
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+
+            merge.emit_rel_metadata(audit_path, rel_path, output)
+            self.assertEqual(
+                (output / "rel_text_section_1.bin").read_bytes(), text_bytes
+            )
+
+            wrong_hash = hashlib.sha256(b"wrong-live-text").hexdigest()
+            audit["comparisons"][0]["text_sections"][0]["expected_sha256"] = wrong_hash
+            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = wrong_hash
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            with self.assertRaisesRegex(
+                ValueError, "replayed REL text SHA-256 does not match audited live text"
+            ):
+                merge.emit_rel_metadata(audit_path, rel_path, output)
+
+            audit["comparisons"][0]["text_sections"][0]["expected_sha256"] = text_hash
+            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = wrong_hash
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            with self.assertRaisesRegex(
+                ValueError, "expected and observed text hashes differ"
+            ):
+                merge.emit_rel_metadata(audit_path, rel_path, output)
+
+            audit["comparisons"][0]["text_sections"][0]["observed_sha256"] = text_hash
+            audit["comparisons"][0]["text_sections"][0]["expected_sha256"] = text_hash
+            audit["comparisons"][0]["text_sections"][0]["mismatch_bytes"] = 1
+            audit_path.write_text(json.dumps(audit), encoding="utf-8")
+            with self.assertRaisesRegex(
+                ValueError, "text section is not an exact live match"
+            ):
+                merge.emit_rel_metadata(audit_path, rel_path, output)
 
     def test_merged_dispatch_preserves_instruction_alignment(self) -> None:
         with tempfile.TemporaryDirectory() as td:
