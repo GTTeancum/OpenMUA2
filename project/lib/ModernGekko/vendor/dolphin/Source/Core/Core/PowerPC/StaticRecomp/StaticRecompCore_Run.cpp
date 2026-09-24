@@ -382,7 +382,8 @@ void StaticRecompCore::Run()
         }
         // SingleStepInner delivers synchronous exceptions itself; external
         // interrupts are delivered at slice start, as in Interpreter::Run.
-        if (m_module_active && IsForcedFallbackAddress(ppc.pc))
+        if (m_module_active && !m_forced_fallback_ranges.empty() &&
+            IsForcedFallbackAddress(ppc.pc))
         {
           ppc.downcount -= interpreter.SingleStepInner();
           ++m_fallback_steps;
