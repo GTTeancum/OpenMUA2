@@ -151,8 +151,15 @@ void StaticRecompCore::Run()
       *rel_section_index = 0xffffffffu;
     return true;
   };
-  const auto host_call_at = [this](u32 address, u32 chunk_index) {
-    return m_guest.host_call && ChunkContainsHostCall(chunk_index) && IsHostCallAddress(address);
+  const auto chunk_contains_host_call = [this](u32 chunk_index) {
+    if (!m_module_source.host_call_contains || chunk_index >= m_chunk_host_call_state.size())
+      return false;
+    const u8 state = m_chunk_host_call_state[chunk_index];
+    return state == 0 ? ChunkContainsHostCall(chunk_index) : state == 2;
+  };
+  const auto host_call_at = [this, &chunk_contains_host_call](u32 address, u32 chunk_index) {
+    return m_guest.host_call && chunk_contains_host_call(chunk_index) &&
+           IsHostCallAddress(address);
   };
   const auto fast_native_continue = [&](u32 address, u32* linked_address,
                                           u32* rel_section_index) {
