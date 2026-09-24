@@ -150,8 +150,12 @@ Validation state:
 - First tooling run on head `9830dcdf...` failed only because one pre-existing source-string regression still expected the old `fast_native_continue()` call shape. The runtime code itself was not implicated by that failure.
 - The stale regression was fixed in head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
 - OpenMUA2 tooling run `36071914753`: **PASS on Ubuntu + Windows**.
-- ModernGekko run `36071914841`: pending at handoff-update time; an older superseded ModernGekko run was still winding down under workflow concurrency.
-- No current-head ModernGekko failure has appeared.
+- ModernGekko run `36071914841`: **still IN PROGRESS at the end of this turn**.
+  - `Standalone tests (windows-latest)`: **PASS**.
+  - `Standalone tests (ubuntu-latest)`: **PASS**.
+  - `Full build and test (windows-latest)`: still in the `Build` step; configure/setup succeeded and no failure has appeared.
+  - `Full build and test (ubuntu-latest)`: still in the `Build` step; configure/setup succeeded and no failure has appeared.
+- PR #24 remains unmerged until both full build/test jobs complete successfully.
 
 ## Current blockers
 
@@ -178,15 +182,13 @@ Validation state:
 
 What happened:
 
-- Started from clean current `main` at `c373cccbde7129d1d4a3acbcf7ef13aa504fd730`.
-- Proved the linked-result optimization safety boundary from source rather than applying it blindly:
-  - lockstep `Verify()` receives const guest state and may run module state-load callbacks, so the fast path is disabled for lockstep-checked blocks;
-  - native exception returns redirect PC/state, so the fast path is disabled when `m_guest.exception` is set;
-  - direct linked eligibility still checks the runtime forced-fallback address, verified chunk state, active REL section membership, and DOL/REL distinction;
-  - any invariant miss retains the existing runtime→linked resolver and REL refresh fallback.
-- Implemented linked-result preservation and active-section reporting.
-- Opened PR #24.
-- Initial tooling exposed one stale test-string expectation; fixed it without changing runtime behavior.
-- Current-head tooling now PASS on Windows + Ubuntu.
-- Current-head ModernGekko validation is pending.
+- Re-read canonical `main`; latest observed `main` commit at the end of this turn is `e2040493438bd53cb458776427995e05ebaec016`.
+- Re-checked PR #24 head `09b9195bd245f466d9c913ab7b7742d7845043f0`; OpenMUA2 tooling run `36071914753` remains green.
+- Inspected ModernGekko run `36071914841` at job level:
+  - standalone Windows: PASS;
+  - standalone Ubuntu: PASS;
+  - full Windows: still compiling in `Build`;
+  - full Ubuntu: still compiling in `Build`.
+- No current-head failure appeared, but the required full-build gate was not complete, so PR #24 was intentionally **not merged**.
+- No additional performance patch was started in parallel; the next turn should finish this integration gate first.
 - No RMSE52 game-side run occurred.
