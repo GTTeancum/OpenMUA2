@@ -120,9 +120,9 @@ void StaticRecompCore::Run()
   m_guest.exram_size = memory.GetExRamSizeReal();
   InitLookupTable(m_guest.ram_size, m_guest.exram_size);
   const bool lockstep_enabled = m_lockstep_verifier->IsEnabled();
-  const auto fast_dispatchable_at = [this](u32 address) {
+  const auto fast_dispatchable_at = [this](u32 address, u32* chunk_index) {
     if (m_has_rel_modules || !m_forced_fallback_ranges.empty())
-      return FastDispatchableAt(address);
+      return FastDispatchableAt(address, chunk_index);
     if (!m_module_active || m_chunk_lookup_table.empty())
       return false;
 
@@ -138,7 +138,18 @@ void StaticRecompCore::Run()
     if (lookup_index < 0 || lookup_index >= static_cast<int>(m_chunk_lookup_table.size()))
       return false;
     const int chunk = m_chunk_lookup_table[lookup_index];
-    return chunk >= 0 && m_chunk_state[chunk] == CHUNK_VERIFIED;
+    if (chunk < 0 || m_chunk_state[chunk] != CHUNK_VERIFIED)
+      return false;
+    if (chunk_index)
+      *chunk_index = static_cast<u32>(chunk);
+    return true;
+  };
+  const auto host_call_at = [this](u32 address, u32 chunk_index) {
+    return m_guest.host_call && ChunkContainsHostCall(chunk_index) && IsHostCallAddress(address);
+  };
+  const auto fast_native_continue = [&](u32 address) {
+    u32 chunk_index = 0;
+    return fast_dispatchable_at(address, &chunk_index) && !host_call_at(address, chunk_index);
   };
 
   const std::string initial_game_id = SConfig::GetInstance().GetGameID();
@@ -199,8 +210,9 @@ void StaticRecompCore::Run()
     {
       // MSR.FP needs no gate here: generated FPU instructions raise the
       // FP-unavailable exception themselves (ppc_fp_available).
-      if (m_module_active && DispatchableAt(ppc.pc) &&
-          !(m_guest.host_call && IsHostCallAddress(ppc.pc)))
+      u32 entry_chunk_index = 0;
+      if (m_module_active && DispatchableAt(ppc.pc, &entry_chunk_index) &&
+          !host_call_at(ppc.pc, entry_chunk_index))
       {
         SyncIn();
         ++m_bursts;
@@ -312,8 +324,7 @@ void StaticRecompCore::Run()
           if ((ppc.Exceptions & EXCEPTION_EXTERNAL_INT) != 0 &&
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
-        } while (m_module_active && fast_dispatchable_at(m_guest.pc) &&
-                 !(m_guest.host_call && IsHostCallAddress(m_guest.pc)) && ppc.downcount > 0 &&
+        } while (m_module_active && fast_native_continue(m_guest.pc) && ppc.downcount > 0 &&
                  *state_ptr == CPU::State::Running);
         SyncOut();
         if ((ppc.Exceptions & SYNC_EXCEPTION_MASK) != 0)
