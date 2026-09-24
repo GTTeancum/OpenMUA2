@@ -153,35 +153,73 @@ Status doc:
 
 - `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` — `Record merged linked continuation fast path`
 
+## Current pending work — PR #25
+
+**PR:** #25 — `Check cheap burst termination before continuation lookup`  
+**Branch:** `perf/cheap-burst-termination-first`  
+**Head:** `f0e8f0c1d130c49343ac427b2ad99015abfc3fa7`  
+**State:** OPEN / UNMERGED
+
+Focused behavior:
+
+- Reorders the native burst back-edge from:
+  - `fast_native_continue(...) && ppc.downcount > 0 && CPU running`
+- To:
+  - `ppc.downcount > 0 && CPU running && fast_native_continue(...)`
+- When the burst must already terminate for exhausted cycle budget or stopped CPU state, the runtime now skips one continuation eligibility probe.
+- When the burst can continue, the same `fast_native_continue()` path still runs unchanged.
+- Synchronous/external exception breaks remain before the back-edge condition.
+
+Safety proof:
+
+- `FastDispatchableLinkedAt()` only reads eligibility/forced-fallback/chunk/REL state.
+- The fallback `FastDispatchableAt() -> ChunkIndexOf() -> ResolveNativeAddress()` may call `RefreshRelSections()`, but that refresh exists to prepare eligibility; after a downcount exit the next outer-loop entry calls `DispatchableAt()` again after timing advance, and after CPU stop there is no continuation.
+- Lazy `ChunkContainsHostCall()` discovery only populates the host-call coverage cache; skipping it on an already-terminating edge does not change guest-visible state and discovery occurs on the next eligible entry.
+- Forced-fallback, exception, timing, SMC/hash verification, lockstep, and host-call semantics are otherwise unchanged.
+
+Files changed:
+
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
+- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
+
+Validation state:
+
+- OpenMUA2 tooling run `36074380247`: **PASS on Ubuntu + Windows**.
+- ModernGekko run `36074380288`: **IN PROGRESS** at handoff-update time.
+- No RMSE52 game-side run occurred.
+
 ## Current blockers
 
-1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
-2. There is no current source/CI integration blocker after PR #24.
+1. **Immediate integration gate:** PR #25 requires current-head ModernGekko Windows/Ubuntu validation before merge.
+2. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
 
 ## Next exact turn
 
-1. Inspect current `main` after PR #24 and the status/handoff commits.
-2. Implement one focused multiplatform performance change at the native burst back-edge:
-   - current order calls `fast_native_continue(...)` before checking `ppc.downcount > 0` and `*state_ptr == CPU::State::Running`;
-   - reorder the cheap termination checks ahead of `fast_native_continue()` so a burst that must already exit does not perform another chunk/REL/host-call eligibility probe.
-3. Before accepting the change, prove the skipped continuation probe has no required end-of-burst side effect:
-   - any lazy host-call-state discovery can safely occur on the next eligible entry;
-   - any REL refresh/resolution can safely occur on the next entry;
-   - forced-fallback, exception, timing, and CPU-state behavior remain unchanged.
-4. Add a focused source regression pinning the cheap-check-first back-edge order.
-5. Run OpenMUA2 tooling CI and ModernGekko Windows/Ubuntu validation; merge only if green.
-6. Update/attach this handoff and stop.
-7. Do not claim FPS improvement without a fresh RMSE52 benchmark.
+1. Inspect current `main` and PR #25 head `f0e8f0c1d130c49343ac427b2ad99015abfc3fa7`.
+2. Check ModernGekko run `36074380288`.
+3. If standalone + full build/test PASS on Ubuntu + Windows:
+   - merge PR #25,
+   - update `docs/CURRENT-STATUS.md`,
+   - update/attach this handoff,
+   - stop.
+4. If any current-head job fails:
+   - keep PR #25 unmerged,
+   - fix only that failure,
+   - rerun validation,
+   - update/attach this handoff,
+   - stop.
+5. Do not claim FPS improvement without a fresh RMSE52 benchmark.
 
 ## Last turn update — 2026-09-24
 
 What happened:
 
-- Stayed on the PR #24 integration gate until the full matrix completed rather than ending another short turn mid-build.
-- OpenMUA2 tooling run `36071914753`: PASS on Ubuntu + Windows.
-- ModernGekko run `36071914841`: PASS all four jobs, including full MSVC/Ninja Windows and full Ubuntu build/test.
-- Merged PR #24 as `de411096f5986980ac58e1f3a7373d8f5351dc67`.
-- Updated `docs/CURRENT-STATUS.md` in `1256b9ff7e59dd48750fdc93ebcfec63a900ab22`.
-- While CI was running, inspected the remaining native burst back-edge and identified the next source-level candidate: check `ppc.downcount` and CPU running state before `fast_native_continue()` so an already-terminating burst skips one eligibility/REL/host-call probe.
-- No second runtime patch was started before PR #24 cleared.
+- Started from current `main` at `c1cfa52e89f1f7daeb578612e66f0f01987d2cd1`.
+- Implemented the next multiplatform performance cleanup on branch `perf/cheap-burst-termination-first`.
+- Reordered the native burst back-edge so `ppc.downcount > 0` and CPU running state are checked before `fast_native_continue()`.
+- Added a focused regression proving the cheap termination checks precede the continuation probe while retaining the no-duplicate-`m_module_active` invariant.
+- Verified the branch diff contains only the intended runtime and test files.
+- Opened PR #25 at head `f0e8f0c1d130c49343ac427b2ad99015abfc3fa7`.
+- OpenMUA2 tooling run `36074380247`: PASS on Ubuntu + Windows.
+- ModernGekko run `36074380288`: in progress.
 - No RMSE52 game-side run occurred.
