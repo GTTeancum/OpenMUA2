@@ -137,13 +137,11 @@ OpenMUA2 tooling Actions run `36030032034`:
 ModernGekko Actions run `36030032243`:
 
 - Standalone Ubuntu: **PASS**
-- Standalone Windows: `in_progress`, Configure step.
-- Full Ubuntu: `in_progress`, Build step.
-- Full Windows: `in_progress`, Configure step.
+- Standalone Windows: **PASS**
+- Full Ubuntu: **PASS**
+- Full Windows: still `in_progress`, Build step
 
-No CI failure has appeared.
-
-One combined workflow-status query timed out once; separate workflow queries succeeded. This was a connector timeout, not a CI failure.
+No CI failure has appeared. PR #18 remains unmerged until the full Windows/MSVC integration build finishes successfully.
 
 ## Current blockers
 
@@ -187,13 +185,22 @@ Do not claim current:
 
 Latest `main` inspected at turn start:
 
-- `6af73016d480b94ca286402e0b524e67ecb2d34c` — `Update MUA2 handoff after PR17 merge`
+- `8fa866426d607a6e13dc0b853578db0281ee71df` — `Refresh PR18 CI state in MUA2 handoff`
 
 Changes this turn:
 
-- Implemented the reverse same-section REL hint for continuation-side runtime→linked resolution.
-- Opened PR #18.
-- Added/updated targeted source regressions.
-- Tooling PASS on Windows and Ubuntu; ModernGekko standalone Ubuntu PASS; remaining ModernGekko jobs still running.
-- Did not merge PR #18 because full cross-platform validation is not complete.
+- No new source code was added beyond the already-open PR #18 implementation.
+- Re-checked PR #18 validation.
+- Tooling PASS on Windows and Ubuntu.
+- Standalone ModernGekko PASS on Windows and Ubuntu.
+- Full ModernGekko Ubuntu PASS.
+- Full ModernGekko Windows remains `in_progress` in the Build step.
+- PR #18 remains open/unmerged solely because the Windows full integration gate is not finished.
 - No RMSE52 game-side run occurred.
+
+Next exact turn:
+
+1. Inspect current `main`.
+2. Check the full Windows job in ModernGekko run `36030032243`.
+3. If PASS, merge PR #18, update `docs/CURRENT-STATUS.md`, investigate the next single dispatch/chassis hotspot, update/attach this handoff, stop.
+4. If FAIL, keep PR #18 unmerged, fix only that failure, rerun validation, update/attach this handoff, stop.
