@@ -52,8 +52,8 @@ public:
   void Run() override;
   void SingleStep() override;
   bool IsModuleActive() const;
-  bool DispatchableAt(u32 address);
-  bool FastDispatchableAt(u32 address);
+  bool DispatchableAt(u32 address, u32* chunk_index = nullptr);
+  bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr);
   bool IsHostCallAddress(u32 address) const;
   bool ShouldYieldAt(u32 address);
 
