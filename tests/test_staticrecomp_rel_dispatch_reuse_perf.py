@@ -126,6 +126,23 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         self.assertIn("RefreshRelSections();", smc)
         self.assertIn("return resolve_active();", smc)
 
+    def test_dispatchability_skips_forced_fallback_helper_when_ranges_are_empty(self) -> None:
+        smc = SMC.read_text(encoding="utf-8")
+
+        guard = (
+            "if (!m_forced_fallback_ranges.empty() && "
+            "IsForcedFallbackAddress(address))"
+        )
+        self.assertEqual(smc.count(guard), 2)
+        self.assertIn(
+            "for (const StaticRecompRange& range : m_forced_fallback_ranges)",
+            smc,
+        )
+        self.assertIn(
+            "if (address >= range.start && address < range.end)",
+            smc,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
