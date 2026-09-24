@@ -151,6 +151,7 @@ Validation state:
 - The stale regression was fixed in head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
 - OpenMUA2 tooling run `36071914753`: **PASS on Ubuntu + Windows**.
 - ModernGekko run `36071914841`: **still IN PROGRESS at the end of this turn**.
+  - Run started at `2026-09-24T23:16:45Z`; this is a normal fresh full-build duration, not evidence of a stall.
   - `Standalone tests (windows-latest)`: **PASS**.
   - `Standalone tests (ubuntu-latest)`: **PASS**.
   - `Full build and test (windows-latest)`: still in the `Build` step; configure/setup succeeded and no failure has appeared.
@@ -182,16 +183,13 @@ Validation state:
 
 What happened:
 
-- Resumed exactly at the PR #24 integration gate.
-- Re-checked head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
+- Resumed at the PR #24 integration gate and re-checked head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
 - OpenMUA2 tooling run `36071914753` remains **PASS**.
-- ModernGekko run `36071914841` remains **IN PROGRESS**:
-  - standalone Windows: **PASS**;
-  - standalone Ubuntu: **PASS**;
-  - full Windows: still in `Build`;
-  - full Ubuntu: still in `Build`.
-- The in-progress job-log endpoint returned no usable live log, so there is no evidence of a compile failure to fix yet.
-- Verified PR #24 still exists and branch `perf/reuse-linked-continuation-result` is still present.
-- PR #24 remains intentionally **unmerged** until both full build/test jobs complete successfully.
-- No second performance patch was started on top of an unmerged PR.
+- ModernGekko run `36071914841` remains **IN PROGRESS**.
+- Direct run metadata shows it started at `2026-09-24T23:16:45Z`; the two full builds are only several minutes into compilation and are not considered stalled.
+- Standalone Windows and Ubuntu jobs remain **PASS**.
+- Full Windows and Ubuntu jobs remain in `Build` with successful setup/configure and no failure.
+- PR #24 remains intentionally **unmerged** until both full jobs complete and test successfully.
+- CI was not cancelled or restarted because there is no failure/stall evidence.
+- No parallel performance patch was started.
 - No RMSE52 game-side run occurred.
