@@ -22,8 +22,12 @@ constexpr u32 LOCKED_CACHE_BASE = 0xE0000000u;
 bool StaticRecompCore::HookHostCall(CPUState* cpu, u32 address)
 {
   auto* core = static_cast<StaticRecompCore*>(cpu->external_user_data);
-  return core->m_module_source.host_call &&
-         core->m_module_source.host_call(cpu, address, core->m_module_source.host_call_user);
+  if (!core->m_module_source.host_call)
+    return false;
+  const bool handled =
+      core->m_module_source.host_call(cpu, address, core->m_module_source.host_call_user);
+  core->RefreshHostCallActivity();
+  return handled;
 }
 
 u64 StaticRecompCore::HookExternalRead(CPUState* cpu, u32 ea, u8 size)
