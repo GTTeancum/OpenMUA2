@@ -28,10 +28,11 @@ Current performance baseline on `main`:
 - explicit A/B control: `--dispatch-lookup indexed|linear`
 - build receipts record `module_opt` and `dispatch_lookup`
 - DOL and REL generation cache identities include the dispatch mode
-- combined DOL+REL dispatch now uses a 4 KiB guest-page index to narrow each lookup before binary search (`bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`)
+- combined DOL+REL dispatch now uses a 4 KiB guest-page index to narrow each lookup before binary search (`bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`), with empty/single-chunk page fast paths from `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6`
+- ordinary DolRecomp indexed dispatch now emits an exact page-local run window; empty pages return immediately, single-run pages skip the scan, and multi-run scans cannot walk beyond the current 4 KiB page (`405b81de4136a7532e966218185a190f6eb9230d`)
 - no current-main game-side speedup is claimed until the proprietary RMSE52 route is measured
 
-Historical profiling showed very high native-dispatch counts and concentrated time in tiny runtime/cross-chunk entries. The first two performance changes therefore reduce generated lookup cost in both the ordinary DolRecomp path and the merged native DOL+REL path. The next optimization work should attack remaining shared chassis/cross-chunk transfer overhead before revisiting lower-volume correctness work.
+Historical profiling showed very high native-dispatch counts and concentrated time in tiny runtime/cross-chunk entries. The accepted dispatch work now reduces lookup cost in both the ordinary DolRecomp path and the merged native DOL+REL path, including page-local zero/one-candidate fast paths. The next optimization work should attack remaining shared chassis/cross-chunk transfer overhead before revisiting lower-volume correctness work.
 
 ## Fresh validation of current work
 
@@ -50,6 +51,8 @@ Pull-request tooling Actions run `35939460805` for the replayed-text guard passe
 Performance PR #2 (`a6328f40bb0c98a58c8f50e52a30d4da55390b7e`) was validated before merge by OpenMUA2 tooling run `35940341273` and DolRecomp run `35940341449`: both Ubuntu and Windows jobs passed. ModernGekko run `35940341332` had both standalone Windows and Ubuntu tests passing at merge time; its two larger full build/test jobs were still compiling and are not counted here as completed results.
 
 Performance PR #3 (`bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc`) page-indexes the combined native DOL+REL dispatcher. OpenMUA2 tooling run `35941158719` passed on both Ubuntu and Windows before merge. Its tests cover page-index emission, empty uncovered pages, alignment, overlap rejection, and the existing dispatch-hole invariant.
+
+Performance PR #9 was merged as `405b81de4136a7532e966218185a190f6eb9230d`. It adds an exact page-local run end to the ordinary DolRecomp indexed dispatcher, fast-paths empty and single-run pages, and bounds multi-run scans to the current page. DolRecomp Actions run `36000036463` passed configure/build/test on both Ubuntu and Windows. ModernGekko Actions run `36000035131` had both standalone Ubuntu and Windows tests passing at merge time; its two full build/test jobs were still building and are not counted as completed results here.
 
 The earlier current-source commits also include cross-platform DolRecomp CI for the cache-control generator change and cross-platform GXRuntime CI for the FMA/runtime changes.
 
