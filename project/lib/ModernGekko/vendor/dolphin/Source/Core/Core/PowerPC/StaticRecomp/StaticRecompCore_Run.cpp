@@ -121,7 +121,8 @@ void StaticRecompCore::Run()
   InitLookupTable(m_guest.ram_size, m_guest.exram_size);
   const bool lockstep_enabled = m_lockstep_verifier->IsEnabled();
   const auto fast_dispatchable_at = [this](u32 address) {
-    if (m_has_rel_modules || !m_forced_fallback_ranges.empty())
+    if ((m_has_rel_modules && !m_rel_identity_mapping) ||
+        !m_forced_fallback_ranges.empty())
       return FastDispatchableAt(address);
     if (!m_module_active || m_chunk_lookup_table.empty())
       return false;
@@ -227,7 +228,7 @@ void StaticRecompCore::Run()
             ++m_dispatch_samples[m_guest.pc];
           const u32 runtime_dispatch_address = m_guest.pc;
           u32 linked_dispatch_address = runtime_dispatch_address;
-          if (m_has_rel_modules)
+          if (m_has_rel_modules && !m_rel_identity_mapping)
             ResolveNativeAddress(runtime_dispatch_address, &linked_dispatch_address, nullptr);
           m_guest.pc = linked_dispatch_address;
           const auto dispatch_start = dispatch_profiler.Enabled() ?
@@ -239,7 +240,7 @@ void StaticRecompCore::Run()
             dispatch_profiler.Record(runtime_dispatch_address,
                                      std::chrono::steady_clock::now() - dispatch_start);
           }
-          if (m_has_rel_modules)
+          if (m_has_rel_modules && !m_rel_identity_mapping)
             m_guest.pc = TranslateRelAddress(m_guest.pc);
           if (m_collect_dispatch_samples)
           {
