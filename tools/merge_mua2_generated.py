@@ -146,12 +146,7 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
         "    DolRecompFunction fn;",
         "} DolRecompDispatchEntry;",
         "",
-        "static const DolRecompDispatchEntry dolrecomp_merged_chunks[] = {",
     ]
-    for start, end in chunks:
-        table.append(f"    {{0x{start:08X}u, 0x{end:08X}u, func_{start:08X}}},")
-    table.append("};")
-    table.append("")
 
     if page_index is not None:
         page_base, page_first, page_end = page_index
@@ -160,22 +155,33 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
                 f"#define DOLRECOMP_MERGED_PAGE_BASE 0x{page_base:08X}u",
                 f"#define DOLRECOMP_MERGED_PAGE_SHIFT {DISPATCH_PAGE_SHIFT}u",
                 f"#define DOLRECOMP_MERGED_PAGE_COUNT {len(page_first)}u",
-                "static const u32 dolrecomp_merged_page_first[DOLRECOMP_MERGED_PAGE_COUNT] = {",
-            ]
-        )
-        table.extend(f"    {value}u," for value in page_first)
-        table.extend(
-            [
-                "};",
-                "static const u32 dolrecomp_merged_page_end[DOLRECOMP_MERGED_PAGE_COUNT] = {",
-            ]
-        )
-        table.extend(f"    {value}u," for value in page_end)
-        table.extend(
-            [
-                "};",
                 "",
-                "static inline DolRecompFunction dolrecomp_find_original(u32 address) {",
+            ]
+        )
+
+    table.extend(
+        [
+            "static inline DolRecompFunction dolrecomp_find_original(u32 address) {",
+            "    static const DolRecompDispatchEntry dolrecomp_merged_chunks[] = {",
+        ]
+    )
+    for start, end in chunks:
+        table.append(f"        {{0x{start:08X}u, 0x{end:08X}u, func_{start:08X}}},")
+    table.append("    };")
+
+    if page_index is not None:
+        table.append(
+            "    static const u32 dolrecomp_merged_page_first[DOLRECOMP_MERGED_PAGE_COUNT] = {"
+        )
+        table.extend(f"        {value}u," for value in page_first)
+        table.append("    };")
+        table.append(
+            "    static const u32 dolrecomp_merged_page_end[DOLRECOMP_MERGED_PAGE_COUNT] = {"
+        )
+        table.extend(f"        {value}u," for value in page_end)
+        table.extend(
+            [
+                "    };",
                 "    if ((address & 3u) != 0u) return NULL;",
                 "    if (address < DOLRECOMP_MERGED_PAGE_BASE) return NULL;",
                 "    u32 page = (address - DOLRECOMP_MERGED_PAGE_BASE) >> DOLRECOMP_MERGED_PAGE_SHIFT;",
@@ -187,7 +193,6 @@ def emit_header(dol_header: str, rel_header: str, output: Path) -> None:
     else:
         table.extend(
             [
-                "static inline DolRecompFunction dolrecomp_find_original(u32 address) {",
                 "    if ((address & 3u) != 0u) return NULL;",
                 "    u32 lo = 0;",
                 "    u32 hi = (u32)(sizeof(dolrecomp_merged_chunks) / sizeof(dolrecomp_merged_chunks[0]));",
