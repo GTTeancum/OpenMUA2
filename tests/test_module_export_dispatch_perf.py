@@ -29,12 +29,13 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
         self.assertIn("supported = 0;", body[msvc:gcc])
         self.assertIn("supported = ((unsigned int)leaf[2]", body[msvc:gcc])
 
-    def test_selected_dispatch_uses_cached_host_probe(self) -> None:
+    def test_indirect_dispatch_reuses_module_load_variant(self) -> None:
         text = MODULE_EXPORT.read_text(encoding="utf-8")
         start = text.index("static int selected_dispatch")
         end = text.index("void dolrecomp_indirect_dispatch", start)
         body = text[start:end]
-        self.assertIn("if (host_has_x86_64_v3())", body)
+        self.assertIn("if (s_use_x86_64_v3)", body)
+        self.assertNotIn("host_has_x86_64_v3()", body)
         self.assertIn("return dolrecomp_call__x86_64_v3(ctx, address);", body)
 
     def test_chassis_dispatch_variant_is_bound_at_module_load(self) -> None:
@@ -51,7 +52,8 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
             "return dolrecomp_call__x86_64_v3(ctx, address);",
             text[v3:export],
         )
-        self.assertIn("if (host_has_x86_64_v3())", get_module)
+        self.assertIn("s_use_x86_64_v3 = host_has_x86_64_v3();", get_module)
+        self.assertIn("if (s_use_x86_64_v3)", get_module)
         self.assertIn("return &s_desc_x86_64_v3;", get_module)
         self.assertIn("return &s_desc_baseline;", get_module)
         self.assertNotIn("selected_dispatch(ctx, address)", text[baseline:export])
