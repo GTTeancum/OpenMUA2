@@ -52,8 +52,10 @@ public:
   void Run() override;
   void SingleStep() override;
   bool IsModuleActive() const;
-  bool DispatchableAt(u32 address, u32* chunk_index = nullptr);
-  bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr);
+  bool DispatchableAt(u32 address, u32* chunk_index = nullptr,
+                      u32* linked_address = nullptr);
+  bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr,
+                          u32* linked_address = nullptr);
   bool IsHostCallAddress(u32 address) const;
   bool ShouldYieldAt(u32 address);
 
@@ -123,7 +125,7 @@ private:
   };
 
   void OnICacheInvalidate(u32 address, u32 length);
-  int ChunkIndexOf(u32 address);
+  int ChunkIndexOf(u32 address, u32* linked_address = nullptr);
   bool IsForcedFallbackAddress(u32 address) const;
   bool ChunkContainsHostCall(u32 index) const;
   void VerifyChunk(u32 index);
