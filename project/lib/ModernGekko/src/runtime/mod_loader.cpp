@@ -565,6 +565,7 @@ bool ModManager::Dispatch(CPUState *state, std::uint32_t address) {
     return false;
   if (!m_impl->runtime_started) {
     m_impl->runtime_started = true;
+    ++m_impl->interception_generation;
     TriggerEvent("*", "runtime_start", state);
   }
   if (!m_impl->pending_returns.empty() &&
@@ -682,10 +683,14 @@ bool ModManager::HostCallRangeContains(std::uint32_t start, std::uint32_t end,
 }
 
 bool ModManager::HostCallActive(void *user_data) {
-  return user_data &&
-         static_cast<ModManager *>(user_data)->HasGuestInterception();
+  if (!user_data)
+    return false;
+  auto *manager = static_cast<ModManager *>(user_data);
+  // Keep the host-call path alive until the one-time runtime_start event has
+  // been delivered. After that, native code only needs the hook while a patch,
+  // entry/return hook, or pending return actually intercepts guest addresses.
+  return !manager->m_impl->runtime_started || manager->HasGuestInterception();
 }
-
 std::uint64_t ModManager::HostCallGeneration(void *user_data) {
   if (!user_data)
     return 0;

@@ -22,10 +22,27 @@ constexpr u32 LOCKED_CACHE_BASE = 0xE0000000u;
 bool StaticRecompCore::HookHostCall(CPUState* cpu, u32 address)
 {
   auto* core = static_cast<StaticRecompCore*>(cpu->external_user_data);
-  return core->m_module_source.host_call &&
-         core->m_module_source.host_call(cpu, address, core->m_module_source.host_call_user);
-}
+  if (!core->m_module_source.host_call)
+    return false;
 
+  const bool handled = core->m_module_source.host_call(
+      cpu, address, core->m_module_source.host_call_user);
+
+  // The first call is also how ModernGekko delivers runtime_start. If that
+  // leaves no guest-address interception active, retire the hook immediately
+  // so subsequent generated dispatches skip ModManager altogether.
+  if (core->m_module_source.host_call_active &&
+      !core->m_module_source.host_call_active(core->m_module_source.host_call_user))
+  {
+    core->m_host_calls_active = false;
+    core->m_host_call_activity_initialized = true;
+    if (core->m_module_source.host_call_generation)
+      core->m_host_call_generation =
+          core->m_module_source.host_call_generation(core->m_module_source.host_call_user);
+    cpu->host_call = nullptr;
+  }
+  return handled;
+}
 u64 StaticRecompCore::HookExternalRead(CPUState* cpu, u32 ea, u8 size)
 {
   auto* core = static_cast<StaticRecompCore*>(cpu->external_user_data);

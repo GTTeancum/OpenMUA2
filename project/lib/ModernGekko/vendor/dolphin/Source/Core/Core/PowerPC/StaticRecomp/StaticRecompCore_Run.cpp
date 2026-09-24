@@ -182,7 +182,7 @@ void StaticRecompCore::Run()
   };
   m_module_active = m_module && (initial_game_id.empty() || initial_game_id == m_module->game_id);
 
-  if (!m_module_active && m_fallback_jit && !m_guest.host_call)
+  if (!m_module_active && m_fallback_jit && !m_host_calls_active)
   {
     record_jit_fallback();
     m_fallback_jit->Run();
@@ -192,6 +192,7 @@ void StaticRecompCore::Run()
   while (*state_ptr == CPU::State::Running)
   {
     core_timing.Advance();
+    RefreshHostCallActivity();
     const std::string current_game_id = SConfig::GetInstance().GetGameID();
     m_module_active = m_module && (current_game_id.empty() || current_game_id == m_module->game_id);
 
@@ -200,7 +201,7 @@ void StaticRecompCore::Run()
       // MSR.FP needs no gate here: generated FPU instructions raise the
       // FP-unavailable exception themselves (ppc_fp_available).
       if (m_module_active && DispatchableAt(ppc.pc) &&
-          !(m_guest.host_call && IsHostCallAddress(ppc.pc)))
+          !(m_host_calls_active && IsHostCallAddress(ppc.pc)))
       {
         SyncIn();
         ++m_bursts;
@@ -313,7 +314,7 @@ void StaticRecompCore::Run()
               (m_guest.msr & 0x8000u) != 0 && after_mtmsr(m_guest.pc))
             break;
         } while (m_module_active && fast_dispatchable_at(m_guest.pc) &&
-                 !(m_guest.host_call && IsHostCallAddress(m_guest.pc)) && ppc.downcount > 0 &&
+                 !(m_host_calls_active && IsHostCallAddress(m_guest.pc)) && ppc.downcount > 0 &&
                  *state_ptr == CPU::State::Running);
         SyncOut();
         if ((ppc.Exceptions & SYNC_EXCEPTION_MASK) != 0)
@@ -324,13 +325,13 @@ void StaticRecompCore::Run()
       }
       else
       {
-        if (m_guest.host_call && IsHostCallAddress(ppc.pc))
+        if (m_host_calls_active && m_guest.host_call && IsHostCallAddress(ppc.pc))
         {
           SyncIn();
           bool handled = m_guest.host_call(&m_guest, m_guest.pc);
-          if (!handled && m_guest.pc < m_guest.ram_size)
+          if (!handled && m_guest.host_call && m_guest.pc < m_guest.ram_size)
             handled = m_guest.host_call(&m_guest, m_guest.pc | 0x80000000u);
-          if (m_fallback_jit && IsHostCallAddress(m_guest.lr))
+          if (m_fallback_jit && m_host_calls_active && IsHostCallAddress(m_guest.lr))
             m_fallback_jit->GetBlockCache()->InvalidateICache(m_guest.lr, 4, true);
           if (handled)
           {
@@ -368,7 +369,7 @@ void StaticRecompCore::Run()
             ppc.downcount -= interpreter.SingleStepInner();
             ++m_fallback_steps;
           } while (!(m_module_active && DispatchableAt(ppc.pc)) &&
-                   !IsHostCallAddress(ppc.pc) && ppc.downcount > 0 &&
+                   !(m_host_calls_active && IsHostCallAddress(ppc.pc)) && ppc.downcount > 0 &&
                    *state_ptr == CPU::State::Running);
         }
       }
