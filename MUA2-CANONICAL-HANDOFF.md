@@ -120,11 +120,6 @@ Historical accepted native-REL run, predating recent optimizations:
 
 This proves native REL progression, **not current performance**.
 
-## Current blockers
-
-1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current-main FPS cannot be measured here.
-2. There is no pending source-integration PR at the end of this turn.
-
 ## Current pending work — PR #24
 
 **PR:** #24 — `Reuse generated linked result on burst continuation`  
