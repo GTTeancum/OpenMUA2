@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `2b5faecb809af8452dba768f1bb505ba570cd4ef` (`Record merged dispatch alignment guard`)  
+**Source state summarized through:** `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` (`Require exact REL audit source`)  
 **Date:** 2026-09-23
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -83,6 +83,10 @@ The accepted post-fix historical run advanced real game frames. Do not treat tha
 ### Hash / SMC protection
 
 Native code remains under chunk-hash/SMC verification. Different or modified guest code must not become native merely to advance boot.
+
+`2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` — `Require exact REL audit source`
+
+`tools/merge_mua2_generated.py` now refuses to emit REL metadata unless the retained live audit reports `LIVE_TEXT_MATCH` and the supplied REL's SHA-256 exactly matches the audit's `source_rel_sha256`. This prevents a stale audit from being paired with changed REL bytes before native metadata is emitted.
 
 ### Cache-control codegen
 
@@ -203,6 +207,8 @@ Workflow `.github/workflows/tooling-ci.yml` runs `python -m unittest discover -s
 
 The resulting tooling run completed successfully on both Ubuntu and Windows. The later tooling run for `5e7fc98e09f53c33f6c383682973af8824889d13` also completed successfully on both `ubuntu-latest` and `windows-latest`, covering the new unaligned-chunk rejection regression.
 
+Tooling Actions run `35938476536` for `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` completed successfully on both `ubuntu-latest` and `windows-latest`. The added regression accepts the exact audited REL bytes, rejects changed REL bytes by SHA-256, and rejects a non-`LIVE_TEXT_MATCH` audit status.
+
 ### What is still not freshly validated
 
 Do not claim from current `main` without a real run:
@@ -278,41 +284,42 @@ Useful deeper documents:
 
 Latest main actually inspected before this handoff edit:
 
-- `2b5faecb809af8452dba768f1bb505ba570cd4ef` — `Record merged dispatch alignment guard`
+- `145100e8a9a1d54a2bfd27622a9d7631720b0a44` — `Record exact REL audit source guard`
 
 Changes made this turn:
 
-- Inspected current `main` rather than relying on the older uploaded handoff; the repository had already advanced through `da67363...`.
-- `b777ddbe0d2c556fc00ee632bd273d0c1ee13621` updates `tools/merge_mua2_generated.py` so merged native dispatch generation rejects any generated chunk whose start or end is not 4-byte aligned.
-- `5e7fc98e09f53c33f6c383682973af8824889d13` adds `test_merged_dispatch_rejects_unaligned_chunks` to `tests/test_merge_mua2_generated.py`.
-- `2b5faecb809af8452dba768f1bb505ba570cd4ef` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
-- This canonical handoff was refreshed in the same turn.
+- Started from the uploaded handoff, then inspected GitHub `main` and found it had already advanced through `666c13fae41877812762db3ea0c19df8b868fce2`; the newer repository state was treated as authoritative.
+- Identified a native-eligibility gap in REL packaging: the merge tool replayed whatever REL file it was given without proving that those bytes were the exact source validated by `docs/recovery/live-rel-audit.json`.
+- `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de` updates `tools/merge_mua2_generated.py` to require audit status `LIVE_TEXT_MATCH`, validate a well-formed `source_rel_sha256`, and require the supplied REL bytes to match that SHA-256 before relocation replay / REL metadata emission.
+- The same commit adds `test_rel_metadata_requires_exact_live_audited_rel` in `tests/test_merge_mua2_generated.py`, covering exact-byte acceptance, changed-byte rejection, and non-matching audit-status rejection.
+- `145100e8a9a1d54a2bfd27622a9d7631720b0a44` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
+- This canonical handoff was refreshed after those changes.
 
 Tests actually run/observed:
 
-- GitHub Actions run `35936262261` for `5e7fc98e...`: PASS.
+- GitHub Actions run `35938476536` for `2a86452d...`: PASS.
 - `Python tests (ubuntu-latest)`: PASS.
 - `Python tests (windows-latest)`: PASS.
-- The workflow executed the repository tooling test suite via the existing tooling CI configuration.
+- No proprietary RMSE52 game-side test was run in this environment.
 
 Game-side validation:
 
-- Not run. This execution environment still has no proprietary RMSE52 workspace, so no boot/gameplay/performance claim was made.
+- Not run. The current environment still does not have the proprietary RMSE52 workspace, so no boot, gameplay, performance, lockstep, audio, save, or controller claim was made.
 
 Windows portability:
 
-- The production change is portable Python only.
-- The exact regression commit passed the project tooling suite on `windows-latest`.
+- The production change is portable Python using `hashlib`, `re`, and `pathlib`.
+- The exact source/test commit passed the tooling suite on `windows-latest`.
 
 Failures/rejected experiments:
 
-- No code or test failures this turn.
-- The commit-status / PR-oriented workflow wrappers exposed no push-run result for the new commit; the repository Actions runs API was then queried directly and showed the completed successful tooling run.
+- No source or CI failure this turn.
+- No performance experiment was attempted because current-main proprietary runtime measurement remains unavailable.
 
 Current blocker:
 
-- Fresh current-main RMSE52 build/audit/benchmark/lockstep execution still requires access to the local proprietary game workspace.
+- Fresh current-main RMSE52 build, native-module audit, baseline benchmark, and bounded lockstep gameplay execution still require access to the local proprietary game workspace.
 
 Next exact step:
 
-- Perform the fresh RMSE52 current-main build and native-module audit first when the local game workspace is available; preserve chunk hashes/SMC and REL eligibility checks exactly as-is.
+- On the local RMSE52 workspace, build current `main` and perform the native-module audit first. Confirm the exact audited REL hash guard accepts the real target REL while chunk hashes/SMC and REL eligibility remain enabled; then run the fresh benchmark and bounded lockstep window.
