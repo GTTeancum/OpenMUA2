@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` (`Verify replayed REL text against live audit`)  
+**Source state summarized through:** `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` (`Make indexed O2 builds the multiplatform performance default`)  
 **Date:** 2026-09-23
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -19,9 +19,9 @@
 The goal is a **real native PC recompilation/port** of Wii Marvel: Ultimate Alliance 2 USA, not a Dolphin wrapper and not disguised emulation.
 
 - GitHub `main` is authoritative.
-- Continue in small, conservative, technically justified increments.
-- Linux is the active development path.
-- Keep shared source/build tooling portable enough that later Windows support remains practical.
+- Continue in small, technically justified increments, with **multiplatform performance as the active priority**.
+- Performance work must target shared Windows/Linux paths wherever practical; neither platform is secondary for optimization decisions.
+- Prefer changes that benefit MSVC and GCC/Clang together and retain explicit A/B controls when an optimization needs game-side measurement.
 - Never weaken chunk hashes, SMC checks, REL eligibility validation, verifier checks, or game timing merely to advance farther.
 - Preserve failures as failures and reduce them to focused regressions.
 - Never fabricate build, boot, gameplay, controller, save, audio, or performance results.
@@ -91,6 +91,22 @@ Native code remains under chunk-hash/SMC verification. Different or modified gue
 `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` — `Verify replayed REL text against live audit`
 
 After relocation replay, the merge tool now also requires the zero-adjust live comparison to be exact, validates matching expected/observed text SHA-256 values, and verifies the replayed executable text bytes against that retained live hash before emitting native REL metadata. A relocation-replay regression that produces the wrong bytes at the correct size is rejected.
+
+### Active performance baseline
+
+`a6328f40bb0c98a58c8f50e52a30d4da55390b7e` — `Make indexed O2 builds the multiplatform performance default`
+
+This is the current default performance configuration for both Windows and Linux:
+
+- native module optimization: `O2`
+- generated dispatch lookup: `indexed`
+- explicit comparison mode: `--dispatch-lookup linear`
+- DOL and REL generation cache identities include the dispatch mode
+- build receipts record `module_opt` and `dispatch_lookup`
+
+DolRecomp's indexed dispatcher uses its existing page/run lookup rather than the older linear range chain. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route.
+
+**Priority directive:** performance is now the focus. Existing SMC/hash/audit/correctness guards stay enabled, but do not spend turns expanding lockstep or correctness coverage unless a concrete failure prevents further performance measurement or execution. Correctness expansion comes later.
 
 ### Cache-control codegen
 
@@ -174,6 +190,8 @@ Recorded historical values:
 
 This proved native REL progression, **not acceptable performance**. No current-main speedup/regression may be claimed until a fresh proprietary-game benchmark is run.
 
+The current source has now moved to the `O2 + indexed` default, but **no FPS/speed improvement is claimed yet** because the proprietary RMSE52 route has not been rerun from this environment. Historical profiling showed very high native dispatch counts and hot tiny runtime/cross-chunk entries, so dispatch/chassis overhead is the first optimization target.
+
 Previously rejected/not-useful performance experiments must not be silently resurrected without new evidence: cache affinity, module IPO, MSVC chunk optimization, and multiword emission experiments recorded in history.
 
 ---
@@ -215,6 +233,12 @@ Tooling Actions run `35938476536` for `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de`
 
 Pull-request tooling Actions run `35939460805` for the replayed-text audit guard completed successfully on both `ubuntu-latest` and `windows-latest` before merge to `main` as `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771`. The integration regression accepts correctly replayed text and rejects same-size wrong replay bytes, inconsistent expected/observed audit hashes, and nonzero text mismatch counts.
 
+Performance PR #2 was merged as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`. Its direct cross-platform validation:
+
+- OpenMUA2 tooling run `35940341273`: PASS on Ubuntu and Windows.
+- DolRecomp run `35940341449`: PASS configure/build/test on Ubuntu and Windows.
+- ModernGekko run `35940341332`: standalone tests PASS on Ubuntu and Windows. The two full build/test jobs were still compiling when this handoff was updated; do not record them as passed unless a later turn observes completion.
+
 ### What is still not freshly validated
 
 Do not claim from current `main` without a real run:
@@ -236,19 +260,19 @@ Do not claim from current `main` without a real run:
 
 ## 6. Exact blocker and next work
 
-The meaningful blocker is **fresh proprietary RMSE52 game-side execution from current `main`**. GitHub/CI does not contain the game image by design.
+The immediate measurement blocker is **fresh proprietary RMSE52 game-side execution from current `main`**. GitHub/CI intentionally does not contain the game image, so this environment can improve and cross-platform-test performance code but cannot claim game FPS gains.
 
-On the local game workspace, the next technically justified sequence is:
+Performance-first sequence:
 
-1. Build current `main` against the exact USA RMSE52 image.
-2. Verify the native module audit still accepts expected DOL+REL coverage with chunk hashes/SMC fully enabled.
-3. Run a fresh baseline benchmark over the same boot/post-ready route used by the retained pre-cache-control measurement.
-4. Run a bounded lockstep gameplay window exercising native REL mapping, direct cache-control hooks, scalar FMA, floating compare, local-loop alignment, and MEM2 journaling together.
-5. If lockstep diverges, preserve the first useful divergence and reduce it to a targeted regression before proceeding.
-6. Only after current correctness is re-established should another performance optimization be accepted.
-7. Continue Linux-first while keeping shared source/build paths Windows-safe.
+1. Build current `main` with the default `O2 + indexed` settings against the exact USA RMSE52 image.
+2. Benchmark the same route on Windows and Linux using identical warmup/sample windows and equivalent graphics/audio settings.
+3. A/B `--dispatch-lookup indexed` and `--dispatch-lookup linear` with all other settings held constant.
+4. On the faster baseline, collect native dispatch count/hot PCs, burst length, host-call check cost, REL translation cost, native exceptions, and JIT fallback.
+5. Optimize shared dispatch/chassis and generated cross-chunk transfer paths that benefit MSVC and GCC/Clang together.
+6. Rebuild and re-measure on both platforms after each accepted performance change.
+7. Defer additional lockstep/correctness expansion until performance reaches a useful plateau or a concrete failure blocks measurement. Existing guards remain enabled.
 
-When proprietary game-side execution is unavailable in the current environment, do not invent results. Continue source-level regressions, CI, and portability work only.
+When proprietary game-side execution is unavailable, continue **performance-oriented** source work, microbenchmarks, generated-code improvements, profiling instrumentation, and Windows/Linux CI. Do not substitute new correctness projects for the performance priority.
 
 ---
 
@@ -290,45 +314,58 @@ Useful deeper documents:
 
 Latest main actually inspected before this handoff edit:
 
-- `675d5d51505fa366602135900746f4c653a5c44f` — `Record replayed REL text audit guard`
+- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` — `Switch OpenMUA2 priority to multiplatform performance`
+
+User priority change:
+
+- The user explicitly changed the project focus to **multiplatform performance** and said correctness comes later.
+- Existing correctness/SMC/hash/audit guards remain in place, but future turns must not default back to correctness expansion. Performance work on shared Windows/Linux paths is the primary objective.
 
 Changes made this turn:
 
-- Read the uploaded canonical handoff, then inspected current GitHub `main`; it had advanced one handoff-only commit to `1974b2dd42df5c961822a2b7811c85fa932441c0`, which was treated as authoritative.
-- With proprietary RMSE52 execution unavailable here, continued only source-level correctness work as required by the project rules.
-- Identified a REL packaging correctness hole: relocation replay output was checked for expected length but not against the retained live-text SHA-256, so a replay regression could theoretically emit wrong native REL text of the correct size.
-- Opened PR #1 from `chatgpt/verify-replayed-rel-text-20260923`. The production change adds `verify_replayed_rel_text()`, requires the zero-adjust comparison to report no mismatches, validates the expected/observed text hashes, and requires the replayed bytes to hash to the retained live result before metadata emission.
-- Added `test_rel_metadata_replayed_text_must_match_live_audit_hash` with a synthetic REL/audit fixture covering correct replay acceptance, same-size wrong replay rejection, inconsistent audit hashes, and a nonzero section mismatch count.
-- PR tooling Actions run `35939460805` passed on both Ubuntu and Windows.
-- Squash-merged PR #1 to `main` as `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771` (`Verify replayed REL text against live audit`).
-- `675d5d51505fa366602135900746f4c653a5c44f` updates `docs/CURRENT-STATUS.md` with the new guard and observed CI result.
-- This canonical handoff was refreshed after those changes.
+- Inspected current `main` and historical profiling/runtime paths after the priority change.
+- Confirmed historical performance is dominated by very high native dispatch counts / hot tiny runtime and cross-chunk entries rather than a reason to expand correctness work first.
+- Found DolRecomp already had a page-indexed dispatcher but defaulted to the older linear lookup.
+- Found the OpenMUA2 workspace defaulted native module optimization to `O0`.
+- PR #2 changed DolRecomp's default generated dispatcher to `indexed` in both the primary and vendored copies while preserving explicit `linear` mode.
+- Workspace defaults are now `--module-opt 2` and `--dispatch-lookup indexed`.
+- DOL and native-REL generation explicitly propagate the selected dispatch mode, include it in generation cache identities, and record it in receipts so A/B tests cannot accidentally reuse mismatched generated output.
+- Added/updated dispatch and workspace tests for the indexed default and linear A/B path.
+- Squash-merged PR #2 to `main` as `a6328f40bb0c98a58c8f50e52a30d4da55390b7e`.
+- `daa546a82e22fa218ab6c67120ccf36e9ece78ad` rewrites `docs/CURRENT-STATUS.md` around the new multiplatform-performance priority.
+- This canonical handoff was refreshed after the priority switch.
 
-Tests actually run/observed:
+Tests/CI actually observed:
 
-- GitHub Actions run `35939460805`: PASS.
-- `Python tests (ubuntu-latest)`: PASS.
-- `Python tests (windows-latest)`: PASS.
-- No proprietary RMSE52 game-side test was run in this environment.
+- OpenMUA2 tooling Actions run `35940341273`: PASS on `ubuntu-latest`.
+- OpenMUA2 tooling Actions run `35940341273`: PASS on `windows-latest`.
+- DolRecomp Actions run `35940341449`: PASS configure/build/test on `ubuntu-latest`.
+- DolRecomp Actions run `35940341449`: PASS configure/build/test on `windows-latest`.
+- ModernGekko Actions run `35940341332`: standalone tests PASS on `ubuntu-latest`.
+- ModernGekko Actions run `35940341332`: standalone tests PASS on `windows-latest`.
+- At the time of this handoff edit, the ModernGekko full build/test jobs for Ubuntu and Windows were still in progress; no PASS claim is made for those two jobs.
+- No proprietary RMSE52 game-side benchmark was run in this environment.
 
-Game-side validation:
+Performance result boundary:
 
-- Not run. The current environment still does not have the proprietary RMSE52 workspace, so no boot, gameplay, performance, lockstep, audio, save, or controller claim was made.
+- The source/configuration is now performance-first, but **no new game FPS or speed gain is claimed yet**. The exact RMSE52 benchmark is required to quantify indexed vs linear and the new O2 baseline.
 
-Windows portability:
+Windows/Linux portability:
 
-- The production change is portable Python using existing standard-library dependencies.
-- The full project tooling test suite for the PR passed on `windows-latest`.
+- The indexed-dispatch implementation and workspace plumbing passed their direct CI coverage on both Windows and Ubuntu.
+- Both ModernGekko standalone platform jobs also passed.
+- The optimization uses portable generated C and Python environment/cache plumbing; no platform-specific fast path was introduced.
 
 Failures/rejected experiments:
 
-- No source or CI failure this turn.
-- No performance experiment was attempted because current-main proprietary runtime measurement remains unavailable.
+- No performance source/test failure occurred this turn.
+- Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
+- No correctness expansion was pursued after the user changed priority.
 
 Current blocker:
 
-- Fresh current-main RMSE52 build, native-module audit, baseline benchmark, and bounded lockstep gameplay execution still require access to the local proprietary game workspace.
+- Fresh RMSE52 game-side performance measurement is unavailable here because the proprietary game workspace is not present.
 
 Next exact step:
 
-- On the local RMSE52 workspace, build current `main` and perform the native-module audit first. Confirm the exact-source and replayed-text audit guards accept the real target REL while chunk hashes/SMC and REL eligibility remain enabled; then run the fresh benchmark and bounded lockstep window.
+- On the RMSE52 workspace, build the new default `O2 + indexed` configuration, benchmark it on the standard route, immediately A/B against `O2 + linear`, and profile dispatch/chassis overhead on the faster result. The next source optimization should target shared high-frequency dispatch/cross-chunk transfer overhead for both Windows and Linux, not new correctness coverage.
