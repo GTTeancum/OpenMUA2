@@ -8,11 +8,11 @@
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
 >
-> At the end of **every future development turn**, update this file **before reporting back**, commit the refreshed handoff to GitHub `main`, and **paste the full refreshed `MUA2-CANONICAL-HANDOFF.md` contents directly into the chat**. Do **not** satisfy this mandate with only a link or attachment. A development turn is not complete until the full handoff text has been posted in chat.
+> At the end of **every future development turn**, update this file **before reporting back**, commit the refreshed handoff to GitHub `main`, and **attach the refreshed `MUA2-CANONICAL-HANDOFF.md` file directly in the chat**. A development turn is not complete until the Markdown attachment has been posted.
 >
 > Record the latest `main` SHA actually inspected, code/document/test changes, tests/builds/CI/game runs actually performed and their real results, failures/rejected experiments, the exact blocker/next step, Windows/Linux portability status, and any new file/location a successor needs.
 >
-> A new chat should need only the **full handoff text pasted directly in chat** plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
+> A new chat should need only the **attached `MUA2-CANONICAL-HANDOFF.md` file** plus access to `GTTeancum/OpenMUA2`. Read this file, then inspect current GitHub `main` because it may have advanced.
 
 ---
 
@@ -350,68 +350,53 @@ Useful deeper documents:
 
 Latest `main` actually inspected before this handoff edit:
 
-- `711ae4541dc81fadf67ce0da1098f041cf048d39` — `Use shorter MUA2 development turns`
+- `f98a4a47754002fc74532cc88cbfe9d8f775ebd4` — `Update MUA2 handoff for pending REL section hint`
 
 User priority / workflow mandates:
 
-- **Short-turn workflow is mandatory because resume-stream failures are occurring:** one focused code change or investigation, its validation state, then update/post this handoff and stop.
-- **The full refreshed handoff text must be pasted directly into chat every turn. A link or attachment by itself does not satisfy the mandate.**
+- **Short-turn workflow remains mandatory because resume-stream failures are occurring:** one focused code change or CI gate, update/post this handoff, stop.
+- **The refreshed handoff must be attached as `MUA2-CANONICAL-HANDOFF.md` every turn.**
 - **Multiplatform performance remains the active project focus. Correctness expansion comes later.**
-- Existing correctness/SMC/hash/audit guards remain enabled; do not drift into new correctness work unless a concrete failure blocks performance measurement or execution.
+- Existing correctness/SMC/hash/audit guards remain enabled.
 
 Changes made this turn:
 
-- Inspected current GitHub `main`; no parallel source work had advanced past `711ae454...`.
-- Created branch `perf/rel-runtime-section-hint` and PR #17 (`Reuse REL section for return translation`).
-- Focused change only: optimize post-dispatch linked→runtime REL translation for the common same-section case.
-- Updated:
-  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
-  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
-  - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
-  - `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
-  - `tests/test_staticrecomp_host_call_gate_perf.py`
-- `ChunkIndexOf`, `DispatchableAt`, and `FastDispatchableAt` now optionally return the active REL section index alongside the already-carried linked PC.
-- Native-burst entry and continuation carry that section index into the dispatch iteration.
-- `TranslateRelAddress(linked_address, rel_section_hint)` now checks the hinted active REL section first. If the returned linked PC is still inside that section, it translates directly with one bounds check and arithmetic instead of scanning all active REL sections.
-- If the result leaves the hinted section, the code falls back to the existing `ResolveRuntimeAddress()` full scan. Cross-section and DOL returns therefore retain the old behavior.
-- The direct non-REL fast path writes the sentinel `0xffffffffu` as the section index.
-- REL refresh behavior, chunk verification, forced fallback, host-call gating, and the prior runtime→linked reuse remain intact.
-- PR #17 current head: `5aff006a6d8949c4692dce68b4127627c0829300`.
-- PR #17 is **not merged yet** in this short turn.
+- No source code was changed.
+- This turn only checked the validation gate for PR #17 (`Reuse REL section for return translation`).
+- PR #17 head remains `5aff006a6d8949c4692dce68b4127627c0829300`.
+- PR #17 remains **open and unmerged** because the two full ModernGekko integration builds are still running.
+- Updated this handoff's delivery mandate from inline full-text posting to a Markdown file attachment, per the user's instruction.
 
 Validation actually observed:
 
 - OpenMUA2 tooling Actions run `36026447896`:
   - Ubuntu Python tests: **PASS**.
-  - Windows Python tests: still `in_progress` in `Run tooling tests` at handoff-update time.
+  - Windows Python tests: **PASS**.
 - ModernGekko Actions run `36026447968`:
-  - Full build/test — Windows: `in_progress`, Configure step.
-  - Standalone tests — Windows: `in_progress`, Configure step.
-  - Standalone tests — Ubuntu: `in_progress`, Configure step.
-  - Full build/test — Ubuntu: `in_progress`, Install Linux dependencies step.
-- No failed CI job had appeared when this handoff was updated.
-- No proprietary RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred in this environment.
+  - Standalone tests — Ubuntu: **PASS**.
+  - Standalone tests — Windows: **PASS**.
+  - Full build and test — Ubuntu: still `in_progress`, Build step.
+  - Full build and test — Windows: still `in_progress`, Build step.
+- No CI failure has appeared.
+- No proprietary RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred.
 
 Windows/Linux portability:
 
-- PR #17 is shared C++ plus Python source regressions; it adds no platform-specific assembly and no POSIX-only runtime dependency.
-- Ubuntu tooling has already passed.
-- Windows tooling and the ModernGekko Windows/Ubuntu matrix remain pending; do **not** merge PR #17 until the relevant final conclusions are observed.
+- The PR #17 source/tooling regressions are green on both Windows and Ubuntu.
+- Full integration compilation/testing is still pending on both operating systems, so PR #17 must remain unmerged until those conclusions are observed.
 
 Failures/rejected experiments:
 
-- No code/test failure observed in this turn.
-- One edit attempt failed locally before a GitHub write because of mixed line endings in the source replacement target; no repository file was changed by that failed attempt. The edit was reapplied using the exact file line endings and committed correctly afterward.
-- Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
+- No new failure this turn.
+- The only blocker is the normal duration of the two full ModernGekko builds.
 
 Current blocker:
 
-- Immediate integration gate: PR #17 CI must finish. If all required Windows/Ubuntu jobs pass, merge PR #17 in the next short turn; if any fail, fix only that failure.
-- Game-performance measurement remains blocked by the absence of a fresh proprietary RMSE52 workspace in this environment, so no FPS/speedup claim is made.
+- Immediate integration gate: wait for full Ubuntu and Windows jobs in ModernGekko run `36026447968`.
+- Game-performance measurement remains blocked by the absence of a fresh proprietary RMSE52 workspace in this environment.
 
 Next exact step:
 
-1. Start the next turn by inspecting current `main` and PR #17 head `5aff006a...`.
-2. Read final conclusions for tooling run `36026447896` and ModernGekko run `36026447968`.
-3. If the required jobs pass, merge PR #17, update `docs/CURRENT-STATUS.md`, refresh this handoff, paste the full handoff directly into chat, and stop.
-4. If any required job fails, keep PR #17 unmerged, fix only that failure, rerun validation, refresh/paste the handoff, and stop.
+1. Start the next short turn by checking current `main`, PR #17, and ModernGekko run `36026447968`.
+2. If both full jobs PASS, merge PR #17, update `docs/CURRENT-STATUS.md`, update/attach this handoff, and stop.
+3. If either full job fails, leave PR #17 unmerged, fix only that failure, rerun validation, update/attach this handoff, and stop.
