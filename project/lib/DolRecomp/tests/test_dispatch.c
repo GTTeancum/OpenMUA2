@@ -93,6 +93,22 @@ int main(void) {
           "emits original lookup helper");
     check(strstr(code, "dolrecomp_call_original") != NULL,
           "emits original call helper");
+    {
+        const char* chassis =
+            strstr(code, "static inline int dolrecomp_call_chassis(CPUState*");
+        const char* public_dispatch =
+            strstr(code, "static inline int dolrecomp_call(CPUState*");
+        const char* host_call = chassis ? strstr(chassis, "ppc_host_call") : NULL;
+        check(chassis != NULL && public_dispatch != NULL && chassis < public_dispatch,
+              "emits chassis-only dispatcher before public dispatcher");
+        check(chassis != NULL && public_dispatch != NULL &&
+                  strstr(chassis, "dolrecomp_dispatch_replacement(ctx, address)") <
+                      public_dispatch &&
+                  strstr(chassis, "dolrecomp_call_original(ctx, address)") <
+                      public_dispatch &&
+                  (host_call == NULL || host_call >= public_dispatch),
+              "chassis dispatcher preserves replacements and skips host calls");
+    }
     check(strstr(code, "dolrecomp_page_first[DOLRECOMP_LOOKUP_PAGES]") != NULL &&
           strstr(code, "run = dolrecomp_page_first[page];") != NULL,
           "default lookup uses page-indexed dispatch");
