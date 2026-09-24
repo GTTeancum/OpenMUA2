@@ -245,7 +245,7 @@ void StaticRecompCore::InitLookupTable(u32 ram_size, u32 exram_size)
   }
 }
 
-int StaticRecompCore::ChunkIndexOf(u32 address)
+int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out)
 {
   if (!m_module_active || m_chunk_lookup_table.empty())
     return -1;
@@ -257,14 +257,19 @@ int StaticRecompCore::ChunkIndexOf(u32 address)
   if (idx < 0 || idx >= static_cast<int>(m_chunk_lookup_table.size()))
     return -1;
 
-  return m_chunk_lookup_table[idx];
+  const int chunk = m_chunk_lookup_table[idx];
+  if (chunk < 0)
+    return -1;
+  if (linked_address_out)
+    *linked_address_out = linked_address;
+  return chunk;
 }
 
-bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index)
+bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* linked_address)
 {
   if (IsForcedFallbackAddress(address))
     return false;
-  const int index = ChunkIndexOf(address);
+  const int index = ChunkIndexOf(address, linked_address);
   if (index < 0 || m_chunk_state[index] != CHUNK_VERIFIED)
     return false;
   if (chunk_index)
@@ -272,11 +277,11 @@ bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index)
   return true;
 }
 
-bool StaticRecompCore::DispatchableAt(u32 address, u32* chunk_index)
+bool StaticRecompCore::DispatchableAt(u32 address, u32* chunk_index, u32* linked_address)
 {
   if (IsForcedFallbackAddress(address))
     return false;
-  const int index = ChunkIndexOf(address);
+  const int index = ChunkIndexOf(address, linked_address);
   if (index < 0)
     return false;
   if (m_chunk_state[index] == CHUNK_UNVERIFIED)
