@@ -115,12 +115,19 @@ void StaticRecompCore::RefreshRelSections()
   if (!changed)
     return;
   m_active_rel_sections = std::move(discovered);
+  m_rel_identity_mapping =
+      !m_active_rel_sections.empty() &&
+      std::all_of(m_active_rel_sections.begin(), m_active_rel_sections.end(),
+                  [](const ActiveRelSection& section) {
+                    return section.runtime_start == section.linked_start;
+                  });
   ++m_rel_mapping_generation;
   if (std::getenv("STATICRECOMP_REL_TRACE"))
   {
-    std::fprintf(stderr, "[staticrecomp] rel-map generation=%llu sections=%zu\n",
+    std::fprintf(stderr,
+                 "[staticrecomp] rel-map generation=%llu sections=%zu identity=%u\n",
                  static_cast<unsigned long long>(m_rel_mapping_generation),
-                 m_active_rel_sections.size());
+                 m_active_rel_sections.size(), m_rel_identity_mapping ? 1u : 0u);
     for (const ActiveRelSection& section : m_active_rel_sections)
     {
       std::fprintf(stderr,
@@ -144,6 +151,22 @@ void StaticRecompCore::RefreshRelSections()
 bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_address,
                                             u32* rel_section_index, bool allow_refresh)
 {
+  if (m_rel_identity_mapping)
+  {
+    const int index = GetAddressLookupIndex(runtime_address);
+    if (index < 0 || index >= static_cast<int>(m_chunk_lookup_table.size()))
+      return false;
+    const int chunk = m_chunk_lookup_table[index];
+    if (chunk < 0)
+      return false;
+    *linked_address = runtime_address;
+    if (rel_section_index)
+      *rel_section_index = m_chunk_rel_sections[chunk] >= 0 ?
+                               static_cast<u32>(m_chunk_rel_sections[chunk]) :
+                               0xffffffffu;
+    return true;
+  }
+
   const auto resolve_active = [&]() {
     for (u32 i = 0; i < m_active_rel_sections.size(); ++i)
     {
@@ -183,6 +206,12 @@ bool StaticRecompCore::ResolveNativeAddress(u32 runtime_address, u32* linked_add
 
 bool StaticRecompCore::ResolveRuntimeAddress(u32 linked_address, u32* runtime_address) const
 {
+  if (m_rel_identity_mapping)
+  {
+    *runtime_address = linked_address;
+    return true;
+  }
+
   for (const ActiveRelSection& section : m_active_rel_sections)
   {
     if (linked_address >= section.linked_start &&
@@ -198,6 +227,8 @@ bool StaticRecompCore::ResolveRuntimeAddress(u32 linked_address, u32* runtime_ad
 
 u32 StaticRecompCore::TranslateRelAddress(u32 linked_address)
 {
+  if (m_rel_identity_mapping)
+    return linked_address;
   u32 runtime_address = linked_address;
   ResolveRuntimeAddress(linked_address, &runtime_address);
   return runtime_address;
@@ -249,6 +280,14 @@ int StaticRecompCore::ChunkIndexOf(u32 address)
 {
   if (!m_module_active || m_chunk_lookup_table.empty())
     return -1;
+
+  if (m_rel_identity_mapping)
+  {
+    const int index = GetAddressLookupIndex(address);
+    if (index < 0 || index >= static_cast<int>(m_chunk_lookup_table.size()))
+      return -1;
+    return m_chunk_lookup_table[index];
+  }
 
   u32 linked_address = address;
   if (!ResolveNativeAddress(address, &linked_address, nullptr))
