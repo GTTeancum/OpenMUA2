@@ -18,8 +18,8 @@
 #if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
 static int host_has_x86_64_v3(void)
 {
-    // Host capabilities do not change during the process. selected_dispatch()
-    // runs once per native block, so CPUID/XGETBV must only execute once.
+    // Host capabilities do not change during the process. Probe once and reuse
+    // the result for both module-load dispatch selection and indirect dispatch.
     static int supported = -1;
     if (supported >= 0)
         return supported;
@@ -84,11 +84,17 @@ void dolrecomp_indirect_dispatch(CPUState* ctx, u32 address)
     (void)selected_dispatch(ctx, address);
 }
 
-static int chassis_dispatch(CPUState* ctx, u32 address)
+static int chassis_dispatch_baseline(CPUState* ctx, u32 address)
 {
-    return selected_dispatch(ctx, address);
+    return dolrecomp_call(ctx, address);
 }
 
+#if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
+static int chassis_dispatch_x86_64_v3(CPUState* ctx, u32 address)
+{
+    return dolrecomp_call__x86_64_v3(ctx, address);
+}
+#endif
 static void chassis_on_state_loaded(CPUState* ctx)
 {
     // Re-arm host FP rounding/flush state from the freshly loaded guest FPSCR.
@@ -97,29 +103,40 @@ static void chassis_on_state_loaded(CPUState* ctx)
 
 #include "module_tables.inc"
 
-static const StaticRecompModuleDesc s_desc = {
-    STATICRECOMP_ABI_VERSION,
-    GXRUNTIME_CPU_ABI_VERSION,
-    (u32)sizeof(CPUState),
-    MODULE_GAME_ID,
-    DOLRECOMP_ENTRY_POINT,
-    chassis_dispatch,
-    chassis_on_state_loaded,
-    s_code_ranges,
-    MODULE_CODE_RANGE_COUNT,
-    s_smc_ranges,
-    MODULE_SMC_RANGE_COUNT,
-    s_chunk_ranges,
-    MODULE_CHUNK_RANGE_COUNT,
-    s_chunk_hashes,
 #if MODULE_REL_MODULE_COUNT
-    s_rel_modules,
+#define MODULE_REL_MODULES s_rel_modules
 #else
-    0,
+#define MODULE_REL_MODULES 0
 #endif
-    MODULE_REL_MODULE_COUNT,
-};
 
+#define MODULE_DESC_INIT(dispatch_fn) { \
+    STATICRECOMP_ABI_VERSION, \
+    GXRUNTIME_CPU_ABI_VERSION, \
+    (u32)sizeof(CPUState), \
+    MODULE_GAME_ID, \
+    DOLRECOMP_ENTRY_POINT, \
+    dispatch_fn, \
+    chassis_on_state_loaded, \
+    s_code_ranges, \
+    MODULE_CODE_RANGE_COUNT, \
+    s_smc_ranges, \
+    MODULE_SMC_RANGE_COUNT, \
+    s_chunk_ranges, \
+    MODULE_CHUNK_RANGE_COUNT, \
+    s_chunk_hashes, \
+    MODULE_REL_MODULES, \
+    MODULE_REL_MODULE_COUNT, \
+}
+
+static const StaticRecompModuleDesc s_desc_baseline =
+    MODULE_DESC_INIT(chassis_dispatch_baseline);
+#if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
+static const StaticRecompModuleDesc s_desc_x86_64_v3 =
+    MODULE_DESC_INIT(chassis_dispatch_x86_64_v3);
+#endif
+
+#undef MODULE_DESC_INIT
+#undef MODULE_REL_MODULES
 #if defined(_WIN32)
 #define RECOMP_MODULE_EXPORT __declspec(dllexport)
 #elif defined(__GNUC__) || defined(__clang__)
@@ -130,5 +147,11 @@ static const StaticRecompModuleDesc s_desc = {
 
 RECOMP_MODULE_EXPORT const StaticRecompModuleDesc* staticrecomp_get_module(void)
 {
-    return &s_desc;
+#if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
+    // Bind the chassis to one dispatcher at module load. The hot native-block
+    // path then has no host-feature selection branch at all.
+    if (host_has_x86_64_v3())
+        return &s_desc_x86_64_v3;
+#endif
+    return &s_desc_baseline;
 }

@@ -37,6 +37,25 @@ class ModuleExportDispatchPerfTests(unittest.TestCase):
         self.assertIn("if (host_has_x86_64_v3())", body)
         self.assertIn("return dolrecomp_call__x86_64_v3(ctx, address);", body)
 
+    def test_chassis_dispatch_variant_is_bound_at_module_load(self) -> None:
+        text = MODULE_EXPORT.read_text(encoding="utf-8")
+        baseline = text.index("static int chassis_dispatch_baseline")
+        v3 = text.index("static int chassis_dispatch_x86_64_v3")
+        export = text.index(
+            "RECOMP_MODULE_EXPORT const StaticRecompModuleDesc* staticrecomp_get_module"
+        )
+        get_module = text[export:]
+
+        self.assertIn("return dolrecomp_call(ctx, address);", text[baseline:v3])
+        self.assertIn(
+            "return dolrecomp_call__x86_64_v3(ctx, address);",
+            text[v3:export],
+        )
+        self.assertIn("if (host_has_x86_64_v3())", get_module)
+        self.assertIn("return &s_desc_x86_64_v3;", get_module)
+        self.assertIn("return &s_desc_baseline;", get_module)
+        self.assertNotIn("selected_dispatch(ctx, address)", text[baseline:export])
+
 
 if __name__ == "__main__":
     unittest.main()
