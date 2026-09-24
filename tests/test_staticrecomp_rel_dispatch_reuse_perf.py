@@ -54,7 +54,7 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         )
         self.assertIn("m_guest.pc = linked_dispatch_address;", run)
         self.assertIn(
-            "fast_native_continue(m_guest.pc, &linked_dispatch_address,",
+            "fast_native_continue(m_guest.pc, linked_result_address,",
             run,
         )
         self.assertIn(
@@ -69,7 +69,7 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         # Linked->runtime translation after dispatch remains intact; this change
         # only removes the duplicate runtime->linked lookup.
         self.assertIn(
-            "m_guest.pc = TranslateRelAddress(m_guest.pc, dispatch_rel_section_index);",
+            "m_guest.pc = TranslateRelAddress(linked_result_address, dispatch_rel_section_index,",
             run,
         )
 
@@ -79,19 +79,25 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         run = RUN.read_text(encoding="utf-8")
 
         self.assertIn(
-            "u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu);",
+            "u32 TranslateRelAddress(u32 linked_address, u32 rel_section_hint = 0xffffffffu,",
             header,
         )
-        self.assertIn("if (rel_section_hint < m_active_rel_sections.size())", smc)
         self.assertIn(
-            "const ActiveRelSection& section = m_active_rel_sections[rel_section_hint];",
+            "if (rel_section_hint < m_active_rel_sections.size() &&",
             smc,
         )
         self.assertIn(
-            "return section.runtime_start + (linked_address - section.linked_start);",
+            "translate_section(rel_section_hint, &runtime_address)",
             smc,
         )
-        self.assertIn("ResolveRuntimeAddress(linked_address, &runtime_address);", smc)
+        self.assertIn(
+            "*resolved_rel_section_index = i;",
+            smc,
+        )
+        self.assertIn(
+            "*resolved_rel_section_index = 0xffffffffu;",
+            smc,
+        )
         self.assertIn("u32 dispatch_rel_section_index = 0xffffffffu;", run)
         self.assertIn("&dispatch_rel_section_index", run)
 
@@ -177,6 +183,37 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             "if (!m_module_active || m_chunk_lookup_table.empty())",
             smc,
         )
+
+    def test_continuation_reuses_linked_result_with_safe_fallbacks(self) -> None:
+        header = HEADER.read_text(encoding="utf-8")
+        smc = SMC.read_text(encoding="utf-8")
+        run = RUN.read_text(encoding="utf-8")
+
+        self.assertIn("FastDispatchableLinkedAt(u32 runtime_address, u32 linked_address,", header)
+        self.assertIn(
+            "FastDispatchableLinkedAt(address, preserved_linked_address, *rel_section_index,",
+            run,
+        )
+        self.assertIn("linked_result_address = m_guest.pc;", run)
+        self.assertIn("linked_result_reusable = !do_ls;", run)
+        self.assertIn("linked_result_reusable = false;", run)
+        self.assertIn(
+            "m_guest.pc = TranslateRelAddress(linked_result_address, dispatch_rel_section_index,",
+            run,
+        )
+        self.assertIn("&dispatch_rel_section_index);", run)
+        # A direct linked lookup must still prove that REL chunks belong to an
+        # active section, and DOL chunks require the non-REL sentinel.
+        self.assertIn("if (m_chunk_rel_sections[chunk] >= 0)", smc)
+        self.assertIn("if (rel_section_index >= m_active_rel_sections.size())", smc)
+        self.assertIn("else if (rel_section_index != 0xffffffffu)", smc)
+        # If the preserved result cannot be trusted, continuation retains the
+        # old runtime->linked resolver and its refresh fallback.
+        self.assertIn(
+            "return fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index,",
+            run,
+        )
+        self.assertIn("RefreshRelSections();", smc)
 
 
 if __name__ == "__main__":
