@@ -162,17 +162,28 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             run,
         )
 
-    def test_burst_backedge_does_not_duplicate_module_active_check(self) -> None:
-        run = RUN.read_text(encoding="utf-8")
-        smc = SMC.read_text(encoding="utf-8")
+    def test_burst_backedge_checks_termination_before_continuation_probe(self) -> None:
+        run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
 
         self.assertIn(
-            "} while (fast_native_continue(m_guest.pc, linked_result_address,",
+            "} while (ppc.downcount > 0 && *state_ptr == CPU::State::Running &&\n"
+            "                 fast_native_continue(m_guest.pc, linked_result_address,\n"
+            "                                      linked_result_reusable, &linked_dispatch_address,\n"
+            "                                      &dispatch_rel_section_index));",
             run,
         )
         self.assertNotIn(
-            "} while (m_module_active &&\n                 fast_native_continue(",
-            run.replace("\r\n", "\n"),
+            "} while (fast_native_continue(m_guest.pc, linked_result_address,",
+            run,
+        )
+
+    def test_burst_backedge_does_not_duplicate_module_active_check(self) -> None:
+        run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
+        smc = SMC.read_text(encoding="utf-8")
+
+        self.assertNotIn(
+            "} while (m_module_active &&",
+            run,
         )
         # Every fast continuation path already rejects an inactive module.
         self.assertIn(
