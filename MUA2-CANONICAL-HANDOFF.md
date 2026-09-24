@@ -354,9 +354,12 @@ Latest `main` actually inspected before this handoff edit:
 
 User priority / workflow mandates:
 
+- **Short-turn workflow now required because resume-stream failures are occurring:** one focused change/investigation + its validation, then handoff update/post and stop.
+
 - **Multiplatform performance remains the active project focus. Correctness expansion comes later.**
 - Existing correctness/SMC/hash/audit guards remain enabled; do not drift into new correctness work unless a concrete failure blocks performance measurement or execution.
 - **Mandatory handoff rule:** every development turn must end with this file updated, committed to GitHub `main`, and posted/attached in chat. The turn is not complete until the refreshed file is posted.
+- **Short-turn rule (2026-09-24):** because resume-stream failures are occurring, keep future development turns intentionally small: one focused code change or investigation, its validation/CI state, then update/post this handoff and stop. Do not batch multiple independent optimizations into one turn.
 
 Changes made this turn:
 
