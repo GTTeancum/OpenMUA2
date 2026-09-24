@@ -505,15 +505,20 @@ def extract_game(root: Path, options: argparse.Namespace, recompiler: Path) -> P
 
 def generate(root: Path, options: argparse.Namespace, recompiler: Path, game: Path) -> Path:
     dol = game / 'sys/main.dol'
+    dispatch_lookup = getattr(options, 'dispatch_lookup', 'indexed')
     key = hashlib.sha256()
     for path in (recompiler, dol, within(root, 'tools/generate_dol_mg01.py')):
         key.update(sha256(path).encode('ascii'))
         key.update(b'\0')
+    key.update(('dispatch=' + dispatch_lookup).encode('ascii'))
     out = within(root, '.local/generated-mg01-' + key.hexdigest()[:12])
     # The guarded historical generator refuses to overwrite edits or mismatched receipts.
+    generate_env = dict(os.environ)
+    generate_env['DOLRECOMP_DISPATCH_LOOKUP'] = dispatch_lookup
     logged(root, 'generate-dol', [sys.executable, root / 'tools/generate_dol_mg01.py',
                                 '--recompiler', recompiler, '--dol', dol,
-                                '--output', out, '--jobs', str(options.jobs)])
+                                '--output', out, '--jobs', str(options.jobs)],
+           env=generate_env)
     return out / 'generated'
 
 
@@ -532,11 +537,13 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
     audit_path = within(root, REL_AUDIT_PATH)
     merger = within(root, 'tools/merge_mua2_generated.py')
     rel_base, bss_base = rel_layout_bases(root)
+    dispatch_lookup = getattr(options, 'dispatch_lookup', 'indexed')
     key = hashlib.sha256()
     for path in (recompiler, rel, audit_path, merger):
         key.update(sha256(path).encode('ascii'))
         key.update(b'\0')
     key.update(f'{rel_base:08X}:{bss_base:08X}'.encode('ascii'))
+    key.update(('dispatch=' + dispatch_lookup).encode('ascii'))
     token = key.hexdigest()[:12]
     rel_root = within(root, f'.local/generated-rel-mg01-{token}')
     combined = within(root, f'.local/generated-combined-mg01-rel-{token}')
@@ -549,6 +556,7 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
         'rel_sha256': sha256(rel),
         'rel_audit_sha256': sha256(audit_path),
         'merger_sha256': sha256(merger),
+        'dispatch_lookup': dispatch_lookup,
     }
     if receipt.is_file():
         saved = json.loads(receipt.read_text(encoding='utf-8'))
@@ -560,9 +568,12 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
         raise ValueError('Existing native REL generated output has no matching receipt: ' + str(combined))
     if rel_root.exists() and any(rel_root.iterdir()):
         raise ValueError('Existing REL generated output has no matching receipt: ' + str(rel_root))
+    generate_env = dict(os.environ)
+    generate_env['DOLRECOMP_DISPATCH_LOOKUP'] = dispatch_lookup
     logged(root, 'generate-rel',
            [recompiler, '--rel-base', f'0x{rel_base:08X}', '--rel-bss-base', f'0x{bss_base:08X}',
-            '--cpu', 'broadway', '--backend', 'c', rel, GAME_ID, rel_root])
+            '--cpu', 'broadway', '--backend', 'c', rel, GAME_ID, rel_root],
+           env=generate_env)
     logged(root, 'merge-dol-rel-generated',
            [sys.executable, merger, '--dol-generated', dol_generated, '--rel-generated', rel_root / 'generated',
             '--rel-audit', audit_path, '--rel-file', rel, '--main-dol', game / 'sys/main.dol',
@@ -673,7 +684,8 @@ def build(root: Path, options: argparse.Namespace) -> None:
                'platform': platform.platform(), 'game': game.relative_to(root).as_posix(),
                'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
-               'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel)}
+               'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel),
+               'module_opt': options.module_opt, 'dispatch_lookup': options.dispatch_lookup}
     write_json(within(root, '.local/receipts/build.json'), receipt)
     print('\nOpenMUA2 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
@@ -851,7 +863,9 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--cc', default=os.environ.get('CC', 'cl' if os.name == 'nt' else 'gcc'))
         s.add_argument('--cxx', default=os.environ.get('CXX', 'cl' if os.name == 'nt' else 'g++'))
         s.add_argument('--module-cc', default='cl' if os.name == 'nt' else ('clang' if shutil.which('clang') else 'gcc'))
-        s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=0)
+        s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=2)
+        s.add_argument('--dispatch-lookup', choices=('indexed', 'linear'), default='indexed',
+                       help='Generated native dispatch lookup; indexed is the performance default.')
         s.add_argument('--module-ipo', action='store_true')
         s.add_argument('--module-suffix')
         s.add_argument('--module-build-retries', type=int, default=0)
