@@ -372,6 +372,18 @@ void emit_dispatch_helpers(FILE* out, const FunctionList* funcs, u32 entry_point
     fprintf(out, "    }\n");
     fprintf(out, "    return false;\n");
     fprintf(out, "}\n");
+    fprintf(out, "\nstatic inline int dolrecomp_call_chassis(CPUState* ctx, u32 address) {\n");
+    fprintf(out, "    u32 alias;\n");
+    fprintf(out, "    ctx->pc = address;\n");
+    fprintf(out, "    if (dolrecomp_dispatch_replacement(ctx, address)) return 1;\n");
+    fprintf(out, "    if (dolrecomp_call_original(ctx, address)) return 1;\n");
+    fprintf(out, "    if (dolrecomp_physical_pc_alias(ctx, address, &alias)) {\n");
+    fprintf(out, "        ctx->pc = alias;\n");
+    fprintf(out, "        if (dolrecomp_dispatch_replacement(ctx, alias)) return 1;\n");
+    fprintf(out, "        if (dolrecomp_call_original(ctx, alias)) return 1;\n");
+    fprintf(out, "    }\n");
+    fprintf(out, "    return 0;\n");
+    fprintf(out, "}\n");
     fprintf(out, "\nstatic inline int dolrecomp_call(CPUState* ctx, u32 address) {\n");
     fprintf(out, "    u32 alias;\n");
     fprintf(out, "    ctx->pc = address;\n");
