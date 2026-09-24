@@ -139,9 +139,35 @@ void StaticRecompCore::IncrementSample(std::unordered_map<u64, u64>& samples, u6
     samples.emplace(key, 1);
 }
 
+void StaticRecompCore::RefreshHostCallActivity()
+{
+  if (!m_module_source.host_call)
+  {
+    m_host_calls_active = false;
+    m_host_call_activity_initialized = true;
+    m_host_call_generation = 0;
+    m_guest.host_call = nullptr;
+    return;
+  }
+
+  if (m_module_source.host_call_generation)
+  {
+    const u64 generation =
+        m_module_source.host_call_generation(m_module_source.host_call_user);
+    if (m_host_call_activity_initialized && generation == m_host_call_generation)
+      return;
+    m_host_call_generation = generation;
+  }
+
+  m_host_calls_active = m_module_source.host_call_active ?
+                            m_module_source.host_call_active(m_module_source.host_call_user) :
+                            true;
+  m_host_call_activity_initialized = true;
+  m_guest.host_call = m_host_calls_active ? HookHostCall : nullptr;
+}
 bool StaticRecompCore::IsHostCallAddress(u32 address) const
 {
-  if (!m_module_source.host_call_contains)
+  if (!m_host_calls_active || !m_module_source.host_call_contains)
     return false;
   if (m_module_source.host_call_contains(address, m_module_source.host_call_user))
     return true;
@@ -204,6 +230,7 @@ void StaticRecompCore::Init()
   m_guest.instruction_fallback = HookInstructionFallback;
   m_guest.host_call = m_module_source.host_call ? HookHostCall : nullptr;
   m_guest.external_user_data = this;
+  RefreshHostCallActivity();
 
   std::fprintf(stderr, "[staticrecomp] core init\n");
 
