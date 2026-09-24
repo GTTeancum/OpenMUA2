@@ -89,13 +89,13 @@ void dolrecomp_indirect_dispatch(CPUState* ctx, u32 address)
 
 static int chassis_dispatch_baseline(CPUState* ctx, u32 address)
 {
-    return dolrecomp_call(ctx, address);
+    return dolrecomp_call_chassis(ctx, address);
 }
 
 #if defined(DOLRECOMP_MODULE_HAVE_X86_64_V3)
 static int chassis_dispatch_x86_64_v3(CPUState* ctx, u32 address)
 {
-    return dolrecomp_call__x86_64_v3(ctx, address);
+    return dolrecomp_call_chassis__x86_64_v3(ctx, address);
 }
 #endif
 static void chassis_on_state_loaded(CPUState* ctx)
