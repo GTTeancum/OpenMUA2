@@ -125,45 +125,73 @@ This proves native REL progression, **not current performance**.
 1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current-main FPS cannot be measured here.
 2. There is no pending source-integration PR at the end of this turn.
 
-## Next performance direction — investigated, not yet changed
+## Current pending work — PR #24
 
-The next genuinely recurring transfer cost is the post-dispatch linked→runtime→linked round trip before burst continuation.
+**PR:** #24 — `Reuse generated linked result on burst continuation`  
+**Branch:** `perf/reuse-linked-continuation-result`  
+**Head:** `09b9195bd245f466d9c913ab7b7742d7845043f0`  
+**State:** OPEN / UNMERGED
 
-Current source behavior:
+Focused behavior:
 
-1. Generated dispatch returns a **linked** PC in `m_guest.pc`.
-2. `TranslateRelAddress()` converts it to the runtime PC for tracing, lockstep, idle-loop, exception and host-side checks.
-3. `fast_native_continue()` then calls dispatchability, which converts that runtime PC back to linked form before the next generated dispatch.
+- Preserves the linked PC returned by generated dispatch while keeping `m_guest.pc` in runtime form for host-side semantics.
+- `TranslateRelAddress()` now reports the active REL section selected during linked→runtime translation.
+- A new `FastDispatchableLinkedAt()` path uses the preserved linked result for the next verified chunk lookup, avoiding the normal runtime→linked conversion when its invariants hold.
+- Forced-fallback and exact host-call checks still use the runtime address.
+- REL chunks must still belong to the resolved active REL section; DOL chunks require the non-REL sentinel.
+- Lockstep-checked blocks and native exception returns explicitly disable preserved-result reuse.
+- Any direct-linked eligibility miss falls back to the existing `FastDispatchableAt() -> ResolveNativeAddress() -> RefreshRelSections()` path, preserving REL refresh/cross-section/alias behavior.
 
-A future optimization could preserve the generated linked result in a separate local while keeping `m_guest.pc` in runtime form for all host-side semantics, then use the preserved linked result for the continuation chunk lookup.
+Files changed:
 
-Do **not** implement that blindly. Before changing it, prove all of the following:
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
+- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
+- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
+- `tests/test_staticrecomp_host_call_gate_perf.py`
 
-- lockstep verification cannot legitimately replace the post-dispatch PC before continuation;
-- exception/interrupt handling cannot require a different linked result;
-- REL section refresh/unload/relocation semantics remain equivalent;
-- physical aliases and DOL/REL cross-section transfers still take the correct fallback;
-- forced-fallback and exact host-call checks continue to use the runtime address.
+Validation state:
 
-Because the recent source cleanups have removed many obvious per-block calls/branches, prefer this transfer optimization only if the invariants above can be pinned by targeted tests. Otherwise the next meaningful step is fresh RMSE52 profiling rather than another speculative micro-cleanup.
+- First tooling run on head `9830dcdf...` failed only because one pre-existing source-string regression still expected the old `fast_native_continue()` call shape. The runtime code itself was not implicated by that failure.
+- The stale regression was fixed in head `09b9195bd245f466d9c913ab7b7742d7845043f0`.
+- OpenMUA2 tooling run `36071914753`: **PASS on Ubuntu + Windows**.
+- ModernGekko run `36071914841`: pending at handoff-update time; an older superseded ModernGekko run was still winding down under workflow concurrency.
+- No current-head ModernGekko failure has appeared.
+
+## Current blockers
+
+1. **Immediate integration gate:** PR #24 requires current-head ModernGekko Windows/Ubuntu validation before merge.
+2. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
 
 ## Next exact turn
 
-1. Inspect current `main`.
-2. Continue the linked-result-preservation investigation above.
-3. If the invariants can be proven from source and targeted regression coverage, implement one focused PR that preserves the linked result across host-side runtime-PC work and uses it for continuation lookup.
-4. If those invariants cannot be proven safely, do not force the optimization; record the blocker and wait for fresh RMSE52 profiling evidence.
-5. Update/attach this handoff and stop.
+1. Inspect current `main` and PR #24 head.
+2. Check ModernGekko run `36071914841`.
+3. If standalone + full build/test PASS on Ubuntu + Windows:
+   - merge PR #24,
+   - update `docs/CURRENT-STATUS.md`,
+   - update/attach this handoff,
+   - stop.
+4. If any current-head job fails:
+   - keep PR #24 unmerged,
+   - fix only that failure,
+   - rerun validation,
+   - update/attach this handoff,
+   - stop.
 
 ## Last turn update — 2026-09-24
 
 What happened:
 
-- Reconciled parallel progress through PR #23.
-- PR #23 tooling and all four ModernGekko jobs were fully green on Windows + Ubuntu.
-- Merged PR #23 as `20dd90851c3a2625ddb973f8850e2494bb33ca9f`.
-- Updated `docs/CURRENT-STATUS.md` as `2de1dee811932d3d010dc606abf02cb7ab749769`.
-- Inspected the remaining native burst transfer path.
-- Confirmed the next recurring cost is a linked→runtime translation after generated dispatch followed by runtime→linked resolution for continuation.
-- Did not implement linked-result preservation yet because lockstep, exception/interrupt, REL refresh, physical-alias, and cross-section invariants must be proven first.
+- Started from clean current `main` at `c373cccbde7129d1d4a3acbcf7ef13aa504fd730`.
+- Proved the linked-result optimization safety boundary from source rather than applying it blindly:
+  - lockstep `Verify()` receives const guest state and may run module state-load callbacks, so the fast path is disabled for lockstep-checked blocks;
+  - native exception returns redirect PC/state, so the fast path is disabled when `m_guest.exception` is set;
+  - direct linked eligibility still checks the runtime forced-fallback address, verified chunk state, active REL section membership, and DOL/REL distinction;
+  - any invariant miss retains the existing runtime→linked resolver and REL refresh fallback.
+- Implemented linked-result preservation and active-section reporting.
+- Opened PR #24.
+- Initial tooling exposed one stale test-string expectation; fixed it without changing runtime behavior.
+- Current-head tooling now PASS on Windows + Ubuntu.
+- Current-head ModernGekko validation is pending.
 - No RMSE52 game-side run occurred.
