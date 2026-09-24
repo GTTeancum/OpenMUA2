@@ -15,6 +15,22 @@ The repository still originates from the recoverable MG01 + FPC01 workspace, but
 - The runtime floating compare path preserves the fifth FPRF classification bit while replacing only FPCC, with a targeted runtime regression.
 - MEM2 is now included in lockstep memory journaling/restoration. MEM1 and MEM2 use disjoint physical journal keys; native and interpreter MMU writes feed the same diagnostic journal, the shadow receives the pre-block image, and the native post-image is restored afterward.
 - Merged DOL+REL dispatch keeps native eligibility bounded to generated code chunks. Alignment and overlap guards are covered, and commit `67db5f86875f6e40dca4f70b65fce63996a251ad` adds a regression proving an uncovered guest-address hole between generated ranges is not bridged into native eligibility. Commit `b777ddbe0d2c556fc00ee632bd273d0c1ee13621` additionally rejects unaligned generated chunk boundaries before emitting the merged table, and `5e7fc98e09f53c33f6c383682973af8824889d13` pins that PowerPC instruction-alignment invariant with a regression.
+- Multiplatform performance is now the active development priority. Commit `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` makes DolRecomp's existing page-indexed native dispatch the default and changes the OpenMUA2 workspace native-module optimization default from O0 to O2 on both Windows and Linux. `--dispatch-lookup linear` remains available for controlled A/B comparison, and generation cache keys/receipts record the dispatch mode so measurements cannot accidentally reuse output from the other mode.
+
+## Active development priority — multiplatform performance
+
+Performance on both Windows and Linux is the primary focus. Existing correctness, SMC, audit, and eligibility guards remain enabled, but expanding lockstep/correctness coverage is deferred unless a performance change produces a concrete failure that blocks measurement or execution.
+
+Current performance baseline on `main`:
+
+- native module optimization default: `O2`
+- generated dispatch lookup default: `indexed`
+- explicit A/B control: `--dispatch-lookup indexed|linear`
+- build receipts record `module_opt` and `dispatch_lookup`
+- DOL and REL generation cache identities include the dispatch mode
+- no current-main game-side speedup is claimed until the proprietary RMSE52 route is measured
+
+Historical profiling showed very high native-dispatch counts and concentrated time in tiny runtime/cross-chunk entries. The next optimization work should therefore attack shared dispatch/chassis overhead and generated cross-chunk transfer costs before revisiting lower-volume correctness work.
 
 ## Fresh validation of current work
 
@@ -30,6 +46,8 @@ Tooling Actions run `35938476536` for `2a86452d2aafe5156f9c4015ad7b2a3ec64b65de`
 
 Pull-request tooling Actions run `35939460805` for the replayed-text guard passed on both `ubuntu-latest` and `windows-latest` before merge to `main` as `eb48bfa68c20ea2d9e9c8731a13cf311d72b3771`. The regression accepts correctly replayed text, rejects same-size replayed bytes whose SHA-256 differs from the live audit, rejects inconsistent expected/observed audit hashes, and rejects a text-section mismatch count.
 
+Performance PR #2 (`a6328f40bb0c98a58c8f50e52a30d4da55390b7e`) was validated before merge by OpenMUA2 tooling run `35940341273` and DolRecomp run `35940341449`: both Ubuntu and Windows jobs passed. ModernGekko run `35940341332` had both standalone Windows and Ubuntu tests passing at merge time; its two larger full build/test jobs were still compiling and are not counted here as completed results.
+
 The earlier current-source commits also include cross-platform DolRecomp CI for the cache-control generator change and cross-platform GXRuntime CI for the FMA/runtime changes.
 
 ## Validation boundary
@@ -42,10 +60,11 @@ No new claim is made here for a complete level, long-session stability, multipla
 
 ## Immediate priorities
 
-1. Rebuild the exact RMSE52 native module/runtime from current `main` on the local game workspace and run a fresh baseline benchmark. This will measure the real effect of keeping cache-control operations inside native bursts.
-2. Run a bounded current-main lockstep window on the opening gameplay route so MEM2 restoration, loop-boundary alignment, floating compare and FMA behavior are exercised together against the reference interpreter.
-3. Preserve any divergence as a failure and reduce it to a focused regression. Do not whitelist mismatches, mask FPSCR state, disable chunk hashes/SMC protection, or change game timing to make a test pass.
-4. Once correctness is re-established on the current build, profile native dispatch/exception/JIT and cache-invalidation costs again using fresh measurements rather than the pre-cache-control benchmark.
-5. Keep Linux as the active development path while continuing to keep shared source/build code portable; a full Windows ModernGekko/game build remains a separate validation milestone.
+1. Build the current `O2 + indexed` native module/runtime against the exact RMSE52 image and benchmark the same route on Windows and Linux wherever the local game workspace is available.
+2. A/B `--dispatch-lookup indexed` against `--dispatch-lookup linear` with the same compiler, optimization level, route, warmup, graphics/audio settings, and sample window. Keep both raw results.
+3. Profile native-dispatch/chassis overhead on the faster baseline: dispatch count, hottest dispatch PCs, burst length, host-call checks, REL address translation, native exceptions, and JIT fallback.
+4. Optimize shared generated/native transfer paths that benefit MSVC and GCC/Clang together, especially high-frequency cross-chunk/tail/indirect transfers and avoidable chassis round trips.
+5. Rebuild and re-measure on both platforms after each accepted performance change. Do not infer a speedup from source structure or CI.
+6. Defer additional lockstep/correctness expansion until performance work reaches a useful plateau or a concrete failure blocks further performance measurement. Existing correctness/SMC/audit guards stay enabled.
 
 The original extracted `sys/main.dol` remains the boot source. Any merged/generated DOL/REL reference is code-generation material only and must never replace the game's real boot DOL.
