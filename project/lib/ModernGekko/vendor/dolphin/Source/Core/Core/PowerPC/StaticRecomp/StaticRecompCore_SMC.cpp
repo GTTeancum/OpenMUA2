@@ -292,7 +292,7 @@ int StaticRecompCore::ChunkIndexOf(u32 address, u32* linked_address_out,
 bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* linked_address,
                                           u32* rel_section_index, u32 rel_section_hint)
 {
-  if (IsForcedFallbackAddress(address))
+  if (!m_forced_fallback_ranges.empty() && IsForcedFallbackAddress(address))
     return false;
   const int index =
       ChunkIndexOf(address, linked_address, rel_section_index, rel_section_hint);
@@ -306,7 +306,7 @@ bool StaticRecompCore::FastDispatchableAt(u32 address, u32* chunk_index, u32* li
 bool StaticRecompCore::DispatchableAt(u32 address, u32* chunk_index, u32* linked_address,
                                       u32* rel_section_index, u32 rel_section_hint)
 {
-  if (IsForcedFallbackAddress(address))
+  if (!m_forced_fallback_ranges.empty() && IsForcedFallbackAddress(address))
     return false;
   const int index =
       ChunkIndexOf(address, linked_address, rel_section_index, rel_section_hint);
