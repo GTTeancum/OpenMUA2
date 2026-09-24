@@ -123,15 +123,17 @@ Diff size:
 
 OpenMUA2 tooling Actions run `36035472440`:
 
-- workflow: `in_progress` at handoff-update time
+- Ubuntu Python tests: **PASS**
+- Windows Python tests: **PASS**
 
 ModernGekko Actions run `36035472344`:
 
-- workflow: `in_progress` at handoff-update time
+- Standalone Ubuntu: **PASS**
+- Standalone Windows: **PASS**
+- Full Ubuntu: still `in_progress`, Build step
+- Full Windows: still `in_progress`, Build step
 
-No CI failure has appeared.
-
-PR #19 must remain unmerged until the required Windows/Ubuntu validation completes.
+No CI failure has appeared. PR #19 remains unmerged until both full integration jobs finish successfully.
 
 ## Current blockers
 
@@ -154,19 +156,35 @@ Do not claim current:
 - fresh large lockstep total
 - crash-free/glitch-free completion
 
+## Next performance target — investigated, not yet changed
+
+The next likely per-block chassis cost is the cached host-call chunk query.
+
+Verified source facts:
+
+- `host_call_at` runs on burst entry and continuation.
+- It currently calls `ChunkContainsHostCall(chunk_index)` every time before exact `IsHostCallAddress(address)`.
+- `ChunkContainsHostCall()` caches its result in `m_chunk_host_call_state` using states 0=unknown, 1=clean, 2=contains host call.
+- When `host_call_range_contains` is available, `LoadModule()` precomputes that cache for every chunk.
+- Therefore the normal hot path still pays an out-of-line helper call even when the chunk state is already known.
+- A likely safe follow-up is to read the cached state directly in the run-loop fast path and only call `ChunkContainsHostCall()` when the state is still 0, preserving exact address checks for state 2 and lazy behavior for unknown chunks.
+
+Do not implement this until PR #19 is accepted.
+
 ## Next exact turn
 
 1. Inspect current `main`.
-2. Check PR #19 and workflow runs `36035472440` / `36035472344`.
-3. If required CI jobs PASS:
+2. Check PR #19 and ModernGekko run `36035472344`.
+3. If both full jobs PASS:
    - merge PR #19,
    - update `docs/CURRENT-STATUS.md`,
-   - investigate one next shared dispatch/chassis hotspot,
+   - implement only the cached host-call-state fast path described above if source still supports it,
+   - open focused CI,
    - update/attach this handoff,
    - stop.
-4. If CI fails:
+4. If either full job FAILS:
    - leave PR #19 unmerged,
-   - fix only the failing issue,
+   - fix only that failure,
    - rerun validation,
    - update/attach this handoff,
    - stop.
@@ -175,13 +193,16 @@ Do not claim current:
 
 Latest `main` inspected at turn start:
 
-- `de299930a871d5ae011760894a96cdc3dc04706d` — `Update MUA2 handoff after PR18 merge`
+- `5085175b6cd8d00b04f35cc93593d82de421bb38` — `Update MUA2 handoff for pending PR19`
 
 Changes this turn:
 
-- Reconciled parallel work: PR #18 was already merged and fully validated.
-- Implemented the empty forced-fallback-range short-circuit.
-- Added a targeted regression proving both eligibility gates short-circuit only when the vector is empty while preserving the configured-range helper.
-- Opened PR #19.
-- PR #19 CI started; both workflows remain in progress.
+- No new source code was added beyond the already-open PR #19 implementation.
+- Re-checked PR #19 CI.
+- Tooling PASS on Windows and Ubuntu.
+- Standalone ModernGekko PASS on Windows and Ubuntu.
+- Full ModernGekko Ubuntu remains `in_progress` in Build.
+- Full ModernGekko Windows remains `in_progress` in Build.
+- Investigated the next per-block chassis cost and identified the cached `ChunkContainsHostCall()` call as a likely follow-up optimization.
+- PR #19 remains open/unmerged until both full integration jobs pass.
 - No RMSE52 game-side run occurred.
