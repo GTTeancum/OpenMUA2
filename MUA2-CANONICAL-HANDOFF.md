@@ -132,13 +132,13 @@ Implementation details:
 OpenMUA2 tooling Actions run `36030032034`:
 
 - Ubuntu Python tests: **PASS**
-- Windows Python tests: `in_progress` at end of turn; it had reached post-checkout cleanup after the tooling test step.
+- Windows Python tests: **PASS**
 
 ModernGekko Actions run `36030032243`:
 
-- Standalone Ubuntu: `in_progress`, Configure step.
+- Standalone Ubuntu: **PASS**
 - Standalone Windows: `in_progress`, Configure step.
-- Full Ubuntu: `in_progress`, Install Linux dependencies.
+- Full Ubuntu: `in_progress`, Build step.
 - Full Windows: `in_progress`, Configure step.
 
 No CI failure has appeared.
@@ -194,5 +194,6 @@ Changes this turn:
 - Implemented the reverse same-section REL hint for continuation-side runtime→linked resolution.
 - Opened PR #18.
 - Added/updated targeted source regressions.
-- Did not merge PR #18 because CI is still running.
+- Tooling PASS on Windows and Ubuntu; ModernGekko standalone Ubuntu PASS; remaining ModernGekko jobs still running.
+- Did not merge PR #18 because full cross-platform validation is not complete.
 - No RMSE52 game-side run occurred.
