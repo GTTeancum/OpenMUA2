@@ -329,7 +329,7 @@ void StaticRecompCore::Run()
         {
           SyncIn();
           bool handled = m_guest.host_call(&m_guest, m_guest.pc);
-          if (!handled && m_guest.pc < m_guest.ram_size)
+          if (!handled && m_guest.host_call && m_guest.pc < m_guest.ram_size)
             handled = m_guest.host_call(&m_guest, m_guest.pc | 0x80000000u);
           if (m_fallback_jit && m_host_calls_active && IsHostCallAddress(m_guest.lr))
             m_fallback_jit->GetBlockCache()->InvalidateICache(m_guest.lr, 4, true);
