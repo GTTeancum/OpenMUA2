@@ -27,11 +27,11 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
         smc = SMC.read_text(encoding="utf-8")
 
         self.assertIn(
-            "bool DispatchableAt(u32 address, u32* chunk_index = nullptr);",
+            "bool DispatchableAt(u32 address, u32* chunk_index = nullptr,",
             header,
         )
         self.assertIn(
-            "bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr);",
+            "bool FastDispatchableAt(u32 address, u32* chunk_index = nullptr,",
             header,
         )
         self.assertIn("*chunk_index = static_cast<u32>(index);", smc)
@@ -45,13 +45,21 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
             "IsHostCallAddress(address)",
             run,
         )
-        self.assertIn("DispatchableAt(ppc.pc, &entry_chunk_index)", run)
+        self.assertIn(
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address)", run
+        )
         self.assertIn("!host_call_at(ppc.pc, entry_chunk_index)", run)
-        self.assertIn("fast_dispatchable_at(address, &chunk_index)", run)
+        self.assertIn(
+            "fast_dispatchable_at(address, &chunk_index, linked_address)", run
+        )
         self.assertIn("!host_call_at(address, chunk_index)", run)
-        self.assertIn("fast_native_continue(m_guest.pc)", run)
+        self.assertIn(
+            "fast_native_continue(m_guest.pc, &linked_dispatch_address)", run
+        )
 
-        native_entry = run.index("DispatchableAt(ppc.pc, &entry_chunk_index)")
+        native_entry = run.index(
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address)"
+        )
         sync_in = run.index("SyncIn();", native_entry)
         self.assertNotIn(
             "m_guest.host_call && IsHostCallAddress(ppc.pc)",
