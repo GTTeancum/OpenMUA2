@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 (USA, RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Source state summarized through:** `7ce7eab392d9d8ebad8b21e513342d76f88ec785` (`Record merged host-call probe gating`)  
+**Source state summarized through:** `8e2baf16efb0022b8910ddefa0130843c1b7da0b` (`Record REL dispatch resolution reuse`)  
 **Date:** 2026-09-24
 
 > ## MANDATORY END-OF-TURN UPDATE RULE
@@ -112,6 +112,7 @@ This is the current default performance configuration for both Windows and Linux
 - normal chassis dispatch is bound directly to baseline or x86-64-v3 at module load as of `4e677ac8491bc3b5256998ba3688893f61d07695`, removing host-feature selection from each normal native block
 - generated indirect dispatch reuses the module-load x86-64-v3 decision as of `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1`, so indirect guest transfers no longer re-enter the host-feature probe
 - native bursts gate exact-address host-call lookup with cached per-chunk host-call coverage as of `2776fa0a3e80136495a32552b9d909e16dcfcd5e`: verified chunks known clean skip the per-block `IsHostCallAddress()` probe, while candidate chunks retain the exact address-level check
+- dispatchability carries the runtime→linked PC it already resolved as of `af7938bdb63d4530ea43a6ba445800fc4171a153`; the native burst reuses that PC for the immediately following dispatch and continuation carries the next linked PC forward, eliminating the duplicate `ResolveNativeAddress()` before dispatch while preserving linked→runtime translation afterward
 
 DolRecomp's indexed dispatcher uses its page/run lookup rather than the older linear range chain. The current `405b81de...` implementation also bounds that lookup to the runs overlapping the current guest page and fast-paths zero/one-run pages. The linear path remains intentionally available so indexed-vs-linear can be measured on the exact same game route. The merge tool emits a 4 KiB guest-page index for the combined DOL+REL module, narrowing its binary search to chunks overlapping the current page rather than the full merged chunk table; the current `f4b7f991...` fast path avoids even that binary search on the common zero- or one-chunk page cases.
 
@@ -267,6 +268,13 @@ Performance PR #13 / merge commit `2776fa0a3e80136495a32552b9d909e16dcfcd5e`:
 - ModernGekko Actions run `36003570930`: full build/test PASS on Ubuntu and Windows, including the Windows MSVC/Ninja path that compiles the modified `StaticRecompCore::Run()` code.
 - The change reuses dispatchability's verified chunk index and consults cached `ChunkContainsHostCall()` coverage before exact `IsHostCallAddress()` lookup; exact host-call behavior remains for chunks that may contain a host call.
 
+Performance PR #14 / merge commit `af7938bdb63d4530ea43a6ba445800fc4171a153`:
+
+- OpenMUA2 tooling Actions run `36008961778`: PASS on Ubuntu and Windows.
+- ModernGekko Actions run `36008961830`: standalone tests PASS on Ubuntu and Windows.
+- ModernGekko Actions run `36008961830`: full build/test PASS on Ubuntu and Windows, including the Windows MSVC/Ninja path compiling the modified StaticRecomp runtime.
+- Dispatchability/continuation now return the already-resolved linked PC, so the immediately following native dispatch no longer performs the same runtime→linked lookup again; post-dispatch linked→runtime translation remains intact.
+
 ### What is still not freshly validated
 
 Do not claim from current `main` without a real run:
@@ -342,7 +350,7 @@ Useful deeper documents:
 
 Latest `main` actually inspected before this handoff edit:
 
-- `7ce7eab392d9d8ebad8b21e513342d76f88ec785` — `Record merged host-call probe gating`
+- `8e2baf16efb0022b8910ddefa0130843c1b7da0b` — `Record REL dispatch resolution reuse`
 
 User priority / workflow mandates:
 
@@ -350,63 +358,60 @@ User priority / workflow mandates:
 - Existing correctness/SMC/hash/audit guards remain enabled; do not drift into new correctness work unless a concrete failure blocks performance measurement or execution.
 - **Mandatory handoff rule:** every development turn must end with this file updated, committed to GitHub `main`, and posted/attached in chat. The turn is not complete until the refreshed file is posted.
 
-Current-main reconciliation this turn:
-
-- The previous PR #9 ModernGekko Actions run `36000035131` is fully complete: standalone and full build/test jobs PASS on Ubuntu and Windows.
-- This turn began with `main` already advanced through:
-  - `917a5d893087736a74566dbaf71de5f3989a6d90` — cache x86-64-v3 feature detection once per process.
-  - `4e677ac8491bc3b5256998ba3688893f61d07695` — bind normal chassis dispatch directly to baseline or x86-64-v3 at module load.
-  - `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — reuse the module-load x86-64-v3 decision for generated indirect dispatch.
-- Those parallel performance commits were preserved and treated as authoritative rather than duplicated.
-
 Changes made this turn:
 
-- Created branch `perf/gate-host-call-probes-by-chunk` and PR #13 (`Gate native host-call probes by chunk`).
+- Inspected current GitHub `main` first; it was stable at `add931c83dec88567dc140b4861e7f37aed616a8` with no parallel work to reconcile.
+- Targeted the next performance hotspot identified by the prior handoff: duplicate REL runtime→linked resolution inside the hot native burst loop.
+- Created branch `perf/reuse-rel-dispatch-resolution` and PR #14 (`Reuse REL resolution across native dispatch`).
 - Updated:
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
   - `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
-- `DispatchableAt` and `FastDispatchableAt` now optionally return the verified chunk index they already resolved.
-- The hot native-burst path uses cached `ChunkContainsHostCall(chunk_index)` before invoking exact `IsHostCallAddress(address)`.
-- Chunks known clean therefore skip a per-block host-call lookup callback; candidate chunks still perform the exact address-level check, so host-call semantics are preserved.
-- Added `tests/test_staticrecomp_host_call_gate_perf.py` to pin the chunk-index plumbing and gated native-burst source path.
-- PR #13 was squash-merged as `2776fa0a3e80136495a32552b9d909e16dcfcd5e`.
-- Updated `docs/CURRENT-STATUS.md` in `7ce7eab392d9d8ebad8b21e513342d76f88ec785` with the accepted performance change and final CI facts.
-- No proprietary RMSE52 image, extracted files, generated game translation, logs, saves, or other game-derived output was committed.
+  - `tests/test_staticrecomp_host_call_gate_perf.py`
+  - added `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
+- `ChunkIndexOf`, `DispatchableAt`, and `FastDispatchableAt` can now return the linked PC produced by the authoritative `ResolveNativeAddress()` lookup they already perform.
+- Native-burst entry reuses that linked PC for the immediately following module dispatch rather than calling `ResolveNativeAddress()` again.
+- Burst continuation similarly resolves/validates the next runtime PC once, returns its linked PC, and carries it into the next dispatch iteration.
+- The post-dispatch `TranslateRelAddress()` path remains intact. This optimization does **not** keep a REL mapping decision beyond the dispatchability/continuation check that immediately precedes the dispatch.
+- Existing chunk verification, forced-fallback handling, REL refresh behavior, and host-call gating remain enabled.
+- PR #14 was squash-merged as `af7938bdb63d4530ea43a6ba445800fc4171a153`.
+- Updated `docs/CURRENT-STATUS.md` in `8e2baf16efb0022b8910ddefa0130843c1b7da0b`.
+- No proprietary RMSE52 game data or game-derived output was committed.
 
 Tests/CI actually observed:
 
-- OpenMUA2 tooling Actions run `36003571111`: PASS on `ubuntu-latest` and `windows-latest`.
-- ModernGekko Actions run `36003570930`:
+- OpenMUA2 tooling Actions run `36008961778`: PASS on `ubuntu-latest` and `windows-latest`.
+- ModernGekko Actions run `36008961830`:
   - Standalone tests — Ubuntu: PASS.
   - Standalone tests — Windows: PASS.
   - Full build and test — Ubuntu: PASS.
   - Full build and test — Windows: PASS.
-- The Windows full job used the MSVC environment + Ninja path and therefore compiled the modified StaticRecomp runtime path on Windows.
-- A temporary 404 from GitHub's live log-blob endpoint occurred while a full job was still running; the jobs themselves later completed successfully, so this was not a build failure.
+- The Windows full job used the MSVC environment + Ninja path and compiled the changed StaticRecomp core as part of the full runtime.
+- The new source regression specifically rejects reintroduction of `ResolveNativeAddress(runtime_dispatch_address, &linked_dispatch_address, nullptr)` in the dispatch body while requiring the linked PC to be carried from dispatchability and continuation.
 - No RMSE52 game-side build, gameplay run, FPS measurement, or benchmark occurred in this environment.
 
 Windows/Linux portability:
 
-- The accepted PR #13 change is shared C++ only; it adds no platform-specific assembly and no POSIX-only runtime dependency.
+- PR #14 is shared C++ only; it adds no platform-specific assembly and no POSIX-only runtime dependency.
 - Tooling regressions pass on Windows and Ubuntu.
 - Full ModernGekko integration build/test passes on Windows/MSVC and Ubuntu.
 - This is source/build portability validation, **not** a full Windows game execution result.
 
 Failures/rejected experiments:
 
-- No code/test failure was observed for PR #13.
+- No code/test failure was observed for PR #14.
+- GitHub's live log-blob endpoint returned a temporary 404 while full jobs were in progress; the jobs themselves remained healthy and later passed.
 - Previously rejected performance experiments (cache affinity, module IPO, MSVC chunk optimization, multiword emission) remain rejected absent fresh evidence.
 
 Current blocker:
 
-- Fresh proprietary RMSE52 game-side execution remains unavailable in this environment, so no FPS/speed improvement is claimed for `2776fa0a...` or the other recent dispatch optimizations.
-- The source-level dispatch/chassis work is now substantially reduced: indexed page lookup, zero/one-candidate fast paths, module-load host-feature selection, indirect-selection reuse, and clean-chunk host-call probe gating are all present.
+- Fresh proprietary RMSE52 game-side execution remains unavailable in this environment, so no FPS/speed improvement is claimed for `af7938bd...` or the other recent dispatch optimizations.
+- The native-dispatch hot path now avoids duplicate runtime→linked resolution between eligibility and dispatch. Remaining REL work is primarily post-dispatch linked→runtime/cross-section translation plus any repeated lookup associated with cross-chunk/indirect transfers.
 
 Next exact step:
 
 1. Inspect current `main` first because parallel work may have advanced it.
 2. Continue **performance work**, not correctness expansion.
-3. The next source hotspot is the REL dispatch/address-translation path in `StaticRecompCore_Run.cpp` / `StaticRecompCore_SMC.cpp`: with REL support active, each native dispatch resolves runtime→linked before module dispatch, translates linked→runtime afterward, and continuation eligibility can perform related lookup work again. Look for a portable way to carry/reuse resolved REL/chunk information without weakening relocation correctness.
+3. Investigate the post-dispatch linked→runtime path in `StaticRecompCore_SMC.cpp` / `StaticRecompCore_Run.cpp`. A promising direction is to fast-path the common case where the dispatched REL block returns to the same active REL section, while retaining full section lookup for cross-section/DOL transfers and retaining REL refresh correctness.
 4. Keep Windows and Ubuntu full-build validation for any change touching the StaticRecomp runtime loop.
 5. When the proprietary RMSE52 workspace is available, benchmark current `O2 + indexed` against `O2 + linear` on the standard route and collect native-dispatch count/hot PCs, burst length, host-call checks, REL translation cost, native exceptions, and JIT fallback before claiming any speedup.
