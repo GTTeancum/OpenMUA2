@@ -10,7 +10,7 @@
 - GitHub `main` is authoritative. Inspect current `main` before every change.
 - **Multiplatform performance is the active priority.** Correctness expansion comes later unless a concrete failure blocks performance work.
 - Preserve SMC/hash/audit/REL eligibility/verification protections.
-- Use **moderately short turns** because resume-stream failures occur: one focused implementation/merge plus validation is appropriate; do not batch unrelated optimizations.
+- Use **moderately short turns** because resume-stream failures occur: one focused implementation/merge plus validation and a small next-step investigation is appropriate; do not batch unrelated optimizations.
 - At the end of **every turn**, update this file, commit it to `main`, and attach `MUA2-CANONICAL-HANDOFF.md` in chat.
 - Never fabricate build, game, controller, save, audio, or performance results.
 - Never commit RMSE52 proprietary game data, extracted files, generated proprietary translation output, saves, logs, screenshots, or RAM captures.
@@ -21,6 +21,7 @@
 - ModernGekko: `project/lib/ModernGekko/`
 - GXRuntime: `project/lib/ModernGekko/vendor/dolphin/GXRuntime/`
 - Static recomp runtime: `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/`
+- Static recomp config: `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/Config/StaticRecompSettings.cpp`
 - Tooling: `tools/`
 - Tests: `tests/`
 - CI: `.github/workflows/`
@@ -51,6 +52,7 @@ Key accepted performance/correctness commits:
 - `2776fa0a3e80136495a32552b9d909e16dcfcd5e` — gate exact host-call probes by cached chunk coverage.
 - `af7938bdb63d4530ea43a6ba445800fc4171a153` — reuse runtime→linked PC resolution across eligibility and dispatch.
 - `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — fast-path same-section linked→runtime REL return translation.
+- `7a9cdc0165257ec19301972785150e4961f7f65e` — fast-path same-section runtime→linked REL continuation resolution.
 
 ## Historical RMSE52 boundary
 
@@ -77,80 +79,50 @@ Historical performance, predating recent optimizations:
 
 Do not claim current FPS improvement until the actual RMSE52 route is rerun.
 
-## Latest accepted work — PR #17
+## Latest accepted work — PR #18
 
-PR #17 `Reuse REL section for return translation` is merged as:
+PR #18 `Reuse REL section for native continuation lookup` is **MERGED**.
 
-- `7b7e412f671039e1d29e2cdff7b2e51509bc046e`
+Merge commit:
+
+- `7a9cdc0165257ec19301972785150e4961f7f65e`
+
+Behavior:
+
+- Runtime→linked native address resolution now accepts an optional previous REL-section hint.
+- Burst continuation snapshots the previous active section before the output section index is overwritten.
+- Same-section continuations check that section's runtime range first and map directly to linked PC.
+- Hint misses preserve the prior full active-section scan.
+- Direct DOL lookup remains after the REL scan.
+- `RefreshRelSections()` remains the final allowed fallback.
+- Initial dispatch and callers without a hint retain old behavior via sentinel `0xffffffffu`.
+- PR #17's linked→runtime same-section fast path remains intact.
 
 Validation:
 
-- OpenMUA2 tooling run `36026447896`: PASS on Ubuntu and Windows.
-- ModernGekko run `36026447968`: standalone + full build/test PASS on Ubuntu and Windows.
-- Windows full build used MSVC/Ninja.
-
-`docs/CURRENT-STATUS.md` was updated in:
-
-- `bccc38eb90bd822beca965773e3d849d79e8eb18`
-
-## Current pending work — PR #18
-
-**PR:** #18 — `Reuse REL section for native continuation lookup`  
-**Branch:** `perf/rel-native-section-hint`  
-**Head:** `26fbbf169146d950a6fbd9bd13d63a7eaf70cd6d`  
-**State:** OPEN / UNMERGED
-
-Focused behavior:
-
-- Adds an optional `rel_section_hint` to runtime→linked native address resolution.
-- On burst continuation, the previous active REL section index is used as the first runtime-range check.
-- Same-section continuation can therefore map runtime→linked directly instead of linearly scanning every active REL section.
-- Hint miss preserves the existing full active-section scan.
-- Direct DOL lookup remains after the active REL scan.
-- `RefreshRelSections()` remains the final fallback when allowed.
-- Initial dispatch and callers without a hint retain the old behavior through the default sentinel `0xffffffffu`.
-- PR #17's linked→runtime same-section fast path is unchanged.
-
-Files changed in PR #18:
-
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore.h`
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_SMC.cpp`
-- `project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp/StaticRecompCore_Run.cpp`
-- `tests/test_staticrecomp_rel_dispatch_reuse_perf.py`
-- `tests/test_staticrecomp_host_call_gate_perf.py`
-
-Implementation details:
-
-- `ResolveNativeAddress(..., rel_section_hint)` factors a `resolve_section(i)` helper.
-- It checks `rel_section_hint` first when valid.
-- On a miss, it scans all other active sections, then performs the original direct-DOL lookup, then the original refresh-and-rescan fallback.
-- `ChunkIndexOf`, `FastDispatchableAt`, and `DispatchableAt` carry the optional hint.
-- `fast_native_continue()` snapshots the current section index as the hint before the call overwrites the output section index.
-
-## PR #18 validation state
-
-OpenMUA2 tooling Actions run `36030032034`:
+OpenMUA2 tooling run `36030032034`:
 
 - Ubuntu Python tests: **PASS**
 - Windows Python tests: **PASS**
 
-ModernGekko Actions run `36030032243`:
+ModernGekko run `36030032243`:
 
 - Standalone Ubuntu: **PASS**
 - Standalone Windows: **PASS**
-- Full Ubuntu: **PASS**
-- Full Windows: still `in_progress`, Build step
+- Full build/test Ubuntu: **PASS**
+- Full build/test Windows: **PASS**
 
-No CI failure has appeared. PR #18 remains unmerged until the full Windows/MSVC integration build finishes successfully.
+The Windows full job uses the MSVC/Ninja integration path and compiled the modified StaticRecomp core.
 
-## Current blockers
+`docs/CURRENT-STATUS.md` updated in:
 
-1. **Immediate integration gate:** PR #18 CI must finish. Do not merge until required Windows/Ubuntu jobs are green.
-2. **Game-performance gate:** this environment still lacks the proprietary RMSE52 workspace/image, so no current-main FPS can be measured here.
+- `41ac96c8fe9b6feee8daecd73d0ec2342cce4f2f` — `Record merged REL continuation hint`
 
-## Not freshly validated
+## Current blocker
 
-Do not claim current:
+Fresh game-side performance measurement is still blocked because this environment does not have the proprietary RMSE52 workspace/image.
+
+No fresh claim is made for:
 
 - current FPS/speed
 - complete boot/title/menu
@@ -164,43 +136,50 @@ Do not claim current:
 - fresh large lockstep total
 - crash-free/glitch-free completion
 
-## Next exact turn
+## Next performance target — investigated, not yet changed
+
+The next likely hot-path cost is the forced-fallback eligibility check.
+
+Verified source facts:
+
+- `StaticRecompSettings.cpp` defines `MAIN_STATICRECOMP_FALLBACK_RANGES` with default value `""`.
+- `StaticRecompCore::Init()` parses that string (or `STATICRECOMP_FALLBACK_RANGES`) into `m_forced_fallback_ranges`.
+- Therefore the normal/default configuration has **no forced fallback ranges**.
+- REL-backed native continuation still routes through `FastDispatchableAt()` because `m_has_rel_modules` is true.
+- `FastDispatchableAt()` currently calls `IsForcedFallbackAddress(address)` unconditionally.
+- `DispatchableAt()` does the same on burst entry.
+- `IsForcedFallbackAddress()` is an out-of-line function that loops `m_forced_fallback_ranges`; with the default empty vector this still imposes a function call plus empty-loop check on every native eligibility test.
+
+Recommended next focused change:
+
+- in `FastDispatchableAt()` and `DispatchableAt()`, only call `IsForcedFallbackAddress(address)` when `!m_forced_fallback_ranges.empty()`;
+- preserve the exact existing range behavior when any forced fallback range is configured;
+- add a source regression pinning the empty-vector short-circuit and configured-range path;
+- keep the change portable C++ and validate Windows + Ubuntu.
+
+This is a lower-risk per-block chassis optimization than changing cross-section behavior further.
+
+## Next exact moderately-short turn
 
 1. Inspect current `main`.
-2. Check PR #18 head and workflow runs `36030032034` / `36030032243`.
-3. If all required CI jobs PASS:
-   - merge PR #18,
-   - update `docs/CURRENT-STATUS.md`,
-   - investigate the next single dispatch/chassis hotspot,
-   - update/attach this handoff,
-   - stop.
-4. If CI fails:
-   - keep PR #18 unmerged,
-   - fix only the failing issue,
-   - rerun validation,
-   - update/attach this handoff,
-   - stop.
+2. Implement only the empty-forced-fallback short-circuit described above.
+3. Add/update targeted regression coverage.
+4. Open a focused PR.
+5. Observe tooling and initial ModernGekko CI state.
+6. Update/attach this handoff and stop.
 
 ## Last turn update — 2026-09-24
 
-Latest `main` inspected at turn start:
+Latest `main` at turn start:
 
-- `8fa866426d607a6e13dc0b853578db0281ee71df` — `Refresh PR18 CI state in MUA2 handoff`
+- `464182734220a32ee3b2b57ca680d559b2e5dc4f` — `Refresh MUA2 handoff while PR18 Windows build runs`
 
-Changes this turn:
+What happened this turn:
 
-- No new source code was added beyond the already-open PR #18 implementation.
-- Re-checked PR #18 validation.
-- Tooling PASS on Windows and Ubuntu.
-- Standalone ModernGekko PASS on Windows and Ubuntu.
-- Full ModernGekko Ubuntu PASS.
-- Full ModernGekko Windows remains `in_progress` in the Build step.
-- PR #18 remains open/unmerged solely because the Windows full integration gate is not finished.
+- PR #18 full Windows integration completed **PASS**.
+- Confirmed all PR #18 tooling, standalone, and full integration jobs passed on Windows and Ubuntu.
+- Merged PR #18 as `7a9cdc0165257ec19301972785150e4961f7f65e`.
+- Updated `docs/CURRENT-STATUS.md` as `41ac96c8fe9b6feee8daecd73d0ec2342cce4f2f`.
+- Investigated the next per-block chassis cost and verified that forced fallback ranges default to empty while `FastDispatchableAt()` / `DispatchableAt()` still call the range-scan helper unconditionally.
+- No additional source optimization was stacked after merging PR #18.
 - No RMSE52 game-side run occurred.
-
-Next exact turn:
-
-1. Inspect current `main`.
-2. Check the full Windows job in ModernGekko run `36030032243`.
-3. If PASS, merge PR #18, update `docs/CURRENT-STATUS.md`, investigate the next single dispatch/chassis hotspot, update/attach this handoff, stop.
-4. If FAIL, keep PR #18 unmerged, fix only that failure, rerun validation, update/attach this handoff, stop.
