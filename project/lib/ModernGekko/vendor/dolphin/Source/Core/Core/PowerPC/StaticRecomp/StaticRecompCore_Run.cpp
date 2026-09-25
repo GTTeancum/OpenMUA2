@@ -423,9 +423,9 @@ void StaticRecompCore::Run()
           {
             ppc.downcount -= interpreter.SingleStepInner();
             ++m_fallback_steps;
-          } while (!(m_module_active && DispatchableAt(ppc.pc)) &&
-                   !IsHostCallAddress(ppc.pc) && ppc.downcount > 0 &&
-                   *state_ptr == CPU::State::Running);
+          } while (ppc.downcount > 0 && *state_ptr == CPU::State::Running &&
+                   !(m_module_active && DispatchableAt(ppc.pc)) &&
+                   !IsHostCallAddress(ppc.pc));
         }
       }
     } while (ppc.downcount > 0 && *state_ptr == CPU::State::Running);
