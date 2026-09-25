@@ -31,6 +31,17 @@ def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _u32_array(header: str, name: str) -> list[int]:
+    match = re.search(
+        rf"static const u32\s+{re.escape(name)}\[[^\]]+\][^=]*=\s*\{{(.*?)\}};",
+        header,
+        re.DOTALL,
+    )
+    if not match:
+        return []
+    return [int(value, 16) for value in re.findall(r"0x([0-9A-Fa-f]+)u", match.group(1))]
+
+
 def parse_ranges(header: str) -> list[tuple[int, int]]:
     ranges = {
         (int(a, 16), int(b, 16))
@@ -42,6 +53,18 @@ def parse_ranges(header: str) -> list[tuple[int, int]]:
     for base, span in RANGE_RE.findall(header):
         start = int(base, 16)
         ranges.add((start, start + int(span, 16)))
+
+    # Indexed/page-bounded DolRecomp headers encode executable coverage in
+    # parallel run_start/run_end arrays instead of repeating inline range
+    # comparisons in dolrecomp_find_original(). Accept both layouts so the
+    # merger stays compatible with linear and indexed generators.
+    run_starts = _u32_array(header, "dolrecomp_run_start")
+    run_ends = _u32_array(header, "dolrecomp_run_end")
+    if run_starts or run_ends:
+        if not run_starts or len(run_starts) != len(run_ends):
+            raise ValueError("mismatched generated dispatch run ranges")
+        ranges.update(zip(run_starts, run_ends))
+
     if not ranges:
         raise ValueError("no generated code ranges found")
     return sorted(ranges)
