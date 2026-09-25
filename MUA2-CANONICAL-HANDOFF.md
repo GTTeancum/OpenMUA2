@@ -3,7 +3,7 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 USA (RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Date:** 2026-09-24
+**Date:** 2026-09-25
 
 ## Mandatory workflow
 
@@ -54,6 +54,7 @@ Key accepted performance commits:
 - `20dd90851c3a2625ddb973f8850e2494bb33ca9f` — skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
 - `de411096f5986980ac58e1f3a7373d8f5351dc67` — reuse generated linked results across eligible native burst continuations.
 - `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` — check cheap burst termination conditions before continuation eligibility.
+- `b78431f21625ad61b4f66855f5f94b859f04cf7a` — check fallback-slice termination before dispatchability/host-call probes.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
@@ -184,34 +185,73 @@ Status doc:
 
 - `3417a27ee6a0d3b032650020724c9758b2191973` — `Record merged cheap burst termination gate`
 
+## Latest accepted work — PR #27
+
+PR #27 `Check fallback termination before dispatch probes` is **MERGED**.
+
+Merge commit:
+
+- `b78431f21625ad61b4f66855f5f94b859f04cf7a`
+
+Behavior:
+
+- Reorders the interpreter-only fallback loop so `ppc.downcount > 0` and CPU running state are checked before `DispatchableAt(ppc.pc)` and `IsHostCallAddress(ppc.pc)`.
+- An exhausted/stopped fallback slice no longer performs chunk verification, REL eligibility refresh, or an exact host-call lookup only to discover that it cannot continue.
+- If the slice can continue, the same dispatchability and host-call stop conditions still run before another interpreted instruction.
+- `IsHostCallAddress()` is read-only.
+- Deferred `DispatchableAt()` work is eligibility preparation only; after a downcount exit the next outer-loop entry runs `core_timing.Advance()` and checks dispatchability before any native execution. After CPU stop there is no next execution to prepare.
+- Forced-fallback, exception delivery, timing, SMC/hash protection, lockstep, and native re-entry semantics otherwise remain unchanged.
+
+Validation:
+
+- OpenMUA2 tooling run `36130494685`: **PASS on Ubuntu + Windows**.
+- ModernGekko run `36130494695`: **PASS all four jobs**:
+  - standalone Windows: PASS;
+  - standalone Ubuntu: PASS;
+  - full Windows build/test: PASS;
+  - full Ubuntu build/test: PASS.
+- No RMSE52 game-side FPS claim is made from CI.
+
+Status doc:
+
+- `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` — `Record merged fallback termination ordering`
+
 ## Current blockers
 
 1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
-2. There is no current source/CI integration blocker after PR #25.
+2. There is no current source/CI integration blocker after PR #27.
 
 ## Next exact turn
 
-1. Inspect current `main` after PR #25 and the status/handoff commits.
-2. Implement one focused multiplatform performance cleanup in the interpreter-only fallback loop:
-   - current condition checks `DispatchableAt(ppc.pc)` and `IsHostCallAddress(ppc.pc)` before `ppc.downcount > 0` and CPU running state;
-   - reorder `ppc.downcount > 0` and `*state_ptr == CPU::State::Running` ahead of those eligibility/host-call probes so an exhausted/stopped fallback slice exits without unnecessary lookups.
-3. Prove the skipped checks have no required end-of-slice guest-visible side effects:
-   - `DispatchableAt()` verification/REL refresh may safely occur on the next outer-loop entry;
-   - host-call address detection may safely occur on the next eligible entry;
-   - timing, exception delivery, forced-fallback handling, and native re-entry behavior remain unchanged.
-4. Add a focused source regression pinning the cheap-check-first fallback-loop order.
+1. Inspect current `main` after PR #27 and the status/handoff commits.
+2. Implement one focused multiplatform performance cleanup at native-entry host-call handoff:
+   - current native-entry condition calls `host_call_at(ppc.pc, entry_chunk_index)`;
+   - when that returns true, the immediately following fallback branch calls `IsHostCallAddress(ppc.pc)` again for the same PC;
+   - preserve the proven exact-host-call result from the entry gate and reuse it in the fallback branch, eliminating that duplicate exact lookup.
+3. Preserve all other cases:
+   - if the module is inactive or `DispatchableAt()` fails, the fallback branch must still perform its direct `m_guest.host_call && IsHostCallAddress(ppc.pc)` check;
+   - candidate-chunk coverage and exact-address semantics remain unchanged;
+   - host-call handler, passthrough-JIT invalidation, timing, forced-fallback, SMC/hash, and exception behavior remain unchanged.
+4. Add a focused source regression proving the exact host-call result is reused only on the dispatchable-entry rejection path.
 5. Run OpenMUA2 tooling CI and ModernGekko Windows/Ubuntu validation; merge only if green.
 6. Update/attach this handoff and stop.
 7. Do not claim FPS improvement without a fresh RMSE52 benchmark.
 
-## Last turn update — 2026-09-24
+## Last turn update — 2026-09-25
 
 What happened:
 
-- Resumed at the PR #25 integration gate and held the turn until the full cross-platform matrix completed.
-- OpenMUA2 tooling run `36074380247`: PASS on Ubuntu + Windows.
-- ModernGekko run `36074380288`: PASS all four jobs, including full MSVC/Ninja Windows and full Ubuntu build/test.
-- Merged PR #25 as `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50`.
-- Updated `docs/CURRENT-STATUS.md` in `3417a27ee6a0d3b032650020724c9758b2191973`.
-- Identified the next exact shared performance target: reorder the interpreter fallback loop's cheap downcount/CPU-state termination checks ahead of `DispatchableAt()` and `IsHostCallAddress()`.
+- Started from current `main` at `9a11ae90aed230638d13fbb3212737b971345f23`.
+- Proved the interpreter-only fallback-loop reorder is safe:
+  - `IsHostCallAddress()` is read-only;
+  - `DispatchableAt()` verification/REL refresh is eligibility work that is re-established before any next native execution;
+  - exhausted downcount returns through `core_timing.Advance()` before re-entry, while stopped CPU state has no next execution to prepare.
+- Implemented the reorder on branch `perf/cheap-fallback-termination-first`.
+- Added a focused regression pinning cheap termination checks ahead of `DispatchableAt()` / `IsHostCallAddress()`.
+- Opened PR #27 at head `5254202b3586ce1efabb4289050caf2fc58c305a`.
+- OpenMUA2 tooling run `36130494685`: PASS on Ubuntu + Windows.
+- ModernGekko run `36130494695`: PASS all four jobs, including full MSVC/Ninja Windows and full Ubuntu build/test.
+- Merged PR #27 as `b78431f21625ad61b4f66855f5f94b859f04cf7a`.
+- Updated `docs/CURRENT-STATUS.md` in `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc`.
+- Identified the next exact shared performance target: preserve the exact host-call result from `host_call_at()` into the fallback branch so a host-call-caused native-entry rejection does not immediately repeat `IsHostCallAddress(ppc.pc)`.
 - No RMSE52 game-side run occurred.
