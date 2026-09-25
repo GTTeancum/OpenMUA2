@@ -149,6 +149,39 @@ class MergeDispatchTests(unittest.TestCase):
             ):
                 merge.emit_rel_metadata(audit_path, rel_path, output)
 
+    def test_indexed_dispatch_run_arrays_define_code_ranges(self) -> None:
+        header = """// indexed generated test header
+// Function entry points
+void func_80004000(CPUState* ctx);
+void func_80006900(CPUState* ctx);
+void func_8000A900(CPUState* ctx);
+#define DOLRECOMP_ENTRY_POINT 0x80004000u
+typedef void (*DolRecompFunction)(CPUState* ctx);
+#define DOLRECOMP_LOOKUP_RUNS 2u
+static const u32 dolrecomp_run_start[DOLRECOMP_LOOKUP_RUNS] = {
+    0x80004000u,
+    0x80006900u,
+};
+static const u32 dolrecomp_run_end[DOLRECOMP_LOOKUP_RUNS] = {
+    0x800066A0u,
+    0x8000E900u,
+};
+static inline DolRecompFunction dolrecomp_find_original(u32 address) { return NULL; }
+static inline int dolrecomp_call_original(CPUState* ctx, u32 address) { return 0; }
+"""
+        self.assertEqual(
+            merge.parse_ranges(header),
+            [(0x80004000, 0x800066A0), (0x80006900, 0x8000E900)],
+        )
+        self.assertEqual(
+            merge.chunk_ranges(header),
+            [
+                (0x80004000, 0x800066A0),
+                (0x80006900, 0x8000A900),
+                (0x8000A900, 0x8000E900),
+            ],
+        )
+
     def test_merged_dispatch_preserves_instruction_alignment(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             output = Path(td) / "generated.h"
