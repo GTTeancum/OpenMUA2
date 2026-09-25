@@ -254,8 +254,9 @@ Status doc:
 
 ## Current blockers
 
-1. The RMSE52 game payload and extracted Wii filesystem are verified persistent; **re-upload is no longer required**.
-2. There is no current source/CI integration blocker after PR #28.
+1. RMSE52 assets are persistent and verified; **re-upload is not required**.
+2. This container cannot currently perform a meaningful game-side FPS baseline because the available MG01 graphical runner cannot acquire an X11 host, while its headless mode exits before guest execution.
+3. Shell GitHub checkout is also blocked by container DNS, so a fresh current-main runtime cannot be cloned directly here; GitHub API/CI validation remains available.
 ## Next exact turn
 
 1. Restore the verified persistent RMSE52 assets from `/MUA2/RMSE52-Game-Files/Extracted` into the working `.local/game` directory:
@@ -280,16 +281,17 @@ Status doc:
 
 What happened:
 
-- Received all 25 split uploads `Marvel - Ultimate Alliance 2 (USA).7z.001` through `.025`.
-- Verified all 25 original upload volumes are persistent in `/MUA2/RMSE52-Game-Files/Uploads`.
-- Reassembled the multipart 7z stream and extracted `Marvel - Ultimate Alliance 2 (USA).wbfs`.
-- Source WBFS SHA-256: `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`.
-- Verified the full extracted Wii filesystem is already persistent in `/MUA2/RMSE52-Game-Files/Extracted`.
-- Verified extracted critical files are present with the known RMSE52 hashes:
+- Restored the verified persistent RMSE52 extracted asset set from `/MUA2/RMSE52-Game-Files/Extracted` into a private working tree.
+- Reconstructed the 10 split tar chunks and extracted the game tree successfully.
+- Verified critical hashes after restore:
   - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
   - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
-- Persistent extracted set contains 10 split tar chunks `RMSE52-extracted.tar.001` through `.010`, plus `main.dol`, the REL, `RMSE52-manifest.json`, `SHA256SUMS.txt`, extraction log, and README.
-- The manifest identifies disc ID `RMSE52`, source WBFS SHA-256 `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`, `main.dol` SHA-256 `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`, and 385 extracted game FST files.
-- The original 25 split uploads are no longer required for normal MUA2 continuation.
-- Future chats must restore from `/MUA2/RMSE52-Game-Files/Extracted` and must not ask the user to upload the MUA2 game again.
-- No proprietary game data was committed to GitHub.
+- Restored tree contains 396 files including disc metadata, `sys/`, game `files/`, and manifest data.
+- Direct shell `git clone` of current GitHub `main` is blocked in this container because DNS resolution for `github.com` is unavailable. GitHub connector/API access remains available.
+- Materialized the persistent `OpenMUA2_LOCAL01.zip` full source snapshot and the runnable `MUA2_MG01_Checkpoint.zip` as a control path.
+- The MG01 Linux runner required `libbluetooth.so.3`, which is absent from the container; supplied a local no-device BlueZ shim implementing only the three imported HCI symbols so the diagnostic runner could start without changing guest/runtime code.
+- 25-second direct headless control stayed alive but produced no useful counters before timeout.
+- 60-second graphical control probe failed before guest boot because the checkpoint runtime reported `No X11 display found` / requested Dolphin host platform unavailable in this container.
+- 45-second headless control probe loaded the RMSE52 module and original `sys/main.dol` but shut down before guest execution; final counters were `native=0`, `fallback=0`, `bursts=0`, so this run is **not a performance baseline**.
+- No new FPS/speed claim is made from these environment-limited runs.
+- Historical MG01/MR01 measurements remain historical only and were not substituted for a fresh result.
