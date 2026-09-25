@@ -254,39 +254,42 @@ Status doc:
 
 ## Current blockers
 
-1. The RMSE52 game payload is now persistently available; **re-upload is no longer required**.
-2. Fresh game-side baseline measurement still requires reconstructing the persisted WBFS into the working container and extracting/materializing the Wii filesystem/workspace for the runtime.
-3. There is no current source/CI integration blocker after PR #28.
+1. The RMSE52 game payload and extracted Wii filesystem are verified persistent; **re-upload is no longer required**.
+2. There is no current source/CI integration blocker after PR #28.
 ## Next exact turn
 
-1. Use persistent Library data only; do not ask for the MUA2 game files again.
-2. Materialize `/MUA2/RMSE52-Game-Files/Extracted-WBFS/MUA2-RMSE52-WBFS-00.part` through `05.part` plus `manifest.json`.
-3. Verify each chunk against the manifest, concatenate them in order, and verify the reconstructed WBFS SHA-256 equals `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`.
-4. Extract/materialize the Wii game filesystem/workspace (`sys/` + `files/`) into local `.local/game` or equivalent private working storage. Do not commit proprietary game data.
-5. With current `main`, run a fresh RMSE52 performance baseline before another micro-optimization:
+1. Restore the verified persistent RMSE52 assets from `/MUA2/RMSE52-Game-Files/Extracted` into the working `.local/game` directory:
+   - materialize `RMSE52-extracted.tar.001` through `.010`;
+   - concatenate them in numeric order;
+   - extract the tar.
+2. Re-verify:
+   - `sys/main.dol` SHA-256 = `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+   - `files/Marvel-rev-fin-plf2.rel` SHA-256 = `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+3. Build current `main` and establish a fresh game-side performance baseline before accepting more source-level micro-optimizations.
+4. Capture at minimum:
    - reported FPS / guest-frame FPS / speed;
-   - frame-time distribution where available;
-   - native dispatch count/rate and burst length;
-   - fallback/JIT/host-call counts;
-   - REL translation/native exception/profile hotspots.
-6. Record baseline results in status/handoff, then resume the next source-level optimization from current `main`.
-7. Update/attach this handoff and stop.
+   - native dispatch count/rate and average burst length if available;
+   - JIT/interpreter fallback counts;
+   - host-call checks/fallbacks;
+   - native exception counts;
+   - hottest dispatch PCs / profiler data if instrumentation is enabled.
+5. Update `docs/CURRENT-STATUS.md` and this handoff with the fresh baseline.
+6. Then resume the next source-level target (per-slice game-ID gating) only after the baseline is recorded.
+7. Do not infer a speedup from CI/source structure; use the fresh RMSE52 measurement.
 ## Last turn update — 2026-09-25
 
 What happened:
 
-- Received all 25 parts of `Marvel - Ultimate Alliance 2 (USA).7z.001` through `.025`.
-- Verified all 25 parts were present in the working container.
-- Concatenated the multipart 7-Zip stream and verified it contains exactly one file: `Marvel - Ultimate Alliance 2 (USA).wbfs`.
-- Extracted that WBFS successfully:
-  - size: `2344615936` bytes;
-  - SHA-256: `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`.
-- Persisted all 25 original multipart volumes in private Library folder `/MUA2/RMSE52-Game-Files/Uploads`.
-- Verified Library contains all 25 persisted archive volumes, `.001` through `.025`, with expected sizes.
-- Because Library has a 512 MB per-file limit, split the extracted WBFS into six persistent reconstruction chunks and stored them in `/MUA2/RMSE52-Game-Files/Extracted-WBFS`.
-- The six chunks are `MUA2-RMSE52-WBFS-00.part` through `05.part`; each chunk is at most 400 MiB except the smaller final chunk.
-- A manifest records chunk order, sizes, per-chunk SHA-256 values, original WBFS size, and original WBFS SHA-256.
-- Verified all six WBFS chunks are present in persistent Library storage.
-- Attempted to build Dolphin's filesystem extraction tool from retained project source so `sys/` + `files/` could also be persisted immediately; source configuration was unusually slow in this environment and did not complete during this persistence turn.
-- This does **not** block future work: the exact original uploads and the extracted WBFS are now persistent and reconstructable without another user upload.
+- Received all 25 split uploads `Marvel - Ultimate Alliance 2 (USA).7z.001` through `.025`.
+- Verified all 25 original upload volumes are persistent in `/MUA2/RMSE52-Game-Files/Uploads`.
+- Reassembled the multipart 7z stream and extracted `Marvel - Ultimate Alliance 2 (USA).wbfs`.
+- Source WBFS SHA-256: `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`.
+- Verified the full extracted Wii filesystem is already persistent in `/MUA2/RMSE52-Game-Files/Extracted`.
+- Verified extracted critical files are present with the known RMSE52 hashes:
+  - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+  - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+- Persistent extracted set contains 10 split tar chunks `RMSE52-extracted.tar.001` through `.010`, plus `main.dol`, the REL, `RMSE52-manifest.json`, `SHA256SUMS.txt`, extraction log, and README.
+- The manifest identifies disc ID `RMSE52`, source WBFS SHA-256 `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`, `main.dol` SHA-256 `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`, and 385 extracted game FST files.
+- The original 25 split uploads are no longer required for normal MUA2 continuation.
+- Future chats must restore from `/MUA2/RMSE52-Game-Files/Extracted` and must not ask the user to upload the MUA2 game again.
 - No proprietary game data was committed to GitHub.
