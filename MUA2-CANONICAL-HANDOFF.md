@@ -277,16 +277,13 @@ Status doc:
 
 What happened:
 
-- Started from current `main` at `740f0733f9742b373617c6e9b408f818c52bb17e`.
-- Implemented native-entry exact host-call result reuse on branch `perf/reuse-entry-host-call-result`.
-- Preserved the old direct host-call lookup for module-inactive / non-dispatchable entries while avoiding the duplicate exact lookup only when `host_call_at()` had already proved the same PC.
-- Added a focused regression for the reuse boundary.
-- Opened PR #28.
-- Initial tooling run `36142577297` exposed one stale pre-existing source-string assertion in `test_staticrecomp_host_call_gate_perf.py`; updated that regression only, producing current head `8aba565403be5607bbfb9fa902f3ea82ef2394fa`.
-- Current-head OpenMUA2 tooling run `36142703033`: PASS on Ubuntu + Windows.
-- Current-head ModernGekko run `36142703037`: PASS all four jobs, including full Windows MSVC/Ninja and Ubuntu build/test.
-- Merged PR #28 as `7b11a1869c85aec8d5384c7f044779454e37a69f`.
-- Updated `docs/CURRENT-STATUS.md` in `fa6dde0c484903e9e9bfabf024af22f0569991c3`.
-- Identified the next exact shared performance target: replace per-slice `GetGameID()` string-copy gating with a locked in-place comparison predicate while preserving per-slice metadata visibility.
-- Persistent private RMSE52 destination remains `/MUA2/RMSE52-Game-Files`; the original proprietary payload is still absent and must be uploaded once before fresh game-side measurement.
-- No RMSE52 game-side run occurred.
+- Received archive parts `001` through `020` of `Marvel - Ultimate Alliance 2 (USA).7z`.
+- Created persistent private Library folder `/MUA2/RMSE52-Game-Files/Archive-Parts`.
+- Copied the exact conversation-upload snapshots for parts `001` through `020` into that persistent Library folder.
+- Verified the Library now contains exactly 20 persisted parts, named `001` through `020`; each is 94,371,840 bytes.
+- Created persistent extracted-assets destination `/MUA2/RMSE52-Game-Files/Extracted`.
+- Five archive parts are still expected: `021` through `025`.
+- Do not attempt extraction until all parts are present.
+- After `021` through `025` arrive: persist those exact uploads first, verify the full 25-part set, extract the archive, verify the RMSE52 payload, then copy the extracted game assets into `/MUA2/RMSE52-Game-Files/Extracted`.
+- Do not claim the extracted game assets are persistent until the extracted Library copies themselves have been verified.
+- No proprietary game data was committed to GitHub.
