@@ -243,10 +243,12 @@ void StaticRecompCore::Run()
       u32 linked_result_address = linked_dispatch_address;
       bool linked_result_reusable = false;
       u32 dispatch_rel_section_index = 0xffffffffu;
-      if (m_module_active &&
-          DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,
-                         &dispatch_rel_section_index) &&
-          !host_call_at(ppc.pc, entry_chunk_index))
+      const bool entry_dispatchable =
+          m_module_active && DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,
+                                            &dispatch_rel_section_index);
+      const bool entry_host_call =
+          entry_dispatchable && host_call_at(ppc.pc, entry_chunk_index);
+      if (entry_dispatchable && !entry_host_call)
       {
         SyncIn();
         ++m_bursts;
@@ -379,7 +381,7 @@ void StaticRecompCore::Run()
       }
       else
       {
-        if (m_guest.host_call && IsHostCallAddress(ppc.pc))
+        if (entry_host_call || (m_guest.host_call && IsHostCallAddress(ppc.pc)))
         {
           SyncIn();
           bool handled = m_guest.host_call(&m_guest, m_guest.pc);
