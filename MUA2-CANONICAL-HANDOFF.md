@@ -57,6 +57,7 @@ Key accepted performance commits:
 - `de411096f5986980ac58e1f3a7373d8f5351dc67` — reuse generated linked results across eligible native burst continuations.
 - `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` — check cheap burst termination conditions before continuation eligibility.
 - `b78431f21625ad61b4f66855f5f94b859f04cf7a` — check fallback-slice termination before dispatchability/host-call probes.
+- `7b11a1869c85aec8d5384c7f044779454e37a69f` — reuse the proven native-entry exact host-call result in fallback.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
@@ -218,23 +219,56 @@ Status doc:
 
 - `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` — `Record merged fallback termination ordering`
 
+## Latest accepted work — PR #28
+
+PR #28 `Reuse native entry host-call result` is **MERGED**.
+
+Merge commit:
+
+- `7b11a1869c85aec8d5384c7f044779454e37a69f`
+
+Behavior:
+
+- Splits native-entry eligibility into `entry_dispatchable` and `entry_host_call`.
+- `entry_host_call` is evaluated only after `DispatchableAt()` succeeds and retains the same candidate-chunk coverage plus exact-address `host_call_at()` semantics.
+- If the otherwise-dispatchable entry is rejected because it is an exact host call, the fallback branch reuses `entry_host_call` rather than immediately calling `IsHostCallAddress(ppc.pc)` again for the same PC.
+- If the module is inactive or `DispatchableAt()` fails, the fallback branch still performs the original direct `m_guest.host_call && IsHostCallAddress(ppc.pc)` check.
+- Host-call handling, LR JIT invalidation, passthrough state, timing, forced-fallback, SMC/hash, lockstep, and exception behavior are unchanged.
+
+Validation:
+
+- Initial OpenMUA2 tooling run `36142577297`: failed only because an older host-call gate regression still expected inline `!host_call_at(ppc.pc, entry_chunk_index)`.
+- Updated that stale source-string regression without changing runtime behavior; current PR head became `8aba565403be5607bbfb9fa902f3ea82ef2394fa`.
+- Current-head OpenMUA2 tooling run `36142703033`: **PASS on Ubuntu + Windows**.
+- Superseded ModernGekko run `36142577241` was cancelled by workflow concurrency after the test-only head update.
+- Current-head ModernGekko run `36142703037`: **PASS all four jobs**:
+  - standalone Windows: PASS;
+  - standalone Ubuntu: PASS;
+  - full Windows build/test: PASS;
+  - full Ubuntu build/test: PASS.
+- No RMSE52 game-side FPS claim is made from CI.
+
+Status doc:
+
+- `fa6dde0c484903e9e9bfabf024af22f0569991c3` — `Record merged native-entry host-call reuse`
+
 ## Current blockers
 
-1. **Game-performance gate:** this environment does not have the proprietary RMSE52 workspace/image, so current FPS cannot be measured here.
-2. There is no current source/CI integration blocker after PR #27.
+1. **Game-performance gate:** the actual proprietary RMSE52 game payload is not yet present in persistent Library storage. The private destination exists at `/MUA2/RMSE52-Game-Files`; the original game files need to be uploaded there once before fresh FPS/gameplay measurement can resume without re-upload.
+2. There is no current source/CI integration blocker after PR #28.
 
 ## Next exact turn
 
-1. Inspect current `main` after PR #27 and the status/handoff commits.
-2. Implement one focused multiplatform performance cleanup at native-entry host-call handoff:
-   - current native-entry condition calls `host_call_at(ppc.pc, entry_chunk_index)`;
-   - when that returns true, the immediately following fallback branch calls `IsHostCallAddress(ppc.pc)` again for the same PC;
-   - preserve the proven exact-host-call result from the entry gate and reuse it in the fallback branch, eliminating that duplicate exact lookup.
-3. Preserve all other cases:
-   - if the module is inactive or `DispatchableAt()` fails, the fallback branch must still perform its direct `m_guest.host_call && IsHostCallAddress(ppc.pc)` check;
-   - candidate-chunk coverage and exact-address semantics remain unchanged;
-   - host-call handler, passthrough-JIT invalidation, timing, forced-fallback, SMC/hash, and exception behavior remain unchanged.
-4. Add a focused source regression proving the exact host-call result is reused only on the dispatchable-entry rejection path.
+1. Inspect current `main` after PR #28 and the status/handoff commits.
+2. Implement one focused multiplatform performance cleanup for per-slice module game-ID gating:
+   - `SConfig::GetGameID()` currently locks `m_metadata_lock` and returns a `std::string` copy;
+   - `StaticRecompCore::Run()` calls it at startup and once per timing slice only to test `empty() || == m_module->game_id`;
+   - add a narrow const predicate in `SConfig` that acquires the same metadata lock and compares the stored `m_game_id` in place against the supplied module ID, without returning/copying the string.
+3. Preserve dynamic metadata behavior:
+   - do **not** cache the game ID across slices;
+   - each slice must still observe current running-game metadata under `m_metadata_lock`;
+   - inactive/mismatched module behavior remains unchanged.
+4. Use the predicate for both initial and per-slice `m_module_active` calculation, add focused source/runtime-shape regression coverage, and avoid unrelated ConfigManager changes.
 5. Run OpenMUA2 tooling CI and ModernGekko Windows/Ubuntu validation; merge only if green.
 6. Update/attach this handoff and stop.
 7. Do not claim FPS improvement without a fresh RMSE52 benchmark.
@@ -243,10 +277,16 @@ Status doc:
 
 What happened:
 
-- Created private persistent Library folder `/MUA2/RMSE52-Game-Files`.
-- Added `/MUA2/RMSE52-Game-Files/README.md` with RMSE52 verification metadata for the original `sys/main.dol` and known REL.
-- Audited persistent Library storage for the original five split 7z volumes, WBFS/ISO, extracted `sys/main.dol`, and `Marvel-rev-fin-plf2.rel`.
-- The actual proprietary RMSE52 game payload is not currently present in Library storage.
-- Inspected `OpenMUA2_LOCAL01.zip` and `MUA2_MG01_Checkpoint.zip`; neither contains the original extracted RMSE52 game payload. The MG01 archive contains a generated recompilation `main.dol`, which must not be substituted for the original `sys/main.dol`.
-- Future uploads of the original game payload should be saved directly to `/MUA2/RMSE52-Game-Files` so later chats can retrieve them without re-upload.
-- No proprietary game data was committed to GitHub.
+- Started from current `main` at `740f0733f9742b373617c6e9b408f818c52bb17e`.
+- Implemented native-entry exact host-call result reuse on branch `perf/reuse-entry-host-call-result`.
+- Preserved the old direct host-call lookup for module-inactive / non-dispatchable entries while avoiding the duplicate exact lookup only when `host_call_at()` had already proved the same PC.
+- Added a focused regression for the reuse boundary.
+- Opened PR #28.
+- Initial tooling run `36142577297` exposed one stale pre-existing source-string assertion in `test_staticrecomp_host_call_gate_perf.py`; updated that regression only, producing current head `8aba565403be5607bbfb9fa902f3ea82ef2394fa`.
+- Current-head OpenMUA2 tooling run `36142703033`: PASS on Ubuntu + Windows.
+- Current-head ModernGekko run `36142703037`: PASS all four jobs, including full Windows MSVC/Ninja and Ubuntu build/test.
+- Merged PR #28 as `7b11a1869c85aec8d5384c7f044779454e37a69f`.
+- Updated `docs/CURRENT-STATUS.md` in `fa6dde0c484903e9e9bfabf024af22f0569991c3`.
+- Identified the next exact shared performance target: replace per-slice `GetGameID()` string-copy gating with a locked in-place comparison predicate while preserving per-slice metadata visibility.
+- Persistent private RMSE52 destination remains `/MUA2/RMSE52-Game-Files`; the original proprietary payload is still absent and must be uploaded once before fresh game-side measurement.
+- No RMSE52 game-side run occurred.
