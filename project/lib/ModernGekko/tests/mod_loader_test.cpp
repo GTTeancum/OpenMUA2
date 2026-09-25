@@ -10,6 +10,7 @@ int entry_hooks = 0;
 int return_hooks = 0;
 int event_callbacks = 0;
 int runtime_callbacks = 0;
+int startup_only_callbacks = 0;
 int exports_called = 0;
 int loads = 0;
 int unloads = 0;
@@ -37,6 +38,11 @@ void EventCallback(CPUState *state) {
 void RuntimeCallback(CPUState *state) {
   ++runtime_callbacks;
   state->gpr[3] = 0x22222222u;
+}
+
+void StartupOnlyCallback(CPUState *state) {
+  ++startup_only_callbacks;
+  state->gpr[3] = 0x33333333u;
 }
 
 void OnLoad(const ModernGekkoModHostApi *) { ++loads; }
@@ -125,6 +131,36 @@ constexpr ModernGekkoModCallback dependent_callbacks[] = {
     RECOMP_CALLBACK("*", "runtime_start", RuntimeCallback),
 };
 
+constexpr ModernGekkoModCallback startup_only_callbacks_desc[] = {
+    RECOMP_CALLBACK("*", "runtime_start", StartupOnlyCallback),
+};
+
+const ModernGekkoModDesc startup_only_descriptor = {
+    MODERNGEKKO_MOD_ABI_VERSION,
+    MODERNGEKKO_CPU_ABI_VERSION,
+    sizeof(CPUState),
+    "TEST01",
+    "startup_only_mod",
+    "1.0.0",
+    "Startup-only mod",
+    nullptr,
+    0u,
+    nullptr,
+    0u,
+    nullptr,
+    0u,
+    nullptr,
+    0u,
+    nullptr,
+    0u,
+    nullptr,
+    0u,
+    startup_only_callbacks_desc,
+    1u,
+    nullptr,
+    nullptr,
+};
+
 const ModernGekkoModDesc dependent_descriptor = {
     MODERNGEKKO_MOD_ABI_VERSION,
     MODERNGEKKO_CPU_ABI_VERSION,
@@ -183,6 +219,24 @@ const ModernGekkoModDesc missing_descriptor = {
 }
 
 int main() {
+  moderngekko::ModManager startup_manager;
+  if (moderngekko::ModManager::HostCallActive(nullptr) ||
+      moderngekko::ModManager::HostCallActive(&startup_manager))
+    return 24;
+  const auto startup_loaded = startup_manager.Load(
+      {moderngekko::ModSource::AttachedDescriptor(&startup_only_descriptor,
+                                                   "startup_only")},
+      "TEST01");
+  if (!startup_loaded ||
+      !moderngekko::ModManager::HostCallActive(&startup_manager))
+    return 25;
+  CPUState startup_state{};
+  if (moderngekko::ModManager::HostCall(&startup_state, 0x80001000u,
+                                         &startup_manager) ||
+      startup_only_callbacks != 1 ||
+      moderngekko::ModManager::HostCallActive(&startup_manager))
+    return 26;
+
   moderngekko::ModManager manager;
   const auto initial_generation = manager.InterceptionGeneration();
   const std::vector<moderngekko::ModSource> sources = {
@@ -247,7 +301,8 @@ int main() {
   const auto loaded_generation = manager.InterceptionGeneration();
   manager.Unload();
   if (imported_function != nullptr || manager.HasGuestInterception() ||
-      manager.InterceptionGeneration() == loaded_generation || unloads != 1)
+      manager.InterceptionGeneration() == loaded_generation || unloads != 1 ||
+      moderngekko::ModManager::HostCallActive(&manager))
     return 13;
   const auto old_cpu =
       manager.Load({moderngekko::ModSource::AttachedDescriptor(

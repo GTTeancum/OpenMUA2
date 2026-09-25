@@ -112,6 +112,7 @@ private:
   };
 
   void LoadModule();
+  void RefreshHostCallActivity();
 
   // D4 SMC guard, verify-on-entry model. Every chunk starts Unverified; the
   // first native dispatch into it hashes its guest RAM against the module's
@@ -178,6 +179,7 @@ private:
   StaticRecompModuleSource m_module_source;
   const StaticRecompModuleDesc* m_module = nullptr;
   bool m_module_active = false;
+  bool m_host_call_active = false;
   u32 m_host_call_passthrough_pc = 0;
   bool m_host_call_passthrough = false;
   std::unique_ptr<JitBase> m_fallback_jit;

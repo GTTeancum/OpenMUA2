@@ -704,6 +704,7 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   recomp_source.host_call_contains = &ModManager::HostCallContains;
   recomp_source.host_call_range_contains =
       &ModManager::HostCallRangeContains;
+  recomp_source.host_call_active = &ModManager::HostCallActive;
   recomp_source.host_call_user = impl->mods.get();
   jit.SetStaticRecompModuleSource(std::move(recomp_source));
 
