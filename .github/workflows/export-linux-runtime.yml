@@ -1,0 +1,56 @@
+name: Export Linux runtime
+on:
+  push:
+    branches:
+      - ci/export-linux-runtime
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build build-essential pkg-config \
+            libevdev-dev libudev-dev libgtk-3-dev libsystemd-dev \
+            libbluetooth-dev libasound2-dev libpulse-dev libgl1-mesa-dev \
+            libxrandr-dev libxi-dev
+      - name: Configure
+        run: >-
+          cmake
+          -S project/lib/ModernGekko
+          -B build/moderngekko
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_TESTING=ON
+          -DDOLRECOMP_ENABLE_LLVM=OFF
+          -DMODERNGEKKO_ENABLE_DOLPHIN_RUNTIME=ON
+          -DUSE_SYSTEM_LIBS=OFF
+      - name: Build
+        run: cmake --build build/moderngekko --parallel 2
+      - name: Test
+        run: >-
+          ctest
+          --test-dir build/moderngekko
+          -C Release
+          --output-on-failure
+          --timeout 300
+          -E "fullbench|fuzzer|zstreamtest"
+      - name: Stage runtime export
+        shell: bash
+        run: |
+          set -e
+          mkdir -p runtime-export
+          cp build/moderngekko/moderngekko-run runtime-export/
+          cp -a project/lib/ModernGekko/vendor/dolphin/Data/Sys runtime-export/Sys
+          ldd runtime-export/moderngekko-run > runtime-export/ldd.txt
+          sha256sum runtime-export/moderngekko-run > runtime-export/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-runtime
+          path: runtime-export
+          if-no-files-found: error
+          retention-days: 1
