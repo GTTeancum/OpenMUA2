@@ -13,6 +13,7 @@
 - Use moderately short turns because resume-stream failures occur: one focused merge/implementation plus validation, then update/attach this handoff.
 - At the end of every turn, update this file, commit it to `main`, and attach `MUA2-CANONICAL-HANDOFF.md` in chat.
 - Never commit proprietary RMSE52 data, extracted files, generated proprietary translation output, saves, logs, screenshots, or RAM captures.
+- When RMSE52 game assets are available, keep their persistent copies in `/MUA2/RMSE52-Game-Files` and materialize working copies under `.local/game`; do not use GitHub checkpoints as substitutes for the original game payload.
 - Never claim FPS/gameplay validation without an actual RMSE52 run.
 
 ## Important locations
@@ -29,6 +30,7 @@
 - Recovery plan: `docs/RECOVERY-PLAN.md`
 - Windows workspace target: `D:\\Programming\\GitHub\\OpenMUA2\\`
 - Local proprietary/generated data: `.local/` only
+- Persistent private game-file Library: `/MUA2/RMSE52-Game-Files`
 
 ## Accepted runtime/performance state
 
@@ -241,17 +243,10 @@ Status doc:
 
 What happened:
 
-- Started from current `main` at `9a11ae90aed230638d13fbb3212737b971345f23`.
-- Proved the interpreter-only fallback-loop reorder is safe:
-  - `IsHostCallAddress()` is read-only;
-  - `DispatchableAt()` verification/REL refresh is eligibility work that is re-established before any next native execution;
-  - exhausted downcount returns through `core_timing.Advance()` before re-entry, while stopped CPU state has no next execution to prepare.
-- Implemented the reorder on branch `perf/cheap-fallback-termination-first`.
-- Added a focused regression pinning cheap termination checks ahead of `DispatchableAt()` / `IsHostCallAddress()`.
-- Opened PR #27 at head `5254202b3586ce1efabb4289050caf2fc58c305a`.
-- OpenMUA2 tooling run `36130494685`: PASS on Ubuntu + Windows.
-- ModernGekko run `36130494695`: PASS all four jobs, including full MSVC/Ninja Windows and full Ubuntu build/test.
-- Merged PR #27 as `b78431f21625ad61b4f66855f5f94b859f04cf7a`.
-- Updated `docs/CURRENT-STATUS.md` in `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc`.
-- Identified the next exact shared performance target: preserve the exact host-call result from `host_call_at()` into the fallback branch so a host-call-caused native-entry rejection does not immediately repeat `IsHostCallAddress(ppc.pc)`.
-- No RMSE52 game-side run occurred.
+- Created private persistent Library folder `/MUA2/RMSE52-Game-Files`.
+- Added `/MUA2/RMSE52-Game-Files/README.md` with RMSE52 verification metadata for the original `sys/main.dol` and known REL.
+- Audited persistent Library storage for the original five split 7z volumes, WBFS/ISO, extracted `sys/main.dol`, and `Marvel-rev-fin-plf2.rel`.
+- The actual proprietary RMSE52 game payload is not currently present in Library storage.
+- Inspected `OpenMUA2_LOCAL01.zip` and `MUA2_MG01_Checkpoint.zip`; neither contains the original extracted RMSE52 game payload. The MG01 archive contains a generated recompilation `main.dol`, which must not be substituted for the original `sys/main.dol`.
+- Future uploads of the original game payload should be saved directly to `/MUA2/RMSE52-Game-Files` so later chats can retrieve them without re-upload.
+- No proprietary game data was committed to GitHub.
