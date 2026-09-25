@@ -162,6 +162,35 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             run,
         )
 
+    def test_native_entry_reuses_exact_host_call_rejection(self) -> None:
+        run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
+
+        self.assertIn(
+            "const bool entry_dispatchable =\n"
+            "          m_module_active && DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,\n"
+            "                                            &dispatch_rel_section_index);",
+            run,
+        )
+        self.assertIn(
+            "const bool entry_host_call =\n"
+            "          entry_dispatchable && host_call_at(ppc.pc, entry_chunk_index);",
+            run,
+        )
+        self.assertIn(
+            "if (entry_dispatchable && !entry_host_call)",
+            run,
+        )
+        self.assertIn(
+            "if (entry_host_call || (m_guest.host_call && IsHostCallAddress(ppc.pc)))",
+            run,
+        )
+        self.assertNotIn(
+            "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,\n"
+            "                         &dispatch_rel_section_index) &&\n"
+            "          !host_call_at(ppc.pc, entry_chunk_index)",
+            run,
+        )
+
     def test_interpreter_loop_checks_termination_before_dispatch_probes(self) -> None:
         run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
 
