@@ -13,7 +13,7 @@
 - Use moderately short turns because resume-stream failures occur: one focused merge/implementation plus validation, then update/attach this handoff.
 - At the end of every turn, update this file, commit it to `main`, and attach `MUA2-CANONICAL-HANDOFF.md` in chat.
 - Never commit proprietary RMSE52 data, extracted files, generated proprietary translation output, saves, logs, screenshots, or RAM captures.
-- When RMSE52 game assets are available, keep their persistent copies in `/MUA2/RMSE52-Game-Files` and materialize working copies under `.local/game`; do not use GitHub checkpoints as substitutes for the original game payload.
+- RMSE52 game assets are now verified persistent in `/MUA2/RMSE52-Game-Files/Extracted`; restore working copies under `.local/game` from the 10 `RMSE52-extracted.tar.NNN` chunks. The original split uploads are no longer required for normal continuation.
 - Never claim FPS/gameplay validation without an actual RMSE52 run.
 
 ## Important locations
@@ -30,7 +30,7 @@
 - Recovery plan: `docs/RECOVERY-PLAN.md`
 - Windows workspace target: `D:\\Programming\\GitHub\\OpenMUA2\\`
 - Local proprietary/generated data: `.local/` only
-- Persistent private game-file Library: `/MUA2/RMSE52-Game-Files`
+- Persistent private game-file Library: `/MUA2/RMSE52-Game-Files/Extracted`
 
 ## Accepted runtime/performance state
 
@@ -254,36 +254,50 @@ Status doc:
 
 ## Current blockers
 
-1. **Game-performance gate:** the actual proprietary RMSE52 game payload is not yet present in persistent Library storage. The private destination exists at `/MUA2/RMSE52-Game-Files`; the original game files need to be uploaded there once before fresh FPS/gameplay measurement can resume without re-upload.
-2. There is no current source/CI integration blocker after PR #28.
+1. There is no current source/CI integration blocker after PR #28.
+2. The RMSE52 game payload is now available persistently for fresh baseline/gameplay measurement; no re-upload is required.
 
 ## Next exact turn
 
-1. Inspect current `main` after PR #28 and the status/handoff commits.
-2. Implement one focused multiplatform performance cleanup for per-slice module game-ID gating:
-   - `SConfig::GetGameID()` currently locks `m_metadata_lock` and returns a `std::string` copy;
-   - `StaticRecompCore::Run()` calls it at startup and once per timing slice only to test `empty() || == m_module->game_id`;
-   - add a narrow const predicate in `SConfig` that acquires the same metadata lock and compares the stored `m_game_id` in place against the supplied module ID, without returning/copying the string.
-3. Preserve dynamic metadata behavior:
-   - do **not** cache the game ID across slices;
-   - each slice must still observe current running-game metadata under `m_metadata_lock`;
-   - inactive/mismatched module behavior remains unchanged.
-4. Use the predicate for both initial and per-slice `m_module_active` calculation, add focused source/runtime-shape regression coverage, and avoid unrelated ConfigManager changes.
-5. Run OpenMUA2 tooling CI and ModernGekko Windows/Ubuntu validation; merge only if green.
-6. Update/attach this handoff and stop.
-7. Do not claim FPS improvement without a fresh RMSE52 benchmark.
+1. Restore the verified persistent RMSE52 assets from `/MUA2/RMSE52-Game-Files/Extracted` into the working `.local/game` directory:
+   - materialize `RMSE52-extracted.tar.001` through `.010`;
+   - concatenate them in numeric order;
+   - extract the tar.
+2. Re-verify:
+   - `sys/main.dol` SHA-256 = `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+   - `files/Marvel-rev-fin-plf2.rel` SHA-256 = `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+3. Build current `main` and establish a fresh game-side performance baseline before accepting more source-level micro-optimizations.
+4. Capture at minimum:
+   - reported FPS / guest-frame FPS / speed;
+   - native dispatch count/rate and average burst length if available;
+   - JIT/interpreter fallback counts;
+   - host-call checks/fallbacks;
+   - native exception counts;
+   - hottest dispatch PCs / profiler data if instrumentation is enabled.
+5. Update `docs/CURRENT-STATUS.md` and this handoff with the fresh baseline.
+6. Then resume the next source-level target (per-slice game-ID gating) only after the baseline is recorded.
+7. Do not infer a speedup from CI/source structure; use the fresh RMSE52 measurement.
 
 ## Last turn update — 2026-09-25
 
 What happened:
 
-- Received archive parts `001` through `020` of `Marvel - Ultimate Alliance 2 (USA).7z`.
-- Created persistent private Library folder `/MUA2/RMSE52-Game-Files/Archive-Parts`.
-- Copied the exact conversation-upload snapshots for parts `001` through `020` into that persistent Library folder.
-- Verified the Library now contains exactly 20 persisted parts, named `001` through `020`; each is 94,371,840 bytes.
-- Created persistent extracted-assets destination `/MUA2/RMSE52-Game-Files/Extracted`.
-- Five archive parts are still expected: `021` through `025`.
-- Do not attempt extraction until all parts are present.
-- After `021` through `025` arrive: persist those exact uploads first, verify the full 25-part set, extract the archive, verify the RMSE52 payload, then copy the extracted game assets into `/MUA2/RMSE52-Game-Files/Extracted`.
-- Do not claim the extracted game assets are persistent until the extracted Library copies themselves have been verified.
+- Received all 25 split uploads `Marvel - Ultimate Alliance 2 (USA).7z.001` through `.025`.
+- Reassembled the multipart 7z stream and extracted `Marvel - Ultimate Alliance 2 (USA).wbfs`.
+- Source WBFS SHA-256: `1c284e494e61d4b494a81a8c555c9347f26d330ae12f5a157d4c3624a137cc39`.
+- Parsed the WBFS container directly, decrypted the RMSE52 Wii game partition, and extracted the Wii filesystem.
+- Verified extracted critical files against the known RMSE52 hashes:
+  - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+  - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+- Extracted game FST files: 385.
+- Persisted tree files: 396.
+- Extracted tree size: 2265051893 bytes.
+- Packaged the full extracted tree as 10 uncompressed split-tar chunks, each kept below the Library object-size ceiling.
+- Uploaded all 10 chunks plus `main.dol`, the REL, `RMSE52-manifest.json`, `SHA256SUMS.txt`, extraction log, and README to:
+  - `/MUA2/RMSE52-Game-Files/Extracted`
+- Materialized **all 10 chunks back from Library** and verified every SHA-256 against the local source chunk.
+- Reassembled the Library copies and successfully enumerated the tar stream.
+- Materialized `main.dol`, REL, manifest, checksum file, and README back from Library and verified their hashes byte-for-byte.
+- Updated `/MUA2/RMSE52-Game-Files/README.md` to `Status: VERIFIED PERSISTENT`.
+- The original 25 split uploads are no longer required for normal MUA2 continuation.
 - No proprietary game data was committed to GitHub.
