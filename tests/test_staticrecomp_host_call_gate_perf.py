@@ -59,7 +59,11 @@ class StaticRecompHostCallGatePerfTests(unittest.TestCase):
         self.assertIn(
             "DispatchableAt(ppc.pc, &entry_chunk_index, &linked_dispatch_address,", run
         )
-        self.assertIn("!host_call_at(ppc.pc, entry_chunk_index)", run)
+        self.assertIn(
+            "entry_dispatchable && host_call_at(ppc.pc, entry_chunk_index);",
+            run,
+        )
+        self.assertIn("if (entry_dispatchable && !entry_host_call)", run)
         self.assertIn(
             "fast_dispatchable_at(address, &chunk_index, linked_address, rel_section_index,", run
         )
