@@ -1,0 +1,44 @@
+name: Export current source overlay
+on:
+  push:
+    branches:
+      - ci/export-main-overlay
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pack files changed since LOCAL01
+        env:
+          BASE_SHA: cda021b5c63a79c13b8986380adb53a429acf744
+        run: |
+          python - <<'PY'
+          import os, subprocess, tarfile, pathlib
+          base = os.environ["BASE_SHA"]
+          head = subprocess.check_output(["git","rev-parse","HEAD"], text=True).strip()
+          paths = subprocess.check_output(
+              ["git","diff","--name-only","--diff-filter=AM",base,head], text=True
+          ).splitlines()
+          exclude = {".github/workflows/export-main-overlay.yml"}
+          paths = [p for p in paths if p not in exclude and pathlib.Path(p).is_file()]
+          with tarfile.open("current-main-overlay.tar.gz","w:gz") as tf:
+              for p in paths:
+                  tf.add(p, arcname=p)
+          pathlib.Path("overlay-meta.txt").write_text(
+              f"base={base}\nhead={head}\nfiles={len(paths)}\n"
+              + "\n".join(paths) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: current-main-overlay
+          path: |
+            current-main-overlay.tar.gz
+            overlay-meta.txt
+          if-no-files-found: error
+          retention-days: 1
