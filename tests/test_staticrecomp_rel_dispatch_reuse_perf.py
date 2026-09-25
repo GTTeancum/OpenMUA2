@@ -162,6 +162,21 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
             run,
         )
 
+    def test_interpreter_loop_checks_termination_before_dispatch_probes(self) -> None:
+        run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
+
+        self.assertIn(
+            "} while (ppc.downcount > 0 && *state_ptr == CPU::State::Running &&\n"
+            "                   !(m_module_active && DispatchableAt(ppc.pc)) &&\n"
+            "                   !IsHostCallAddress(ppc.pc));",
+            run,
+        )
+        self.assertNotIn(
+            "} while (!(m_module_active && DispatchableAt(ppc.pc)) &&\n"
+            "                   !IsHostCallAddress(ppc.pc) && ppc.downcount > 0 &&",
+            run,
+        )
+
     def test_burst_backedge_checks_termination_before_continuation_probe(self) -> None:
         run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
 
