@@ -264,10 +264,10 @@ Status doc:
 
 ## Next exact turn
 
-1. Configure a separate optimized **Clang 17 + LLD** module build from the same audited 524-chunk merged source.
-2. Keep `RECOMPCORE_MODULE_OPT_LEVEL=2`; allow IPO only if Clang's supported path can link within the container.
-3. If Clang full IPO still exceeds memory, fall back to O2 with IPO disabled for the current Linux baseline and document that build difference explicitly.
-4. Run the native audit on the resulting optimized module and require **524/524** hash PASS.
+1. Build the already configured optimized Clang 17 + LLD module at `/mnt/data/mua2/current-kit/build/module-current-clang`.
+2. This configuration keeps `RECOMPCORE_MODULE_OPT_LEVEL=2`; CMake automatically disabled IPO because the local Clang LTO probe cannot find `LLVMgold.so` through the default executable linker path. The actual module shared-link path is explicitly LLD.
+3. Treat this as the documented **O2, no-IPO Linux baseline module** rather than silently equating it with GCC O2+IPO.
+4. Run the native audit on the resulting module and require **524/524** hash PASS.
 5. Stop there if needed; only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
 
 ## Last turn update — 2026-09-26
@@ -286,5 +286,8 @@ What happened:
 - The normal link uses GCC LTO and fails because `lto1` is OOM-killed.
 - A serialized relink using `-flto=1 -flto-partition=one` was already attempted and also OOM-killed.
 - This is a host-memory/linker limitation, not a generated-code compile failure and not a native-audit/hash failure.
+- Configured a separate replacement build at `/mnt/data/mua2/current-kit/build/module-current-clang` using Clang 17 + LLD and `RECOMPCORE_MODULE_OPT_LEVEL=2`.
+- CMake's IPO capability probe disabled IPO because its test executable used the default GNU linker and could not find `LLVMgold.so`; configuration otherwise completed successfully. The module build itself is set to use LLD.
+- No Clang module compilation was started in this deliberately small turn.
 - No source/runtime semantics were changed in this turn.
 - No gameplay or FPS test was attempted.
