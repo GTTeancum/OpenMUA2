@@ -262,8 +262,8 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. Durable GCC O2/no-IPO progress is now **138 total object files**:
-   - **131 generated chunk objects**;
+6. Durable GCC O2/no-IPO progress is now **142 total object files**:
+   - **135 generated chunk objects**;
    - **7 support/runtime objects**.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
@@ -284,21 +284,21 @@ Status doc:
 
 What happened:
 
-- Continued from the durable checkpoint of **134 total objects / 127 generated chunk objects**.
+- Continued from the durable checkpoint of **138 total objects / 131 generated chunk objects**.
 - Selected the next four genuinely missing generated chunk targets:
-  - `chunk_0063_text1_800FE900.c.o`
-  - `chunk_0064_rel1_80F4A164.c.o`
-  - `chunk_0064_text1_80102900.c.o`
-  - `chunk_0065_rel1_80F4E164.c.o`
+  - `chunk_0065_text1_80106900.c.o`
+  - `chunk_0066_rel1_80F52164.c.o`
+  - `chunk_0066_text1_8010A900.c.o`
+  - `chunk_0067_rel1_80F56164.c.o`
 - Compiled them as one finite explicit Ninja batch at `-j4`; Ninja exited normally before the tool cap.
 - Durable post-batch state:
-  - **138 total objects**;
-  - **131 generated chunk objects**;
+  - **142 total objects**;
+  - **135 generated chunk objects**;
   - **7 support/runtime objects**.
 - Re-requested all four targets; every one returned:
   `ninja: no work to do.`
 - Verified Ninja dependency bookkeeping on all four targets; each reports `(VALID)`.
-- Final process verification confirmed **no active Ninja, GCC/cc, cc1, collect2, linker, or LTO worker remains running**.
+- Final process verification showed no active Ninja/GCC/cc1/linker/LTO build worker; only the verification shell/timeout command itself matched the broad process pattern.
 - No optimized `gRMSE52_recomp.so` has linked yet.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
