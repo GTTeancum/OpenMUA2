@@ -262,19 +262,18 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. Durable GCC O2/no-IPO progress is now **129 total object files**:
-   - **122 generated chunk objects**;
+6. Durable GCC O2/no-IPO progress is now **134 total object files**:
+   - **127 generated chunk objects**;
    - **7 support/runtime objects**.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
 1. Continue the GCC O2/no-IPO build using the durable **finite explicit object-batch** method.
-2. Select the next five genuinely missing generated chunk object targets.
-3. Let Ninja exit normally, then verify:
+2. Use a slightly smaller explicit batch if the selected chunks look expensive; if one target is left incomplete, finish it individually.
+3. Let Ninja exit normally for each completed target and verify:
    - total/chunk object counts increased;
-   - each new target returns `ninja: no work to do.`;
-   - `ninja -t deps <target>` reports `(VALID)`;
+   - each new target reports valid deps / no remaining work;
    - no active build workers remain.
 4. Once all generated/support objects are complete, link `gRMSE52_recomp.so`.
 5. Run the native audit and require **524/524** chunk-hash PASS.
@@ -284,23 +283,26 @@ Status doc:
 
 What happened:
 
-- Continued from the durable checkpoint of **124 total objects / 117 generated chunk objects**.
-- Selected the next five genuinely missing generated chunk targets from `build.ninja`.
-- Compiled them as one finite explicit Ninja batch at `-j5`, allowing Ninja to exit normally:
-  - `chunk_0058_text1_800EA900.c.o`
-  - `chunk_0059_rel1_80F36164.c.o`
-  - `chunk_0059_text1_800EE900.c.o`
-  - `chunk_0060_rel1_80F3A164.c.o`
-  - `chunk_0060_text1_800F2900.c.o`
-- Durable post-batch state:
-  - **129 total objects**;
-  - **122 generated chunk objects**;
+- Continued from the durable checkpoint of **129 total objects / 122 generated chunk objects**.
+- Selected the next five genuinely missing generated chunk targets:
+  - `chunk_0061_rel1_80F3E164.c.o`
+  - `chunk_0061_text1_800F6900.c.o`
+  - `chunk_0062_rel1_80F42164.c.o`
+  - `chunk_0062_text1_800FA900.c.o`
+  - `chunk_0063_rel1_80F46164.c.o`
+- The five-target batch hit the 45-second execution cap before Ninja could finish all five.
+- Post-timeout verification showed **four** of the five objects were already fully durable with `(VALID)` dependency records:
+  - `chunk_0061_text1_800F6900.c.o`
+  - `chunk_0062_rel1_80F42164.c.o`
+  - `chunk_0062_text1_800FA900.c.o`
+  - `chunk_0063_rel1_80F46164.c.o`
+- The only missing target, `chunk_0061_rel1_80F3E164.c.o`, was then compiled individually at `-j1` and completed cleanly.
+- Its Ninja dependency record also reports `(VALID)`.
+- Durable post-turn state:
+  - **134 total objects**;
+  - **127 generated chunk objects**;
   - **7 support/runtime objects**.
-- Re-requested all five new targets individually; every one returned:
-  `ninja: no work to do.`
-- Verified Ninja dependency bookkeeping on `chunk_0058_text1_800EA900.c.o`:
-  `#deps 51 ... (VALID)`.
-- Final process verification confirmed **no active Ninja, GCC/cc, cc1, collect2, linker, or LTO worker remains running**.
 - No optimized `gRMSE52_recomp.so` has linked yet.
+- No active Ninja/GCC/cc1/linker/LTO workers remain.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
