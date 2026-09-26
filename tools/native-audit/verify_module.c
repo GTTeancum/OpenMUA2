@@ -42,7 +42,11 @@ static unsigned char *read_all(const char *path, size_t *size_out) {
 static int join_rel_text_path(char *out, size_t out_size, const char *dir,
                               uint32_t section_index) {
     int wrote;
+#if defined(_WIN32)
     const char *slash="\\";
+#else
+    const char *slash="/";
+#endif
     size_t len=strlen(dir);
     if(len && (dir[len-1]=='/' || dir[len-1]=='\\')) slash="";
     wrote=snprintf(out,out_size,"%s%srel_text_section_%u.bin",dir,slash,section_index);
