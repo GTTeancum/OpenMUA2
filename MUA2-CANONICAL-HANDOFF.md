@@ -262,12 +262,12 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. The GCC O2/no-IPO build currently has **103 object files** completed.
+6. The GCC O2/no-IPO build currently has **114 object files** completed.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the GCC O2/no-IPO build incrementally from the existing **103-object** state.
+1. Continue the GCC O2/no-IPO build incrementally from the existing **114-object** state.
 2. Use one bounded compile slice, then explicitly verify no active Ninja/GCC workers remain.
 3. Do not retry GCC LTO or Clang unless the GCC O2/no-IPO route fails.
 4. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
@@ -277,12 +277,14 @@ Status doc:
 
 What happened:
 
-- Resumed the GCC O2/no-IPO build from **97 completed objects**.
+- Resumed the GCC O2/no-IPO build from **103 completed objects**.
 - Ran one bounded Ninja compile slice at `-j5`.
-- The execution cap interrupted the wrapper before its summary.
-- Completed outputs were preserved and the build advanced to **103 object files**.
+- The execution cap interrupted the wrapper after six units had visibly completed.
+- Several in-flight compiler workers remained briefly after the timeout.
+- Completed outputs were preserved and, after cleanup, the build advanced to **114 object files**.
 - No `gRMSE52_recomp.so` has linked yet.
-- Final process verification confirmed **no active Ninja, GCC, cc1, collect2, linker, or LTO worker remains running**.
-- Net progress this turn: **+6 objects**.
+- Active compiler workers were explicitly terminated after the timeout.
+- Final verification confirmed **no active Ninja, GCC/cc, cc1, collect2, linker, or LTO worker remains running**.
+- Net progress this turn: **+11 objects**.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
