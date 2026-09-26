@@ -262,12 +262,12 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. The GCC O2/no-IPO build currently has **89 object files** completed.
+6. The GCC O2/no-IPO build currently has **97 object files** completed.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the GCC O2/no-IPO build incrementally from the existing **89-object** state.
+1. Continue the GCC O2/no-IPO build incrementally from the existing **97-object** state.
 2. Use one bounded compile slice, then explicitly verify no active Ninja/GCC workers remain.
 3. Do not retry GCC LTO or Clang unless the GCC O2/no-IPO route fails.
 4. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
@@ -277,12 +277,13 @@ Status doc:
 
 What happened:
 
-- Resumed the GCC O2/no-IPO build from **82 completed objects**.
+- Resumed the GCC O2/no-IPO build from **89 completed objects**.
 - Ran one bounded Ninja compile slice at `-j5`.
-- The outer execution cap interrupted the wrapper after five units had visibly completed.
-- Several in-flight compiler workers continued briefly; after cleanup, completed outputs were preserved and the build advanced to **89 object files**.
+- The container transport timeout interrupted the wrapper before its cleanup section.
+- Completed outputs were preserved and the build advanced to **97 object files**.
 - No `gRMSE52_recomp.so` has linked yet.
-- Final process verification confirmed **no active Ninja, GCC, cc1, collect2, linker, or LTO worker remains running**.
-- Net progress this turn: **+7 objects**.
+- Several in-flight compiler processes were still visible immediately after the timeout; terminating the parent Ninja/timeout tree cleared them.
+- Final verification confirmed **no active Ninja, GCC/cc, cc1, collect2, linker, or LTO worker remains running**.
+- Net progress this turn: **+8 objects**.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
