@@ -256,54 +256,54 @@ Status doc:
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
 2. The current private build checkpoint is persisted at:
-   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-44obj.tar.zst`.
 3. That checkpoint contains:
    - merged/regenerated 524-chunk source;
    - current GCC O2/no-IPO CMake/Ninja build tree;
    - current live REL audit JSON;
-   - **40 durable total objects / 33 generated chunk objects**.
+   - **44 durable total objects / 37 generated chunk objects**.
 4. Checkpoint archive SHA-256:
-   `4f2965bc5c3ca6e2635e73e0f95afab843be543c506eb390da659ad52b6b58cc`.
+   `c6383db7231804e2322d569d42d0dc1adf754ae1c3ae41525fe0f28676182a02`.
 5. GCC O2+IPO remains unsuitable in this container because of LTO memory/time behavior.
 6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
 1. If local state is missing, restore:
-   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
-2. Continue GCC O2/no-IPO from **40 total / 33 chunk objects**.
-3. Use finite explicit object batches small enough for Ninja to exit normally.
-4. Verify every new target returns `ninja: no work to do.` and `ninja -t deps` reports `(VALID)`.
-5. After meaningful progress, create and upload a newer private build checkpoint.
-6. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-44obj.tar.zst`.
+2. Continue GCC O2/no-IPO from **44 total / 37 generated chunk objects**.
+3. Compile the next finite explicit batch of missing chunk objects, small enough for Ninja to exit normally.
+4. Verify each new target returns `ninja: no work to do.` and `ninja -t deps` reports `(VALID)`.
+5. Persist a newer private checkpoint after meaningful progress.
+6. Once the optimized module links, run the native audit and require **524/524** chunk-hash PASS.
 7. Gameplay comes only after the optimized module passes audit.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- The container-local build tree was absent again at the start of the turn.
-- Restored the private **36-object** checkpoint and the matching current Linux build kit.
-- Verified restored state:
-  - **36 total objects**;
-  - **29 generated chunk objects**.
-- Confirmed the saved Ninja graph remained healthy after the restore.
+- Continued from the persisted **40-object** private checkpoint.
+- Verified local state was already present at:
+  - **40 total objects**;
+  - **33 generated chunk objects**.
 - Selected the next four genuinely missing generated chunk targets:
-  - `chunk_0014_text1_8003A900.c.o`
-  - `chunk_0015_rel1_80E86164.c.o`
-  - `chunk_0015_text1_8003E900.c.o`
-  - `chunk_0016_rel1_80E8A164.c.o`
-- Compiled all four as one finite explicit `ninja -j4` batch; Ninja exited normally.
+  - `chunk_0016_text1_80042900.c.o`
+  - `chunk_0017_rel1_80E8E164.c.o`
+  - `chunk_0017_text1_80046900.c.o`
+  - `chunk_0018_rel1_80E92164.c.o`
+- Compiled all four as one finite explicit `ninja -j4` batch.
+- Ninja exited normally.
 - Re-requested all four targets; every one returned:
   `ninja: no work to do.`
 - Verified all four dependency records report `(VALID)`.
-- Durable build state now:
-  - **40 total objects**;
-  - **33 generated chunk objects**.
+- Durable build state advanced:
+  - **40 → 44 total objects**;
+  - **33 → 37 generated chunk objects**.
 - Created and uploaded a new persistent private checkpoint:
-  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
-- Archive size: ~45 MB.
+  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-44obj.tar.zst`.
+- Archive size: ~46 MB.
 - Archive SHA-256:
-  `4f2965bc5c3ca6e2635e73e0f95afab843be543c506eb390da659ad52b6b58cc`.
+  `c6383db7231804e2322d569d42d0dc1adf754ae1c3ae41525fe0f28676182a02`.
+- No optimized `gRMSE52_recomp.so` has linked yet.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
