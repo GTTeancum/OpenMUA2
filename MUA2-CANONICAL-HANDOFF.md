@@ -255,70 +255,66 @@ Status doc:
 ## Current blockers
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
-2. The restored persistent tar is complete but its Wii non-filesystem metadata is stored under `disc-meta/`, which is not directly bootable by Dolphin's extracted-disc reader. A private working copy must restore Dolphin's expected compatibility layout before runtime tests:
-   - copy `disc-meta/ticket.bin`, `tmd.bin`, `cert.bin`, and `h3.bin` to the game root;
-   - create `disc/header.bin` from bytes `0x000000-0x0000FF` of `disc-meta/disc-header.bin`;
-   - create `disc/region.bin` from bytes `0x04E000-0x04E01F` of `disc-meta/disc-header.bin`.
-3. Shell GitHub checkout remains blocked by container DNS, but this is no longer a hard blocker: ModernGekko CI now retains a Linux runtime/build kit artifact containing the tested runner, Sys data, current DolRecomp/module-build sources, tooling, and tests.
-4. A fresh **current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
+2. The private working tree still needs the extracted-disc metadata compatibility layout before runtime tests:
+   - root `ticket.bin`, `tmd.bin`, `cert.bin`, `h3.bin`;
+   - `disc/header.bin` and `disc/region.bin` reconstructed from the retained raw disc header.
+3. The current merged DOL+REL source and validation module now pass the native module audit. There is no remaining generation/audit blocker.
+4. A fresh **optimized O2 current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Check ModernGekko CI run `36206182149` for commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
-2. When the Linux full-build/test job is green, download/materialize its `moderngekko-linux-<sha>` artifact.
-3. Build current DolRecomp locally from the retained kit.
-4. Regenerate RMSE52:
-   - DOL from the verified `sys/main.dol`;
-   - REL with `--rel-base 0x80E4A080 --rel-bss-base 0x811BCAC0 --cpu broadway --backend c`.
-5. Merge DOL + REL generated output with `tools/merge_mua2_generated.py` using the retained verified live REL audit; build the current 524-chunk module and run the native module audit.
-6. Run the current-main Linux runner against the metadata-fixed private RMSE52 tree under Xvfb/llvmpipe and establish the fresh baseline.
-7. Capture at minimum:
+1. Resume/finish the already configured optimized O2 module build at:
+   `/mnt/data/mua2/current-kit/build/module-current`.
+2. Re-run the native audit on that optimized module and require PASS.
+3. Restore the metadata compatibility layout in the private RMSE52 working tree if it is not already present.
+4. Run the current-main Linux runner under Xvfb/llvmpipe with the optimized current module.
+5. Capture the fresh baseline:
    - reported FPS / guest-frame FPS / speed;
-   - native dispatch count/rate and average burst length if available;
+   - native dispatch count/rate and average burst length;
    - JIT/interpreter fallback counts;
-   - host-call checks/fallbacks;
+   - host-call fast/fallback/slow counts;
    - native exception counts;
-   - hottest dispatch PCs / profiler data if instrumentation is enabled.
-8. Update `docs/CURRENT-STATUS.md` and this handoff with the measured current-main baseline.
-9. Only then resume the next source-level performance target.
+   - SMC verification/reverify counts;
+   - hottest dispatch PCs if profiling is enabled.
+6. Update `docs/CURRENT-STATUS.md` and this handoff with the measured baseline.
+7. Only after that baseline is recorded should another source-level performance change be accepted.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Used the persisted current-main Linux kit from commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
-- Configured and built current DolRecomp locally with GCC 14 / Ninja / Release C backend.
-- DolRecomp validation: **19/19 CTests passed**.
-- Current local DolRecomp SHA-256:
-  `a76483483d8a0e0d13cca89e16386f77e341da7add1fc3f1ab597b821e2bb49e`.
-- Reconstructed the persistent RMSE52 game tree from the ten split tar chunks.
-- Re-verified the pinned originals:
-  - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
-  - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
-- Regenerated the DOL with the current recompiler:
-  - Broadway CPU profile;
-  - C backend;
-  - **325 generated chunks**;
-  - copied generated `main.dol` still matches the pinned original SHA-256.
-- Regenerated the REL with the accepted fixed live layout:
-  - `--rel-base 0x80E4A080`;
-  - `--rel-bss-base 0x811BCAC0`;
-  - executable section starts at `0x80E4A164`;
-  - executable text size `0x0031ADC0` / 3,255,744 bytes;
-  - 95,772 relocations applied;
-  - 813,936 instructions decoded;
-  - **199 generated chunks**;
-  - zero unknown instructions.
-- Combined expected generated chunk count is therefore **524** (325 DOL + 199 REL).
-- SMC candidate lists remain present: 69 DOL entries and 22 REL entries in the generated SMC lists.
-- Generated working tree is private/local only; no proprietary generated game code was committed.
-- No combined module build, native audit, or gameplay benchmark was started in this deliberately bounded turn.
-
-## Next exact turn
-
-1. Retrieve the retained verified live REL audit used by the accepted merge path.
-2. Merge the freshly generated DOL + REL outputs with `tools/merge_mua2_generated.py`.
-3. Verify the merged output reports exactly **524 chunks** and one REL module.
-4. Build the current module with the retained current-main module-template/GXRuntime/StaticRecomp sources.
-5. Run the native module audit and require PASS before any gameplay run.
-6. Stop there if the turn is getting large; only after the audit passes should the next turn launch the current-main RMSE52 benchmark.
+- Retrieved the retained verified `docs/recovery/live-rel-audit.json` from current `main`.
+- Merged the freshly regenerated DOL + fixed-layout REL with current `tools/merge_mua2_generated.py`.
+- Merge result: **524 chunks** exactly (325 DOL + 199 REL).
+- Merged `main.dol` SHA-256 remains:
+  `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`.
+- Replayed REL text SHA-256 is the accepted live-text hash:
+  `05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0`.
+- Merged REL metadata reports:
+  - module ID 1;
+  - version 3;
+  - 19 sections;
+  - native section 1 at linked start `0x80E4A164`;
+  - native REL text size 3,255,744 bytes.
+- Module table generation reports:
+  - **524 code ranges**;
+  - **524 hashed chunk ranges**;
+  - **89 SMC ranges**.
+- Began the optimized O2 module build and left its partial Ninja output intact for the next turn.
+- For this bounded validation turn, built a complete current-source **O0/no-IPO audit module** with Clang 17 + LLD. This binary is for correctness/audit only, not performance measurement.
+- The first Linux native-audit attempt exposed a real tooling bug: `tools/native-audit/verify_module.c` used a Windows backslash when opening generated REL text on Linux.
+- Fixed the verifier to use the platform-appropriate path separator and pushed:
+  `f34b33226897b7ec6c4e17c12c41af5e31845ba1` — `Fix native audit REL path on Linux`.
+- After that fix, the native audit **PASSed**:
+  - game ID: RMSE52;
+  - module ABI: 3;
+  - CPU ABI: 4;
+  - code ranges: **524**;
+  - verified chunk hashes: **524/524**;
+  - covered text bytes: **8,571,904**;
+  - covered REL text bytes: **3,255,744**;
+  - REL modules: **1**;
+  - uncovered-dispatch test: true.
+- The audit is explicitly **not** a game boot test.
+- OpenMUA2 tooling CI run `36239684938` for the Linux path fix was still in progress when this handoff was written.
+- No gameplay/FPS claim was made from this turn.
