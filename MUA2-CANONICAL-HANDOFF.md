@@ -255,50 +255,68 @@ Status doc:
 ## Current blockers
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
-2. The private working tree still needs the extracted-disc metadata compatibility layout before runtime tests:
-   - root `ticket.bin`, `tmd.bin`, `cert.bin`, `h3.bin`;
-   - `disc/header.bin` and `disc/region.bin` reconstructed from the retained raw disc header.
-3. The merged 524-chunk DOL+REL source and validation module pass the native module audit.
-4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
-5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
-   `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. Durable GCC O2/no-IPO progress is now **142 total object files**:
-   - **135 generated chunk objects**;
-   - **7 support/runtime objects**.
+2. A container reset occurred after the prior 142-object local checkpoint. That local object state had not yet been persisted, so those compiled objects were lost.
+3. The persistent recovery path is now fixed:
+   - current Linux build kit remains at `/MUA2/Build-Kits/moderngekko-linux-29e567630abf5f12e6854256c9ca8f6954b1a0d8.zip`;
+   - RMSE52 source assets remain under `/MUA2/RMSE52-Game-Files/Extracted`;
+   - a new private build-state checkpoint is stored at `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-28obj.tar.zst`.
+4. The new checkpoint contains:
+   - regenerated/merged 524-chunk source;
+   - current GCC O2/no-IPO CMake/Ninja build tree;
+   - current live REL audit JSON;
+   - **28 durable total objects / 21 generated chunk objects**.
+5. Checkpoint archive SHA-256:
+   `79434003e440672ffe4002507ec9f2e4bd33e5f77d211921e3ec532eb201762a`.
+6. GCC O2+IPO remains unsuitable in this container because of LTO memory/time behavior.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the GCC O2/no-IPO build using the durable **finite explicit object-batch** method.
-2. Select the next four genuinely missing generated chunk object targets.
-3. Let Ninja exit normally, then verify:
-   - total/chunk object counts increased;
-   - each new target returns `ninja: no work to do.`;
-   - `ninja -t deps <target>` reports `(VALID)`;
-   - no active build workers remain.
-4. Once all generated/support objects are complete, link `gRMSE52_recomp.so`.
-5. Run the native audit and require **524/524** chunk-hash PASS.
-6. Gameplay comes only after the optimized module passes audit.
+1. If the local container state is missing, restore:
+   - the persistent Linux build kit;
+   - `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-28obj.tar.zst`.
+2. Extract the checkpoint under `/mnt/data/mua2`; its paths are designed to restore:
+   - `generated-current/combined`;
+   - `current-kit/build/module-current-gcc-o2-noipo`;
+   - `live-rel-audit.json`.
+3. Continue the GCC O2/no-IPO build from the restored durable checkpoint.
+4. Prefer a long-running local Ninja process that remains alive between short polling calls; stop Ninja cleanly with SIGINT before checkpointing.
+5. Periodically create and upload a replacement private build checkpoint so container resets cannot erase substantial progress again.
+6. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
+7. Gameplay comes only after the optimized module passes audit.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Continued from the durable checkpoint of **138 total objects / 131 generated chunk objects**.
-- Selected the next four genuinely missing generated chunk targets:
-  - `chunk_0065_text1_80106900.c.o`
-  - `chunk_0066_rel1_80F52164.c.o`
-  - `chunk_0066_text1_8010A900.c.o`
-  - `chunk_0067_rel1_80F56164.c.o`
-- Compiled them as one finite explicit Ninja batch at `-j4`; Ninja exited normally before the tool cap.
-- Durable post-batch state:
-  - **142 total objects**;
-  - **135 generated chunk objects**;
-  - **7 support/runtime objects**.
-- Re-requested all four targets; every one returned:
-  `ninja: no work to do.`
-- Verified Ninja dependency bookkeeping on all four targets; each reports `(VALID)`.
-- Final process verification showed no active Ninja/GCC/cc1/linker/LTO build worker; only the verification shell/timeout command itself matched the broad process pattern.
-- No optimized `gRMSE52_recomp.so` has linked yet.
-- No source/runtime semantics changed.
+- The working container was reset before this turn; `/mnt/data/mua2` was absent.
+- Verified the persistent private Library still contained:
+  - current Linux build kit;
+  - all ten RMSE52 extracted tar chunks;
+  - canonical handoff history.
+- Materialized the build kit and all ten RMSE52 chunks into the new container.
+- Reconstructed the RMSE52 game tree and reverified the pinned originals:
+  - `sys/main.dol` SHA-256: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+  - `Marvel-rev-fin-plf2.rel` SHA-256: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+- Rebuilt current DolRecomp from the persistent current-main kit.
+- Regenerated:
+  - **325 DOL chunks**;
+  - **199 REL chunks**.
+- Replayed the accepted live REL audit and rebuilt the merged source:
+  - **524 combined chunks**;
+  - merged DOL hash still matches the pinned original;
+  - REL text hash still matches `05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0`.
+- Reconfigured the GCC O2/no-IPO module build from scratch.
+- Switched from timeout-killed per-call Ninja runs to a persistent local background Ninja process, polled from short tool calls.
+- Stopped that Ninja process cleanly with SIGINT at:
+  - **28 total objects**;
+  - **21 generated chunk objects**.
+- Created a compressed private build checkpoint containing the merged generated source, build tree, and REL audit:
+  `MUA2-BUILD-CHECKPOINT-28obj.tar.zst`.
+- Archive size: ~44 MB.
+- Archive SHA-256:
+  `79434003e440672ffe4002507ec9f2e4bd33e5f77d211921e3ec532eb201762a`.
+- Uploaded it to:
+  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-28obj.tar.zst`.
+- This resolves the previous persistence gap: a future container reset no longer forces full regeneration/recompilation from zero.
 - No gameplay or FPS test was attempted.
