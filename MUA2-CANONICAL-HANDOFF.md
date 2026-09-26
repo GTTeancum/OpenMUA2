@@ -259,35 +259,38 @@ Status doc:
    - root `ticket.bin`, `tmd.bin`, `cert.bin`, `h3.bin`;
    - `disc/header.bin` and `disc/region.bin` reconstructed from the retained raw disc header.
 3. The merged 524-chunk DOL+REL source and validation module pass the native module audit.
-4. The original GCC O2+IPO link OOMs with the default LTO partitioning and with `-flto-partition=one`.
-5. A new test using the already-compiled **533 GCC O2+IPO objects** with `-flto=1 -flto-partition=none` is memory-safe in this container, but it did not finish within the deliberately short turn. It ran for several minutes at full CPU with roughly 1.3–2.4 GiB RSS and no OOM before being terminated cleanly. No shared object was produced.
-6. The separate Clang 17 + LLD O2/no-IPO build remains configured at `/mnt/data/mua2/current-kit/build/module-current-clang`, but only the first few objects have been compiled.
-7. A fresh **optimized current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
+4. GCC O2+IPO is not practical in this container:
+   - default LTO partitioning OOMs;
+   - `-flto-partition=one` OOMs;
+   - `-flto-partition=none` is memory-safe but remains CPU-bound for several minutes without linking;
+   - `-flto-partition=1to1` is memory-safe and completes WPA, but then schedules **531 serial LTRANS jobs**, making it unsuitable for the bounded-turn workflow.
+5. The separate Clang 17 + LLD **O2/no-IPO** build remains configured at `/mnt/data/mua2/current-kit/build/module-current-clang` and is now the preferred route to the Linux baseline.
+6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Prefer the no-recompile GCC route first: retry the existing 533 O2+IPO objects with a memory-safe LTO partition strategy.
-2. Try `-flto=1 -flto-partition=1to1` before returning to `partition=none`; it may retain bounded memory while completing faster.
-3. If that still does not produce a module in a bounded turn, switch to the already configured Clang 17 + LLD O2/no-IPO build and continue it incrementally.
-4. As soon as an optimized module links, run the native audit and require **524/524** chunk-hash PASS.
-5. Do not launch gameplay in the same turn unless the optimized module is already linked and audited early.
+1. Continue the already configured Clang 17 + LLD O2/no-IPO module build incrementally.
+2. Do not retry GCC LTO unless the container memory/CPU budget materially changes.
+3. Once the Clang module links, run the native audit and require **524/524** chunk-hash PASS.
+4. Stop after the optimized audit if the turn is getting large.
+5. Only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Resumed the optimized-build investigation without touching gameplay.
-- The Clang 17 + LLD O2/no-IPO build remained healthy, but generated translation units compile too slowly for the requested small-turn cadence; only the first few objects completed.
-- Re-examined the already-complete GCC O2+IPO build, which already has all **533 object files** and therefore avoids recompiling the 524 generated chunks.
-- Identified that the prior memory-saving retry used `-flto-partition=one`, which forces one giant LTO partition and is especially memory-hungry.
-- Retried the final GCC link with:
-  `-flto=1 -flto-partition=none`.
-- This mode behaved materially better:
-  - it did **not** OOM;
-  - `lto1` stayed at full CPU;
-  - observed RSS ranged roughly from 1.3 GiB to 2.4 GiB;
-  - several GiB of host memory remained available throughout the bounded observation window.
-- The link was still running after several minutes and had not yet produced `gRMSE52_recomp.so`, so it was terminated cleanly to honor the smaller-turn request.
-- The zero-length intermediate output was removed; no linker process was left running in the background.
+- Reused the already-complete **533 GCC O2+IPO object files**; no generated chunk recompilation was required for this probe.
+- Retried the exact final link with:
+  `-flto=1 -flto-partition=1to1`.
+- The link did **not** OOM.
+- GCC completed the WPA phase successfully.
+- It then reported:
+  `using serial compilation of 531 LTRANS jobs`.
+- The first LTRANS job began normally, but the linker could not plausibly complete all 531 serial jobs inside the requested bounded turn.
+- The link's own 90-second timeout terminated it cleanly.
+- No usable `gRMSE52_recomp.so` was produced; the intermediate output remained zero-length.
+- No linker/LTO process was left running in the background.
+- Conclusion: `1to1` solves memory pressure but creates an unacceptable serial-link-time problem here.
+- The Clang 17 + LLD O2/no-IPO path is therefore the preferred next route.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
