@@ -316,5 +316,5 @@ What happened:
   - REL modules: **1**;
   - uncovered-dispatch test: true.
 - The audit is explicitly **not** a game boot test.
-- OpenMUA2 tooling CI run `36239684938` for the Linux path fix was still in progress when this handoff was written.
+- OpenMUA2 tooling CI run `36239684938` for the Linux path fix completed successfully.
 - No gameplay/FPS claim was made from this turn.
