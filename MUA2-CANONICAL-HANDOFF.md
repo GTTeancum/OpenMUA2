@@ -259,35 +259,35 @@ Status doc:
    - root `ticket.bin`, `tmd.bin`, `cert.bin`, `h3.bin`;
    - `disc/header.bin` and `disc/region.bin` reconstructed from the retained raw disc header.
 3. The merged 524-chunk DOL+REL source and validation module pass the native module audit.
-4. The optimized GCC O2+IPO build compiled all **533 object files**, but the final GCC LTO link exceeds this container's memory and is killed in `lto1`. Even `-flto=1 -flto-partition=one` still OOMs.
-5. A fresh **optimized current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
+4. The original GCC O2+IPO link OOMs with the default LTO partitioning and with `-flto-partition=one`.
+5. A new test using the already-compiled **533 GCC O2+IPO objects** with `-flto=1 -flto-partition=none` is memory-safe in this container, but it did not finish within the deliberately short turn. It ran for several minutes at full CPU with roughly 1.3–2.4 GiB RSS and no OOM before being terminated cleanly. No shared object was produced.
+6. The separate Clang 17 + LLD O2/no-IPO build remains configured at `/mnt/data/mua2/current-kit/build/module-current-clang`, but only the first few objects have been compiled.
+7. A fresh **optimized current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Build the already configured optimized Clang 17 + LLD module at `/mnt/data/mua2/current-kit/build/module-current-clang`.
-2. This configuration keeps `RECOMPCORE_MODULE_OPT_LEVEL=2`; CMake automatically disabled IPO because the local Clang LTO probe cannot find `LLVMgold.so` through the default executable linker path. The actual module shared-link path is explicitly LLD.
-3. Treat this as the documented **O2, no-IPO Linux baseline module** rather than silently equating it with GCC O2+IPO.
-4. Run the native audit on the resulting module and require **524/524** hash PASS.
-5. Stop there if needed; only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
+1. Prefer the no-recompile GCC route first: retry the existing 533 O2+IPO objects with a memory-safe LTO partition strategy.
+2. Try `-flto=1 -flto-partition=1to1` before returning to `partition=none`; it may retain bounded memory while completing faster.
+3. If that still does not produce a module in a bounded turn, switch to the already configured Clang 17 + LLD O2/no-IPO build and continue it incrementally.
+4. As soon as an optimized module links, run the native audit and require **524/524** chunk-hash PASS.
+5. Do not launch gameplay in the same turn unless the optimized module is already linked and audited early.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Resumed the preserved optimized module build at:
-  `/mnt/data/mua2/current-kit/build/module-current`.
-- Confirmed the build is configured as:
-  - GCC `/usr/bin/cc`;
-  - Release;
-  - `RECOMPCORE_MODULE_OPT_LEVEL=2`;
-  - `RECOMPCORE_MODULE_ENABLE_IPO=ON`.
-- All **533 object files** are present; translation-unit compilation is complete.
-- The remaining step is only the final shared-library link.
-- The normal link uses GCC LTO and fails because `lto1` is OOM-killed.
-- A serialized relink using `-flto=1 -flto-partition=one` was already attempted and also OOM-killed.
-- This is a host-memory/linker limitation, not a generated-code compile failure and not a native-audit/hash failure.
-- Configured a separate replacement build at `/mnt/data/mua2/current-kit/build/module-current-clang` using Clang 17 + LLD and `RECOMPCORE_MODULE_OPT_LEVEL=2`.
-- CMake's IPO capability probe disabled IPO because its test executable used the default GNU linker and could not find `LLVMgold.so`; configuration otherwise completed successfully. The module build itself is set to use LLD.
-- No Clang module compilation was started in this deliberately small turn.
-- No source/runtime semantics were changed in this turn.
+- Resumed the optimized-build investigation without touching gameplay.
+- The Clang 17 + LLD O2/no-IPO build remained healthy, but generated translation units compile too slowly for the requested small-turn cadence; only the first few objects completed.
+- Re-examined the already-complete GCC O2+IPO build, which already has all **533 object files** and therefore avoids recompiling the 524 generated chunks.
+- Identified that the prior memory-saving retry used `-flto-partition=one`, which forces one giant LTO partition and is especially memory-hungry.
+- Retried the final GCC link with:
+  `-flto=1 -flto-partition=none`.
+- This mode behaved materially better:
+  - it did **not** OOM;
+  - `lto1` stayed at full CPU;
+  - observed RSS ranged roughly from 1.3 GiB to 2.4 GiB;
+  - several GiB of host memory remained available throughout the bounded observation window.
+- The link was still running after several minutes and had not yet produced `gRMSE52_recomp.so`, so it was terminated cleanly to honor the smaller-turn request.
+- The zero-length intermediate output was removed; no linker process was left running in the background.
+- No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
