@@ -255,43 +255,56 @@ Status doc:
 ## Current blockers
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
-2. This container cannot currently perform a meaningful game-side FPS baseline because the available MG01 graphical runner cannot acquire an X11 host, while its headless mode exits before guest execution.
-3. Shell GitHub checkout is also blocked by container DNS, so a fresh current-main runtime cannot be cloned directly here; GitHub API/CI validation remains available.
+2. The restored persistent tar is complete but its Wii non-filesystem metadata is stored under `disc-meta/`, which is not directly bootable by Dolphin's extracted-disc reader. A private working copy must restore Dolphin's expected compatibility layout before runtime tests:
+   - copy `disc-meta/ticket.bin`, `tmd.bin`, `cert.bin`, and `h3.bin` to the game root;
+   - create `disc/header.bin` from bytes `0x000000-0x0000FF` of `disc-meta/disc-header.bin`;
+   - create `disc/region.bin` from bytes `0x04E000-0x04E01F` of `disc-meta/disc-header.bin`.
+3. Shell GitHub checkout remains blocked by container DNS, but this is no longer a hard blocker: ModernGekko CI now retains a Linux runtime/build kit artifact containing the tested runner, Sys data, current DolRecomp/module-build sources, tooling, and tests.
+4. A fresh **current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
+
 ## Next exact turn
 
-1. Restore the verified persistent RMSE52 assets from `/MUA2/RMSE52-Game-Files/Extracted` into the working `.local/game` directory:
-   - materialize `RMSE52-extracted.tar.001` through `.010`;
-   - concatenate them in numeric order;
-   - extract the tar.
-2. Re-verify:
-   - `sys/main.dol` SHA-256 = `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
-   - `files/Marvel-rev-fin-plf2.rel` SHA-256 = `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
-3. Build current `main` and establish a fresh game-side performance baseline before accepting more source-level micro-optimizations.
-4. Capture at minimum:
+1. Check ModernGekko CI run `36206182149` for commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
+2. When the Linux full-build/test job is green, download/materialize its `moderngekko-linux-<sha>` artifact.
+3. Build current DolRecomp locally from the retained kit.
+4. Regenerate RMSE52:
+   - DOL from the verified `sys/main.dol`;
+   - REL with `--rel-base 0x80E4A080 --rel-bss-base 0x811BCAC0 --cpu broadway --backend c`.
+5. Merge DOL + REL generated output with `tools/merge_mua2_generated.py` using the retained verified live REL audit; build the current 524-chunk module and run the native module audit.
+6. Run the current-main Linux runner against the metadata-fixed private RMSE52 tree under Xvfb/llvmpipe and establish the fresh baseline.
+7. Capture at minimum:
    - reported FPS / guest-frame FPS / speed;
    - native dispatch count/rate and average burst length if available;
    - JIT/interpreter fallback counts;
    - host-call checks/fallbacks;
    - native exception counts;
    - hottest dispatch PCs / profiler data if instrumentation is enabled.
-5. Update `docs/CURRENT-STATUS.md` and this handoff with the fresh baseline.
-6. Then resume the next source-level target (per-slice game-ID gating) only after the baseline is recorded.
-7. Do not infer a speedup from CI/source structure; use the fresh RMSE52 measurement.
+8. Update `docs/CURRENT-STATUS.md` and this handoff with the measured current-main baseline.
+9. Only then resume the next source-level performance target.
+
 ## Last turn update — 2026-09-25
 
 What happened:
 
-- Restored the verified persistent RMSE52 extracted asset set from `/MUA2/RMSE52-Game-Files/Extracted` into a private working tree.
-- Reconstructed the 10 split tar chunks and extracted the game tree successfully.
-- Verified critical hashes after restore:
+- Reused the verified persistent RMSE52 game tree; critical hashes remain:
   - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
   - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
-- Restored tree contains 396 files including disc metadata, `sys/`, game `files/`, and manifest data.
-- Direct shell `git clone` of current GitHub `main` is blocked in this container because DNS resolution for `github.com` is unavailable. GitHub connector/API access remains available.
-- Materialized the persistent `OpenMUA2_LOCAL01.zip` full source snapshot and the runnable `MUA2_MG01_Checkpoint.zip` as a control path.
-- The MG01 Linux runner required `libbluetooth.so.3`, which is absent from the container; supplied a local no-device BlueZ shim implementing only the three imported HCI symbols so the diagnostic runner could start without changing guest/runtime code.
-- 25-second direct headless control stayed alive but produced no useful counters before timeout.
-- 60-second graphical control probe failed before guest boot because the checkpoint runtime reported `No X11 display found` / requested Dolphin host platform unavailable in this container.
-- 45-second headless control probe loaded the RMSE52 module and original `sys/main.dol` but shut down before guest execution; final counters were `native=0`, `fallback=0`, `bursts=0`, so this run is **not a performance baseline**.
-- No new FPS/speed claim is made from these environment-limited runs.
-- Historical MG01/MR01 measurements remain historical only and were not substituted for a fresh result.
+- Confirmed Xvfb and `xvfb-run` are available in the current container. The earlier “no X11 host” conclusion was environment/setup-specific, not a permanent container limitation.
+- Reproduced the zero-dispatch failure in both headless and X11/OGL modes with the restored tree. The runtime loaded RMSE52 and the native module but shut down immediately after `Booting from disc`.
+- Root cause was identified in Dolphin `DirectoryBlob.cpp`: the persistent restore stores Wii partition metadata under `disc-meta/`, while Dolphin expects `ticket.bin`, `tmd.bin`, `cert.bin`, and `h3.bin` at the partition root plus `disc/header.bin` and `disc/region.bin`.
+- Reconstructed those compatibility files **only in the private working copy**. No proprietary source asset or stored persistent archive was modified.
+- After that metadata-layout repair, the same preserved MG01 graphical runner genuinely entered RMSE52 guest execution:
+  - apploader initialized;
+  - game reported `Main as started`;
+  - GX/VI initialized;
+  - existing SMC/hash protection remained active and reported the historical protected-chunk mismatch/fallback behavior;
+  - live REL base was reported as `0x80E4A080`;
+  - automation status reached `state=running` with frames/presents advancing.
+- The native dispatch trace reached at least `18,874,368` dispatches during this early control run, proving guest/native execution is restored.
+- The control run was terminated by the outer harness/Xvfb timeout before a clean runtime shutdown, so its transient FPS/speed/status values are **not** accepted as a performance baseline.
+- Added reusable CI artifact retention:
+  - `b3ff95f0270d0ba9700164d38ee2f61525051f56` — retain Linux runtime kit;
+  - `29e567630abf5f12e6854256c9ca8f6954b1a0d8` — include current tooling/tests in that kit.
+- ModernGekko CI run `36206182149` was active at the end of this turn. Standalone Ubuntu and Windows tests had passed; full Ubuntu/Windows build-test jobs were still running.
+- The artifact path is intended to bypass the container's shell GitHub DNS limitation and provide the exact current-main runner/source pieces needed for the fresh RMSE52 native-REL baseline.
+- No new current-main FPS/speed claim is made yet.
