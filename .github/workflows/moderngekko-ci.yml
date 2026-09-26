@@ -127,4 +127,5 @@ jobs:
             project/lib/ModernGekko/vendor/dolphin/module-template
             project/lib/ModernGekko/vendor/dolphin/GXRuntime
             project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp
-            tools/merge_mua2_generated.py
+            tools
+            tests
