@@ -258,63 +258,33 @@ Status doc:
 2. The private working tree still needs the extracted-disc metadata compatibility layout before runtime tests:
    - root `ticket.bin`, `tmd.bin`, `cert.bin`, `h3.bin`;
    - `disc/header.bin` and `disc/region.bin` reconstructed from the retained raw disc header.
-3. The current merged DOL+REL source and validation module now pass the native module audit. There is no remaining generation/audit blocker.
-4. A fresh **optimized O2 current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
+3. The merged 524-chunk DOL+REL source and validation module pass the native module audit.
+4. The optimized GCC O2+IPO build compiled all **533 object files**, but the final GCC LTO link exceeds this container's memory and is killed in `lto1`. Even `-flto=1 -flto-partition=one` still OOMs.
+5. A fresh **optimized current-main native-REL game-side baseline** is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Resume/finish the already configured optimized O2 module build at:
-   `/mnt/data/mua2/current-kit/build/module-current`.
-2. Re-run the native audit on that optimized module and require PASS.
-3. Restore the metadata compatibility layout in the private RMSE52 working tree if it is not already present.
-4. Run the current-main Linux runner under Xvfb/llvmpipe with the optimized current module.
-5. Capture the fresh baseline:
-   - reported FPS / guest-frame FPS / speed;
-   - native dispatch count/rate and average burst length;
-   - JIT/interpreter fallback counts;
-   - host-call fast/fallback/slow counts;
-   - native exception counts;
-   - SMC verification/reverify counts;
-   - hottest dispatch PCs if profiling is enabled.
-6. Update `docs/CURRENT-STATUS.md` and this handoff with the measured baseline.
-7. Only after that baseline is recorded should another source-level performance change be accepted.
+1. Configure a separate optimized **Clang 17 + LLD** module build from the same audited 524-chunk merged source.
+2. Keep `RECOMPCORE_MODULE_OPT_LEVEL=2`; allow IPO only if Clang's supported path can link within the container.
+3. If Clang full IPO still exceeds memory, fall back to O2 with IPO disabled for the current Linux baseline and document that build difference explicitly.
+4. Run the native audit on the resulting optimized module and require **524/524** hash PASS.
+5. Stop there if needed; only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Retrieved the retained verified `docs/recovery/live-rel-audit.json` from current `main`.
-- Merged the freshly regenerated DOL + fixed-layout REL with current `tools/merge_mua2_generated.py`.
-- Merge result: **524 chunks** exactly (325 DOL + 199 REL).
-- Merged `main.dol` SHA-256 remains:
-  `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`.
-- Replayed REL text SHA-256 is the accepted live-text hash:
-  `05a41edb0df90f3bdf3de80c12a4b68e59786bf5c214f5d877945bffe20605f0`.
-- Merged REL metadata reports:
-  - module ID 1;
-  - version 3;
-  - 19 sections;
-  - native section 1 at linked start `0x80E4A164`;
-  - native REL text size 3,255,744 bytes.
-- Module table generation reports:
-  - **524 code ranges**;
-  - **524 hashed chunk ranges**;
-  - **89 SMC ranges**.
-- Began the optimized O2 module build and left its partial Ninja output intact for the next turn.
-- For this bounded validation turn, built a complete current-source **O0/no-IPO audit module** with Clang 17 + LLD. This binary is for correctness/audit only, not performance measurement.
-- The first Linux native-audit attempt exposed a real tooling bug: `tools/native-audit/verify_module.c` used a Windows backslash when opening generated REL text on Linux.
-- Fixed the verifier to use the platform-appropriate path separator and pushed:
-  `f34b33226897b7ec6c4e17c12c41af5e31845ba1` — `Fix native audit REL path on Linux`.
-- After that fix, the native audit **PASSed**:
-  - game ID: RMSE52;
-  - module ABI: 3;
-  - CPU ABI: 4;
-  - code ranges: **524**;
-  - verified chunk hashes: **524/524**;
-  - covered text bytes: **8,571,904**;
-  - covered REL text bytes: **3,255,744**;
-  - REL modules: **1**;
-  - uncovered-dispatch test: true.
-- The audit is explicitly **not** a game boot test.
-- OpenMUA2 tooling CI run `36239684938` for the Linux path fix completed successfully.
-- No gameplay/FPS claim was made from this turn.
+- Resumed the preserved optimized module build at:
+  `/mnt/data/mua2/current-kit/build/module-current`.
+- Confirmed the build is configured as:
+  - GCC `/usr/bin/cc`;
+  - Release;
+  - `RECOMPCORE_MODULE_OPT_LEVEL=2`;
+  - `RECOMPCORE_MODULE_ENABLE_IPO=ON`.
+- All **533 object files** are present; translation-unit compilation is complete.
+- The remaining step is only the final shared-library link.
+- The normal link uses GCC LTO and fails because `lto1` is OOM-killed.
+- A serialized relink using `-flto=1 -flto-partition=one` was already attempted and also OOM-killed.
+- This is a host-memory/linker limitation, not a generated-code compile failure and not a native-audit/hash failure.
+- No source/runtime semantics were changed in this turn.
+- No gameplay or FPS test was attempted.
