@@ -282,29 +282,34 @@ Status doc:
 8. Update `docs/CURRENT-STATUS.md` and this handoff with the measured current-main baseline.
 9. Only then resume the next source-level performance target.
 
-## Last turn update — 2026-09-25
+## Last turn update — 2026-09-26
 
 What happened:
 
-- Reused the verified persistent RMSE52 game tree; critical hashes remain:
-  - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
-  - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
-- Confirmed Xvfb and `xvfb-run` are available in the current container. The earlier “no X11 host” conclusion was environment/setup-specific, not a permanent container limitation.
-- Reproduced the zero-dispatch failure in both headless and X11/OGL modes with the restored tree. The runtime loaded RMSE52 and the native module but shut down immediately after `Booting from disc`.
-- Root cause was identified in Dolphin `DirectoryBlob.cpp`: the persistent restore stores Wii partition metadata under `disc-meta/`, while Dolphin expects `ticket.bin`, `tmd.bin`, `cert.bin`, and `h3.bin` at the partition root plus `disc/header.bin` and `disc/region.bin`.
-- Reconstructed those compatibility files **only in the private working copy**. No proprietary source asset or stored persistent archive was modified.
-- After that metadata-layout repair, the same preserved MG01 graphical runner genuinely entered RMSE52 guest execution:
-  - apploader initialized;
-  - game reported `Main as started`;
-  - GX/VI initialized;
-  - existing SMC/hash protection remained active and reported the historical protected-chunk mismatch/fallback behavior;
-  - live REL base was reported as `0x80E4A080`;
-  - automation status reached `state=running` with frames/presents advancing.
-- The native dispatch trace reached at least `18,874,368` dispatches during this early control run, proving guest/native execution is restored.
-- The control run was terminated by the outer harness/Xvfb timeout before a clean runtime shutdown, so its transient FPS/speed/status values are **not** accepted as a performance baseline.
-- Added reusable CI artifact retention:
-  - `b3ff95f0270d0ba9700164d38ee2f61525051f56` — retain Linux runtime kit;
-  - `29e567630abf5f12e6854256c9ca8f6954b1a0d8` — include current tooling/tests in that kit.
-- ModernGekko CI run `36206182149` was active at the end of this turn. Standalone Ubuntu and Windows tests had passed; full Ubuntu/Windows build-test jobs were still running.
-- The artifact path is intended to bypass the container's shell GitHub DNS limitation and provide the exact current-main runner/source pieces needed for the fresh RMSE52 native-REL baseline.
-- No new current-main FPS/speed claim is made yet.
+- ModernGekko CI run `36206182149` for commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8` completed **successfully**.
+- All four jobs passed:
+  - standalone Ubuntu;
+  - standalone Windows;
+  - full Ubuntu build/test;
+  - full Windows build/test.
+- Downloaded artifact `moderngekko-linux-29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
+- Verified artifact SHA-256 exactly matches GitHub's recorded digest:
+  `e7ee235ee4d24942eb563c4180c4c2d5058f649d087dc1cad6d1852db708802b`.
+- Extracted the kit into the current workspace and verified it contains:
+  - current Linux `moderngekko-run`;
+  - 2,628 runtime `Sys` files;
+  - current DolRecomp sources;
+  - current StaticRecomp/module-template/GXRuntime build sources;
+  - current MUA2 tooling and tests.
+- Persisted the exact CI artifact in private Library storage at:
+  `/MUA2/Build-Kits/moderngekko-linux-29e567630abf5f12e6854256c9ca8f6954b1a0d8.zip`.
+- No game-side baseline was attempted in this deliberately smaller turn.
+
+## Next exact turn
+
+1. Use the persisted/extracted current-main Linux kit.
+2. Configure and build current DolRecomp locally with the C backend.
+3. Regenerate the verified RMSE52 DOL and fixed-layout REL:
+   - REL base `0x80E4A080`;
+   - REL BSS base `0x811BCAC0`.
+4. Stop after generation/build verification if the turn is getting large; do not start an extended gameplay benchmark until the current 524-chunk module has passed native audit.
