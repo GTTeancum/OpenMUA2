@@ -112,3 +112,19 @@ jobs:
           --output-on-failure
           --timeout 300
           -E "fullbench|fuzzer|zstreamtest"
+
+      - name: Upload Linux runtime kit
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: moderngekko-linux-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            build/moderngekko/moderngekko-run
+            build/moderngekko/Sys
+            project/lib/DolRecomp
+            project/lib/ModernGekko/vendor/dolphin/module-template
+            project/lib/ModernGekko/vendor/dolphin/GXRuntime
+            project/lib/ModernGekko/vendor/dolphin/Source/Core/Core/PowerPC/StaticRecomp
+            tools/merge_mua2_generated.py
