@@ -262,29 +262,47 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. The GCC O2/no-IPO build currently has **114 object files** completed.
+6. Durable GCC O2/no-IPO progress is now **119 total object files**:
+   - **112 generated chunk objects**;
+   - **7 support/runtime objects**.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the GCC O2/no-IPO build incrementally from the existing **114-object** state.
-2. Use one bounded compile slice, then explicitly verify no active Ninja/GCC workers remain.
-3. Do not retry GCC LTO or Clang unless the GCC O2/no-IPO route fails.
-4. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
-5. Stop after the optimized audit if needed; gameplay comes only afterward.
+1. Continue the GCC O2/no-IPO build using **finite explicit object batches**, not timeout-killed whole-target Ninja runs.
+2. Select the next missing chunk objects from the generated source list and compile a batch small enough for Ninja to exit normally.
+3. After each batch, verify:
+   - object count increased;
+   - `ninja -t deps` records the outputs as VALID;
+   - no active build workers remain.
+4. Once all objects are complete, link `gRMSE52_recomp.so`.
+5. Run the native audit and require **524/524** chunk-hash PASS.
+6. Gameplay comes only after the optimized module passes audit.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Resumed the GCC O2/no-IPO build from **103 completed objects**.
-- Ran one bounded Ninja compile slice at `-j5`.
-- The execution cap interrupted the wrapper after six units had visibly completed.
-- Several in-flight compiler workers remained briefly after the timeout.
-- Completed outputs were preserved and, after cleanup, the build advanced to **114 object files**.
-- No `gRMSE52_recomp.so` has linked yet.
-- Active compiler workers were explicitly terminated after the timeout.
-- Final verification confirmed **no active Ninja, GCC/cc, cc1, collect2, linker, or LTO worker remains running**.
-- Net progress this turn: **+11 objects**.
+- Started from the previous **114-object** checkpoint.
+- A normal timeout-bounded whole-target Ninja run rebuilt five objects but left the total object count unchanged.
+- Diagnosed the cause of the misleading prior progress behavior:
+  - when the outer timeout kills Ninja, some compiler children can finish after Ninja has stopped tracking the build;
+  - raw `.o` counts can therefore include outputs whose bookkeeping is incomplete or whose final state is not a reliable measure of forward progress;
+  - later Ninja invocations may rebuild those same files.
+- Verified this directly on previously rebuilt chunk objects and Ninja dependency/log state.
+- Changed the build method to **finite explicit object batches** so Ninja can exit normally instead of being killed mid-build.
+- Compiled the next five genuinely missing chunk objects successfully in one clean batch:
+  - `chunk_0053_text1_800D6900.c.o`
+  - `chunk_0054_rel1_80F22164.c.o`
+  - `chunk_0054_text1_800DA900.c.o`
+  - `chunk_0055_rel1_80F26164.c.o`
+  - `chunk_0055_text1_800DE900.c.o`
+- Post-batch state:
+  - **119 total objects**;
+  - **112 generated chunk objects**;
+  - **119 VALID dependency records** for module objects;
+  - no optimized `gRMSE52_recomp.so` yet.
+- Re-asked Ninja for a previously suspect object target; result was `ninja: no work to do.`, confirming the clean-batch method produces durable progress.
+- Final process verification confirmed no active Ninja/GCC/cc1/linker/LTO workers remain.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
