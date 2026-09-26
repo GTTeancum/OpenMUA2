@@ -286,30 +286,39 @@ Status doc:
 
 What happened:
 
-- ModernGekko CI run `36206182149` for commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8` completed **successfully**.
-- All four jobs passed:
-  - standalone Ubuntu;
-  - standalone Windows;
-  - full Ubuntu build/test;
-  - full Windows build/test.
-- Downloaded artifact `moderngekko-linux-29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
-- Verified artifact SHA-256 exactly matches GitHub's recorded digest:
-  `e7ee235ee4d24942eb563c4180c4c2d5058f649d087dc1cad6d1852db708802b`.
-- Extracted the kit into the current workspace and verified it contains:
-  - current Linux `moderngekko-run`;
-  - 2,628 runtime `Sys` files;
-  - current DolRecomp sources;
-  - current StaticRecomp/module-template/GXRuntime build sources;
-  - current MUA2 tooling and tests.
-- Persisted the exact CI artifact in private Library storage at:
-  `/MUA2/Build-Kits/moderngekko-linux-29e567630abf5f12e6854256c9ca8f6954b1a0d8.zip`.
-- No game-side baseline was attempted in this deliberately smaller turn.
+- Used the persisted current-main Linux kit from commit `29e567630abf5f12e6854256c9ca8f6954b1a0d8`.
+- Configured and built current DolRecomp locally with GCC 14 / Ninja / Release C backend.
+- DolRecomp validation: **19/19 CTests passed**.
+- Current local DolRecomp SHA-256:
+  `a76483483d8a0e0d13cca89e16386f77e341da7add1fc3f1ab597b821e2bb49e`.
+- Reconstructed the persistent RMSE52 game tree from the ten split tar chunks.
+- Re-verified the pinned originals:
+  - `sys/main.dol`: `0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741`;
+  - `files/Marvel-rev-fin-plf2.rel`: `5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f`.
+- Regenerated the DOL with the current recompiler:
+  - Broadway CPU profile;
+  - C backend;
+  - **325 generated chunks**;
+  - copied generated `main.dol` still matches the pinned original SHA-256.
+- Regenerated the REL with the accepted fixed live layout:
+  - `--rel-base 0x80E4A080`;
+  - `--rel-bss-base 0x811BCAC0`;
+  - executable section starts at `0x80E4A164`;
+  - executable text size `0x0031ADC0` / 3,255,744 bytes;
+  - 95,772 relocations applied;
+  - 813,936 instructions decoded;
+  - **199 generated chunks**;
+  - zero unknown instructions.
+- Combined expected generated chunk count is therefore **524** (325 DOL + 199 REL).
+- SMC candidate lists remain present: 69 DOL entries and 22 REL entries in the generated SMC lists.
+- Generated working tree is private/local only; no proprietary generated game code was committed.
+- No combined module build, native audit, or gameplay benchmark was started in this deliberately bounded turn.
 
 ## Next exact turn
 
-1. Use the persisted/extracted current-main Linux kit.
-2. Configure and build current DolRecomp locally with the C backend.
-3. Regenerate the verified RMSE52 DOL and fixed-layout REL:
-   - REL base `0x80E4A080`;
-   - REL BSS base `0x811BCAC0`.
-4. Stop after generation/build verification if the turn is getting large; do not start an extended gameplay benchmark until the current 524-chunk module has passed native audit.
+1. Retrieve the retained verified live REL audit used by the accepted merge path.
+2. Merge the freshly generated DOL + REL outputs with `tools/merge_mua2_generated.py`.
+3. Verify the merged output reports exactly **524 chunks** and one REL module.
+4. Build the current module with the retained current-main module-template/GXRuntime/StaticRecomp sources.
+5. Run the native module audit and require PASS before any gameplay run.
+6. Stop there if the turn is getting large; only after the audit passes should the next turn launch the current-main RMSE52 benchmark.
