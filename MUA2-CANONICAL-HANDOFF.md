@@ -262,35 +262,44 @@ Status doc:
 4. GCC O2+IPO is not practical in this container:
    - default LTO partitioning OOMs;
    - `-flto-partition=one` OOMs;
-   - `-flto-partition=none` is memory-safe but remains CPU-bound for several minutes without linking;
-   - `-flto-partition=1to1` is memory-safe and completes WPA, but then schedules **531 serial LTRANS jobs**, making it unsuitable for the bounded-turn workflow.
-5. The separate Clang 17 + LLD **O2/no-IPO** build remains configured at `/mnt/data/mua2/current-kit/build/module-current-clang` and is now the preferred route to the Linux baseline.
-6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
+   - `-flto-partition=none` is memory-safe but too slow;
+   - `-flto-partition=1to1` is memory-safe but expands into 531 serial LTRANS jobs.
+5. The new preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
+   `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
+   It compiles generated chunks materially faster than the Clang O2/no-IPO build and avoids the LTO link bottleneck entirely.
+6. The GCC O2/no-IPO build currently has **22 object files** completed.
+7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the already configured Clang 17 + LLD O2/no-IPO module build incrementally.
-2. Do not retry GCC LTO unless the container memory/CPU budget materially changes.
-3. Once the Clang module links, run the native audit and require **524/524** chunk-hash PASS.
-4. Stop after the optimized audit if the turn is getting large.
-5. Only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
+1. Continue the GCC O2/no-IPO build incrementally from:
+   `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
+2. Use bounded compile slices and ensure no compiler/Ninja process is left running after each turn.
+3. Do not retry GCC LTO or Clang unless the GCC O2/no-IPO route fails.
+4. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
+5. Stop after the optimized audit if the turn is getting large.
+6. Only after the optimized module passes audit should the following turn launch RMSE52 under Xvfb/llvmpipe.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- Reused the already-complete **533 GCC O2+IPO object files**; no generated chunk recompilation was required for this probe.
-- Retried the exact final link with:
-  `-flto=1 -flto-partition=1to1`.
-- The link did **not** OOM.
-- GCC completed the WPA phase successfully.
-- It then reported:
-  `using serial compilation of 531 LTRANS jobs`.
-- The first LTRANS job began normally, but the linker could not plausibly complete all 531 serial jobs inside the requested bounded turn.
-- The link's own 90-second timeout terminated it cleanly.
-- No usable `gRMSE52_recomp.so` was produced; the intermediate output remained zero-length.
-- No linker/LTO process was left running in the background.
-- Conclusion: `1to1` solves memory pressure but creates an unacceptable serial-link-time problem here.
-- The Clang 17 + LLD O2/no-IPO path is therefore the preferred next route.
+- Began by resuming the previously configured Clang 17 + LLD O2/no-IPO build.
+- Clang remained correct but extremely slow on the generated translation units; a bounded slice advanced only one additional object.
+- Confirmed the old GCC O2+IPO objects are slim-LTO objects with zero native `.text`, so they cannot simply be relinked without LTO.
+- Configured a separate **GCC 14 O2/no-IPO** build from the exact same audited 524-chunk merged source:
+  `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
+- Configuration completed successfully with:
+  - Release;
+  - `RECOMPCORE_MODULE_OPT_LEVEL=2`;
+  - `RECOMPCORE_MODULE_ENABLE_IPO=OFF`.
+- Module table generation remains exactly:
+  - 524 code ranges;
+  - 89 SMC ranges;
+  - 524 hashed chunk ranges.
+- A short initial GCC O2/no-IPO probe reached 13 objects.
+- A subsequent bounded compile slice advanced the build to **22 completed object files**.
+- This is materially faster than the Clang path and avoids the final LTO-memory/serial-LTRANS problem.
+- All Ninja/GCC worker processes were stopped cleanly at the end of the turn.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
