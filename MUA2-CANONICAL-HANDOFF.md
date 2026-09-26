@@ -262,13 +262,13 @@ Status doc:
 4. GCC O2+IPO is not practical in this container because of LTO memory/time behavior.
 5. The preferred optimized Linux route is **GCC O2 with IPO disabled**, configured at:
    `/mnt/data/mua2/current-kit/build/module-current-gcc-o2-noipo`.
-6. The GCC O2/no-IPO build currently has **40 object files** completed.
+6. The GCC O2/no-IPO build currently has **45 object files** completed.
 7. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. Continue the GCC O2/no-IPO build incrementally from the existing **40-object** state.
-2. Use one bounded compile slice, then explicitly terminate and verify any surviving Ninja/GCC workers.
+1. Continue the GCC O2/no-IPO build incrementally from the existing **45-object** state.
+2. Use one bounded compile slice, then explicitly verify no Ninja/GCC workers remain.
 3. Do not retry GCC LTO or Clang unless the GCC O2/no-IPO route fails.
 4. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
 5. Stop after the optimized audit if needed; gameplay comes only afterward.
@@ -277,13 +277,13 @@ Status doc:
 
 What happened:
 
-- Resumed the existing GCC O2/no-IPO build from **30 completed objects**.
+- Resumed the GCC O2/no-IPO build from **40 completed objects**.
 - Ran one bounded Ninja compile slice at `-j5`.
-- The outer execution cap fired before the wrapper's cleanup section ran.
-- The slice still preserved progress to **40 completed object files**.
-- Several Ninja/GCC/cc1 workers briefly remained alive after the timeout; they were explicitly terminated afterward.
-- Final process check confirmed **no Ninja, GCC, cc1, linker, collect2, or LTO worker remains running**.
+- The outer execution timeout stopped the slice after five additional generated translation units completed.
+- The build now contains **45 completed object files**.
+- A cleanup command briefly self-matched and exited with SIGTERM, so a separate process verification was run afterward.
+- Final verification confirmed **no Ninja, GCC, cc1, collect2, linker, or LTO worker remains running**.
 - No `gRMSE52_recomp.so` has linked yet.
-- Net progress this turn: **+10 objects**.
+- Net progress this turn: **+5 objects**.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
