@@ -256,50 +256,54 @@ Status doc:
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
 2. The current private build checkpoint is persisted at:
-   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-36obj.tar.zst`.
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
 3. That checkpoint contains:
    - merged/regenerated 524-chunk source;
    - current GCC O2/no-IPO CMake/Ninja build tree;
    - current live REL audit JSON;
-   - **36 durable total objects / 29 generated chunk objects**.
+   - **40 durable total objects / 33 generated chunk objects**.
 4. Checkpoint archive SHA-256:
-   `421dbfbedf2d3253485e0a3cc22b77ef9eecf76d92d3dcaab92c672e87b80441`.
+   `4f2965bc5c3ca6e2635e73e0f95afab843be543c506eb390da659ad52b6b58cc`.
 5. GCC O2+IPO remains unsuitable in this container because of LTO memory/time behavior.
 6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
-1. If local state is missing, restore `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-36obj.tar.zst`.
-2. Continue GCC O2/no-IPO from **36 total / 29 chunk objects**.
-3. Prefer finite explicit batches or a continuously owned Ninja process that is stopped cleanly before checkpointing.
-4. After meaningful progress, create and upload a newer private build checkpoint so container resets cannot erase the work.
-5. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
-6. Gameplay comes only after the optimized module passes audit.
+1. If local state is missing, restore:
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
+2. Continue GCC O2/no-IPO from **40 total / 33 chunk objects**.
+3. Use finite explicit object batches small enough for Ninja to exit normally.
+4. Verify every new target returns `ninja: no work to do.` and `ninja -t deps` reports `(VALID)`.
+5. After meaningful progress, create and upload a newer private build checkpoint.
+6. Once the module links, run the native audit and require **524/524** chunk-hash PASS.
+7. Gameplay comes only after the optimized module passes audit.
 
 ## Last turn update — 2026-09-26
 
 What happened:
 
-- User chose to continue in this chat rather than hand off to Work mode.
-- Restored from the private persistent **28-object** checkpoint.
+- The container-local build tree was absent again at the start of the turn.
+- Restored the private **36-object** checkpoint and the matching current Linux build kit.
 - Verified restored state:
-  - **28 total objects**;
-  - **21 generated chunk objects**.
-- Attempted an 8-object advance:
-  - first four-object batch completed normally;
-  - second four-object batch hit the per-call timeout before producing durable outputs.
-- Recovered cleanly by compiling the remaining four missing objects as two explicit two-object batches.
-- Durable build state now:
   - **36 total objects**;
-  - **29 generated chunk objects**;
-  - all 36 module dependency records report `(VALID)`;
-  - no optimized `gRMSE52_recomp.so` has linked yet.
-- Created a new private persistent checkpoint:
-  `MUA2-BUILD-CHECKPOINT-36obj.tar.zst`.
+  - **29 generated chunk objects**.
+- Confirmed the saved Ninja graph remained healthy after the restore.
+- Selected the next four genuinely missing generated chunk targets:
+  - `chunk_0014_text1_8003A900.c.o`
+  - `chunk_0015_rel1_80E86164.c.o`
+  - `chunk_0015_text1_8003E900.c.o`
+  - `chunk_0016_rel1_80E8A164.c.o`
+- Compiled all four as one finite explicit `ninja -j4` batch; Ninja exited normally.
+- Re-requested all four targets; every one returned:
+  `ninja: no work to do.`
+- Verified all four dependency records report `(VALID)`.
+- Durable build state now:
+  - **40 total objects**;
+  - **33 generated chunk objects**.
+- Created and uploaded a new persistent private checkpoint:
+  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-40obj.tar.zst`.
 - Archive size: ~45 MB.
 - Archive SHA-256:
-  `421dbfbedf2d3253485e0a3cc22b77ef9eecf76d92d3dcaab92c672e87b80441`.
-- Uploaded it to:
-  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-36obj.tar.zst`.
+  `4f2965bc5c3ca6e2635e73e0f95afab843be543c506eb390da659ad52b6b58cc`.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
