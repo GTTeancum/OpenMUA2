@@ -257,6 +257,14 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(o.jobs,2)
         self.assertEqual(o.module_opt,2)
         self.assertEqual(o.dispatch_lookup,'indexed')
+    def test_inline_experiment_has_separate_output(self):
+        parser = w.make_parser()
+        baseline = parser.parse_args(['build', '--native-rel'])
+        experiment = parser.parse_args(['build', '--native-rel', '--module-msvc-inline', '1'])
+        self.assertEqual(baseline.module_msvc_inline, 0)
+        self.assertNotEqual(w.module_build_name(baseline), w.module_build_name(experiment))
+        self.assertEqual(w.module_build_name(experiment), 'module-mg01-rel-o2-ob1')
+
     def test_write_json_replaces_only_destination(self):
         p=self.root/'new.json';w.write_json(p,{'a':1});w.write_json(p,{'a':2})
         self.assertEqual(json.loads(p.read_text()),{'a':2})

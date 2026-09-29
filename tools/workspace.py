@@ -608,6 +608,10 @@ def module_build_name(options: argparse.Namespace) -> str:
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', suffix):
             raise ValueError('--module-suffix may only contain letters, numbers, dot, underscore, and dash')
         return 'module-mg01' + rel + '-' + suffix
+    inline = getattr(options, 'module_msvc_inline', 0)
+    if inline:
+        ipo = '-ipo' if getattr(options, 'module_ipo', False) else ''
+        return f'module-mg01{rel}-o{options.module_opt}-ob{inline}{ipo}'
     if getattr(options, 'module_ipo', False):
         return f'module-mg01{rel}-o{options.module_opt}-ipo'
     if options.module_opt:
@@ -653,6 +657,7 @@ def build_module(root: Path, options: argparse.Namespace, generated: Path, game:
                     ['-DGAME_ID=RMSE52', '-DGENERATED_DIR=' + str(generated),
                      '-DRECOMPCORE_MODULE_ENABLE_IPO=' + ('ON' if options.module_ipo else 'OFF'),
                      '-DRECOMPCORE_MODULE_OPT_LEVEL=' + str(options.module_opt),
+                     '-DRECOMPCORE_MODULE_MSVC_INLINE_LEVEL=' + str(options.module_msvc_inline),
                      '-DRECOMPCORE_MODULE_MSVC_OD_CHUNKS=' +
                      ';'.join(MSVC_MODULE_OD_CHUNKS.get(GAME_ID, []))], module=True)
     cmake_build(root, out, options, retries=getattr(options, 'module_build_retries', 0))
@@ -685,7 +690,8 @@ def build(root: Path, options: argparse.Namespace) -> None:
                'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
                'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel),
-               'module_opt': options.module_opt, 'dispatch_lookup': options.dispatch_lookup}
+               'module_opt': options.module_opt, 'dispatch_lookup': options.dispatch_lookup,
+               'module_msvc_inline': options.module_msvc_inline}
     write_json(within(root, '.local/receipts/build.json'), receipt)
     print('\nOpenMUA2 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
@@ -866,6 +872,8 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--module-opt', type=int, choices=(0, 1, 2, 3), default=2)
         s.add_argument('--dispatch-lookup', choices=('indexed', 'linear'), default='indexed',
                        help='Generated native dispatch lookup; indexed is the performance default.')
+        s.add_argument('--module-msvc-inline', type=int, choices=(0, 1, 2), default=0,
+                       help='Experimental MSVC inline expansion; nonzero levels use separate build outputs.')
         s.add_argument('--module-ipo', action='store_true')
         s.add_argument('--module-suffix')
         s.add_argument('--module-build-retries', type=int, default=0)

@@ -2,6 +2,39 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## MSVC helper-inline experiment in progress — 2026-09-29
+
+The sustained-30 goal remains active. Added opt-in `--module-msvc-inline 1`
+with separate module output and build-receipt metadata; default remains Ob0.
+Existing strict floating point, IPO-off setting and chunk0201 Od workaround
+are unchanged. Windows Build.cmd --native-rel --module-msvc-inline 1
+--module-suffix o2-ob1 --jobs 2 is still running in the local workspace.
+Runtime compilation/link succeeded and ModernGekko tests passed 32/32;
+recompiler tests passed 19/19. Tooling suite ran 110 tests, 109 passed and one
+skipped; after adding output-isolation coverage, workspace suite ran 42 tests,
+41 passed and one skipped. No complete candidate module or FPS result yet.
+
+A separate MSVC O2/Ob1/fp:strict compile of the historically troublesome
+chunk0165 succeeded (769562-byte private object). Full module compilation
+has started (534 build steps). Nonfatal dependency/CMake warnings and D9025
+were observed. Private log: .local/logs/combat-ob1-build.log. Keep the build
+running; inspect completion before restarting anything. Its terminal session
+is 60093. Probe session 83777 completed with exit 0.
+
+The rebuilt runner SHA256 is
+9c5af2645a5544bdea5e87dba76e27ada82d70b3539176423740349def6fffba.
+The build receipt remains stale until the full Build.cmd finishes its module
+audit. Baseline DLL remains .local/build/windows-x64/module-mg01-rel-o2/
+gRMSE52_recomp.dll. Candidate output is module-mg01-rel-o2-ob1 in the same
+build root. Existing user diagnostic edits were stashed during runtime build,
+then restored; they are not in this runner or this checkpoint commit. The
+preservation stash remains available. Build-With-Log.cmd is untouched.
+
+Next: finish module build/audit, replay the same combat save, and repeat the
+baseline beside the candidate. Another unrelated project was compiling;
+record contention and do not stop it. Inspect native captures before claiming
+correctness. No production speedup, audio pass, or sustained-30 pass is claimed.
+
 ## Combat timing and CPU comparison — 2026-09-29
 
 Goal remains active; no production speedup or sustained-30 pass is claimed.

@@ -88,3 +88,13 @@ missing/overflowed traces, counter gaps/rewinds and reversed timestamps rather
 than silently removing them. It reports average and rolling FPS, frame-time
 tails, 1% lows, long-frame episodes and emulated/host elapsed time. No automatic
 pass flag substitutes for combat visuals, normal speed or sustained validation.
+
+## MSVC inline experiment
+
+`Build.cmd --native-rel --module-msvc-inline 1` builds an isolated O2/Ob1
+module through the existing Windows toolchain. The default remains Ob0;
+strict floating-point semantics and the documented per-chunk Od workaround
+are preserved. Record the exact build result and compare the same private
+combat route against the baseline before changing production defaults.
+The build receipt records the requested inline level. This option by itself
+is not evidence of a performance improvement.

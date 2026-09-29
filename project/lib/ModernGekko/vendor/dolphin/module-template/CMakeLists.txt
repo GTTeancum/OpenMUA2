@@ -132,6 +132,12 @@ set(RECOMPCORE_MODULE_OPT_LEVEL "2" CACHE STRING
 set_property(CACHE RECOMPCORE_MODULE_OPT_LEVEL PROPERTY STRINGS 0 1 2 3)
 set(RECOMPCORE_MODULE_MSVC_OD_CHUNKS "" CACHE STRING
     "Semicolon-separated generated chunk filenames to compile with /Od under MSVC")
+set(RECOMPCORE_MODULE_MSVC_INLINE_LEVEL "0" CACHE STRING
+    "MSVC inline expansion level; 0 preserves the compiler-crash workaround")
+set_property(CACHE RECOMPCORE_MODULE_MSVC_INLINE_LEVEL PROPERTY STRINGS 0 1 2)
+if(NOT RECOMPCORE_MODULE_MSVC_INLINE_LEVEL MATCHES "^[0-2]$")
+  message(FATAL_ERROR "RECOMPCORE_MODULE_MSVC_INLINE_LEVEL must be 0, 1, or 2")
+endif()
 if(NOT RECOMPCORE_MODULE_OPT_LEVEL MATCHES "^[0-3]$")
   message(FATAL_ERROR
     "RECOMPCORE_MODULE_OPT_LEVEL must be one of 0, 1, 2, or 3")
@@ -178,7 +184,7 @@ if(MSVC)
   elseif(RECOMPCORE_MODULE_OPT_LEVEL STREQUAL "1")
     target_compile_options(${MODULE_NAME} PRIVATE /O1 /fp:strict)
   else()
-    target_compile_options(${MODULE_NAME} PRIVATE /O2 /Ob0 /fp:strict)
+    target_compile_options(${MODULE_NAME} PRIVATE /O2 /Ob${RECOMPCORE_MODULE_MSVC_INLINE_LEVEL} /fp:strict)
   endif()
   foreach(_module_od_chunk IN LISTS RECOMPCORE_MODULE_MSVC_OD_CHUNKS)
     set(_module_od_source "${GENERATED_DIR}/chunks/${_module_od_chunk}")

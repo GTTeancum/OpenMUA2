@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "status": "module_build_running",
+  "goal_met": false,
+  "runtime_build": "passed",
+  "runtime_tests": {
+    "passed": 32,
+    "failed": 0
+  },
+  "recompiler_tests": {
+    "passed": 19,
+    "failed": 0
+  },
+  "tooling_tests": {
+    "run": 110,
+    "passed": 109,
+    "skipped": 1
+  },
+  "workspace_tests_after_isolation_test": {
+    "run": 42,
+    "passed": 41,
+    "skipped": 1
+  },
+  "probe_0165": {
+    "exit_code": 0,
+    "object_bytes": 769562
+  },
+  "runtime_sha256": "9c5af2645a5544bdea5e87dba76e27ada82d70b3539176423740349def6fffba",
+  "module_inline_level": 1,
+  "production_default_inline_level": 0,
+  "module_opt": 2,
+  "fp": "strict",
+  "ipo": false,
+  "new_combat_result": null
+}
