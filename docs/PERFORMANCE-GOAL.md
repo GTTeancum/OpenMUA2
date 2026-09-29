@@ -98,3 +98,10 @@ are preserved. Record the exact build result and compare the same private
 combat route against the baseline before changing production defaults.
 The build receipt records the requested inline level. This option by itself
 is not evidence of a performance improvement.
+
+For audio-enabled execution, use `--windowed --audio Cubeb`. This launches
+the game window but all replay input remains inside the target process. The
+headless runtime forces silent audio, so the runner rejects audible-backend
+requests without --windowed. Check the actual backend in runtime.log; a
+requested backend in run.json alone is not proof of activation. Successful
+audio-enabled execution does not establish audible quality or synchronization.

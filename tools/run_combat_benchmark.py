@@ -18,6 +18,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ("runner","module","game","user","state","route","output"):
         p.add_argument("--"+name,required=True,type=Path)
+    p.add_argument("--windowed",action="store_true",help="Create the game window; inputs remain process-local.")
+    p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed for sound.")
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
@@ -25,6 +27,8 @@ def main():
     p.add_argument("--jit-diagnostic",action="store_true")
     p.add_argument("--profile-dispatch",action="store_true")
     args=p.parse_args()
+    if not args.windowed and args.audio not in ("Null", "No Audio Output"):
+        p.error("audio output requires --windowed: the runtime forces silent audio when headless")
     root=args.output.resolve(); root.mkdir(parents=True,exist_ok=False)
     for name in ("commands","processed","failed","shots"):(root/name).mkdir()
     shutil.copytree(args.user,root/"user")
@@ -40,8 +44,9 @@ def main():
     if not args.no_trace:env["MODERNGEKKO_FRAME_TIMES"]=str(root/"frames.csv")
     if args.jit_diagnostic:env["MODERNGEKKO_STATICRECOMP"]="0"
     if args.profile_dispatch:env["STATICRECOMP_PROFILE_DISPATCH"]="1"
-    cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--module",str(args.module.resolve()),"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio","Null","--headless","--load-state",str(args.state.resolve())]
-    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"profile_dispatch":args.profile_dispatch,"screenshots":not args.no_screenshots}
+    cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--module",str(args.module.resolve()),"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio",args.audio,"--load-state",str(args.state.resolve())]
+    if not args.windowed:cmd.append("--headless")
+    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"profile_dispatch":args.profile_dispatch,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:

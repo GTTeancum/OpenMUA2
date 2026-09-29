@@ -2,6 +2,37 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Rebuilt-runtime combat and audio-path checks — 2026-09-29
+
+The Ob1 module build is still live in terminal session 60093; it has passed
+chunk0165 and chunk0167 with no reported compile failure. Large generated
+functions can take many minutes and several GB of compiler memory. Do not
+restart this build merely because its log is temporarily unchanged.
+
+While it compiles, the rebuilt runtime completed two baseline-module combat
+replays, both exit 0 and route_completed=true. All four native screenshots
+from each replay were inspected in chronological order: heroes, Doombots,
+attacks, damage numbers/flashes, HUD, scenery and destructible props appeared.
+These are sampled captures, not inspection of every frame. The headless run
+used No Audio Output; the windowed run reported Cubeb. Audio-enabled execution
+is confirmed, but audible quality/synchronization is not. No host input or
+screen capture was used; windowed replay used process-local automation.
+
+Added --windowed and --audio to tools/run_combat_benchmark.py. The tool rejects
+non-silent audio requests in headless mode because the runtime forces silent
+audio there. CLI rejection was checked (exit 2 before output creation), Python
+compilation passed, and the windowed Cubeb replay completed. Defaults preserve
+silent headless timing runs.
+
+Common frames 11472..11625 under concurrent compiler load measured 5.335 FPS
+headless and 6.320 FPS windowed/Cubeb. These are functional checks under load,
+not a controlled compiler comparison or a performance improvement. Private
+runs: .local/automation/combat-ob1-control-build-load and
+.local/automation/combat-ob1-control-audio-build-load. Both use the unchanged
+baseline Ob0 module. The Ob1 module has not linked/audited or been benchmarked.
+Next: finish the live build, audit, compare baseline/candidate without compiler
+load, and continue toward the unchanged sustained-30 combat goal.
+
 ## MSVC helper-inline experiment in progress — 2026-09-29
 
 The sustained-30 goal remains active. Added opt-in `--module-msvc-inline 1`

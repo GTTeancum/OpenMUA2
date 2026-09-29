@@ -1,0 +1,86 @@
+{
+  "scope": "baseline runtime functional checks under concurrent compiler load; not optimization comparison",
+  "goal_met": false,
+  "runs": {
+    "combat-ob1-control-build-load": {
+      "runner_sha256": "9c5af2645a5544bdea5e87dba76e27ada82d70b3539176423740349def6fffba",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "route_completed": true,
+      "exit_code": 0,
+      "analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3721617900,
+        "intervals": 153,
+        "seconds": 28.678265,
+        "average_fps": 5.335050778002087,
+        "frame_ms": {
+          "median": 183.19950000000063,
+          "p95": 278.7071000000019,
+          "p99": 318.37260000000003,
+          "max": 319.5096000000004
+        },
+        "one_percent_low_fps": 3.135375152340038,
+        "rolling_1s_fps_min": 4,
+        "rolling_1s_fps_median": 5,
+        "frames_over_33_334ms": 153,
+        "frames_over_50ms": 153,
+        "longest_consecutive_over_50ms_seconds": 28.678265,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.1051,
+        "emulation_speed_percent": 17.801286095933627
+      },
+      "native_captures_inspected": [
+        "start.png",
+        "attack-2.png",
+        "attack-5.png",
+        "attack-9.png"
+      ],
+      "audio_backend": "No Audio Output",
+      "audible_quality_verified": false
+    },
+    "combat-ob1-control-audio-build-load": {
+      "runner_sha256": "9c5af2645a5544bdea5e87dba76e27ada82d70b3539176423740349def6fffba",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "route_completed": true,
+      "exit_code": 0,
+      "analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3709455750,
+        "intervals": 153,
+        "seconds": 24.2085372,
+        "average_fps": 6.320084470035638,
+        "frame_ms": {
+          "median": 157.7319000000017,
+          "p95": 235.14180000000007,
+          "p99": 253.63630000000015,
+          "max": 283.48850000000004
+        },
+        "one_percent_low_fps": 3.723529429287196,
+        "rolling_1s_fps_min": 5,
+        "rolling_1s_fps_median": 6,
+        "frames_over_33_334ms": 153,
+        "frames_over_50ms": 153,
+        "longest_consecutive_over_50ms_seconds": 24.2085372,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.088416666666666,
+        "emulation_speed_percent": 21.019100099392485
+      },
+      "native_captures_inspected": [
+        "start.png",
+        "attack-2.png",
+        "attack-5.png",
+        "attack-9.png"
+      ],
+      "audio_backend": "Cubeb",
+      "audible_quality_verified": false
+    }
+  }
+}
