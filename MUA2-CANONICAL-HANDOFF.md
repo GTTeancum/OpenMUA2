@@ -256,54 +256,56 @@ Status doc:
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
 2. The current private build checkpoint is persisted at:
-   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-48obj.tar.zst`.
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
 3. That checkpoint contains:
    - merged/regenerated 524-chunk source;
    - current GCC O2/no-IPO CMake/Ninja build tree;
    - current live REL audit JSON;
-   - **48 durable total objects / 41 generated chunk objects**.
+   - **52 durable total objects / 45 generated chunk objects**.
 4. Checkpoint archive SHA-256:
-   `cef43c1af70f39b3bca44b46ed3c42fe1b66467c75bc12f3d5f01816971d3704`.
+   `c0b6dd25fe34bc03ff0a0d98fa7d77ee39ef5614d0257273a4ff722965fc5869`.
 5. GCC O2+IPO remains unsuitable in this container because of LTO memory/time behavior.
 6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
 ## Next exact turn
 
 1. If local state is missing, restore:
-   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-48obj.tar.zst`.
-2. Continue GCC O2/no-IPO from **48 total / 41 generated chunk objects**.
+   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
+2. Continue GCC O2/no-IPO from **52 total / 45 generated chunk objects**.
 3. Compile the next finite explicit batch of missing chunk objects, small enough for Ninja to exit normally.
 4. Verify each new target returns `ninja: no work to do.` and `ninja -t deps` reports `(VALID)`.
 5. Persist a newer private checkpoint after meaningful progress.
 6. Once the optimized module links, run the native audit and require **524/524** chunk-hash PASS.
 7. Gameplay comes only after the optimized module passes audit.
 
-## Last turn update — 2026-09-26
+## Last turn update — 2026-09-29
 
 What happened:
 
-- Continued from the persisted **44-object** private checkpoint.
-- Verified local state was present at:
-  - **44 total objects**;
-  - **37 generated chunk objects**.
+- User explicitly asked whether the project can be pushed to Git. Confirmed GitHub write access through the connected GitHub integration.
+- The local container had reset, so the private **48-object** checkpoint was restored from Library storage.
+- Restored state verified exactly:
+  - **48 total objects**;
+  - **41 generated chunk objects**;
+  - checkpoint SHA-256 matched `cef43c1af70f39b3bca44b46ed3c42fe1b66467c75bc12f3d5f01816971d3704`.
 - Selected the next four genuinely missing generated chunk targets:
-  - `chunk_0018_text1_8004A900.c.o`
-  - `chunk_0019_rel1_80E96164.c.o`
-  - `chunk_0019_text1_8004E900.c.o`
-  - `chunk_0020_rel1_80E9A164.c.o`
+  - `chunk_0020_text1_80052900.c.o`
+  - `chunk_0021_rel1_80E9E164.c.o`
+  - `chunk_0021_text1_80056900.c.o`
+  - `chunk_0022_rel1_80EA2164.c.o`
 - Compiled all four as one finite explicit `ninja -j4` batch.
 - Ninja exited normally.
 - Re-requested all four targets; every one returned:
   `ninja: no work to do.`
 - Verified all four dependency records report `(VALID)`.
 - Durable build state advanced:
-  - **44 → 48 total objects**;
-  - **37 → 41 generated chunk objects**.
+  - **48 → 52 total objects**;
+  - **41 → 45 generated chunk objects**.
 - Created and uploaded a new persistent private checkpoint:
-  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-48obj.tar.zst`.
-- Archive size: ~46 MB.
+  `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
+- Archive size: ~47 MB.
 - Archive SHA-256:
-  `cef43c1af70f39b3bca44b46ed3c42fe1b66467c75bc12f3d5f01816971d3704`.
+  `c0b6dd25fe34bc03ff0a0d98fa7d77ee39ef5614d0257273a4ff722965fc5869`.
 - No optimized `gRMSE52_recomp.so` has linked yet.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
