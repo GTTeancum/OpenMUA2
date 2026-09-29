@@ -75,17 +75,19 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
-    for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
+    for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_PROFILE_GATE_FILE","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
         env.pop(key,None)
     if not args.no_trace:env["MODERNGEKKO_FRAME_TIMES"]=str(root/"frames.csv")
     if args.jit_diagnostic:env["MODERNGEKKO_STATICRECOMP"]="0"
     if args.jit_ranges:
         env["STATICRECOMP_FALLBACK_RANGES"]=args.jit_ranges
         env["STATICRECOMP_FALLBACK_USE_JIT"]="1"
-    if args.profile_dispatch:env["STATICRECOMP_PROFILE_DISPATCH"]="1"
+    if args.profile_dispatch:
+        env["STATICRECOMP_PROFILE_DISPATCH"]="1"
+        env["STATICRECOMP_PROFILE_GATE_FILE"]=str(root/"profile.enabled")
     cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--module",str(args.module.resolve()),"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio",args.audio,"--load-state",str(args.state.resolve())]
     if not args.windowed:cmd.append("--headless")
-    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
+    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:
@@ -117,6 +119,8 @@ def main():
                 except OSError:status={}
                 if int(status.get("frame_count","0"))>=int(route["restored_frame_min"]):break
                 time.sleep(.1)
+            if args.profile_dispatch:
+                (root/"profile.enabled").write_text("restored combat state\n")
             for item in route["commands"]:submit(item)
             submit({"command":"pad_frames","port":0,"frames":2})
             submit({"command":"stop"})

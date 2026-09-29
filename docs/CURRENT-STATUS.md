@@ -2,6 +2,36 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Combat-only dispatch profile — 2026-09-29
+
+The earlier per-dispatch profile included boot/restoration. Added optional
+STATICRECOMP_PROFILE_GATE_FILE: native profiling waits for a private marker,
+checked at 65536-dispatch intervals until it opens. The benchmark publishes
+that marker only after the restored frame threshold. One latched decision
+covers both timestamps, preventing a gate transition between start/end.
+Normal runs clear this variable. The profile includes initial neutral frames;
+it is not exactly the narrower frame-analysis window.
+
+The rebuilt Windows runner completed the gated combat route with exit 0,
+clean command receipts and one gate-open event. The ranking corroborates the
+old profile: 8035ba00 (1233.5 ms), 803682c4 (1165.9 ms), context/scheduler and
+other frequent short entries remain expensive. These intrusive timings under
+compiler load are for ranking only, not release FPS. No captures or audio were
+collected in this timing-only run. See COMBAT-GATED-PROFILE.json for exact data.
+
+Runtime build: exit 0, no reported warning/error. Tests: 32/32 Windows runtime
+and 5/5 benchmark tooling passed. Runner SHA256:
+cd561d89b1018078272a429d82f50822cafb77851ac790abc3bed8639e518457.
+Use the same current runner for both native DLL comparisons.
+The Ob1 build is still live in session 60093, last seen 443/534. No candidate
+module result yet; goal remains active and unmet.
+
+Source inspection found the direct cross-chunk call emitter's table setter
+has no callers in the current DolRecomp source. Do not simply enable it:
+its direct calls would need native eligibility/hash/host-call and REL checks,
+bounded cycle handling and regression coverage before a safe game experiment.
+This is a future design lead, not an implemented optimization.
+
 ## Selective JIT profiling checkpoint — 2026-09-29
 
 Added opt-in STATICRECOMP_FALLBACK_USE_JIT=1 for forced fallback ranges.

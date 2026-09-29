@@ -120,3 +120,8 @@ not a production default or evidence of correctness. Native/JIT crossings
 can dominate these results; they are not an additive cost decomposition.
 Cannot combine with full --jit-diagnostic. Re-run the native control with
 the same runner and separate loaded diagnostics from acceptance benchmarks.
+
+Dispatch profiling now starts after the restored combat frame threshold via
+STATICRECOMP_PROFILE_GATE_FILE. It includes initial neutral route frames and
+is still intrusive. Keep full-run counters separate from gated timings; do
+not label shutdown counters as combat-only counts.

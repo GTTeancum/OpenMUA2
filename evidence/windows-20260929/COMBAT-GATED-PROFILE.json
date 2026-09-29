@@ -1,0 +1,183 @@
+{
+  "scope": "Intrusive native dispatch profile after combat save restoration. Includes initial neutral frames; excludes boot. Compiler load active. Never release-FPS evidence.",
+  "private_run": ".local\\automation\\combat-native-profile-gated",
+  "runner_sha256": "cd561d89b1018078272a429d82f50822cafb77851ac790abc3bed8639e518457",
+  "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+  "gate_open_count": 1,
+  "route_completed": true,
+  "exit_code": 0,
+  "top_dispatch_samples": [
+    {
+      "pc": "8035ba00",
+      "count": 2945774,
+      "wall_ms": 1233.504,
+      "average_ns": 418.7
+    },
+    {
+      "pc": "803682c4",
+      "count": 431051,
+      "wall_ms": 1165.856,
+      "average_ns": 2704.7
+    },
+    {
+      "pc": "803ee9e8",
+      "count": 2842225,
+      "wall_ms": 756.35,
+      "average_ns": 266.1
+    },
+    {
+      "pc": "803eea68",
+      "count": 2882086,
+      "wall_ms": 651.807,
+      "average_ns": 226.2
+    },
+    {
+      "pc": "803f673c",
+      "count": 2842771,
+      "wall_ms": 536.6,
+      "average_ns": 188.8
+    },
+    {
+      "pc": "80010724",
+      "count": 428235,
+      "wall_ms": 503.216,
+      "average_ns": 1175.1
+    },
+    {
+      "pc": "803f680c",
+      "count": 5684452,
+      "wall_ms": 502.385,
+      "average_ns": 88.4
+    },
+    {
+      "pc": "80381560",
+      "count": 1896126,
+      "wall_ms": 403.194,
+      "average_ns": 212.6
+    },
+    {
+      "pc": "80514198",
+      "count": 1066694,
+      "wall_ms": 389.13,
+      "average_ns": 364.8
+    },
+    {
+      "pc": "805143bc",
+      "count": 1066591,
+      "wall_ms": 385.256,
+      "average_ns": 361.2
+    },
+    {
+      "pc": "8036f560",
+      "count": 3028424,
+      "wall_ms": 384.533,
+      "average_ns": 127.0
+    },
+    {
+      "pc": "8036f650",
+      "count": 3028431,
+      "wall_ms": 369.213,
+      "average_ns": 121.9
+    },
+    {
+      "pc": "8036f490",
+      "count": 3028452,
+      "wall_ms": 363.039,
+      "average_ns": 119.9
+    },
+    {
+      "pc": "803c11a0",
+      "count": 1069223,
+      "wall_ms": 335.621,
+      "average_ns": 313.9
+    },
+    {
+      "pc": "803c6110",
+      "count": 1201554,
+      "wall_ms": 320.226,
+      "average_ns": 266.5
+    },
+    {
+      "pc": "803ab7ec",
+      "count": 84295,
+      "wall_ms": 278.314,
+      "average_ns": 3301.7
+    },
+    {
+      "pc": "8000f7dc",
+      "count": 384905,
+      "wall_ms": 272.884,
+      "average_ns": 709.0
+    },
+    {
+      "pc": "80fb0c0c",
+      "count": 158097,
+      "wall_ms": 260.913,
+      "average_ns": 1650.3
+    },
+    {
+      "pc": "803ee980",
+      "count": 2918690,
+      "wall_ms": 251.308,
+      "average_ns": 86.1
+    },
+    {
+      "pc": "80007448",
+      "count": 5684639,
+      "wall_ms": 245.375,
+      "average_ns": 43.2
+    },
+    {
+      "pc": "803c5094",
+      "count": 297583,
+      "wall_ms": 242.866,
+      "average_ns": 816.1
+    },
+    {
+      "pc": "803c10b0",
+      "count": 599305,
+      "wall_ms": 239.311,
+      "average_ns": 399.3
+    },
+    {
+      "pc": "80385270",
+      "count": 161038,
+      "wall_ms": 233.04,
+      "average_ns": 1447.1
+    },
+    {
+      "pc": "8000f748",
+      "count": 428236,
+      "wall_ms": 217.543,
+      "average_ns": 508.0
+    }
+  ],
+  "frame_metrics": {
+    "scope": "new-frame callback timing, not display scanout or correctness proof",
+    "first_frame": 11472,
+    "last_frame": 11625,
+    "emulated_ticks": 3709455750,
+    "intervals": 153,
+    "seconds": 31.1269107,
+    "average_fps": 4.915360906663956,
+    "frame_ms": {
+      "median": 201.5070000000012,
+      "p95": 308.6309000000003,
+      "p99": 326.3823000000024,
+      "max": 357.35380000000026
+    },
+    "one_percent_low_fps": 2.925105168499941,
+    "rolling_1s_fps_min": 4,
+    "rolling_1s_fps_median": 5.0,
+    "frames_over_33_334ms": 153,
+    "frames_over_50ms": 153,
+    "longest_consecutive_over_50ms_seconds": 31.1269107,
+    "warmup_seconds": 0,
+    "dropped_samples": 0,
+    "guest_ticks_per_second": 729000000,
+    "emulated_seconds": 5.088416666666666,
+    "emulation_speed_percent": 16.347323111209576
+  },
+  "validation": "32/32 Windows runtime tests and 5/5 benchmark tooling tests passed. MSVC runtime build exit 0; no reported warnings/errors. No captures/audio in this timing-only run.",
+  "conclusion": "Combat-only ranking corroborates previous whole-run ranking. Frequent short dispatches and math/paired-single paths remain leads. No production speedup demonstrated."
+}

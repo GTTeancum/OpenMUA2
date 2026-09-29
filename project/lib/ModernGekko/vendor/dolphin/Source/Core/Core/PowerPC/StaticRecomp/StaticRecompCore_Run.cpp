@@ -54,9 +54,34 @@ FilePtr OpenDispatchTrace()
 class DispatchProfiler
 {
 public:
-  DispatchProfiler() : m_enabled(std::getenv("STATICRECOMP_PROFILE_DISPATCH") != nullptr) {}
+  DispatchProfiler() : m_enabled(std::getenv("STATICRECOMP_PROFILE_DISPATCH") != nullptr)
+  {
+    if (m_enabled)
+    {
+      const char* gate = std::getenv("STATICRECOMP_PROFILE_GATE_FILE");
+      if (gate && *gate)
+      {
+        m_gate = gate;
+        m_enabled = false;
+      }
+    }
+  }
 
-  bool Enabled() const { return m_enabled; }
+  bool Enabled()
+  {
+    // Check only while armed, at bounded dispatch intervals. The benchmark
+    // publishes this private marker after restoring the combat save.
+    if (!m_enabled && !m_gate.empty() && (++m_gate_checks & 0xffffu) == 0)
+    {
+      FilePtr marker(std::fopen(m_gate.c_str(), "rb"));
+      if (marker)
+      {
+        m_enabled = true;
+        std::fprintf(stderr, "[staticrecomp] combat dispatch profile gate opened\n");
+      }
+    }
+    return m_enabled;
+  }
 
   void Record(u32 pc, std::chrono::steady_clock::duration elapsed)
   {
@@ -98,6 +123,8 @@ private:
     u64 nanos = 0;
   };
 
+  std::string m_gate;
+  u32 m_gate_checks = 0;
   bool m_enabled = false;
   std::unordered_map<u32, Sample> m_samples;
 };
@@ -272,11 +299,12 @@ void StaticRecompCore::Run()
             ++m_dispatch_samples[m_guest.pc];
           const u32 runtime_dispatch_address = m_guest.pc;
           m_guest.pc = linked_dispatch_address;
-          const auto dispatch_start = dispatch_profiler.Enabled() ?
+          const bool profile_dispatch = dispatch_profiler.Enabled();
+          const auto dispatch_start = profile_dispatch ?
                                           std::chrono::steady_clock::now() :
                                           std::chrono::steady_clock::time_point{};
           m_module->dispatch(&m_guest, linked_dispatch_address);
-          if (dispatch_profiler.Enabled())
+          if (profile_dispatch)
           {
             dispatch_profiler.Record(runtime_dispatch_address,
                                      std::chrono::steady_clock::now() - dispatch_start);
