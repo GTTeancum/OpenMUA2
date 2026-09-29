@@ -9,6 +9,32 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Active sustained-30-FPS goal — 2026-09-29
+
+The user requested major frame-rate improvements and will not accept less than
+solid 30 FPS in combat. The active goal and acceptance criteria are recorded in
+`docs/PERFORMANCE-GOAL.md`; small improvements do not complete it.
+
+Planning is complete and execution has begun. GitHub main was checked at
+f14ea4a8. Existing runtime diagnostic edits remain untouched and excluded from
+the running binaries. First enemy encounter reached via process-local inputs;
+native captures showed multiple Doombots, enemy health UI, projectile/effect
+activity and reduced player health. This is a checkpoint inspection, not full
+combat correctness or sustained-30 validation. Private run:
+`.local/automation/20260929T164700-combat-route`, clean exit 0 after 395.797 s.
+`route-progress.sav` (first encounter) and `combat.sav` (enemies surrounding
+Captain America) are private reusable checkpoints. Saves were created; replay
+repeatability remains to be checked. No speedup implemented or claimed yet.
+
+The diagnostic run recorded 3,291,406,422 native dispatches, 9,200,590 bursts,
+985,217 JIT fallback entries, 514,671 native exceptions and zero failed chunks.
+Hot dispatch samples include 803f2b60, 803f2b38, 803f680c and 80007448. These are
+frequency samples, not time attribution, and fixed-stride sampling can alias
+loops. Do not infer the bottleneck or a speedup from the counts alone.
+Next: replay combat, implement low-overhead unique-frame timing and benchmark
+analysis, establish uninstrumented combat baseline, then profile CPU/GPU and
+short-block/OS scheduling costs. Preserve all timing and verification guards.
+
 ## Windows performance checkpoint — 2026-09-29
 
 OpenMUA2 was actually run using the audited Windows O2/indexed native DOL+REL

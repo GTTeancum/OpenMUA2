@@ -1,0 +1,17 @@
+{
+  "date": "2026-09-29",
+  "goal_status": "active",
+  "plan": "docs/PERFORMANCE-GOAL.md",
+  "stage": "Combat checkpoint captured; repeatability and frame-time baseline pending",
+  "speedup_claimed": false,
+  "acceptance_passed": false,
+  "diagnostic_counts": {
+    "native_dispatches": 3291406422,
+    "bursts": 9200590,
+    "jit_fallback_entries": 985217,
+    "native_exceptions": 514671,
+    "failed_chunks": 0
+  },
+  "scope": "395.797-second mixed traversal and first-encounter diagnostic run; counts are not CPU time; fixed-stride sample aliasing possible",
+  "exit_code": 0
+}
