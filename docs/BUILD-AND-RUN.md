@@ -14,6 +14,11 @@ OpenMUA2.cmd build --jobs 2
 OpenMUA2.cmd run
 ```
 
+For the current native DOL+REL checkpoint, use `Build.cmd --jobs 2 --native-rel`.
+Without `--native-rel`, the build produces a DOL-only module and retains REL
+fallback. Current defaults are O2, indexed dispatch, and IPO disabled. Both
+variants retain the ABI/chunk-hash audit before a successful build receipt.
+
 `build-tools` builds and tests **DolRecomp only**, not every runtime tool. `extract` and `generate` validate/rebuild DolRecomp as needed. A successful previous extraction is reused only with matching WBFS input receipts and valid game hashes. Do not mix a changed input image into an existing `.local\game` directory.
 
 Input paths with spaces are passed as separate arguments, not shell-concatenated commands. A split image's `.wbf1`, `.wbf2`, etc. must be beside its `.wbfs`; companions are hashed and must be contiguous. The original image and companions are opened read-only by the workspace script. Extraction writes a new staging directory, validates the result, rechecks input hashes, then publishes `.local\game`. Failed staging output is retained for diagnosis and is not treated as a completed extraction.
@@ -22,7 +27,11 @@ Input paths with spaces are passed as separate arguments, not shell-concatenated
 
 `--jobs` defaults to 2 to avoid exhausting memory on large generated translation units. Raise it deliberately for your host. `--config` is `Release` by default; `Debug` and `RelWithDebInfo` are available. `--cc`, `--cxx` and `--module-cc` select existing compilers. Do not switch compiler/generator in an existing CMake cache; use a separate working copy or deliberately move that build directory first. The wrapper never silently deletes a build.
 
-Windows defaults use `cl` for the native source and module. The supplied native module CMake has explicit MSVC strict floating-point options. These settings are a source-based build plan, not an executed Windows validation. Do not use `--module-opt 1/2/3` as a workaround for a correctness failure; O0/IPO-off is the recovery baseline. Windows dependency DLL availability and complete build compatibility remain to be tested on the target host.
+Windows defaults use `cl` for the native source and module. The module uses
+`/O2 /Ob0 /fp:strict` by default, retaining the existing `/Od` exception for
+`chunk_0201_text1_80326900.c`. Do not lower optimization as a workaround for a
+correctness failure. See `CURRENT-STATUS.md` and `../MUA2-CANONICAL-HANDOFF.md`
+for dated Windows build/test results and their gameplay-validation boundary.
 
 `--wit` selects an already present WIT executable; `WIT` in the environment is also recognized. `--image` selects an exact filename in the repository root. `--sdk` is Linux-only and selects an already extracted private frontend SDK. `openmua2.json` is descriptive project metadata, **not** an override configuration parsed by the command runner.
 

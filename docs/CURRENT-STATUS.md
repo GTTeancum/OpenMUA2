@@ -1,6 +1,32 @@
 # Current status — GitHub main
 
-September 25, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
+September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
+
+## Windows build checkpoint — September 29, 2026
+
+The existing Windows entry point completed successfully on the local x64 host:
+`Build.cmd --jobs 2 --native-rel`, Release, MSVC 19.44.35225.0, Ninja, CMake 4.3.1.
+Both O2/indexed modules linked with IPO off and passed the native audit: DOL-only
+325/325 chunk hashes; native DOL+REL 524/524, including uncovered-address rejection.
+The runtime was incrementally rebuilt; the two module trees were newly built.
+The selected build receipt points to `.local/build/windows-x64/module-mg01-rel-o2/gRMSE52_recomp.dll`.
+
+The initial DOL module failure exposed missing indexed-array support in the
+module-table generator. Exact coverage parsing now handles those arrays while
+preserving merged-table precedence and SMC/hash protection. Regression tests
+cover holes, hashes, and malformed intervals. Version metadata no longer assumes
+`master` exists, and source backups now accept the canonical handoff document.
+
+Validation: tooling 104 passed / 1 skipped; DolRecomp 19/19; ModernGekko 31/31;
+broader runtime CTest 50 passed with `playTests` disabled and the CI exclusions;
+GXRuntime 1/1. These runtime suite counts overlap. Nonfatal upstream CMake and
+test-fixture deprecation warnings remain. Detailed warnings, binary hashes and
+sizes are in `../evidence/windows-20260929/VALIDATION.json`; the latest handoff
+records private local log paths. Pre-existing uncommitted runtime diagnostic
+edits are preserved separately from this build and source commit.
+
+This is a verified Windows build/module audit, **not a game execution**. RMSE52
+was not launched, and no current gameplay or FPS result is available.
 
 ## Current reconstructed source
 
@@ -101,7 +127,7 @@ No fresh RMSE52 WBFS boot/gameplay session has been run from GitHub CI after the
 
 The latest recorded live native-REL benchmark predates the direct cache-control generator change: it advanced game frames but remained far below the 30 FPS target. A speedup from the later source changes must be measured rather than inferred.
 
-No new claim is made here for a complete level, long-session stability, multiplayer, audible audio, game-owned save/reload, physical-controller gameplay, or a full Windows game build/execution.
+No new claim is made here for a complete level, long-session stability, multiplayer, audible audio, game-owned save/reload, physical-controller gameplay, or Windows game execution.
 
 ## Immediate priorities
 

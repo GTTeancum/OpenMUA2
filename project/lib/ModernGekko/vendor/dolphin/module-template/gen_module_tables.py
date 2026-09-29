@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Generate module_tables.inc for a dolphin-chassis static recompilation module.
 
-Parses the generated dispatcher's coverage ranges out of generated.h. Both
-the original per-chunk address guards and DolRecomp's compact offset-table
-dispatch runs are supported. SMC candidate ranges come from generated_smc.txt,
-so the module ABI tables can never drift from a DolRecomp regen.
+Parses the generated dispatcher's coverage ranges out of generated.h. Supports
+the original per-chunk guards, compact offset-table runs, and indexed run arrays.
+SMC candidate ranges come from generated_smc.txt, so the module ABI tables can
+never drift from a DolRecomp regen.
 """
 import json
 import re
@@ -95,6 +95,28 @@ def main() -> int:
         header,
     ):
         code_ranges.add((int(start, 16), int(end, 16)))
+    # Indexed dispatch stores exact executable intervals in parallel arrays.
+    # Do not use page bounds here: pages can contain uncovered guest addresses.
+    run_arrays = []
+    for name in ("dolrecomp_run_start", "dolrecomp_run_end"):
+        match = re.search(
+            rf"static const u32\s+{name}\[[^\]]+\][^=]*=\s*\{{(.*?)\}};",
+            header, re.DOTALL,
+        )
+        run_arrays.append(None if match is None else [
+            int(value, 16) for value in re.findall(r"0x([0-9A-Fa-f]+)u", match.group(1))
+        ])
+    # Merged DOL+REL headers retain old DOL arrays alongside their authoritative
+    # per-chunk dispatch table. Do not add overlapping legacy run intervals.
+    if not code_ranges and any(array is not None for array in run_arrays):
+        starts, ends = run_arrays
+        if not starts or not ends or len(starts) != len(ends):
+            raise ValueError("mismatched generated dispatch run ranges")
+        if any(start >= end or (start | end) & 3 for start, end in zip(starts, ends)):
+            raise ValueError("invalid generated dispatch run range")
+        if any(ends[i] > starts[i + 1] for i in range(len(starts) - 1)):
+            raise ValueError("overlapping or unsorted generated dispatch run ranges")
+        code_ranges.update(zip(starts, ends))
     if not code_ranges:
         print("error: no coverage ranges found in", generated_h, file=sys.stderr)
         return 1

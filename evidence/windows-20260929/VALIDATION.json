@@ -1,0 +1,135 @@
+{
+  "date": "2026-09-29",
+  "platform": "Windows 11 x64",
+  "base_commit": "5e5ffc8daf84ec10b59637ecebc9d6134af6a15c",
+  "source": "base commit plus source fixes in the same commit as this evidence",
+  "toolchain": {
+    "visual_studio": "2022 Community 17.14.29",
+    "msvc": "19.44.35225.0",
+    "cmake": "4.3.1",
+    "python": "3.12.10",
+    "generator": "Ninja",
+    "configuration": "Release"
+  },
+  "build": {
+    "command": "Build.cmd --jobs 2 --native-rel",
+    "exit_code": 0,
+    "module_opt": 2,
+    "dispatch_lookup": "indexed",
+    "ipo": false,
+    "msvc_od_exception": "chunk_0201_text1_80326900.c",
+    "runtime": "incremental configure/build of existing Windows tree",
+    "modules": "new module-mg01-o2 and module-mg01-rel-o2 trees",
+    "noop_rebuilds": "both module targets: ninja: no work to do."
+  },
+  "tests": {
+    "tooling": {
+      "run": 105,
+      "passed": 104,
+      "skipped": 1,
+      "skip": "POSIX symlink fixture"
+    },
+    "dolrecomp": {
+      "passed": 19,
+      "failed": 0
+    },
+    "moderngekko": {
+      "passed": 31,
+      "failed": 0
+    },
+    "full_runtime_ctest": {
+      "passed": 50,
+      "failed": 0,
+      "disabled": "playTests",
+      "excluded_regex": "fullbench|fuzzer|zstreamtest",
+      "note": "includes the 31 ModernGekko tests and vendored DolRecomp tests"
+    },
+    "gxruntime": {
+      "passed": 1,
+      "failed": 0
+    },
+    "runner_help_exit": 0,
+    "port_usage_exit": 2,
+    "port_usage_note": "usage path intentionally returns 2 in moderngekko_port.cpp",
+    "dol_audit": {
+      "status": "PASS",
+      "chunks": 325,
+      "code_ranges": 2,
+      "rel_modules": 0
+    },
+    "native_rel_audit": {
+      "status": "PASS",
+      "chunks": 524,
+      "code_ranges": 524,
+      "rel_modules": 1,
+      "covered_text_bytes": 8571904,
+      "covered_rel_text_bytes": 3255744
+    },
+    "module_abi": 3,
+    "cpu_abi": 4,
+    "uncovered_dispatch_test": true
+  },
+  "resolved_problems": [
+    "Indexed DOL coverage arrays were not supported by gen_module_tables.py; module build exited 1. Added exact interval parsing and regression tests, retaining merged-table precedence.",
+    "ScmRevGen.cmake assumed master and emitted fatal: bad revision ^master. Added main and detached-checkout handling with regression coverage.",
+    "Source snapshot/backup allowlist rejected tracked MUA2-CANONICAL-HANDOFF.md. Added explicit documentation allowlist entry and regression."
+  ],
+  "warnings": [
+    "MSVC C4996 for fopen and tmpfile in two DolRecomp test files, including vendored copies.",
+    "CMake CMP0080 OLD and dependency minimum-version deprecations.",
+    "CMake object-path warnings at seven vendored targets with CMAKE_OBJECT_PATH_MAX=180.",
+    "Optional Wayland/PkgConfig not found; Windows build succeeded.",
+    "Unused FETCHCONTENT_FULLY_DISCONNECTED and FETCHCONTENT_UPDATES_DISCONNECTED for projects that do not consume them.",
+    "Generator advisory that DOL may patch executable memory; SMC/hash/fallback safeguards remain enabled."
+  ],
+  "binaries": [
+    {
+      "path": ".local/build/windows-x64/dolrecomp/dolrecomp.exe",
+      "bytes": 162816,
+      "sha256": "7c12d01614821c2e57dc4842ff48a6d803a8b6d5124af34ffed16c57d92b91ab"
+    },
+    {
+      "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "bytes": 15556096,
+      "sha256": "279f4d73767595eeeeb720e32680896faad42f20e7382a6a89726b0f11e30d35"
+    },
+    {
+      "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "bytes": 11821056,
+      "sha256": "fc2252f9ca72e364a2d4e78087c147f43b5d6498767a69c448dc713d2cae2018"
+    },
+    {
+      "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "bytes": 243200,
+      "sha256": "0e440af715b2680a5193cedb80d1161582fdf43f001f0bd0598a29fe0515c72f"
+    },
+    {
+      "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+      "bytes": 29696,
+      "sha256": "72cefb424194bd2a71da05a4cac146f896e73db77fad2a63c2b132484ac43b09"
+    },
+    {
+      "path": ".local/build/windows-x64/module-mg01-o2/gRMSE52_recomp.dll",
+      "bytes": 175943680,
+      "sha256": "eed78a28284068fb806a9e28ab3172fdbbe18475b7c27016fbe37b49af9c11a2"
+    },
+    {
+      "path": ".local/build/windows-x64/module-mg01-rel-o2/gRMSE52_recomp.dll",
+      "bytes": 314896384,
+      "sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f"
+    },
+    {
+      "path": ".local/build/windows-x64/native-audit/openmua2-verify-module.exe",
+      "bytes": 15872,
+      "sha256": "3889c47abd25d0d52b47f581b23c51cf15135182e27cee31d76d98a76b323416"
+    },
+    {
+      "path": ".local/build/windows-x64/gxruntime-validation/gxruntime_tests.exe",
+      "bytes": 167424,
+      "sha256": "191105772f2c0dcdf93383ded8e2ba2b39ef90ab7566b8519657ee4dbdb2e32f"
+    }
+  ],
+  "gameplay_verified": false,
+  "fps_verified": false,
+  "private_assets": "Original WBFS unchanged and ignored; extraction/generated translations/binaries/logs remain in ignored .local; none committed."
+}

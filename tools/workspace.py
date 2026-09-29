@@ -37,7 +37,7 @@ PRIVATE_EXT = {'.wbfs', '.wbf1', '.wbf2', '.wbf3', '.iso', '.gcm', '.rvz', '.wia
                '.dol', '.rel', '.sav', '.raw', '.gci', '.pem', '.key', '.pfx'}
 CODE_DIRS = {'project', 'tools', 'tests', 'docs', 'configs', 'cmake', 'patches',
              'locks', 'recovery', 'evidence', '.vscode', '.github'}
-ROOT_FILES = {'README.md', 'AGENTS.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md',
+ROOT_FILES = {'README.md', 'AGENTS.md', 'MUA2-CANONICAL-HANDOFF.md', 'LICENSE', 'THIRD-PARTY-NOTICES.md',
               '.gitignore', '.gitattributes', '.editorconfig', 'FILE-MANIFEST.json',
               'OpenMUA2.cmd', 'Setup.cmd', 'Build.cmd', 'Run.cmd', 'Snapshot.cmd',
               'Backup.cmd', 'openmua2.json', 'OpenMUA2.code-workspace'}

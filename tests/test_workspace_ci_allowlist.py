@@ -12,6 +12,9 @@ SPEC.loader.exec_module(workspace)
 
 
 class WorkspaceCIAllowlistTests(unittest.TestCase):
+    def test_canonical_handoff_is_source_documentation(self) -> None:
+        self.assertTrue(workspace.is_code_path("MUA2-CANONICAL-HANDOFF.md", set()))
+
     def test_github_workflows_are_source_code(self) -> None:
         self.assertTrue(
             workspace.is_code_path(".github/workflows/tooling-ci.yml", set())

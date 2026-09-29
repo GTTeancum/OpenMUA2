@@ -3,7 +3,68 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 USA (RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Date:** 2026-09-25
+**Date:** 2026-09-29
+
+**Latest local checkpoint:** Windows build and audit completed below. The older
+Linux container's 52-object checkpoint remains historical and is not a blocker
+for the Windows workspace.
+
+## Windows continuation — 2026-09-29
+
+- Confirmed `origin` is `https://github.com/GTTeancum/OpenMUA2.git` and pulled
+  `main` with `--ff-only` to `5e5ffc8daf84ec10b59637ecebc9d6134af6a15c`.
+- Preserved three pre-existing local runtime diagnostic edits in a named Git
+  stash and `.local/pre-pull-diagnostics-20260929.patch` before pulling. They are
+  excluded from the source fix commit and tested binaries, and restored after
+  validation. The pre-existing `Build-With-Log.cmd` remains untracked.
+- Used the existing `Build.cmd` / `tools/msvc-env.cmd` / `tools/workspace.py`
+  Windows path: Visual Studio 2022 Community 17.14.29, MSVC 19.44.35225.0,
+  CMake 4.3.1, Ninja, Python 3.12.10, x64 Release, two jobs per module build.
+- Initial default build exited 1 because `gen_module_tables.py` could not read
+  indexed coverage arrays. Added exact run-interval parsing, malformed-range
+  rejection, and synthetic regressions for hash equivalence, coverage holes,
+  and merged-table precedence. The latter prevents retained DOL arrays from
+  adding overlapping ranges to a merged DOL+REL module.
+- Fixed the nonfatal `fatal: bad revision '^master'` version-metadata diagnostic
+  by supporting `main` and detached checkouts; regression fixtures cover
+  `master`, `main`, and a checkout with neither branch.
+- Added this handoff to the source snapshot/backup allowlist and documented
+  current Windows O2/indexed defaults and `--native-rel` in the build guide.
+- Final `Build.cmd --jobs 2 --native-rel` exited **0**. The runtime tree was
+  incrementally rebuilt; both module output trees were newly configured and
+  compiled. O2/indexed, IPO off, `/Ob0 /fp:strict`, and the existing `/Od`
+  exception for `chunk_0201_text1_80326900.c` were retained.
+- DOL-only module: **325/325** chunk hashes PASS, 2 code ranges.
+- Native DOL+REL module: **524/524** chunk hashes PASS, 524 code ranges,
+  one REL module, 8,571,904 covered bytes including 3,255,744 REL text bytes.
+  Both audits passed module ABI 3 / CPU ABI 4 and uncovered-address rejection.
+  Final rebuilds of both modules returned `ninja: no work to do.`
+- Tooling: **104 passed, 1 skipped** (105 run; POSIX symlink fixture skipped).
+  DolRecomp: **19/19**. ModernGekko: **31/31**. Broader runtime CTest:
+  **50 passed**, `playTests` disabled; CI exclusions `fullbench|fuzzer|zstreamtest`
+  retained. GXRuntime: **1/1**. Counts overlap between runtime suites.
+  `moderngekko-run.exe --help` exited 0; port usage printed and exited its
+  source-defined usage status 2.
+- Remaining nonfatal warnings: MSVC C4996 in DolRecomp test fixtures, upstream
+  CMake policy/minimum-version deprecations, seven object-path warnings,
+  optional Wayland/PkgConfig detection, unused FetchContent options, and the
+  generator's self-modifying-code advisory. No final compile/link/audit failure.
+- Binary paths, sizes, SHA-256 values, and validation details:
+  `evidence/windows-20260929/VALIDATION.json`. Main outputs under
+  `.local/build/windows-x64/` are `runtime/moderngekko-run.exe`,
+  `runtime/ModernGekko.exe`, `runtime/moderngekko-port.exe`,
+  `runtime/moderngekko-module-info.exe`, `dolrecomp/dolrecomp.exe`,
+  `native-audit/openmua2-verify-module.exe`, and `gRMSE52_recomp.dll` in
+  `module-mg01-o2/` and `module-mg01-rel-o2/`.
+- Final native build log: `.local/logs/windows-main-20260929-native-rel-final.log`.
+  Build receipt: `.local/receipts/build.json` selects the native DOL+REL DLL.
+  Other logs share the `windows-main-20260929-` prefix; failures were retained.
+- Original WBFS SHA-256 was rechecked unchanged. Assets, generated translation,
+  binaries, receipts, and raw logs stay outside Git. No proprietary output is
+  included in the source commit.
+- **RMSE52 was not launched. No gameplay, graphics, audio, controls, saves, or
+  FPS validation is claimed.** A current actual game run remains the next
+  performance-validation step, respecting the user's ban on desktop automation.
 
 ## Mandatory workflow
 
@@ -252,7 +313,7 @@ Status doc:
 
 - `fa6dde0c484903e9e9bfabf024af22f0569991c3` — `Record merged native-entry host-call reuse`
 
-## Current blockers
+## Historical Linux container blockers
 
 1. RMSE52 assets are persistent and verified; **re-upload is not required**.
 2. The current private build checkpoint is persisted at:
@@ -267,7 +328,7 @@ Status doc:
 5. GCC O2+IPO remains unsuitable in this container because of LTO memory/time behavior.
 6. A fresh optimized current-main native-REL game-side baseline is still required before accepting another performance micro-optimization.
 
-## Next exact turn
+## Historical Linux container continuation
 
 1. If local state is missing, restore:
    `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
@@ -278,7 +339,7 @@ Status doc:
 6. Once the optimized module links, run the native audit and require **524/524** chunk-hash PASS.
 7. Gameplay comes only after the optimized module passes audit.
 
-## Last turn update — 2026-09-29
+## Previous container update — 2026-09-29
 
 What happened:
 

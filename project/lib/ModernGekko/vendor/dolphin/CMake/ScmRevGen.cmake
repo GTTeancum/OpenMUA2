@@ -18,10 +18,25 @@ if(GIT_FOUND)
   execute_process(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
       OUTPUT_VARIABLE DOLPHIN_WC_BRANCH
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-  # defines DOLPHIN_WC_COMMITS_AHEAD_MASTER
-  execute_process(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD ^master
-      OUTPUT_VARIABLE DOLPHIN_WC_COMMITS_AHEAD_MASTER
-      OUTPUT_STRIP_TRAILING_WHITESPACE)
+  # Keep the upstream macro name, but support the main branch used by this
+  # flattened repository and detached/shallow source checkouts without master.
+  set(DOLPHIN_WC_COMMITS_AHEAD_MASTER 0)
+  foreach(base_branch master main)
+    execute_process(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND ${GIT_EXECUTABLE} rev-parse --verify "refs/heads/${base_branch}"
+        RESULT_VARIABLE base_branch_result OUTPUT_QUIET ERROR_QUIET)
+    if(base_branch_result EQUAL 0)
+      execute_process(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+          COMMAND ${GIT_EXECUTABLE} rev-list --count HEAD "^refs/heads/${base_branch}"
+          OUTPUT_VARIABLE DOLPHIN_WC_COMMITS_AHEAD_MASTER
+          OUTPUT_STRIP_TRAILING_WHITESPACE
+          RESULT_VARIABLE commit_count_result)
+      if(NOT commit_count_result EQUAL 0)
+        message(FATAL_ERROR "Failed to count commits ahead of ${base_branch}")
+      endif()
+      break()
+    endif()
+  endforeach()
 
   # defines DOLPHIN_WC_TAG
   execute_process(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} COMMAND ${GIT_EXECUTABLE} describe --exact-match HEAD
