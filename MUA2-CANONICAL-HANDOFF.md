@@ -9,6 +9,31 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Windows performance checkpoint — 2026-09-29
+
+OpenMUA2 was actually run using the audited Windows O2/indexed native DOL+REL
+binaries from the c54bde7 source checkpoint. Native application captures confirmed
+the opening cinematic, Latveria level environment, four heroes, HUD/minimap,
+player movement and party-following. Combat was not reached or measured.
+
+- Ryzen 7 8745HS, Radeon 780M (driver 32.0.23033.1002), 27.8 GiB usable RAM.
+- Configured 1920x1080 preset maps to 3x EFB scale (1920x1584 backing buffer).
+  Native aspect-corrected captures were 2501x1410; this was an offscreen Vulkan
+  run with Null audio, not a measured 1080p window presentation.
+- Opening-level traversal/idle/obstacle-contact interval: **1,366 new frames /
+  219.516 seconds = 6.223 FPS**, mean reported emulation speed **20.666%**.
+- Counted unique XFB frames against monotonic wall time, excluding duplicate
+  presentations. Headless fps/vps status fields stayed zero and were not used.
+- No combat FPS, 1% lows, audio validation or full-game visual correctness claim.
+  Captures were inspected at checkpoints, not every rendered frame.
+- Both private runtime sessions exited 0. Source diagnostics restored after the
+  build remain uncommitted and were not part of the tested binaries.
+- Evidence: `evidence/windows-20260929/PERFORMANCE.json`. Raw logs, captures,
+  copied saves and checkpoints remain private under `.local/automation/`;
+  latest run `20260929T161554-action-fps` has `level-start.sav` and `traversal.sav`.
+- Next performance work: reach an actual enemy encounter, measure a repeatable
+  combat interval, then profile CPU/GPU before attributing the low frame rate.
+
 ## Windows continuation — 2026-09-29
 
 - Confirmed `origin` is `https://github.com/GTTeancum/OpenMUA2.git` and pulled

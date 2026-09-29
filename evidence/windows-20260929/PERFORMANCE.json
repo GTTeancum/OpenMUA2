@@ -1,0 +1,41 @@
+{
+  "project": "OpenMUA2",
+  "date": "2026-09-29",
+  "build_source_commit": "c54bde7ead0c27158215b1397b3dd2e873bb566f",
+  "scope": "Opening Latveria level traversal, pauses and obstacle contact; not combat",
+  "cpu": "AMD Ryzen 7 8745HS (8 cores / 16 threads)",
+  "gpu": "AMD Radeon 780M",
+  "gpu_driver": "32.0.23033.1002",
+  "usable_memory_bytes": 29832409088,
+  "configured_resolution": "1920x1080",
+  "efb_scale": 3,
+  "efb_backing_dimensions": "1920x1584",
+  "native_capture_dimensions": "2501x1410",
+  "backend": "Vulkan",
+  "mode": "headless/offscreen",
+  "audio": "Null (not validated)",
+  "measurement": {
+    "method": "delta unique XFB frame_count / monotonic wall seconds; duplicate presents excluded",
+    "start_seconds": 620.4059999999881,
+    "end_seconds": 839.9219999999914,
+    "duration_seconds": 219.51600000000326,
+    "new_frames": 1366,
+    "average_fps": 6.222781027350989,
+    "mean_reported_speed_percent": 20.665527168949772,
+    "frame_time_percentiles": null
+  },
+  "combat_verified": false,
+  "visual_checks": "Native screenshots inspected: opening cinematic, populated level/environment/HUD/minimap, player displacement and party-following. Not every rendered frame inspected. Full visual correctness unverified.",
+  "limitations": [
+    "Headless fps/vps status fields were zero; used unique frame_count deltas instead.",
+    "Traversal includes idle gaps and obstacle contact, not continuous combat.",
+    "No 1% low/per-frame timing captured.",
+    "Normal window presentation, audio, GPU utilization and bottleneck not measured."
+  ],
+  "exit_code": 0,
+  "private_run": "D:\\Programming\\GitHub\\OpenMUA2\\.local\\automation\\20260929T161554-action-fps",
+  "binary_hashes": {
+    "runner_sha256": "279f4d73767595eeeeb720e32680896faad42f20e7382a6a89726b0f11e30d35",
+    "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f"
+  }
+}
