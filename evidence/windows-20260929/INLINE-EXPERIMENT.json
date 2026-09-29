@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "status": "module_build_running",
+  "status": "built_and_audited_no_performance_win",
   "goal_met": false,
   "runtime_build": "passed",
   "runtime_tests": {
@@ -31,5 +31,118 @@
   "module_opt": 2,
   "fp": "strict",
   "ipo": false,
-  "new_combat_result": null
+  "new_combat_result": {
+    "scope": "One sequential same-runner baseline/candidate pair after this project compiler and backup ended; no intrusive profile or screenshots; 3x EFB; not acceptance repeat/soak validation",
+    "runs": [
+      {
+        "private_run": ".local\\automation\\combat-ob1-ab-baseline-1",
+        "runner_sha256": "cd561d89b1018078272a429d82f50822cafb77851ac790abc3bed8639e518457",
+        "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+        "route_completed": true,
+        "exit_code": 0,
+        "metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 23.8159205,
+          "average_fps": 6.424274048109961,
+          "frame_ms": {
+            "median": 152.61429999999976,
+            "p95": 237.39969999999988,
+            "p99": 287.23059999999913,
+            "max": 291.95410000000163
+          },
+          "one_percent_low_fps": 3.453129891034755,
+          "rolling_1s_fps_min": 5,
+          "rolling_1s_fps_median": 6,
+          "frames_over_33_334ms": 153,
+          "frames_over_50ms": 153,
+          "longest_consecutive_over_50ms_seconds": 23.8159205,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666666,
+          "emulation_speed_percent": 21.365609893880297
+        }
+      },
+      {
+        "private_run": ".local\\automation\\combat-ob1-ab-candidate-1",
+        "runner_sha256": "cd561d89b1018078272a429d82f50822cafb77851ac790abc3bed8639e518457",
+        "module_sha256": "11b4d161ffc02f1ff9c49292973961651c999249e43ac0adf3b0a38dbc24f631",
+        "route_completed": true,
+        "exit_code": 0,
+        "metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 26.1286406,
+          "average_fps": 5.855643328034448,
+          "frame_ms": {
+            "median": 167.70290000000188,
+            "p95": 253.10630000000012,
+            "p99": 295.88850000000025,
+            "max": 311.40319999999997
+          },
+          "one_percent_low_fps": 3.293310282356896,
+          "rolling_1s_fps_min": 4,
+          "rolling_1s_fps_median": 6.0,
+          "frames_over_33_334ms": 153,
+          "frames_over_50ms": 153,
+          "longest_consecutive_over_50ms_seconds": 26.1286406,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666666,
+          "emulation_speed_percent": 19.474479153219576
+        }
+      }
+    ],
+    "decision": "Do not promote Ob1: no measured speedup; goal unmet."
+  },
+  "build_exit_code": 0,
+  "runtime_sha256_at_comparison": "cd561d89b1018078272a429d82f50822cafb77851ac790abc3bed8639e518457",
+  "module_sha256": "11b4d161ffc02f1ff9c49292973961651c999249e43ac0adf3b0a38dbc24f631",
+  "module_bytes": 591055360,
+  "baseline_module_bytes": 314896384,
+  "audit": {
+    "status": "PASS",
+    "module_abi": 3,
+    "cpu_abi": 4,
+    "verified_chunk_hashes": 524,
+    "code_ranges": 524,
+    "covered_text_bytes": 8571904,
+    "covered_rel_text_bytes": 3255744,
+    "rel_modules": 1,
+    "uncovered_dispatch_test": true
+  },
+  "full_build_warning_counts": {
+    "D9025": 276,
+    "C5045": 93,
+    "C4711": 4364,
+    "D9002": 1
+  },
+  "compiler_error_count": 0,
+  "warning_notes": {
+    "D9025": "275 W3-to-W0 overrides and one expected O2-to-Od override",
+    "C4711": "automatic inline expansion diagnostics",
+    "C5045": "diagnostic about mitigation if Qspectre is specified; does not establish mitigation enabled",
+    "D9002": "ignored -fexceptions option"
+  },
+  "visual_audio_check": {
+    "private_run": ".local/automation/combat-ob1-visual-audio",
+    "route_completed": true,
+    "exit_code": 0,
+    "audio_backend": "Cubeb",
+    "captures_inspected_in_order": [
+      "start.png",
+      "attack-2.png",
+      "attack-5.png",
+      "attack-9.png"
+    ],
+    "observed": "Heroes and Doombots, attacks, damage values, hit effects, HUD and scenery; sampled captures only. Audible quality/sync unverified."
+  }
 }

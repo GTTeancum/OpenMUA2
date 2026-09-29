@@ -45,6 +45,7 @@ class WorkspaceTests(unittest.TestCase):
         return argparse.Namespace(cc=sys.executable, cxx=sys.executable, module_cc=sys.executable,
             config='Release', jobs=2, module_opt=kw.get('module_opt', 2),
             dispatch_lookup=kw.get('dispatch_lookup', 'indexed'),
+            c_chunk_instructions=kw.get('c_chunk_instructions', 4096),
             wit=sys.executable, image=kw.get('image'), sdk=None)
     def image(self, name='Marvel Ultimate Alliance 2.wbfs'):
         p=self.root/name;p.write_bytes(b'WBFS'+bytes(512));return p
@@ -248,6 +249,30 @@ class WorkspaceTests(unittest.TestCase):
         self.assertEqual(calls[0][1]['env']['DOLRECOMP_DISPATCH_LOOKUP'],'indexed')
         self.assertEqual(calls[1][1]['env']['DOLRECOMP_DISPATCH_LOOKUP'],'linear')
         self.assertIn('PATH',calls[0][1]['env'])
+
+    def test_chunk_size_changes_generation_keys_and_overrides_inherited_environment(self):
+        tools=self.root/'tools';tools.mkdir()
+        (tools/'generate_dol_mg01.py').write_text('fixture')
+        recompiler=self.root/'dolrecomp';recompiler.write_text('fixture')
+        game=self.root/'.local/game';(game/'sys').mkdir(parents=True)
+        (game/'sys/main.dol').write_bytes(b'dol')
+        with patch.object(w,'logged') as logged, patch.dict(os.environ, {'DOLRECOMP_C_CHUNK_INSTRUCTIONS':'128'}):
+            baseline=w.generate(self.root,self.options(),recompiler,game)
+            smaller=w.generate(self.root,self.options(c_chunk_instructions=1024),recompiler,game)
+        self.assertNotEqual(baseline,smaller)
+        self.assertEqual(logged.call_args_list[0].kwargs['env']['DOLRECOMP_C_CHUNK_INSTRUCTIONS'],'4096')
+        self.assertEqual(logged.call_args_list[1].kwargs['env']['DOLRECOMP_C_CHUNK_INSTRUCTIONS'],'1024')
+        with patch.object(w,'logged') as logged, patch.object(w,'sha256',return_value='fixture'), \
+             patch.object(w,'rel_layout_bases',return_value=(0x80E40000,0x90000000)):
+            first=w.generate_native_rel(self.root,self.options(),recompiler,game,baseline)
+            second=w.generate_native_rel(self.root,self.options(c_chunk_instructions=1024),recompiler,game,smaller)
+        self.assertNotEqual(first,second)
+        self.assertEqual(logged.call_args_list[2].kwargs['env']['DOLRECOMP_C_CHUNK_INSTRUCTIONS'],'1024')
+        parser=w.make_parser()
+        normal=parser.parse_args(['build','--native-rel'])
+        experiment=parser.parse_args(['build','--native-rel','--c-chunk-instructions','1024','--module-msvc-inline','2'])
+        self.assertNotEqual(w.module_build_name(normal),w.module_build_name(experiment))
+        self.assertEqual(w.module_build_name(experiment),'module-mg01-rel-o2-ob2-c1024')
 
     def test_run_requires_verified_build_receipt(self):
         opts=argparse.Namespace(graphics=None,audio=None)

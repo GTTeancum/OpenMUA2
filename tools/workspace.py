@@ -511,13 +511,19 @@ def generate(root: Path, options: argparse.Namespace, recompiler: Path, game: Pa
         key.update(sha256(path).encode('ascii'))
         key.update(b'\0')
     key.update(('dispatch=' + dispatch_lookup).encode('ascii'))
+    chunk_instructions = getattr(options, 'c_chunk_instructions', 4096)
+    if chunk_instructions != 4096:
+        key.update(('c-chunk=' + str(chunk_instructions)).encode('ascii'))
     out = within(root, '.local/generated-mg01-' + key.hexdigest()[:12])
     # The guarded historical generator refuses to overwrite edits or mismatched receipts.
     generate_env = dict(os.environ)
     generate_env['DOLRECOMP_DISPATCH_LOOKUP'] = dispatch_lookup
+    generate_env['DOLRECOMP_C_CHUNK_INSTRUCTIONS'] = str(chunk_instructions)
     logged(root, 'generate-dol', [sys.executable, root / 'tools/generate_dol_mg01.py',
                                 '--recompiler', recompiler, '--dol', dol,
-                                '--output', out, '--jobs', str(options.jobs)],
+                                '--output', out, '--jobs', str(options.jobs),
+                                '--c-chunk-instructions', str(chunk_instructions),
+                                '--dispatch-lookup', dispatch_lookup],
            env=generate_env)
     return out / 'generated'
 
@@ -544,6 +550,9 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
         key.update(b'\0')
     key.update(f'{rel_base:08X}:{bss_base:08X}'.encode('ascii'))
     key.update(('dispatch=' + dispatch_lookup).encode('ascii'))
+    chunk_instructions = getattr(options, 'c_chunk_instructions', 4096)
+    if chunk_instructions != 4096:
+        key.update(('c-chunk=' + str(chunk_instructions)).encode('ascii'))
     token = key.hexdigest()[:12]
     rel_root = within(root, f'.local/generated-rel-mg01-{token}')
     combined = within(root, f'.local/generated-combined-mg01-rel-{token}')
@@ -558,6 +567,8 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
         'merger_sha256': sha256(merger),
         'dispatch_lookup': dispatch_lookup,
     }
+    if chunk_instructions != 4096:
+        expected['c_chunk_instructions'] = chunk_instructions
     if receipt.is_file():
         saved = json.loads(receipt.read_text(encoding='utf-8'))
         if all(saved.get(name) == value for name, value in expected.items()):
@@ -570,6 +581,7 @@ def generate_native_rel(root: Path, options: argparse.Namespace, recompiler: Pat
         raise ValueError('Existing REL generated output has no matching receipt: ' + str(rel_root))
     generate_env = dict(os.environ)
     generate_env['DOLRECOMP_DISPATCH_LOOKUP'] = dispatch_lookup
+    generate_env['DOLRECOMP_C_CHUNK_INSTRUCTIONS'] = str(chunk_instructions)
     logged(root, 'generate-rel',
            [recompiler, '--rel-base', f'0x{rel_base:08X}', '--rel-bss-base', f'0x{bss_base:08X}',
             '--cpu', 'broadway', '--backend', 'c', rel, GAME_ID, rel_root],
@@ -602,6 +614,12 @@ def build_runtime(root: Path, options: argparse.Namespace) -> Path:
 
 
 def module_build_name(options: argparse.Namespace) -> str:
+    name = _module_build_name(options)
+    chunks = getattr(options, 'c_chunk_instructions', 4096)
+    return name + (f'-c{chunks}' if chunks != 4096 else '')
+
+
+def _module_build_name(options: argparse.Namespace) -> str:
     suffix = getattr(options, 'module_suffix', None)
     rel = '-rel' if getattr(options, 'native_rel', False) else ''
     if suffix:
@@ -691,7 +709,8 @@ def build(root: Path, options: argparse.Namespace) -> None:
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
                'gameplay_verified': False, 'native_rel_integrated': bool(options.native_rel),
                'module_opt': options.module_opt, 'dispatch_lookup': options.dispatch_lookup,
-               'module_msvc_inline': options.module_msvc_inline}
+               'module_msvc_inline': options.module_msvc_inline,
+               'c_chunk_instructions': options.c_chunk_instructions}
     write_json(within(root, '.local/receipts/build.json'), receipt)
     print('\nOpenMUA2 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
@@ -874,6 +893,8 @@ def make_parser() -> argparse.ArgumentParser:
                        help='Generated native dispatch lookup; indexed is the performance default.')
         s.add_argument('--module-msvc-inline', type=int, choices=(0, 1, 2), default=0,
                        help='Experimental MSVC inline expansion; nonzero levels use separate build outputs.')
+        s.add_argument('--c-chunk-instructions', type=int, choices=(128,256,512,1024,2048,4096), default=4096,
+                       help='Experimental C chunk size; nondefault sizes use isolated generation/build outputs.')
         s.add_argument('--module-ipo', action='store_true')
         s.add_argument('--module-suffix')
         s.add_argument('--module-build-retries', type=int, default=0)

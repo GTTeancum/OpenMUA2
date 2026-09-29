@@ -2,6 +2,35 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Ob1 build completed; no combat speedup — 2026-09-29
+
+The long-running session 60093 finished with exit 0. Windows native module:
+.local/build/windows-x64/module-mg01-rel-o2-ob1/gRMSE52_recomp.dll,
+591055360 bytes, SHA256
+11b4d161ffc02f1ff9c49292973961651c999249e43ac0adf3b0a38dbc24f631.
+Audit passed all 524 chunk hashes, module ABI 3 / CPU ABI 4. Recompiler tests
+19/19; runtime tests 32/32. Full build warning counts: D9025 276 (275 W3/W0,
+one expected O2/Od), C4711 4364, C5045 93, D9002 1 (ignored -fexceptions).
+No compiler error diagnostics. Exact results: INLINE-EXPERIMENT.json.
+
+After this project's compile/backup ended, the same-runner 3x timing pair
+measured baseline 6.4243 FPS versus Ob1 5.8556 FPS over the same 153 intervals.
+Both completed with exit 0 and clean receipts. This rejects Ob1 as a performance
+win; it is not a repeated acceptance result. The DLL also grew from 314896384
+to 591055360 bytes. Production default remains Ob0. A separate windowed Cubeb
+run completed; all four native captures were inspected in order and showed
+combat, damage/effects, HUD and scenery. Audible quality/sync remains unverified.
+
+Next experiment: Build.cmd --native-rel --c-chunk-instructions 1024
+--module-msvc-inline 2 --jobs 4. The new explicit chunk-size option isolates
+DOL/REL generation keys and module output, records configuration and overrides
+inherited generator settings. Generation verifies the DOL section-derived chunk
+count instead of assuming 325 chunks. Default remains 4096. Tooling tests:
+118 run, 117 passed, one skipped. This experiment is running in session 99026,
+log .local/logs/combat-c1024-ob2-build.log. Do not restart a live build.
+Smaller functions may permit stronger optimization but add dispatch boundaries;
+no performance gain is assumed. Goal remains active and unmet.
+
 ## Combat-only dispatch profile — 2026-09-29
 
 The earlier per-dispatch profile included boot/restoration. Added optional

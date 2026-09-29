@@ -125,3 +125,13 @@ Dispatch profiling now starts after the restored combat frame threshold via
 STATICRECOMP_PROFILE_GATE_FILE. It includes initial neutral route frames and
 is still intrusive. Keep full-run counters separate from gated timings; do
 not label shutdown counters as combat-only counts.
+
+## Smaller generated-function experiment
+
+The full 4096-instruction Ob1 build completed and passed audit, but measured
+5.86 FPS against 6.42 FPS for the baseline. Do not promote it. Next test uses
+Build.cmd --native-rel --c-chunk-instructions 1024 --module-msvc-inline 2
+--jobs 4. This changes generated function boundaries and compiler optimization,
+not game resolution, cycle charges or effects. Generation keys, receipts and
+module output isolate the experiment. Re-audit and compare the same fight;
+smaller functions can also increase dispatch cost, so discard losses.
