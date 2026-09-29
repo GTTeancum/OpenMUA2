@@ -1,0 +1,191 @@
+{
+  "scope": "Command receipt names and complete payloads; not frame-by-frame correctness or sustained FPS proof",
+  "runs": [
+    {
+      "run": "combat-baseline-3x-no-capture",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-baseline-3x-telemetry",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-diagnostic-1x-telemetry",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": false,
+      "missing": [],
+      "unexpected": [],
+      "failed": [
+        "000003.txt.tmp"
+      ],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-diagnostic-3x-jit",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-diagnostic-native-no-trace",
+      "route_completed": false,
+      "exit_code": 0,
+      "receipt_audit_pass": false,
+      "missing": [
+        "000011.txt",
+        "000012.txt",
+        "000013.txt",
+        "000014.txt",
+        "000015.txt",
+        "000016.txt",
+        "000017.txt",
+        "000018.txt",
+        "000019.txt",
+        "000020.txt",
+        "000021.txt",
+        "000022.txt",
+        "000023.txt"
+      ],
+      "unexpected": [
+        "999999-stop.txt"
+      ],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-diagnostic-native-no-trace-retry",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-diagnostic-native-profile",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-extended-control-build-load",
+      "route_completed": false,
+      "exit_code": 0,
+      "receipt_audit_pass": false,
+      "missing": [
+        "000006.txt",
+        "000007.txt",
+        "000008.txt",
+        "000009.txt",
+        "000010.txt",
+        "000011.txt",
+        "000012.txt",
+        "000013.txt",
+        "000014.txt",
+        "000015.txt",
+        "000016.txt",
+        "000017.txt",
+        "000018.txt",
+        "000019.txt",
+        "000020.txt",
+        "000021.txt",
+        "000022.txt",
+        "000023.txt",
+        "000024.txt",
+        "000025.txt",
+        "000026.txt",
+        "000027.txt",
+        "000028.txt",
+        "000029.txt",
+        "000030.txt",
+        "000031.txt",
+        "000032.txt",
+        "000033.txt",
+        "000034.txt",
+        "000035.txt",
+        "000036.txt",
+        "000037.txt",
+        "000038.txt",
+        "000039.txt",
+        "000040.txt",
+        "000041.txt",
+        "000042.txt",
+        "000043.txt",
+        "000044.txt",
+        "000045.txt",
+        "000046.txt",
+        "000047.txt",
+        "000048.txt",
+        "000049.txt"
+      ],
+      "unexpected": [
+        "000006.txt.tmp",
+        "999999-stop.txt"
+      ],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-ob1-control-audio-build-load",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-ob1-control-build-load",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-extended-control-build-load-retry",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    },
+    {
+      "run": "combat-power-control-build-load",
+      "route_completed": true,
+      "exit_code": 0,
+      "receipt_audit_pass": true,
+      "missing": [],
+      "unexpected": [],
+      "failed": [],
+      "payload_mismatches": []
+    }
+  ]
+}

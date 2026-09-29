@@ -105,3 +105,9 @@ headless runtime forces silent audio, so the runner rejects audible-backend
 requests without --windowed. Check the actual backend in runtime.log; a
 requested backend in run.json alone is not proof of activation. Successful
 audio-enabled execution does not establish audible quality or synchronization.
+
+Command files must be staged outside the runtime's watched commands directory:
+it consumes all regular files, including .tmp. The replay runner publishes
+closed files from a sibling staging folder and requires an exact successful
+receipt set before reporting completion. Earlier 1x evidence is excluded by
+the command-receipt audit; use clean reruns for resolution comparisons.

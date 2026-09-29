@@ -62,7 +62,9 @@
       "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
       "resolution": "640x528",
       "jit_diagnostic": false,
-      "screenshots": true
+      "screenshots": true,
+      "controlled_comparison_valid": false,
+      "exclusion_reason": "Later receipt audit found failed/000003.txt.tmp: the old harness staged within the watched directory. Excluded pending a clean rerun."
     },
     "combat-baseline-3x-no-capture": {
       "scope": "new-frame callback timing, not display scanout or correctness proof",

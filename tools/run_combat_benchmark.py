@@ -14,6 +14,34 @@ def sha(path):
         return hashlib.file_digest(f,"sha256").hexdigest()
 
 
+
+def publish_command(root, name, item, timeout=5.0):
+    # The runtime consumes every regular file in commands, regardless of suffix.
+    # Stage outside the watched directory, then publish a complete closed file.
+    staging = root / "staging"
+    staging.mkdir(exist_ok=True)
+    tmp = staging / (name + ".tmp")
+    tmp.write_text("\n".join(f"{k}={v}" for k,v in item.items())+"\n", encoding="utf-8")
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            tmp.rename(root / "commands" / name)
+            return
+        except OSError as exc:
+            if getattr(exc, "winerror", None) not in (32, 33) or time.monotonic() >= deadline:
+                raise
+            time.sleep(.05)
+
+
+
+def validate_command_receipts(root, count):
+    expected = {f"{i:06d}.txt" for i in range(1, count + 1)}
+    processed = {p.name for p in (root / "processed").iterdir() if p.is_file()}
+    failed = [p.name for p in (root / "failed").iterdir() if p.is_file()]
+    if failed or processed != expected:
+        raise RuntimeError(f"command receipt mismatch: failed={failed}, missing={sorted(expected-processed)}, unexpected={sorted(processed-expected)}")
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ("runner","module","game","user","state","route","output"):
@@ -63,9 +91,7 @@ def main():
         def submit(item):
             nonlocal index
             index+=1; name=f"{index:06d}.txt"
-            tmp=root/"commands"/(name+".tmp")
-            tmp.write_text("\n".join(f"{k}={v}" for k,v in item.items())+"\n",encoding="utf-8")
-            tmp.rename(root/"commands"/name)
+            publish_command(root,name,item)
             while not (root/"processed"/name).exists():
                 check()
                 if (root/"failed"/name).exists():raise RuntimeError(read_status() or "automation command failed")
@@ -85,10 +111,12 @@ def main():
             submit({"command":"stop"})
             child.wait(timeout=30)
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
+            validate_command_receipts(root,index)
             completed=True
         finally:
             if child.poll() is None:
-                (root/"commands/999999-stop.txt").write_text("command=stop\n")
+                try:publish_command(root,"999999-stop.txt",{"command":"stop"})
+                except OSError as exc:print(f"Unable to publish cleanup stop: {exc}",flush=True)
                 try:child.wait(timeout=20)
                 except subprocess.TimeoutExpired:child.terminate();child.wait(timeout=10)
             (root/"result.json").write_text(json.dumps({"route_completed":completed,"exit_code":child.returncode,"elapsed":time.monotonic()-started,"timeline":timeline},indent=2))

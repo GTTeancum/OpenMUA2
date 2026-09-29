@@ -2,6 +2,45 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Command-publication race fixed; extended combat route — 2026-09-29
+
+The extended route exposed a Windows sharing failure while renaming a command
+from .txt.tmp to .txt. Root cause: ListCommandFiles consumes every regular
+file in the watched directory, including temporary files. The runner now
+stages in a separate sibling directory, publishes a closed file atomically,
+and retries only bounded Windows sharing/lock violations. Cleanup stop uses
+the same publication path. Completion now requires exactly the expected
+processed command names and zero failed command files. Four focused tests
+passed; full tooling suite: 115 run, 114 passed, one skipped.
+
+Audited prior completed combat command receipts and exact payloads. The
+3x baseline, 3x JIT, native profile, trace-off retry and both runtime/audio
+checks passed. The old 1x run has failed/000003.txt.tmp and is EXCLUDED from
+controlled resolution comparisons; COMBAT-BASELINE.json marks it invalid.
+The aborted trace-off attempt and first extended-route attempt remain failed.
+See evidence/windows-20260929/COMMAND-RECEIPT-AUDIT.json. The valid same-3x
+native-versus-JIT comparison still supports a CPU-path bottleneck.
+
+The corrected extended native route completed with exit 0 and clean receipts.
+All five native captures were inspected in order: movement away from the
+lamppost, active melee, damage/effects, reduced enemy health and defeated
+Doombots. This is sampled visual evidence, not every-frame validation. The
+power attempt did not establish activation; a separate three-capture ability
+probe also completed but did not clearly demonstrate a shield throw. Do not
+claim a power-effect pass. Both runs used Null audio and concurrent compiler
+load, so neither is an optimization or sustained-FPS result.
+
+Private extended route: .local/scratch/combat-route-extended.json; completed
+run .local/automation/combat-extended-control-build-load-retry contains
+combat-extended.sav (frame around 11832). Ability probe lives in
+.local/automation/combat-power-control-build-load. Preserve the original
+short route for direct baseline/candidate comparisons.
+
+The Ob1 build remains live in session 60093, still compiling large generated
+functions with no reported failure. No candidate DLL/audit/FPS result yet.
+Continue the live build, then benchmark with the corrected publisher. Goal
+remains active; no production speedup or sustained-30 claim is made.
+
 ## Rebuilt-runtime combat and audio-path checks — 2026-09-29
 
 The Ob1 module build is still live in terminal session 60093; it has passed
