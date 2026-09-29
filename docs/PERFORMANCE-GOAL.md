@@ -111,3 +111,12 @@ it consumes all regular files, including .tmp. The replay runner publishes
 closed files from a sibling staging folder and requires an exact successful
 receipt set before reporting completion. Earlier 1x evidence is excluded by
 the command-receipt audit; use clean reruns for resolution comparisons.
+
+## Selective CPU-region diagnostics
+
+Use --jit-ranges START-END[,START-END] to route chosen hexadecimal runtime
+address ranges through the existing fallback JIT. This is a profiling tool,
+not a production default or evidence of correctness. Native/JIT crossings
+can dominate these results; they are not an additive cost decomposition.
+Cannot combine with full --jit-diagnostic. Re-run the native control with
+the same runner and separate loaded diagnostics from acceptance benchmarks.

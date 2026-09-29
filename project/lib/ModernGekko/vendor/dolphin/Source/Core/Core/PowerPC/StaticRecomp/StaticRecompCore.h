@@ -243,6 +243,7 @@ private:
   std::vector<u8> m_chunk_state;
   mutable std::vector<u8> m_chunk_host_call_state;
   std::vector<StaticRecompRange> m_forced_fallback_ranges;
+  bool m_forced_fallback_use_jit = false;
   struct ActiveRelSection
   {
     u32 module_id;

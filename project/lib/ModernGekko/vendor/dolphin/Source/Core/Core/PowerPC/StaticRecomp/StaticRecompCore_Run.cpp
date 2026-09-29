@@ -408,7 +408,10 @@ void StaticRecompCore::Run()
         }
         // SingleStepInner delivers synchronous exceptions itself; external
         // interrupts are delivered at slice start, as in Interpreter::Run.
-        if (m_module_active && !m_forced_fallback_ranges.empty() &&
+        // Opt-in profiling can compare a region against the existing JIT. The
+        // interpreter remains the default, including hosts without a JIT.
+        if ((!m_forced_fallback_use_jit || !m_fallback_jit) &&
+            m_module_active && !m_forced_fallback_ranges.empty() &&
             IsForcedFallbackAddress(ppc.pc))
         {
           ppc.downcount -= interpreter.SingleStepInner();

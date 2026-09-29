@@ -54,7 +54,15 @@ def main():
     p.add_argument("--no-screenshots",action="store_true")
     p.add_argument("--jit-diagnostic",action="store_true")
     p.add_argument("--profile-dispatch",action="store_true")
+    p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
     args=p.parse_args()
+    if args.jit_ranges and args.jit_diagnostic:
+        p.error("--jit-ranges and --jit-diagnostic are mutually exclusive")
+    if args.jit_ranges:
+        import re
+        for item in args.jit_ranges.split(","):
+            if not re.fullmatch(r"[0-9a-fA-F]{1,8}-[0-9a-fA-F]{1,8}", item) or int(item.split("-")[0],16) >= int(item.split("-")[1],16):
+                p.error("--jit-ranges requires valid hexadecimal start-end ranges")
     if not args.windowed and args.audio not in ("Null", "No Audio Output"):
         p.error("audio output requires --windowed: the runtime forces silent audio when headless")
     root=args.output.resolve(); root.mkdir(parents=True,exist_ok=False)
@@ -67,14 +75,17 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
-    for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP"):
+    for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
         env.pop(key,None)
     if not args.no_trace:env["MODERNGEKKO_FRAME_TIMES"]=str(root/"frames.csv")
     if args.jit_diagnostic:env["MODERNGEKKO_STATICRECOMP"]="0"
+    if args.jit_ranges:
+        env["STATICRECOMP_FALLBACK_RANGES"]=args.jit_ranges
+        env["STATICRECOMP_FALLBACK_USE_JIT"]="1"
     if args.profile_dispatch:env["STATICRECOMP_PROFILE_DISPATCH"]="1"
     cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--module",str(args.module.resolve()),"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio",args.audio,"--load-state",str(args.state.resolve())]
     if not args.windowed:cmd.append("--headless")
-    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"profile_dispatch":args.profile_dispatch,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
+    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:

@@ -56,4 +56,19 @@ class CommandPublicationTest(unittest.TestCase):
         (self.root/'failed/000002.txt.tmp').write_text('')
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
+class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_invalid_ranges_and_conflicting_modes_fail_before_launch(self):
+        required = [item for name in ("runner", "module", "game", "user", "state", "route", "output")
+                    for item in ("--" + name, "unused")]
+        cases = [["--jit-ranges", value] for value in
+                 ("garbage", "80400000-80300000", "80300000-80300000", "100000000-100000004")]
+        cases.append(["--jit-ranges", "80300000-80400000", "--jit-diagnostic"])
+        for extra in cases:
+            with self.subTest(extra=extra), mock.patch("sys.argv", ["runner"] + required + extra), \
+                 mock.patch.object(mod.shutil, "copytree") as copy, mock.patch("sys.stderr"):
+                with self.assertRaises(SystemExit) as raised:
+                    mod.main()
+                self.assertEqual(raised.exception.code, 2)
+                copy.assert_not_called()
+
 if __name__ == '__main__':unittest.main()

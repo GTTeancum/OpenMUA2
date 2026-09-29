@@ -9,6 +9,38 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Selective JIT profiling checkpoint — 2026-09-29
+
+Added opt-in STATICRECOMP_FALLBACK_USE_JIT=1 for forced fallback ranges.
+Default execution remains unchanged; without the flag (or without a JIT),
+forced ranges still use the interpreter. The benchmark accepts --jit-ranges,
+validates address ranges, rejects combination with --jit-diagnostic, clears
+inherited diagnostic variables, and records the selected ranges in metadata.
+Native eligibility/hash checks, host-call handling and timing remain active.
+
+The runtime rebuilt through the existing MSVC environment with exit 0 and no
+reported warning/error in its incremental build log. All 32 Windows runtime
+tests passed. Tooling: 116 tests run, 115 passed, one skipped. An existing
+source-pattern test needed its expected condition updated for the new opt-in
+JIT gate; the empty-range short-circuit remains covered.
+
+Concurrent-build diagnostics at the unchanged 3x preset: fresh native control
+5.7365 FPS; scheduler-region JIT 6.1493; broader math/library-region JIT 6.7784;
+80000000-80500000 region JIT 9.1802. These are not clean acceptance benchmarks
+or a production speedup. All four scheduler-run native captures were inspected
+in order and showed ongoing combat, damage/effects, HUD and scenery; other runs
+were timing-only. No sustained-30, every-frame or audible-quality pass.
+A complementary upper-code-region run measured 5.8206 FPS over 151 intervals
+(two fewer than the other 153-interval diagnostic windows).
+See evidence/windows-20260929/SELECTIVE-JIT-DIAGNOSTICS.json. Raw data is private.
+
+The isolated native Ob1 module build remains live in session 60093, last seen
+at 432/534; no candidate DLL/audit/FPS result yet. Do not restart it merely for
+a stationary log. New runner SHA256:
+9fd119537f37407911838cdb447e511b6bdb296d90084329f43eb993f4f51807.
+Compare both baseline and Ob1 using this same runner after the build finishes.
+Goal remains active and unmet; production defaults have not been changed.
+
 ## Command-publication race fixed; extended combat route — 2026-09-29
 
 The extended route exposed a Windows sharing failure while renaming a command

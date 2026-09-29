@@ -153,7 +153,8 @@ class StaticRecompRelDispatchReusePerfTests(unittest.TestCase):
         run = RUN.read_text(encoding="utf-8").replace("\r\n", "\n")
 
         self.assertIn(
-            "if (m_module_active && !m_forced_fallback_ranges.empty() &&\n"
+            "if ((!m_forced_fallback_use_jit || !m_fallback_jit) &&\n"
+            "            m_module_active && !m_forced_fallback_ranges.empty() &&\n"
             "            IsForcedFallbackAddress(ppc.pc))",
             run,
         )

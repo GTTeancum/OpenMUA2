@@ -175,6 +175,8 @@ void StaticRecompCore::Init()
   RefreshConfig();
   m_collect_dispatch_samples = std::getenv("STATICRECOMP_DISPATCH_SAMPLES") != nullptr;
   m_collect_fallback_samples = std::getenv("STATICRECOMP_FALLBACK_SAMPLES") != nullptr;
+  const char* fallback_jit = std::getenv("STATICRECOMP_FALLBACK_USE_JIT");
+  m_forced_fallback_use_jit = fallback_jit && std::strcmp(fallback_jit, "1") == 0;
   const char* fallback_override = std::getenv("STATICRECOMP_FALLBACK_RANGES");
   std::istringstream fallback_ranges(fallback_override ? fallback_override :
                                                          Config::Get(Config::MAIN_STATICRECOMP_FALLBACK_RANGES));
@@ -206,6 +208,8 @@ void StaticRecompCore::Init()
   m_guest.external_user_data = this;
 
   std::fprintf(stderr, "[staticrecomp] core init\n");
+  if (m_forced_fallback_use_jit)
+    std::fprintf(stderr, "[staticrecomp] diagnostic forced regions use JIT when available\n");
 
   LoadModule();
   m_idle_pc = Config::Get(Config::MAIN_STATICRECOMP_IDLE_PC);
