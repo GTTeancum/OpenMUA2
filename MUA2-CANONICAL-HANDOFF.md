@@ -9,6 +9,50 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Combat timing and CPU comparison — 2026-09-29
+
+Goal remains active; no production speedup or sustained-30 pass is claimed.
+Added opt-in bounded unique-frame timing at after_present, independent of the
+status-file loop; no file I/O on the video thread. Added the replay runner and
+analyzer documented in PERFORMANCE-GOAL.md. Timestamp tests cover duplicate
+presents, rewind epochs and overflow; analyzer rejects lost/discontinuous data
+and reports frame tails, rolling FPS and normal-speed ratio. The optional
+status read tolerates transient Windows sharing errors; an aborted attempt was
+retained and a complete retry succeeded.
+
+Windows/MSVC runtime rebuild exited 0, ModernGekko 32/32 tests passed. Tooling
+suite 108 passed / 1 skipped (109 run); subsequent analyzer suite 5/5 passed.
+Native DOL+REL audit remains 524/524 PASS. Compilation had nonfatal dependency
+warnings (including D9025 and C4711), with no compile/link failure.
+
+Replayed combat.sav with repeated A-button attacks. Native captures showed
+Doombots, attacks, reduced health, hit effects and debris. All measured runs
+exited 0 and completed the route. Common frames 11472..11625 (153 intervals):
+- Native 3x with captures: 6.062 FPS, p99 302.36 ms, 20.23% normal speed.
+- Native 1x with captures: 5.762 FPS, p99 274.39 ms, 19.16% normal speed.
+- Native 3x without captures: 5.899 FPS, p99 264.21 ms, 19.62% normal speed.
+- Diagnostic JIT 3x with captures: 30.069 FPS, p99 88.98 ms, 100.00% speed.
+These short comparisons point strongly to the native CPU path, not resolution.
+The JIT run is not a substitute for native optimization or sustained acceptance.
+A trace-off replay took 23.907 s after warmup versus 25.750 s trace-on; one pair
+cannot resolve tracing overhead from run variability. Per-dispatch profiling is
+intrusive; use its cost ranking, never its FPS as release performance.
+
+Next: pursue major generated-code/dispatch improvements, starting with the
+Windows global /Ob0 workaround versus explicit helper inlining
+and repeated short-block overhead. Keep all guards and timing. Time-heavy
+blocks include 8035ba00, 803682c4, 803ee9e8 and 803eea68; fixed-stride dispatch
+frequency alone was not a useful cost ranking.
+
+Private runs under .local/automation/combat-* contain traces, copied saves,
+metadata and captures. Public aggregate: evidence/windows-20260929/COMBAT-BASELINE.json.
+Current runner SHA256 d349b67d272b526dc3875fa362a1201baf20696ef71f5f899ca3c5245791cab7.
+The main build receipt still describes the prior runner; regenerate it with the
+normal Build.cmd --native-rel before normal receipt-verified launch. This
+checkpoint used explicit hashed runner/module paths. Original binaries are
+preserved under .local/perf-baseline-789e77f9. Pre-existing diagnostic edits are
+restored after the telemetry build and remain excluded from tested binaries.
+
 ## Active sustained-30-FPS goal — 2026-09-29
 
 The user requested major frame-rate improvements and will not accept less than

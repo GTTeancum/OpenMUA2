@@ -26,6 +26,7 @@
 #include "VideoCommon/VideoEvents.h"
 #include "VideoCommon/VideoConfig.h"
 #include "automation_protocol.hpp"
+#include "frame_timing.hpp"
 #include "dolphin_runtime_internal.hpp"
 #include "moderngekko/cpu_state.h"
 #include "moderngekko/mod_loader.hpp"
@@ -513,6 +514,8 @@ struct Runtime::Impl {
   std::atomic<bool> running{false};
   RuntimeAutomationState automation_state;
   Common::EventHook present_hook;
+  std::unique_ptr<moderngekko::telemetry::FrameTiming> frame_timing;
+  std::filesystem::path frame_timing_path;
   bool automation_registered = false;
   std::jthread automation_thread;
 };
@@ -814,8 +817,19 @@ RuntimeRunResult Runtime::Run() {
                          "Dolphin could not boot sys/main.dol"}};
   }
   m_impl->booted = true;
+  if (const char* path = std::getenv("MODERNGEKKO_FRAME_TIMES"); path && *path) {
+    m_impl->frame_timing_path = path;
+    m_impl->frame_timing = std::make_unique<moderngekko::telemetry::FrameTiming>();
+  }
   m_impl->present_hook =
       GetVideoEvents().after_present_event.Register([this](const PresentInfo &info) {
+        if (m_impl->frame_timing &&
+            info.reason != PresentInfo::PresentReason::VideoInterfaceDuplicate) {
+          const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              std::chrono::steady_clock::now().time_since_epoch()).count();
+          m_impl->frame_timing->Record(info.frame_count, info.present_count,
+                                     info.emulated_timestamp, ns, false);
+        }
         m_impl->automation_state.frame_count.store(info.frame_count,
                                                    std::memory_order_relaxed);
         m_impl->automation_state.present_count.store(info.present_count,
@@ -859,6 +873,14 @@ RuntimeRunResult Runtime::Run() {
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: shutting down core\n");
   Core::Shutdown(Core::System::GetInstance());
+  if (m_impl->frame_timing) {
+    std::ofstream output(m_impl->frame_timing_path);
+    m_impl->frame_timing->Write(output);
+    output.close();
+    if (!output)
+      std::fprintf(stderr, "[moderngekko] failed to write frame timing trace\n");
+    m_impl->frame_timing.reset();
+  }
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: core shutdown complete\n");
   m_impl->booted = false;

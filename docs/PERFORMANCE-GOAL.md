@@ -56,3 +56,35 @@ Keep the goal active while meaningful work remains. A 1-2 FPS improvement is
 not an acceptable final result. Document inability to prove a criterion rather
 than quietly weakening it. This plan may change with profiling evidence while
 the acceptance target remains fixed.
+
+## Benchmark tooling added at the first measurement checkpoint
+
+Set `MODERNGEKKO_FRAME_TIMES` to a private CSV path to capture unique-frame
+steady-clock timestamps at the renderer's after-present callback. Records are
+buffered (120,000 maximum) and written after the video thread stops. The parent
+folder must exist. Zero lost samples are required; partial/crashed runs are not
+usable. These timestamps measure completed callback cadence, not monitor
+scanout. Duplicate presents are omitted and frame-counter rewinds start an epoch.
+
+`tools/run_combat_benchmark.py` accepts explicit --runner, --module, --game,
+--user, --state, --route and --output paths. Use an ignored .local output folder;
+it copies user data and saves there. A private JSON route has restored_frame_min
+and commands using the native automation protocol. The restore threshold must
+match the chosen save. Frame-bounded attacks are repeated but the file-command
+polling adds small wall-time gaps, so this is not a deterministic input movie.
+The result records route completion separately from process exit. Input remains
+inside the target process; it never generates host input.
+
+Use --no-screenshots for timing runs, with separate captured replays for visual
+checks. --no-trace permits overhead comparison. --resolution 640x528 and
+--jit-diagnostic are diagnostic comparisons only; they do not satisfy the native
+3x target. --profile-dispatch enables intrusive per-dispatch timing; never treat
+its FPS as release performance. Profiling variables are cleared for normal runs.
+
+Analyze with `tools/analyze_frame_times.py TRACE --start-frame FRAME --warmup 5
+--guest-ticks-per-second 729000000 --output PRIVATE_JSON` for this Wii build.
+The caller must select a contiguous post-restore sequence. The analyzer rejects
+missing/overflowed traces, counter gaps/rewinds and reversed timestamps rather
+than silently removing them. It reports average and rolling FPS, frame-time
+tails, 1% lows, long-frame episodes and emulated/host elapsed time. No automatic
+pass flag substitutes for combat visuals, normal speed or sustained validation.

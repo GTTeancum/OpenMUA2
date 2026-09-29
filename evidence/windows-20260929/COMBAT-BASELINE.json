@@ -1,0 +1,292 @@
+{
+  "date": "2026-09-29",
+  "goal_status": "active",
+  "acceptance_passed": false,
+  "production_speedup_claimed": false,
+  "results": {
+    "combat-baseline-3x-telemetry": {
+      "scope": "new-frame callback timing, not display scanout or correctness proof",
+      "first_frame": 11472,
+      "last_frame": 11625,
+      "emulated_ticks": 3721617900,
+      "intervals": 153,
+      "seconds": 25.2410577,
+      "average_fps": 6.061552642463156,
+      "frame_ms": {
+        "median": 161.00859999999884,
+        "p95": 247.42119999999977,
+        "p99": 302.36100000000124,
+        "max": 305.3468000000006
+      },
+      "one_percent_low_fps": 3.291055339424628,
+      "rolling_1s_fps_min": 5,
+      "rolling_1s_fps_median": 6,
+      "frames_over_33_334ms": 153,
+      "frames_over_50ms": 153,
+      "longest_consecutive_over_50ms_seconds": 25.2410577,
+      "warmup_seconds": 0,
+      "dropped_samples": 0,
+      "emulated_seconds": 5.1051,
+      "emulation_speed_percent": 20.225380650352065,
+      "runner_sha256": "d349b67d272b526dc3875fa362a1201baf20696ef71f5f899ca3c5245791cab7",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "resolution": "1920x1080",
+      "jit_diagnostic": false,
+      "screenshots": true
+    },
+    "combat-diagnostic-1x-telemetry": {
+      "scope": "new-frame callback timing, not display scanout or correctness proof",
+      "first_frame": 11472,
+      "last_frame": 11625,
+      "emulated_ticks": 3709455750,
+      "intervals": 153,
+      "seconds": 26.5525926,
+      "average_fps": 5.76214919216589,
+      "frame_ms": {
+        "median": 173.6329000000012,
+        "p95": 260.97919999999954,
+        "p99": 274.3862999999998,
+        "max": 282.0374000000001
+      },
+      "one_percent_low_fps": 3.5943832011468966,
+      "rolling_1s_fps_min": 4,
+      "rolling_1s_fps_median": 6.0,
+      "frames_over_33_334ms": 153,
+      "frames_over_50ms": 153,
+      "longest_consecutive_over_50ms_seconds": 26.5525926,
+      "warmup_seconds": 0,
+      "dropped_samples": 0,
+      "emulated_seconds": 5.088416666666666,
+      "emulation_speed_percent": 19.163539859631886,
+      "runner_sha256": "d349b67d272b526dc3875fa362a1201baf20696ef71f5f899ca3c5245791cab7",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "resolution": "640x528",
+      "jit_diagnostic": false,
+      "screenshots": true
+    },
+    "combat-baseline-3x-no-capture": {
+      "scope": "new-frame callback timing, not display scanout or correctness proof",
+      "first_frame": 11472,
+      "last_frame": 11625,
+      "emulated_ticks": 3709455750,
+      "intervals": 153,
+      "seconds": 25.9353086,
+      "average_fps": 5.899293598534625,
+      "frame_ms": {
+        "median": 166.45060000000012,
+        "p95": 246.97959999999952,
+        "p99": 264.2091999999998,
+        "max": 286.8920000000008
+      },
+      "one_percent_low_fps": 3.6290975232861,
+      "rolling_1s_fps_min": 5,
+      "rolling_1s_fps_median": 6.0,
+      "frames_over_33_334ms": 153,
+      "frames_over_50ms": 153,
+      "longest_consecutive_over_50ms_seconds": 25.9353086,
+      "warmup_seconds": 0,
+      "dropped_samples": 0,
+      "emulated_seconds": 5.088416666666666,
+      "emulation_speed_percent": 19.619649587152654,
+      "runner_sha256": "d349b67d272b526dc3875fa362a1201baf20696ef71f5f899ca3c5245791cab7",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "resolution": "1920x1080",
+      "jit_diagnostic": false,
+      "screenshots": false
+    },
+    "combat-diagnostic-3x-jit": {
+      "scope": "new-frame callback timing, not display scanout or correctness proof",
+      "first_frame": 11472,
+      "last_frame": 11625,
+      "emulated_ticks": 3709455750,
+      "intervals": 153,
+      "seconds": 5.0883735,
+      "average_fps": 30.068547444482995,
+      "frame_ms": {
+        "median": 33.30459999999924,
+        "p95": 64.1216,
+        "p99": 88.97690000000003,
+        "max": 90.18910000000035
+      },
+      "one_percent_low_fps": 11.162832233794335,
+      "rolling_1s_fps_min": 29,
+      "rolling_1s_fps_median": 30,
+      "frames_over_33_334ms": 73,
+      "frames_over_50ms": 14,
+      "longest_consecutive_over_50ms_seconds": 0.11172720000000003,
+      "warmup_seconds": 0,
+      "dropped_samples": 0,
+      "emulated_seconds": 5.088416666666666,
+      "emulation_speed_percent": 100.0008483391926,
+      "runner_sha256": "d349b67d272b526dc3875fa362a1201baf20696ef71f5f899ca3c5245791cab7",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "resolution": "1920x1080",
+      "jit_diagnostic": true,
+      "screenshots": true
+    }
+  },
+  "profile_top_dispatches": [
+    {
+      "pc": "8035ba00",
+      "count": "2865168",
+      "wall_ms": "1213.281",
+      "avg_ns": "423.5"
+    },
+    {
+      "pc": "803682c4",
+      "count": "417372",
+      "wall_ms": "1126.629",
+      "avg_ns": "2699.3"
+    },
+    {
+      "pc": "803ee9e8",
+      "count": "2787534",
+      "wall_ms": "706.038",
+      "avg_ns": "253.3"
+    },
+    {
+      "pc": "803eea68",
+      "count": "2827441",
+      "wall_ms": "602.914",
+      "avg_ns": "213.2"
+    },
+    {
+      "pc": "803f673c",
+      "count": "2788081",
+      "wall_ms": "482.911",
+      "avg_ns": "173.2"
+    },
+    {
+      "pc": "80010724",
+      "count": "417412",
+      "wall_ms": "460.943",
+      "avg_ns": "1104.3"
+    },
+    {
+      "pc": "803f680c",
+      "count": "5575068",
+      "wall_ms": "452.295",
+      "avg_ns": "81.1"
+    },
+    {
+      "pc": "8036f650",
+      "count": "2932387",
+      "wall_ms": "390.040",
+      "avg_ns": "133.0"
+    },
+    {
+      "pc": "8036f490",
+      "count": "2932430",
+      "wall_ms": "378.840",
+      "avg_ns": "129.2"
+    },
+    {
+      "pc": "80381560",
+      "count": "1891151",
+      "wall_ms": "377.237",
+      "avg_ns": "199.5"
+    },
+    {
+      "pc": "80514198",
+      "count": "1111393",
+      "wall_ms": "377.033",
+      "avg_ns": "339.2"
+    },
+    {
+      "pc": "805143bc",
+      "count": "1111252",
+      "wall_ms": "373.985",
+      "avg_ns": "336.5"
+    },
+    {
+      "pc": "8036f560",
+      "count": "2932399",
+      "wall_ms": "360.480",
+      "avg_ns": "122.9"
+    },
+    {
+      "pc": "803c11a0",
+      "count": "1117459",
+      "wall_ms": "326.260",
+      "avg_ns": "292.0"
+    },
+    {
+      "pc": "803c6110",
+      "count": "1220931",
+      "wall_ms": "287.738",
+      "avg_ns": "235.7"
+    },
+    {
+      "pc": "80fb0c0c",
+      "count": "158942",
+      "wall_ms": "268.019",
+      "avg_ns": "1686.3"
+    },
+    {
+      "pc": "803ab7ec",
+      "count": "84787",
+      "wall_ms": "260.321",
+      "avg_ns": "3070.3"
+    },
+    {
+      "pc": "8000f7dc",
+      "count": "375239",
+      "wall_ms": "246.181",
+      "avg_ns": "656.1"
+    },
+    {
+      "pc": "803c10b0",
+      "count": "629504",
+      "wall_ms": "233.987",
+      "avg_ns": "371.7"
+    },
+    {
+      "pc": "803ee980",
+      "count": "2864099",
+      "wall_ms": "230.788",
+      "avg_ns": "80.6"
+    },
+    {
+      "pc": "80007448",
+      "count": "5575254",
+      "wall_ms": "224.957",
+      "avg_ns": "40.3"
+    },
+    {
+      "pc": "80385270",
+      "count": "157963",
+      "wall_ms": "222.854",
+      "avg_ns": "1410.8"
+    },
+    {
+      "pc": "803c5094",
+      "count": "304030",
+      "wall_ms": "222.158",
+      "avg_ns": "730.7"
+    },
+    {
+      "pc": "803ee364",
+      "count": "121127",
+      "wall_ms": "208.111",
+      "avg_ns": "1718.1"
+    }
+  ],
+  "limitations": [
+    "Only 153 common frame intervals; short diagnostic encounter, not sustained validation.",
+    "Native captures checked for enemies, attacks, health changes, effects and debris; not every rendered frame inspected.",
+    "Headless Vulkan / Null audio.",
+    "Frame callback timestamps are not physical scanout.",
+    "Trace-off route interval 23.907 s versus 25.750 s trace-on, one pair; overhead versus normal variability unresolved.",
+    "JIT comparison is diagnostic and does not satisfy native optimization goal.",
+    "One no-trace attempt aborted on transient Windows status-file sharing error; harness now tolerates unavailable advisory status, retry completed."
+  ],
+  "validation": {
+    "runtime_build_exit": 0,
+    "moderngekko_tests_passed": 32,
+    "tooling_suite_run": 109,
+    "tooling_suite_passed": 108,
+    "tooling_suite_skipped": 1,
+    "analyzer_focused_tests_passed": 5,
+    "module_verified_chunks": 524
+  }
+}

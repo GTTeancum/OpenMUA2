@@ -722,6 +722,12 @@ if(BUILD_TESTING)
     add_test(NAME moderngekko.frontend_config_gamecube
              COMMAND moderngekko_frontend_config_gamecube_test)
 
+    add_executable(moderngekko_frame_timing_test tests/frame_timing_test.cpp)
+    target_include_directories(moderngekko_frame_timing_test PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+    target_compile_features(moderngekko_frame_timing_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.frame_timing COMMAND moderngekko_frame_timing_test)
+
     if(MODERNGEKKO_ENABLE_DOLPHIN_RUNTIME)
         add_executable(moderngekko_automation_protocol_test
             tests/automation_protocol_test.cpp
