@@ -9,6 +9,42 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Original formatter combat cadence - 2026-09-30
+
+The earlier near-30 statue/LTO measurements below used the opt-in formatter
+replacement. That experiment remains default OFF and has not passed complete
+correctness/timing acceptance. It is not the validated production baseline.
+
+Two new runs with the original formatter, the same LTO runner and statue route,
+one logical CPU, Vulkan and 3x EFB gave the following after a two-second warmup:
+
+| Run | Newly rendered FPS | Guest speed | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Original first | 25.4255 | 99.9960% | 53.4737 | 61.6665 | 53 | 23 |
+| Original repeat | 25.2343 | 100.0035% | 60.2698 | 64.8466 | 64 | 23 |
+
+Guest intervals include 104/110 frames at 50.050ms and 187/183 at 33.367ms.
+These short restored runs are not qualifying repeats or proof of original
+console performance. They show that host JIT speed alone is insufficient to
+remove delays already present in this measured guest timeline. Intrusive block
+profiling separately attributes about 20% of resident guest cycles to the decimal
+conversion page; this is not a host CPU time percentage. Next investigate a
+behavior-preserving game-library optimization with explicit ABI, interrupt and
+world-speed validation, alongside host stalls and improved combat routing.
+
+All four investigation runs exited 0. All five native visual captures were
+inspected sequentially: street/statue, team/HUD, enemies and hit effects present;
+player partly tree-occluded and low health, statue intact. This is sampled visual
+evidence, not full-frame inspection. Cubeb was active but muted. The repeat's
+12 interior profile seconds recorded one DMA and three streaming empty dequeues,
+maximum callback gap 14.4052ms. Those counters are not device underruns or audible
+click counts, and their interval differs from the FPS window. Crackling remains
+unresolved; no audible verification. No runtime/source default changed and no
+new build was required for these measurements. The preceding 39/39 Windows
+build result remains scoped to that build. Goal active/unmet: three qualifying
+repeats and ten-minute varied combat still required. Numeric evidence and private
+artifact hashes: evidence/windows-20260930/ORIGINAL-FORMATTER-CADENCE.json.
+
 ## Windows optional LTO trial - 2026-09-30
 
 The existing ENABLE_LTO option failed with MSVC C2220/C5049 because the shared

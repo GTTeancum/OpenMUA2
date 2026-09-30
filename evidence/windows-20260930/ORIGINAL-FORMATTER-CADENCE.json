@@ -1,0 +1,333 @@
+{
+  "schema": 1,
+  "source_checkpoint": "d54e0c4ae3e3648556fdd8522711a2634088a727",
+  "scope": "Original formatter combat cadence investigation, not goal acceptance",
+  "goal_complete": false,
+  "runs": [
+    {
+      "private_directory": ".local/automation/statue-original-code-timing-20260930",
+      "exit_code": 0,
+      "settings": {
+        "runner_sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc",
+        "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+        "resolution": "1920x1080",
+        "cpu": "jit",
+        "simple_format": "off",
+        "single_core_required": true,
+        "host_logical_processors_required": 1,
+        "audio_profile": true,
+        "requested_audio_backend": "Cubeb",
+        "runtime_profile": false,
+        "jit_block_profile": false,
+        "screenshots": false
+      },
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14904,
+          "emulated_ticks": 9644584950,
+          "intervals": 342,
+          "seconds": 13.4575243,
+          "average_fps": 25.41329239881068,
+          "frame_ms": {
+            "median": 33.933549999999535,
+            "p95": 51.32120000000029,
+            "p99": 63.08189999999997,
+            "max": 186.08210000000003
+          },
+          "one_percent_low_fps": 8.85961475294189,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 26,
+          "frames_over_33_334ms": 237,
+          "frames_over_50ms": 60,
+          "longest_consecutive_over_50ms_seconds": 0.3879897,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 13.229883333333333,
+          "emulation_speed_percent": 98.30844840706202,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 2,
+            "33.367": 229,
+            "50.050": 111
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.032500000000143525,
+            "p99": 14.941033333333174,
+            "min": -15.972266666666638,
+            "max": 169.3987666666667
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14613,
+          "last_frame": 14904,
+          "emulated_ticks": 8343234900,
+          "intervals": 291,
+          "seconds": 11.4452244,
+          "average_fps": 25.425451684459762,
+          "frame_ms": {
+            "median": 33.96740000000076,
+            "p95": 51.17900000000031,
+            "p99": 53.473699999999624,
+            "max": 61.66650000000029
+          },
+          "one_percent_low_fps": 17.404673154741957,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 25,
+          "frames_over_33_334ms": 206,
+          "frames_over_50ms": 53,
+          "longest_consecutive_over_50ms_seconds": 0.06166650000000029,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.444766666666666,
+          "emulation_speed_percent": 99.9960006609103,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 187,
+            "50.050": 104
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.041533333331775224,
+            "p99": 6.074633333333343,
+            "min": -6.854299999999938,
+            "max": 11.616500000000293
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      "audio": {
+        "scope": "Profile seconds >=2 excluding final partial bucket; includes route/startup beyond FPS interval. Muted Cubeb. Internal mixer empties are not device underruns or audible clicks. Unused mixer channels excluded.",
+        "channels": {
+          "DMA": {
+            "seconds": 12,
+            "empty_dequeues": 3,
+            "max_callback_gap_ms": 0.0
+          },
+          "streaming": {
+            "seconds": 12,
+            "empty_dequeues": 2,
+            "max_callback_gap_ms": 0.0
+          },
+          "callback": {
+            "seconds": 12,
+            "empty_dequeues": 0,
+            "max_callback_gap_ms": 11.834
+          }
+        }
+      },
+      "artifact_sha256": {
+        "frames.csv": "3b17665fc0638cb43ed6b692d5f12846deb1d1ec8495c1b11a5a6fe2f31431a1",
+        "audio-profile.csv": "7a70f6a182cc4970aaf0f6d72400bfe0690f5b07b113885912cedd8b96a5e744",
+        "run.json": "07a5b5bc1e33852580ddc7b92ca0796c443f0d0cf3d95f9a9550ac525cb26f39",
+        "result.json": "584064006bca4c61d0198ae74657e55d73c5df1281126fc5d577ea95f8ace169",
+        "measurement-end.txt": "ab20dae8c5d6477611112b4f02ddcbd7090dc94bb313d38ff117a499dd7c3796"
+      }
+    },
+    {
+      "private_directory": ".local/automation/statue-original-code-repeat-20260930",
+      "exit_code": 0,
+      "settings": {
+        "runner_sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc",
+        "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+        "resolution": "1920x1080",
+        "cpu": "jit",
+        "simple_format": "off",
+        "single_core_required": true,
+        "host_logical_processors_required": 1,
+        "audio_profile": true,
+        "requested_audio_backend": "Cubeb",
+        "runtime_profile": false,
+        "jit_block_profile": false,
+        "screenshots": false
+      },
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14907,
+          "emulated_ticks": 9790530750,
+          "intervals": 345,
+          "seconds": 13.6298756,
+          "average_fps": 25.312043200159508,
+          "frame_ms": {
+            "median": 33.872399999999914,
+            "p95": 52.263599999999855,
+            "p99": 64.84660000000008,
+            "max": 183.9691
+          },
+          "one_percent_low_fps": 9.159996281041506,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 25,
+          "frames_over_33_334ms": 230,
+          "frames_over_50ms": 71,
+          "longest_consecutive_over_50ms_seconds": 0.3618911,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 13.430083333333334,
+          "emulation_speed_percent": 98.53415927973205,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 2,
+            "33.367": 226,
+            "50.050": 117
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.010000000000218168,
+            "p99": 23.145633333333347,
+            "min": -17.195166666666665,
+            "max": 167.28576666666666
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14614,
+          "last_frame": 14907,
+          "emulated_ticks": 8464856400,
+          "intervals": 293,
+          "seconds": 11.6111958,
+          "average_fps": 25.23426570758543,
+          "frame_ms": {
+            "median": 34.15369999999995,
+            "p95": 52.025500000000946,
+            "p99": 60.26980000000037,
+            "max": 64.8465999999992
+          },
+          "one_percent_low_fps": 16.032304023787578,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 25,
+          "frames_over_33_334ms": 204,
+          "frames_over_50ms": 64,
+          "longest_consecutive_over_50ms_seconds": 0.15262010000000004,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.611600000000001,
+          "emulation_speed_percent": 100.00348112293482,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 183,
+            "50.050": 110
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.01683333333356296,
+            "p99": 10.219800000000376,
+            "min": -11.830766666666728,
+            "max": 28.639133333334772
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      "audio": {
+        "scope": "Profile seconds >=2 excluding final partial bucket; includes route/startup beyond FPS interval. Muted Cubeb. Internal mixer empties are not device underruns or audible clicks. Unused mixer channels excluded.",
+        "channels": {
+          "DMA": {
+            "seconds": 12,
+            "empty_dequeues": 1,
+            "max_callback_gap_ms": 0.0
+          },
+          "streaming": {
+            "seconds": 12,
+            "empty_dequeues": 3,
+            "max_callback_gap_ms": 0.0
+          },
+          "callback": {
+            "seconds": 12,
+            "empty_dequeues": 0,
+            "max_callback_gap_ms": 14.4052
+          }
+        }
+      },
+      "artifact_sha256": {
+        "frames.csv": "ee5a4bfa7e572a80b36fec04368b2e55cba67dc6affbe35e60db1229ee48ccf9",
+        "audio-profile.csv": "81eced032d5975cc48e9cada2b3748f0c35c561b883f63d13eed9ebb78cfdfb5",
+        "run.json": "9598de4c29014c9601b6274ae1f7865b3a5cf29994ea31d6257a0b45f181db2e",
+        "result.json": "6771de5a7348654739bd2328bfae475c349893e50fefcce67a884ac2256bc4c6",
+        "measurement-end.txt": "6eb28bb143e68d764d9c86ee5e0f1a18c23ec42469cb48cbec252f2cccdac5ac"
+      }
+    }
+  ],
+  "profiling": {
+    "scope": "Intrusive JIT block profiling, resident blocks only. Guest cycle share is not host CPU time or a timing acceptance run.",
+    "page_cycle_shares": [
+      {
+        "page": "803c1000",
+        "guest_cycle_share_percent": 19.988356474532413
+      },
+      {
+        "page": "8036f000",
+        "guest_cycle_share_percent": 10.744543849612665
+      },
+      {
+        "page": "80514000",
+        "guest_cycle_share_percent": 7.004008990126222
+      },
+      {
+        "page": "80368000",
+        "guest_cycle_share_percent": 6.564972818211859
+      },
+      {
+        "page": "803c5000",
+        "guest_cycle_share_percent": 5.751149690710896
+      },
+      {
+        "page": "8000f000",
+        "guest_cycle_share_percent": 4.194684712461948
+      }
+    ]
+  },
+  "visual": {
+    "exit_code": 0,
+    "captures": [
+      {
+        "file": "00-statue.png",
+        "sha256": "0a5503489ea917934b594ed3856afdb2f79e67a65e36bff0adfd7c97f3fcf627"
+      },
+      {
+        "file": "01-combat.png",
+        "sha256": "31ba169684099ce9dbf125b2fb13acc8fc541ca4127fdb278f671e5e632080ce"
+      },
+      {
+        "file": "02-combat.png",
+        "sha256": "8364c97884ed211fe02a1c4db6d93ab70ff6d3ebd2d51fb8dcc74b3f47e62f2a"
+      },
+      {
+        "file": "03-combat.png",
+        "sha256": "b78ff497a99d6ee545bdfe97590743122d0b6e5740d417896c1b52771685803b"
+      },
+      {
+        "file": "04-combat.png",
+        "sha256": "9a15679e53c6d79fa4196a15a136a3cb823d89330ec4a84535b7f7443309768b"
+      }
+    ],
+    "inspection": "All five captures inspected sequentially: statue/street, team/HUD, Doombots and combat effects present. Player partly tree-occluded, low health; statue remains intact. Sampled captures, not every rendered frame. No audible verification."
+  },
+  "interpretation": [
+    "Earlier near-30 statue/LTO runs explicitly enabled the experimental formatter replacement. It remains default off and has not passed timing/correctness acceptance.",
+    "Original formatter runs produce mixed 33.367/50.050ms guest frame intervals near 100% guest speed. These measurements do not establish a fixed game FPS cap or original console performance.",
+    "Host execution improvements alone do not remove intervals already in this guest timeline. Decimal conversion is a substantial guest-cycle target, but replacements must preserve behavior and be validated for world speed, interrupts and ABI state.",
+    "No default or acceptance gate changed. Three qualifying repeats and ten-minute varied combat remain outstanding. Audio crackling unresolved."
+  ]
+}
