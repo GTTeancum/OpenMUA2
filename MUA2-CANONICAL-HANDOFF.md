@@ -9,6 +9,50 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Formatter caller-state audit and remaining hotspots — 2026-09-30
+
+Extended the default-off formatter shadow diagnostic to aggregate changed
+register numbers (GPR, both paired-single lanes, and condition-register fields).
+No raw register contents are written. Original code still runs in shadow mode;
+replacement behavior and the default-off setting are unchanged.
+
+A headless combat shadow run compared 398399 supported calls, including 150262
+floating calls: zero output/va_list/return/FPSCR mismatches, abandoned or pending
+samples. Original code changed GPR 0 and 3–12, floating PS0 registers 0–1, and
+CR fields 0, 1, 5. No PS1 changes were observed. Other inspected registers stayed
+unchanged. This strengthens the observed caller-state audit; it is not complete
+architectural equivalence, interrupt timing, alias coverage or whole-game proof.
+Register masks describe original execution, not errors; in replacement mode
+there are no shadow register samples and zero masks are not validation.
+
+An intrusive block profile with replacement enabled completed after the headless
+submission fix. It recorded 36,504 resident executed blocks, 31.991 billion
+cycles versus 32.541 billion guest ticks and zero skipped idle ticks. Region
+803c1000 still accounts for 12.463% of recorded cycles; 8036f000 for 12.194%,
+80368000 for 7.400%. Inspection identifies remaining decimal conversion and
+indirect per-element/paired-single processing loops. The narrow replacement
+handled 928630 calls but 918823 were unsupported; investigate those unsupported
+formats and live callers before another rewrite. These whole-run formatter
+counts and gated resident-block counts have different scopes. Profile timings
+are heavily perturbed and must not be cited as release FPS.
+
+A separate candidate run without block profiling averaged 29.8246 FPS at
+100.0001% guest speed, P99 51.2428 ms, maximum 84.9062 ms and minimum rolling
+one-second FPS 28 (frames 12620–13850). Guest intervals: 1074 at 33.367 ms,
+84 at 50.05 ms, 72 at 16.683 ms. It still fails sustained-30 pacing. Runtime/audio
+span profiling remained enabled; this is a diagnostic, not visible acceptance.
+All three native endpoint captures were inspected in order. Heroes, Doombots,
+street scenery, HUD and combat effects were present; the candidate endpoint
+shows a fusion result and incapacitated heroes. Not sustained varied combat.
+
+Windows build passed, 37/37 runtime tests in 7.57 s. No compiler warnings/errors
+found; existing CMake deprecation, Wayland and object-path warnings remain.
+Exact build artifacts and candidate timing are in
+`evidence/windows-20260930/FORMATTER-STATE-AUDIT.json`. All new runs are headless,
+JIT, Vulkan, 3x EFB, one host CPU, normal clocks and muted Cubeb. The user's
+visible-performance and sound failures remain unresolved. Goal active/unmet;
+no manual retest requested and no experimental replacement promoted.
+
 ## Headless GPU submission diagnosis — 2026-09-30
 
 The user's visible 17–18 FPS and poor-audio report still fails acceptance.

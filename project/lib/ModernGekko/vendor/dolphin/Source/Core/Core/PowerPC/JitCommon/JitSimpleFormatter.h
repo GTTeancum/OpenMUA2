@@ -35,6 +35,9 @@ private:
     u32 fpscr;
     std::array<u8, 12> argument_state;
     std::array<u8, 1024> expected;
+    std::array<u32, 32> gpr{};
+    std::array<u64, 32> ps0{}, ps1{};
+    std::array<u32, 8> cr{};
   };
   bool Run(Core::System& system, u32 pc);
   Mode m_mode = Mode::Disabled;
@@ -49,4 +52,5 @@ private:
   u64 m_abandoned = 0;
   u64 m_floating = 0;
   u64 m_fpscr_mismatches = 0;
+  u32 m_changed_gpr = 0, m_changed_ps0 = 0, m_changed_ps1 = 0, m_changed_cr = 0;
 };

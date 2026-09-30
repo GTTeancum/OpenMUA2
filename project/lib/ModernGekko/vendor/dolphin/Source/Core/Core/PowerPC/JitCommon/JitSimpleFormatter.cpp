@@ -84,10 +84,12 @@ void JitSimpleFormatter::Finish()
   if (m_mode != Mode::Disabled)
     fmt::print(stderr, "Simple formatter: mode={} entries={} eligible={} replaced={} "
                        "compared={} mismatches={} guard_rejects={} unsupported={} "
-                       "abandoned={} pending={} floating={} fpscr_mismatches={}\n",
+                       "abandoned={} pending={} floating={} fpscr_mismatches={} "
+                       "changed_gpr={:08x} changed_ps0={:08x} changed_ps1={:08x} changed_cr={:02x}\n",
                  m_mode == Mode::Shadow ? "shadow" : "on", m_entries, m_eligible, m_replaced,
                  m_compared, m_mismatches, m_guard_rejects, m_unsupported, m_abandoned, m_pending.size(),
-                 m_floating, m_fpscr_mismatches);
+                 m_floating, m_fpscr_mismatches, m_changed_gpr, m_changed_ps0, m_changed_ps1,
+                 m_changed_cr);
 }
 
 bool JitSimpleFormatter::Invoke(JitSimpleFormatter* self, Core::System* system, u32 pc)
@@ -108,6 +110,17 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
       const auto* output = DirectRAM(system, it->output, static_cast<u32>(it->expected.size()));
       const auto* arguments = DirectRAM(system, it->arguments, static_cast<u32>(it->argument_state.size()));
       ++m_compared;
+      // Aggregate register numbers only, never guest register contents. This
+      // exposes state clobbered by the original that the replacement preserves;
+      // an output-byte match alone cannot establish caller-state equivalence.
+      for (u32 i = 0; i < 32; ++i)
+      {
+        if (state.gpr[i] != it->gpr[i]) m_changed_gpr |= u32{1} << i;
+        if (state.ps[i].PS0AsU64() != it->ps0[i]) m_changed_ps0 |= u32{1} << i;
+        if (state.ps[i].PS1AsU64() != it->ps1[i]) m_changed_ps1 |= u32{1} << i;
+      }
+      for (u32 i = 0; i < 8; ++i)
+        if (state.cr.GetField(i) != it->cr[i]) m_changed_cr |= u32{1} << i;
       if (state.fpscr.Hex != it->fpscr)
         ++m_fpscr_mismatches;
       if (!output || !arguments || state.gpr[3] != it->length ||
@@ -191,6 +204,13 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
     candidate.output = destination;
     candidate.length = *length;
     candidate.arguments = state.gpr[6];
+    for (u32 i = 0; i < 32; ++i)
+    {
+      candidate.gpr[i] = state.gpr[i];
+      candidate.ps0[i] = state.ps[i].PS0AsU64();
+      candidate.ps1[i] = state.ps[i].PS1AsU64();
+    }
+    for (u32 i = 0; i < 8; ++i) candidate.cr[i] = state.cr.GetField(i);
     m_pending.push_back(candidate);
     return false;
   }
