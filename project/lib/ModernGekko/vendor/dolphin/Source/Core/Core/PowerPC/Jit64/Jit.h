@@ -32,6 +32,7 @@
 #include "Core/PowerPC/JitCommon/ConstantPropagation.h"
 #include "Core/PowerPC/JitCommon/JitBase.h"
 #include "Core/PowerPC/JitCommon/JitCache.h"
+#include "Core/PowerPC/JitCommon/JitSimpleFormatter.h"
 
 class HostDisassembler;
 namespace PPCAnalyst
@@ -291,6 +292,7 @@ private:
   FPURegCache fpr{*this};
 
   JitCommon::ConstantPropagation m_constant_propagation;
+  JitSimpleFormatter m_simple_formatter;
 
   Jit64AsmRoutineManager asm_routines{*this};
 

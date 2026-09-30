@@ -651,6 +651,21 @@ void Jit64::FlushRegistersBeforeSlowAccess()
 
 bool Jit64::HandleFunctionHooking(u32 address)
 {
+  if (m_simple_formatter.Handles(address))
+  {
+    FlushCarry();
+    gpr.Flush();
+    fpr.Flush();
+    m_constant_propagation.Clear();
+    ABI_PushRegistersAndAdjustStack({}, 0);
+    ABI_CallFunctionPPC(JitSimpleFormatter::Invoke, &m_simple_formatter, &m_system, address);
+    ABI_PopRegistersAndAdjustStack({}, 0);
+    TEST(8, R(AL), R(AL));
+    const auto original = J_CC(CC_Z, Jump::Near);
+    MOV(32, R(RSCRATCH), PPCSTATE_LR);
+    WriteBLRExit();
+    SetJumpTarget(original);
+  }
   const auto result = HLE::TryReplaceFunction(m_ppc_symbol_db, address, PowerPC::CoreMode::JIT);
   if (!result)
     return false;

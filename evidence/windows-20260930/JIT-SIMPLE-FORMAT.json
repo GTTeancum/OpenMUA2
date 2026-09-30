@@ -1,0 +1,721 @@
+{
+  "date": "2026-09-30",
+  "repository": "GTTeancum/OpenMUA2",
+  "base_commit": "ba3ba5cb91aa5c2e9c3d11b29537d3fa6d371b6d",
+  "goal_status": "active; sustained nominal 30 FPS remains unmet; experimental replacement remains disabled by default",
+  "single_core_required": true,
+  "future_target": "original Xbox; no Xbox build or whole-process single-CPU fit demonstrated",
+  "implementation": {
+    "activation": "MODERNGEKKO_SIMPLE_FORMAT=shadow|on; combat harness --simple-format shadow|on; ordinary harness runs clear inherited setting",
+    "scope": "Game-library high-level rewrite of a known formatter call; literal strings and at most eight bare %f conversions only. Logging and the caller ring buffer remain active.",
+    "float_domain": "Guest round-to-nearest; finite exact binary32 values promoted to double, signed zero or absolute value 1e-30 through 1e6; six fractional digits. Unsupported cases run original instructions.",
+    "guards": "Live SHA1 of known formatter code; expected caller/LR, ring destination, size, stack va_list and FPR save layout; canonical directly BAT-mapped RAM; no accurate data cache or memory checks; bounded input/output, no truncation or format/output overlap.",
+    "timing_limit": "Does not preserve original formatter instruction-loop latency or internal interrupt points. Guest clocks/cycle tables are unchanged and normal JIT return/downcount handling remains, but less guest work executes. Normal emulation speed alone does not establish timing equivalence. Not a cycle-accurate optimization or acceptance result.",
+    "validation_limit": "Observed buffer, return, va_list and FPSCR equality is bounded evidence; not a complete architectural-state comparison, exhaustive guest numeric/alias edge corpus or full-game equivalence. Keep off pending broader correctness and timing review."
+  },
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "log": ".local/logs/jit-simple-format-build.log",
+    "runtime_tests": {
+      "passed": 36,
+      "failed": 0,
+      "seconds": 4.97
+    },
+    "tooling_tests": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 0.069
+    },
+    "artifacts": [
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+        "bytes": 15722496,
+        "sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+        "bytes": 243200,
+        "sha256": "ec2b19c906e1ef05d5952845a7b4c3a6b4d409558b076463ec47d9844e1206b5"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+        "bytes": 29696,
+        "sha256": "fcfe0d40df4862d3b0c3d04158f114c54672d8c51f597893d7080f9fa47d922d"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+        "bytes": 11942400,
+        "sha256": "d41e613c9a1ddf93a4678d795efd4f1a4c67655f6902798424881d898717c1fb"
+      }
+    ],
+    "compiler_warnings": [],
+    "compiler_errors": [],
+    "configure_warnings": [
+      "Vendored CMake deprecation/policy warnings",
+      "Missing Wayland on Windows",
+      "Long vendored object paths"
+    ],
+    "earlier_failure": {
+      "log": ".local/logs/jit-literal-format-build.log",
+      "exit_code": 1,
+      "cause": "Missing Memmap.h left MemoryManager incomplete (C2027); two size_t-to-u32 C4267 warnings. Fixed include and bounded explicit casts."
+    },
+    "literal_only_build": {
+      "log": ".local/logs/jit-literal-format-build-final.log",
+      "exit_code": 0,
+      "runtime_tests": "36/36",
+      "seconds": 7.04
+    },
+    "generated_game_module": "None required or produced for this JIT build; existing private artifacts preserved"
+  },
+  "unit_scope": "Literal empty/ASCII/high-byte/exact-fit and rejection cases; 20000 deterministic random float patterns filtered to supported domain compared with host snprintf, including signed zero and untouched tail. Not 20000 guest comparisons or exhaustive rounding validation.",
+  "shadow": {
+    "root": ".local/automation/jit-simple-shadow-short-20260930",
+    "route_completed": true,
+    "exit_code": 0,
+    "error": null,
+    "elapsed": 38.01600000000326,
+    "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+    "simple_format": "shadow",
+    "single_core_confirmed": true,
+    "cubeb_confirmed": true,
+    "efb_3x_confirmed": true,
+    "formatter_stats": {
+      "mode": "shadow",
+      "entries": 611949,
+      "eligible": 284398,
+      "replaced": 0,
+      "compared": 284398,
+      "mismatches": 0,
+      "guard_rejects": 4574,
+      "unsupported": 322977,
+      "abandoned": 0,
+      "pending": 0,
+      "floating": 104852,
+      "fpscr_mismatches": 0
+    }
+  },
+  "shadow_scope": "284398 original calls compared, including 104852 floating calls: full 1024-byte output including untouched tail, return count, 12-byte va_list and entire FPSCR. Zero mismatches, abandoned or pending samples. Original code executes; intrusive, not release performance evidence.",
+  "literal_only": {
+    "off": {
+      "root": ".local/automation/jit-literal-off-short-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 39.85899999999674,
+      "runner_sha256": "fc44226c0d38cc695562921dfc6d20915967f13ef8f1f1b962fb952dce097dc4",
+      "simple_format": "off",
+      "single_core_confirmed": true,
+      "cubeb_confirmed": true,
+      "efb_3x_confirmed": true,
+      "frame_analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 12990,
+        "emulated_ticks": 10386476100,
+        "intervals": 370,
+        "seconds": 14.2408946,
+        "average_fps": 25.981513829896613,
+        "frame_ms": {
+          "median": 33.536499999999634,
+          "p95": 50.396600000000014,
+          "p99": 65.5131,
+          "max": 83.61979999999924
+        },
+        "one_percent_low_fps": 14.159763192120396,
+        "rolling_1s_fps_min": 24,
+        "rolling_1s_fps_median": 26,
+        "frames_over_33_334ms": 283,
+        "frames_over_50ms": 63,
+        "longest_consecutive_over_50ms_seconds": 0.10044770000000014,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 14.247566666666668,
+        "emulation_speed_percent": 100.04685145739838,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 260,
+          "50.050": 107,
+          "66.733": 2,
+          "83.417": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0020833333332775927,
+          "p99": 1.9670000000002048,
+          "min": -15.39799999999987,
+          "max": 15.463099999999994
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    "on": {
+      "root": ".local/automation/jit-literal-on-short-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 43.875,
+      "runner_sha256": "fc44226c0d38cc695562921dfc6d20915967f13ef8f1f1b962fb952dce097dc4",
+      "simple_format": "on",
+      "single_core_confirmed": true,
+      "cubeb_confirmed": true,
+      "efb_3x_confirmed": true,
+      "formatter_stats": {
+        "mode": "on",
+        "entries": 629858,
+        "eligible": 184200,
+        "replaced": 184200,
+        "compared": 0,
+        "mismatches": 0,
+        "guard_rejects": 5278,
+        "unsupported": 440380,
+        "abandoned": 0,
+        "pending": 0
+      },
+      "frame_analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 12990,
+        "emulated_ticks": 10252692450,
+        "intervals": 370,
+        "seconds": 14.059101,
+        "average_fps": 26.317472219596404,
+        "frame_ms": {
+          "median": 33.51240000000022,
+          "p95": 50.30449999999931,
+          "p99": 58.35440000000003,
+          "max": 84.62780000000004
+        },
+        "one_percent_low_fps": 13.719317175864795,
+        "rolling_1s_fps_min": 22,
+        "rolling_1s_fps_median": 26,
+        "frames_over_33_334ms": 257,
+        "frames_over_50ms": 60,
+        "longest_consecutive_over_50ms_seconds": 0.16683920000000008,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 14.06405,
+        "emulation_speed_percent": 100.0352013973013,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 271,
+          "66.733": 2,
+          "50.050": 96,
+          "83.417": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0027666666667786055,
+          "p99": 1.4904333333333049,
+          "min": -24.98429999999992,
+          "max": 24.98773333333336
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    "shadow_runs": [
+      {
+        "root": ".local/automation/jit-literal-shadow-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 55.78099999995902,
+        "runner_sha256": "fc44226c0d38cc695562921dfc6d20915967f13ef8f1f1b962fb952dce097dc4",
+        "simple_format": "shadow",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "formatter_stats": {
+          "mode": "shadow",
+          "entries": 110274,
+          "eligible": 34157,
+          "replaced": 0,
+          "compared": 34157,
+          "mismatches": 0,
+          "guard_rejects": 839,
+          "unsupported": 75278,
+          "abandoned": 0,
+          "pending": 0
+        },
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 13690,
+          "emulated_ticks": 13816202400,
+          "intervals": 1070,
+          "seconds": 18.9408345,
+          "average_fps": 56.49170315067163,
+          "frame_ms": {
+            "median": 16.68420000000026,
+            "p95": 17.338299999998696,
+            "p99": 33.96929999999998,
+            "max": 296.5129999999998
+          },
+          "one_percent_low_fps": 14.0939505304899,
+          "rolling_1s_fps_min": 20,
+          "rolling_1s_fps_median": 60.0,
+          "frames_over_33_334ms": 28,
+          "frames_over_50ms": 6,
+          "longest_consecutive_over_50ms_seconds": 0.2965129999999998,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 18.952266666666667,
+          "emulation_speed_percent": 100.06035724913106,
+          "guest_frame_ms": {
+            "median": 16.683333333333334,
+            "p99": 33.36666666666667,
+            "max": 266.93333333333334
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 37,
+            "50.050": 7,
+            "16.683": 1025,
+            "266.933": 1
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0003666666664112195,
+            "p99": 0.6968666666665111,
+            "min": -12.436233333332721,
+            "max": 37.927666666666184
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      {
+        "root": ".local/automation/jit-literal-shadow-visual-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 62.46799999999348,
+        "runner_sha256": "fc44226c0d38cc695562921dfc6d20915967f13ef8f1f1b962fb952dce097dc4",
+        "simple_format": "shadow",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "formatter_stats": {
+          "mode": "shadow",
+          "entries": 1535162,
+          "eligible": 461715,
+          "replaced": 0,
+          "compared": 461715,
+          "mismatches": 0,
+          "guard_rejects": 9869,
+          "unsupported": 1063578,
+          "abandoned": 0,
+          "pending": 0
+        }
+      }
+    ],
+    "decision": "25.9815 vs 26.3175 FPS is insufficient; no literal-only promotion"
+  },
+  "short_repeats": {
+    "off": [
+      {
+        "root": ".local/automation/jit-simple-off-short-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 39.90599999995902,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "off",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 10216206000,
+          "intervals": 370,
+          "seconds": 14.0140198,
+          "average_fps": 26.40213195645692,
+          "frame_ms": {
+            "median": 33.40569999999943,
+            "p95": 50.43749999999925,
+            "p99": 51.371299999999565,
+            "max": 73.57020000000003
+          },
+          "one_percent_low_fps": 17.479125554306766,
+          "rolling_1s_fps_min": 22,
+          "rolling_1s_fps_median": 26,
+          "frames_over_33_334ms": 266,
+          "frames_over_50ms": 69,
+          "longest_consecutive_over_50ms_seconds": 0.15011810000000025,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 14.014000000000001,
+          "emulation_speed_percent": 99.99985871291548,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 66.73333333333333
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 269,
+            "50.050": 99,
+            "66.733": 1,
+            "16.683": 1
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.00046666666699002324,
+            "p99": 2.2325000000004565,
+            "min": -15.993699999999514,
+            "max": 16.56553333333309
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      {
+        "root": ".local/automation/jit-simple-off-short-r2-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 46.56199999997625,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "off",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 9522963450,
+          "intervals": 370,
+          "seconds": 13.0545868,
+          "average_fps": 28.342528619902396,
+          "frame_ms": {
+            "median": 33.376099999999354,
+            "p95": 50.030200000000136,
+            "p99": 50.47090000000054,
+            "max": 77.02560000000003
+          },
+          "one_percent_low_fps": 15.765106223315058,
+          "rolling_1s_fps_min": 26,
+          "rolling_1s_fps_median": 28,
+          "frames_over_33_334ms": 273,
+          "frames_over_50ms": 22,
+          "longest_consecutive_over_50ms_seconds": 0.07702560000000003,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 13.06305,
+          "emulation_speed_percent": 100.06482932113946,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 66.73333333333333
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 328,
+            "50.050": 41,
+            "66.733": 1
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0012333333342245956,
+            "p99": 2.4885333333331956,
+            "min": -15.591966666666304,
+            "max": 24.239733333333387
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      {
+        "root": ".local/automation/jit-simple-off-short-r3-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 38.14100000000326,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "off",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 10313503200,
+          "intervals": 370,
+          "seconds": 14.1403375,
+          "average_fps": 26.166277855814972,
+          "frame_ms": {
+            "median": 33.42370000000007,
+            "p95": 50.50350000000003,
+            "p99": 66.7327000000002,
+            "max": 83.41000000000065
+          },
+          "one_percent_low_fps": 13.512637018139337,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 26.0,
+          "frames_over_33_334ms": 252,
+          "frames_over_50ms": 73,
+          "longest_consecutive_over_50ms_seconds": 0.11678570000000033,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 14.147466666666666,
+          "emulation_speed_percent": 100.05041723131903,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 66.73333333333333,
+            "max": 83.41666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 262,
+            "50.050": 100,
+            "66.733": 4,
+            "16.683": 3,
+            "83.417": 1
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.006216666666461479,
+            "p99": 1.8337333333341284,
+            "min": -12.88136666666663,
+            "max": 13.363233333333211
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    ],
+    "on": [
+      {
+        "root": ".local/automation/jit-simple-on-short-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 39.125,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "on",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "formatter_stats": {
+          "mode": "on",
+          "entries": 627863,
+          "eligible": 297260,
+          "replaced": 297260,
+          "compared": 0,
+          "mismatches": 0,
+          "guard_rejects": 5813,
+          "unsupported": 324790,
+          "abandoned": 0,
+          "pending": 0,
+          "floating": 109479,
+          "fpscr_mismatches": 0
+        },
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 9097288200,
+          "intervals": 370,
+          "seconds": 12.479147,
+          "average_fps": 29.649462419186186,
+          "frame_ms": {
+            "median": 33.367249999999956,
+            "p95": 50.01450000000052,
+            "p99": 51.05910000000158,
+            "max": 67.49110000000003
+          },
+          "one_percent_low_fps": 17.092307863230637,
+          "rolling_1s_fps_min": 27,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 245,
+          "frames_over_50ms": 20,
+          "longest_consecutive_over_50ms_seconds": 0.10488570000000008,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 12.479133333333333,
+          "emulation_speed_percent": 99.99989048396765,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 318,
+            "50.050": 30,
+            "16.683": 22
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0007166666668029231,
+            "p99": 9.64513333333282,
+            "min": -11.902966666666694,
+            "max": 27.462833333333368
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      {
+        "root": ".local/automation/jit-simple-on-short-r2-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 44.90600000001723,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "on",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "formatter_stats": {
+          "mode": "on",
+          "entries": 618536,
+          "eligible": 298931,
+          "replaced": 298931,
+          "compared": 0,
+          "mismatches": 0,
+          "guard_rejects": 5973,
+          "unsupported": 313632,
+          "abandoned": 0,
+          "pending": 0,
+          "floating": 112936,
+          "fpscr_mismatches": 0
+        },
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 9048639600,
+          "intervals": 370,
+          "seconds": 12.413212,
+          "average_fps": 29.806950852043776,
+          "frame_ms": {
+            "median": 33.389150000000086,
+            "p95": 50.02059999999986,
+            "p99": 61.08040000000003,
+            "max": 67.54290000000118
+          },
+          "one_percent_low_fps": 15.471009069492208,
+          "rolling_1s_fps_min": 28,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 207,
+          "frames_over_50ms": 19,
+          "longest_consecutive_over_50ms_seconds": 0.06754290000000118,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 12.412400000000002,
+          "emulation_speed_percent": 99.9934585826779,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 66.73333333333333
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 299,
+            "50.050": 36,
+            "16.683": 34,
+            "66.733": 1
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.011049999999828558,
+            "p99": 14.278699999999908,
+            "min": -15.371166666666616,
+            "max": 32.229433333333596
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      },
+      {
+        "root": ".local/automation/jit-simple-on-short-r3-20260930",
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 43.81300000002375,
+        "runner_sha256": "4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa",
+        "simple_format": "on",
+        "single_core_confirmed": true,
+        "cubeb_confirmed": true,
+        "efb_3x_confirmed": true,
+        "formatter_stats": {
+          "mode": "on",
+          "entries": 616383,
+          "eligible": 290153,
+          "replaced": 290153,
+          "compared": 0,
+          "mismatches": 0,
+          "guard_rejects": 5395,
+          "unsupported": 320835,
+          "abandoned": 0,
+          "pending": 0,
+          "floating": 106117,
+          "fpscr_mismatches": 0
+        },
+        "frame_analysis": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 12620,
+          "last_frame": 12990,
+          "emulated_ticks": 9158098950,
+          "intervals": 370,
+          "seconds": 12.5622765,
+          "average_fps": 29.453260322681164,
+          "frame_ms": {
+            "median": 33.37130000000066,
+            "p95": 50.06370000000082,
+            "p99": 51.39280000000035,
+            "max": 73.44099999999986
+          },
+          "one_percent_low_fps": 16.412552484265476,
+          "rolling_1s_fps_min": 26,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 231,
+          "frames_over_50ms": 24,
+          "longest_consecutive_over_50ms_seconds": 0.10673289999999991,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 12.562550000000002,
+          "emulation_speed_percent": 100.00217715316171,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 313,
+            "50.050": 35,
+            "16.683": 22
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0008333333324367365,
+            "p99": 14.14503333333271,
+            "min": -13.42556666666668,
+            "max": 29.14593333333336
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    ],
+    "mean_average_fps": {
+      "off": 26.970312810724764,
+      "on": 29.63655786463704
+    },
+    "mean_difference_fps": 2.6662450539122773,
+    "relative_difference_percent": 9.885851427173819,
+    "scope": "Same runner/state/profile/input sequence, frames 12620-12990 (370 intervals each), sequential runs, 1920x1080 preset / 3xEFB / Vulkan / Cubeb / normal clocks. Mid-route native capture included; nondeterministic input receipt timing and combat divergence limit causal precision. All six short runs fail solid-30 pacing; these are not the goal acceptance repeats.",
+    "visual_review": "All three native captures in each of six runs inspected sequentially: heroes and Doombots, attacks/beam/impact effects and damage, street/building/tree geometry, HUD and fusion tutorial visible. Hero selection and positions vary. Sampled images only; actual captures 2501x1410, no every-frame or display-scanout proof."
+  },
+  "route_correction": "Seven sequential captures in the full literal-shadow route show that repeated attacks carry Spider-Man out of the crowd and into an empty alley late in the route. The older full-route averages are diagnostics, not proof of continuous crowded combat. Replace the route before long acceptance.",
+  "excluded_outlier": "Uncaptured original-code literal-shadow run measured 56.4917 FPS; no replacement was active. Cause unresolved; excluded from gain/cap/acceptance claims, retained in evidence.",
+  "audio": "Cubeb activation verified; audible quality and synchronization unverified",
+  "next": [
+    "Review high-level replacement timing/ABI and expand guest edge-case/guard validation before promotion",
+    "Make process-local combat route stay engaged; current long replay leaves the fight",
+    "Measure varied sustained combat and profile remaining slow frames; solid 30, acceptance repeats and ten-minute soak remain open",
+    "Complete and validate PS2-derived Xbox controls; table remains at bottom of PERFORMANCE-GOAL.md"
+  ],
+  "preservation": "Original proprietary assets, RAM, disassembly, saves, generated translation output, screenshots and raw logs remain private/ignored. Three user StaticRecomp edits, root Build-With-Log.cmd and unfinished static stash preserved."
+}

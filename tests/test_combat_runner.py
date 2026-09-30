@@ -103,6 +103,7 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                  ("garbage", "80400000-80300000", "80300000-80300000", "100000000-100000004")]
         cases.append(["--jit-ranges", "80300000-80400000", "--jit-diagnostic"])
         cases.append(["--cpu", "staticrecomp", "--jit-block-profile"])
+        cases.append(["--cpu", "staticrecomp", "--simple-format", "on"])
         cases.append(["--jit-profile-callers", "803c63bc"])
         for targets in ("803c63bd", "803c63bc,", "100000000", "junk", ",".join(["803c63bc"]*33)):
             cases.append(["--jit-block-profile", "--jit-profile-callers", targets])

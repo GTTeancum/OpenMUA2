@@ -299,6 +299,83 @@ Then compare uninstrumented single-core combat and inspect native output before
 repeat/soak acceptance. No formatter optimization or new FPS gain is delivered
 at this checkpoint. Evidence: evidence/windows-20260930/JIT-CALLERS-SINGLE-CORE.json.
 
+## Guarded formatter rewrite experiment — 2026-09-30
+
+Single-core CPU/GPU emulation remains enforced. The new default-off
+`--simple-format shadow|on` experiment replaces a narrow game-library formatter
+operation with portable host formatting: literal text and bare `%f` for bounded,
+finite binary32 values. Live code hashing, caller/buffer/ABI and direct-RAM guards
+restrict eligibility; unsupported cases execute the original instructions. The
+caller still rotates its four buffers and the logging sink still filters/emits.
+No messages, effects or game assets are removed or patched.
+
+This is a high-level game-library rewrite, **not instruction-timing equivalence**.
+It does not retain the original formatter loop's latency or internal interrupt
+points. Clock rates and existing JIT return/downcount handling are unchanged,
+but less guest work executes. Normal emulation speed alone cannot validate that
+timing change. Keep the experiment off pending broader correctness/timing review;
+these results do not satisfy the goal's correctness or sustained-FPS acceptance.
+
+Shadow mode executed the original and matched 284,398 eligible calls, including
+104,852 calls with floating conversions. It compared all 1,024 output bytes (untouched tail
+included), return count, 12-byte va_list and full FPSCR: zero mismatches, abandoned
+or pending samples. This is bounded observed-state evidence, not all architectural
+state, exhaustive guest rounding/alias/guard coverage or full-game equivalence.
+Host component tests compare supported random floats with snprintf; unsupported
+formats and values retain the original path.
+
+Three short runs per mode used the same runner, save, profile and input sequence
+at 1920x1080 preset / 3x EFB, Vulkan/Cubeb, normal clocks and single-core mode.
+Each measures frames 12620–12990, 370 newly rendered frame intervals:
+
+| Mode / run | Average FPS | P99 ms | Maximum ms | Lowest rolling 1 s FPS |
+| --- | ---: | ---: | ---: | ---: |
+| Off 1 | 26.4021 | 51.37 | 73.57 | 22 |
+| Off 2 | 28.3425 | 50.47 | 77.03 | 26 |
+| Off 3 | 26.1663 | 66.73 | 83.41 | 23 |
+| On 1 | 29.6495 | 51.06 | 67.49 | 27 |
+| On 2 | 29.8070 | 61.08 | 67.54 | 28 |
+| On 3 | 29.4533 | 51.39 | 73.44 | 26 |
+
+Mean of run averages: 26.9703 off versus 29.6366 on
+(+2.6662 FPS,
++9.89%). Input receipt
+timing and combat progression vary; this is provisional evidence, not a precise
+causal gain. All six runs fail solid-30 pacing. The earlier literal-only pair
+measured 25.9815 versus 26.3175 FPS and was insufficient by itself.
+
+All 18 native captures from these six short runs were inspected sequentially:
+heroes/Doombots, attacks, beam/impact effects, damage, street/building/tree scenery,
+HUD and fusion tutorial were visible. Actual window captures are 2501x1410.
+This is sampled visual evidence, not every frame. Mid-route capture can add
+stalls. Cubeb activation is confirmed; audible quality/synchronization is unverified.
+
+**Route correction:** seven captures from the full original-code shadow replay
+show attacks carrying Spider-Man out of the crowd and into an empty alley late
+in the sequence. Earlier full-route averages remain diagnostic and must not be
+described as continuous crowded combat. An uncaptured original-code shadow run
+also produced an unexplained 56.4917 FPS outlier; no replacement was active.
+Retain it as unresolved evidence, excluded from FPS-gain or frame-cap claims.
+
+Windows `Build.cmd --cpu jit --jobs 2` exited 0: 36/36 runtime tests in 4.97 s,
+8/8 tooling tests. Current runner: 15,722,496 bytes, SHA256
+4a0ad7d58d5d9123ca9b78c697ba6a13f32dec8075a660197767e3b009c242aa.
+ModernGekko.exe, moderngekko-port.exe and moderngekko-module-info.exe were also
+produced; artifact hashes are in the evidence. No proprietary game DLL is needed.
+Final compiler diagnostics: no warnings/errors found. Existing CMake deprecation,
+missing Wayland and object-path warnings remain. An initial compile failed on a
+missing Memmap include and reported two size-conversion warnings; both were fixed
+before the successful builds. Log: .local/logs/jit-simple-format-build.log.
+
+Next expand guest correctness/guard/timing validation, repair the combat route
+to stay engaged, then profile remaining slow frames. The three qualifying repeats,
+ten-minute varied combat session and full Xbox controls remain outstanding. The
+Xbox control table stays at the bottom of the to-do file. Goal remains active.
+Proprietary data/raw logs/captures stay ignored; user StaticRecomp edits,
+Build-With-Log.cmd and the unfinished static experiment stash are preserved.
+
+Evidence: evidence/windows-20260930/JIT-SIMPLE-FORMAT.json.
+
 ## Xbox / XInput controls — quick reference
 
 **Planned PS2-style layout; full implementation and gameplay validation are pending.**

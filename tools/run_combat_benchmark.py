@@ -97,6 +97,7 @@ def main():
     p.add_argument("--profile-dispatch",action="store_true")
     p.add_argument("--jit-block-profile",action="store_true",help="Intrusive full-JIT resident-block counters; diagnostic only, never release-FPS evidence.")
     p.add_argument("--jit-profile-callers",help="With --jit-block-profile: up to 32 comma-separated aligned hexadecimal block addresses; private bounded caller/argument samples.")
+    p.add_argument("--simple-format", choices=("shadow", "on"), help="Default-off simple formatter experiment; shadow compares original output/state, on replaces supported calls.")
     p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
     args=p.parse_args()
     if args.jit_ranges and args.jit_diagnostic:
@@ -106,6 +107,8 @@ def main():
         p.error("--jit-diagnostic requires the jit CPU backend")
     if args.jit_block_profile and cpu != "jit":
         p.error("--jit-block-profile requires the jit CPU backend")
+    if args.simple_format and cpu != "jit":
+        p.error("--simple-format requires the jit CPU backend")
     if args.jit_profile_callers:
         import re
         addresses = args.jit_profile_callers.split(',')
@@ -135,6 +138,8 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
+    env.pop("MODERNGEKKO_SIMPLE_FORMAT",None)
+    if args.simple_format:env["MODERNGEKKO_SIMPLE_FORMAT"]=args.simple_format
     env.pop("MODERNGEKKO_JIT_PROFILE_CALLERS",None)
     if args.jit_profile_callers:env["MODERNGEKKO_JIT_PROFILE_CALLERS"]=args.jit_profile_callers
     env.pop("MODERNGEKKO_PRESENT_QUEUE",None)
@@ -159,6 +164,7 @@ def main():
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers
     metadata["single_core_required"] = True
+    metadata["simple_format"] = args.simple_format or "off"
     metadata["jit_block_profile_scope"] = "resident blocks after restored frame threshold; intrusive, invalidated blocks excluded" if args.jit_block_profile else None
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]

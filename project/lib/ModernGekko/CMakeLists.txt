@@ -740,6 +740,12 @@ if(BUILD_TESTING)
     target_compile_features(moderngekko_jit_caller_profile_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.jit_caller_profile COMMAND moderngekko_jit_caller_profile_test)
 
+    add_executable(moderngekko_simple_format_test tests/simple_format_test.cpp)
+    target_include_directories(moderngekko_simple_format_test PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+    target_compile_features(moderngekko_simple_format_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.simple_format COMMAND moderngekko_simple_format_test)
+
     if(MODERNGEKKO_ENABLE_DOLPHIN_RUNTIME)
         add_executable(moderngekko_automation_protocol_test
             tests/automation_protocol_test.cpp

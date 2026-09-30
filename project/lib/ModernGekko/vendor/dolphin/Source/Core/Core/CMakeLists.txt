@@ -594,6 +594,9 @@ add_library(core
   PowerPC/JitCommon/JitBase.h
   PowerPC/JitCommon/JitCache.cpp
   PowerPC/JitCommon/JitCache.h
+  PowerPC/JitCommon/JitSimpleFormatter.cpp
+  PowerPC/JitCommon/JitSimpleFormatter.h
+  PowerPC/JitCommon/SimpleFormat.h
   PowerPC/JitInterface.cpp
   PowerPC/JitInterface.h
   PowerPC/GDBStub.cpp

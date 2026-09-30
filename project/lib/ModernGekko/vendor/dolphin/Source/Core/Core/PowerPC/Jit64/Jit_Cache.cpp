@@ -45,6 +45,7 @@ using namespace PowerPC;
 
 void Jit64::Init()
 {
+  m_simple_formatter.Init();
   InitFastmemArena();
 
   RefreshConfig();
@@ -93,6 +94,7 @@ void Jit64::Init()
 
 void Jit64::ClearCache()
 {
+  m_simple_formatter.ClearPending();
   blocks.Clear();
   blocks.ClearRangesToFree();
   trampolines.ClearCodeSpace();
@@ -128,6 +130,7 @@ void Jit64::ResetFreeMemoryRanges()
 
 void Jit64::Shutdown()
 {
+  m_simple_formatter.Finish();
   FreeCodeSpace();
 
   auto& memory = m_system.GetMemory();
