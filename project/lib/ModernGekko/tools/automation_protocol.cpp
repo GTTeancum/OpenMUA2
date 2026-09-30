@@ -169,6 +169,8 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
     return CommandType::LoadState;
   if (text == "screenshot")
     return CommandType::Screenshot;
+  if (text == "read_timing")
+    return CommandType::ReadTiming;
   if (text == "read_memory")
     return CommandType::ReadMemory;
   if (text == "write_memory")
@@ -479,6 +481,7 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
   }
   case CommandType::SaveState:
   case CommandType::LoadState:
+  case CommandType::ReadTiming:
   case CommandType::Screenshot:
   {
     const auto path_it = values.find("path");

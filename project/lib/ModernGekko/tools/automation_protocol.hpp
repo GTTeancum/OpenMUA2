@@ -21,6 +21,7 @@ enum class CommandType
   SaveState,
   LoadState,
   Screenshot,
+  ReadTiming,
   ReadMemory,
   WriteMemory,
   Stop,

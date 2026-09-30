@@ -2,6 +2,34 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Idle-cycle hypothesis ruled out for this fight — 2026-09-29
+
+Added read_timing to the process-local automation protocol. It snapshots
+CoreTiming ticks and idle_ticks under a CPU-thread guard, then releases the
+guard before writing the requested private file. It never generates host input
+or changes CPU timing policy. Missing-path parsing is rejected. Runtime rebuilt
+with exit 0 and no reported warning/error; all 32 Windows runtime tests passed.
+
+Completed native and JIT combat probes both had zero idle-tick delta:
+native over 3651052829 ticks; JIT over 4385648130 ticks. Both exited 0 with
+clean command receipts. The differing command-route intervals are not paired
+FPS windows. Compiler load was active; these timing-only runs had no captures
+or audible audio. IDLE-CYCLE-PROBE.json records the measurements. Do not pursue
+idle skipping as the explanation for this fight's native/JIT speed gap.
+
+Two module builds remain active: session 99026 for the isolated c1024/Ob2
+MSVC experiment, and session 66634 for an isolated Clang/O2 module with the
+original 4096-instruction chunks. Clang 22.1.2 already exists at
+C:/Program Files/LLVM/bin/clang.exe and targets x86_64-pc-windows-msvc.
+No toolchain was installed. The private .local/scratch/build-clang-module.cmd
+uses workspace CMake helpers and the existing Windows SDK; its output is
+.local/build/windows-x64/module-mg01-rel-clang-o2/gRMSE52_recomp.dll.
+Clang uses O2, fp-contract=off, no-fast-math, IPO off. Its script audits with
+the existing verifier and writes .local/receipts/clang-module-experiment.json
+only on success. It does not replace the default build receipt. See
+.local/ACTIVE-PERFORMANCE-BUILDS.json for active commands/logs. Neither module
+has a completed audit or performance result yet. Goal remains active and unmet.
+
 ## Ob1 build completed; no combat speedup — 2026-09-29
 
 The long-running session 60093 finished with exit 0. Windows native module:

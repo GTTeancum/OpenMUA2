@@ -68,6 +68,21 @@ int main()
     return 5;
   }
 
+  {
+    std::ofstream output(commands / "010_read_timing.txt");
+    output << "command=read_timing\npath=artifacts/timing.txt\n";
+  }
+  if (!automation::ParseCommandFile(commands / "010_read_timing.txt", &command, &error) ||
+      command.type != automation::CommandType::ReadTiming ||
+      command.path != std::filesystem::path("artifacts/timing.txt"))
+    return 20;
+  {
+    std::ofstream output(commands / "011_bad_timing.txt");
+    output << "command=read_timing\n";
+  }
+  if (automation::ParseCommandFile(commands / "011_bad_timing.txt", &command, &error))
+    return 21;
+
   automation::Status status;
   status.state = "running";
   status.booted = true;

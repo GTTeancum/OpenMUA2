@@ -8,6 +8,7 @@
 #include "Core/Boot/BootManager.h"
 #include "Core/Config/GraphicsSettings.h"
 #include "Core/Config/MainSettings.h"
+#include "Core/CoreTiming.h"
 #include "Core/Core.h"
 #include "Core/HW/GBACore.h"
 #include "Core/HW/Memmap.h"
@@ -232,6 +233,32 @@ void SaveAutomationScreenshot(const std::filesystem::path& path)
     g_frame_dumper->SaveScreenshot(path.string());
 }
 
+std::optional<RuntimeError> ReadAutomationTiming(const std::filesystem::path& path)
+{
+  u64 ticks;
+  u64 idle_ticks;
+  {
+    auto& system = Core::System::GetInstance();
+    const Core::CPUThreadGuard guard(system);
+    ticks = system.GetCoreTiming().GetTicks();
+    idle_ticks = system.GetCoreTiming().GetIdleTicks();
+  }
+  // File I/O occurs after releasing the CPU guard. This is an explicit
+  // diagnostic snapshot, never part of the per-frame timing path.
+  std::error_code ec;
+  std::filesystem::create_directories(path.parent_path(), ec);
+  if (ec)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not create timing output directory: " + ec.message()};
+  std::ofstream output(path);
+  output << "ticks=" << ticks << "\nidle_ticks=" << idle_ticks << "\n";
+  output.close();
+  if (!output)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not write timing output file"};
+  return {};
+}
+
 std::optional<RuntimeError> ReadAutomationMemory(const std::filesystem::path& path, u32 address,
                                                  u32 size)
 {
@@ -336,6 +363,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   case automation::CommandType::Screenshot:
     SaveAutomationScreenshot(NormalizeScreenshotPath(command.path));
     break;
+  case automation::CommandType::ReadTiming:
+    if (auto error = ReadAutomationTiming(command.path))
+      return error;
+    break;
   case automation::CommandType::ReadMemory:
     if (auto error = ReadAutomationMemory(command.path, command.address, command.size))
       return error;
@@ -361,6 +392,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   case automation::CommandType::SaveState:
   case automation::CommandType::LoadState:
   case automation::CommandType::Screenshot:
+  case automation::CommandType::ReadTiming:
   case automation::CommandType::ReadMemory:
   case automation::CommandType::WriteMemory:
   case automation::CommandType::PadFrames:

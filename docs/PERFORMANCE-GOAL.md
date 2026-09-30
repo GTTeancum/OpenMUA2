@@ -135,3 +135,9 @@ Build.cmd --native-rel --c-chunk-instructions 1024 --module-msvc-inline 2
 not game resolution, cycle charges or effects. Generation keys, receipts and
 module output isolate the experiment. Re-audit and compare the same fight;
 smaller functions can also increase dispatch cost, so discard losses.
+
+The explicit process-local command read_timing with path=<private file> writes
+ticks and idle_ticks. Compare two snapshots after restoring the same save;
+absolute idle counters may include prior saved execution. Initial native/JIT
+combat probes both skipped zero idle ticks, so idle skipping is not a supported
+optimization lead for this route. Snapshot pauses are diagnostic only.

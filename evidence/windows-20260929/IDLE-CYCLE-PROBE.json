@@ -1,0 +1,48 @@
+{
+  "scope": "Read-only process-local CoreTiming snapshots during combat; compiler load active; timing-only runs without screenshots or audible audio.",
+  "conclusion": "Both paths skipped zero idle ticks. Idle-loop skipping does not explain their speed gap in this route. Do not add idle skipping based on this evidence.",
+  "interval_note": "The command-based routes have different guest tick spans; no paired FPS comparison is inferred.",
+  "runtime_tests": {
+    "passed": 32,
+    "failed": 0
+  },
+  "runtime_build": "MSVC build exit 0; no reported warnings/errors",
+  "runs": [
+    {
+      "private_run": ".local\\automation\\combat-native-idle-probe",
+      "jit_diagnostic": false,
+      "runner_sha256": "7712303b6e31b2f98b6159fd131bcc63844963035a752c848610e4a2f906a33b",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "start": {
+        "ticks": 295268133164,
+        "idle_ticks": 1437538819
+      },
+      "end": {
+        "ticks": 298919185993,
+        "idle_ticks": 1437538819
+      },
+      "ticks_delta": 3651052829,
+      "idle_ticks_delta": 0,
+      "route_completed": true,
+      "exit_code": 0
+    },
+    {
+      "private_run": ".local\\automation\\combat-jit-idle-probe",
+      "jit_diagnostic": true,
+      "runner_sha256": "7712303b6e31b2f98b6159fd131bcc63844963035a752c848610e4a2f906a33b",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "start": {
+        "ticks": 295281955687,
+        "idle_ticks": 1437538819
+      },
+      "end": {
+        "ticks": 299667603817,
+        "idle_ticks": 1437538819
+      },
+      "ticks_delta": 4385648130,
+      "idle_ticks_delta": 0,
+      "route_completed": true,
+      "exit_code": 0
+    }
+  ]
+}
