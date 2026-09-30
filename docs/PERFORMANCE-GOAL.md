@@ -244,3 +244,32 @@ Evidence: `evidence/windows-20260930/AGGREGATE-DISPATCH-PROFILE.json`.
 The 30 FPS goal remains unmet. Next investigate generated-code entry/return
 frequency and helper overhead, not only the external dispatcher. Preserve
 native eligibility/hash checks, exceptions and interrupt/timing boundaries.
+
+## Xbox / XInput controls — quick reference
+
+**Planned PS2-style layout; full implementation and gameplay validation are pending.**
+Existing Xbox support does not yet provide every mapping below. Wii button prompts
+will remain for now. User testing is not required yet.
+
+| Xbox control | Action | PS2 equivalent |
+| --- | --- | --- |
+| Left stick | Move | Left analog stick |
+| Right stick | Rotate camera | Right analog stick |
+| A | Light attack; confirm in menus | Cross |
+| B | Heavy attack; hold to charge | Circle |
+| X | Grab / use / interact | Square |
+| Y | Jump; flight where supported | Triangle |
+| LB (hold) | Block | L1 |
+| RB (hold) + A / B / X / Y | Use the corresponding power | R1 + face button |
+| LB + RB (hold), then a face button | Fusion attack / revive teammate | L1 + R1, then face button |
+| D-pad | Select hero | Directional buttons |
+| Start / Menu | Pause | Start |
+
+Power-slot order, direct hero selection, camera behavior and fusion/revive still
+need validation against the Wii game. The PS2 manual lists Triangle for menu
+back/cancel, which translates to Y in this target layout.
+
+Sources: [Activision PS2 manual](https://www.gamesdatabase.org/Media/SYSTEM/Sony_Playstation_2/Manual/formated/Marvel_Ultimate_Alliance_2_-_2009_-_Activision.pdf),
+printed pages 4–5. Its gameplay table repeats Cross for both attack and jump;
+[the PS2 review](https://www.cheatcc.com/articles/marvel-ultimate-alliance-2-review-for-playstation-2-ps2-psx2/)
+corroborates Triangle for jump/flight.

@@ -20,6 +20,7 @@
 #include "Core/State.h"
 #include "Core/System.h"
 #include "DolphinNoGUI/Platform.h"
+#include "InputCommon/ControllerEmu/ControllerEmu.h"
 #include "InputCommon/ControllerInterface/Touch/InputOverrider.h"
 #include "UICommon/UICommon.h"
 #include "VideoCommon/FrameDumper.h"
@@ -176,12 +177,29 @@ void EnsureAutomationDirectories(const std::filesystem::path& root)
   std::filesystem::create_directories(root / "commands", ec);
   std::filesystem::create_directories(root / "processed", ec);
   std::filesystem::create_directories(root / "failed", ec);
+  std::filesystem::create_directories(root / "errors", ec);
 }
 
 void SetAutomationError(RuntimeAutomationState& state, std::string message)
 {
   std::lock_guard lock(state.mutex);
   state.last_error = std::move(message);
+}
+
+void RecordAutomationFailure(RuntimeAutomationState& state, const std::filesystem::path& root,
+                             const std::filesystem::path& command_path, std::string message)
+{
+  const std::string detail = command_path.filename().string() + ": " + message;
+  SetAutomationError(state, detail);
+  // Publish the reason before the failed receipt. The periodic status file can
+  // still describe the preceding command and is cleared by a successful stop.
+  std::ofstream output(root / "errors" / command_path.filename(),
+                       std::ios::binary | std::ios::trunc);
+  output << detail << '\n';
+  output.close();
+  std::fprintf(stderr, "Automation failure: %s\n", detail.c_str());
+  if (!output)
+    std::fprintf(stderr, "Unable to save automation failure detail\n");
 }
 
 void MarkAutomationCommand(RuntimeAutomationState& state, std::string command_name)
@@ -194,6 +212,7 @@ void MarkAutomationCommand(RuntimeAutomationState& state, std::string command_na
 
 void ClearAutomationPad(int port)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   for (int control = static_cast<int>(ciface::Touch::FIRST_GC_CONTROL);
        control <= static_cast<int>(ciface::Touch::LAST_WII_CONTROL); ++control)
   {
@@ -204,6 +223,7 @@ void ClearAutomationPad(int port)
 
 void ApplyAutomationPad(const automation::PadState& pad)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   ClearAutomationPad(pad.port);
   for (std::size_t index = 0; index < pad.controls.size(); ++index)
   {
@@ -338,7 +358,8 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
         break;
       std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
-    ClearAutomationPad(command.pad.port);
+    if (command.release_pad || stop_token.stop_requested())
+      ClearAutomationPad(command.pad.port);
     break;
   }
   case automation::CommandType::ClearPad:
@@ -494,8 +515,7 @@ void AutomationLoop(Runtime& runtime, ImplT& impl, std::stop_token stop_token)
       std::string error;
       if (!automation::ParseCommandFile(command_path, &command, &error))
       {
-        SetAutomationError(impl.automation_state,
-                           command_path.filename().string() + ": " + error);
+        RecordAutomationFailure(impl.automation_state, root, command_path, error);
         MoveAutomationCommand(command_path, root, "failed");
         continue;
       }
@@ -509,8 +529,8 @@ void AutomationLoop(Runtime& runtime, ImplT& impl, std::stop_token stop_token)
       if (auto runtime_error =
               ApplyAutomationCommand(runtime, impl.automation_state, command, stop_token))
       {
-        SetAutomationError(impl.automation_state,
-                           command.source_name + ": " + runtime_error->message);
+        RecordAutomationFailure(impl.automation_state, root, command_path,
+                                runtime_error->message);
         MoveAutomationCommand(command_path, root, "failed");
         continue;
       }

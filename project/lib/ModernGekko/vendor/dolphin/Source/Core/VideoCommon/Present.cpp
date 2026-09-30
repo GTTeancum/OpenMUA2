@@ -3,11 +3,15 @@
 
 #include "VideoCommon/Present.h"
 
+#include <cstdio>
+#include <cstdlib>
+
 #include "Common/ChunkFile.h"
 #include "Core/Config/GraphicsSettings.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/CoreTiming.h"
 #include "Core/HW/VideoInterface.h"
+#include "Core/HW/SystemTimers.h"
 #include "Core/Host.h"
 #include "Core/System.h"
 
@@ -95,6 +99,11 @@ static void TryToSnapToXFBSize(int& width, int& height, int xfb_width, int xfb_h
 
 Presenter::Presenter()
 {
+  const char* queue = std::getenv("MODERNGEKKO_PRESENT_QUEUE");
+  m_queue_requested = queue && *queue == '1';
+  m_queue_enabled = m_queue_requested;
+  if (m_queue_requested)
+    std::fprintf(stderr, "Experimental presentation queue: half refresh, two-frame prefill\n");
   auto& video_events = GetVideoEvents();
 
   m_config_changed =
@@ -106,6 +115,16 @@ Presenter::Presenter()
 
 Presenter::~Presenter()
 {
+  if (m_queue_requested)
+    std::fprintf(stderr,
+        "Presentation queue: enqueued=%llu displayed=%llu pending=%zu underflows=%llu "
+        "overflows=%llu state_discards=%llu\n",
+        static_cast<unsigned long long>(m_queue_enqueued),
+        static_cast<unsigned long long>(m_queue_displayed), m_presentation_queue.size(),
+        static_cast<unsigned long long>(m_queue_clock.Underflows()),
+        static_cast<unsigned long long>(m_queue_overflows),
+        static_cast<unsigned long long>(m_queue_state_discards));
+  ClearPresentationQueue();
   // Disable ControllerInterface's aspect ratio adjustments so mapping dialog behaves normally.
   g_controller_interface.SetAspectRatioAdjustment(1);
 }
@@ -206,17 +225,135 @@ void Presenter::ViSwap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height,
     }
   }
 
-  auto& video_events = GetVideoEvents();
+  if (m_queue_enabled)
+  {
+    if (!is_duplicate)
+    {
+      if (!QueueXFB(present_info))
+      {
+        m_queue_enabled = false;
+        while (!m_presentation_queue.empty())
+          PresentQueuedFrame(presentation_time);
+        std::fprintf(stderr, "Presentation queue disabled: texture snapshot unavailable\n");
+      }
+    }
+    // A faster source must not grow latency indefinitely or silently drop work.
+    // Drain in order and disable the experiment if its bounded queue fills.
+    if (m_presentation_queue.size() >= 6)
+    {
+      ++m_queue_overflows;
+      m_queue_enabled = false;
+      while (!m_presentation_queue.empty())
+        PresentQueuedFrame(presentation_time);
+      std::fprintf(stderr, "Presentation queue disabled: source exceeded bounded queue\n");
+      return;
+    }
+    auto& system = Core::System::GetInstance();
+    auto& vi = system.GetVideoInterface();
+    const u64 field_period = PresentationQueueClock::FieldPeriod(
+        system.GetSystemTimers().GetTicksPerSecond(), vi.GetTargetRefreshRateNumerator(),
+        vi.GetTargetRefreshRateDenominator());
+    if (m_queue_enabled && m_queue_clock.Due(ticks, field_period, m_presentation_queue.size()))
+      PresentQueuedFrame(presentation_time);
+    if (m_queue_enabled)
+      return;
+  }
 
+  auto& video_events = GetVideoEvents();
   video_events.before_present_event.Trigger(present_info);
 
   if (!is_duplicate || !g_ActiveConfig.bSkipPresentingDuplicateXFBs)
   {
     Present(&present_info);
-    ProcessFrameDumping(ticks);
+    ProcessFrameDumping(ticks, present_info.frame_count + 1);
 
     video_events.after_present_event.Trigger(present_info);
   }
+}
+
+bool Presenter::QueueXFB(PresentInfo present_info)
+{
+  std::unique_ptr<AbstractTexture> snapshot;
+  if (m_xfb_entry)
+  {
+    const auto* source = m_xfb_entry->texture.get();
+    const auto& config = source->GetConfig();
+    for (auto& available : m_queue_texture_pool)
+    {
+      if (available && available->GetConfig() == config)
+      {
+        snapshot = std::move(available);
+        break;
+      }
+    }
+    std::erase(m_queue_texture_pool, nullptr);
+    if (!snapshot)
+      snapshot = g_gfx->CreateTexture(config, "Presentation queue snapshot");
+    if (!snapshot)
+      return false;
+    // Independent textures leave cache identity and duplicate detection untouched.
+    // All copies stay on the GPU; no readback or guest state is involved.
+    for (u32 layer = 0; layer < source->GetLayers(); ++layer)
+      for (u32 level = 0; level < source->GetLevels(); ++level)
+        snapshot->CopyRectangleFromTexture(source, source->GetMipRect(level), layer, level,
+                                          source->GetMipRect(level), layer, level);
+    snapshot->FinishedRendering();
+  }
+  auto& frame = m_presentation_queue.emplace_back();
+  frame.texture = std::move(snapshot);
+  frame.rect = m_xfb_rect;
+  frame.width = m_last_xfb_width;
+  frame.height = m_last_xfb_height;
+  // PresentInfo uses views into cache metadata. Own those strings while queued.
+  for (const auto hash : present_info.xfb_copy_hashes)
+    frame.copy_hashes.emplace_back(hash);
+  frame.info = std::move(present_info);
+  frame.info.xfb_copy_hashes.clear();
+  for (const auto& hash : frame.copy_hashes)
+    frame.info.xfb_copy_hashes.push_back(hash);
+  ++m_queue_enqueued;
+  return true;
+}
+
+AbstractTexture* Presenter::GetPresentedXFBTexture() const
+{
+  return m_presenting_queued_frame ? m_queued_texture :
+      (m_xfb_entry ? m_xfb_entry->texture.get() : nullptr);
+}
+
+void Presenter::PresentQueuedFrame(TimePoint presentation_time)
+{
+  auto& frame = m_presentation_queue.front();
+  // Keep source tracking separate from the older texture being displayed.
+  const auto current_rect = m_xfb_rect;
+  const u32 current_width = m_last_xfb_width, current_height = m_last_xfb_height;
+  m_presenting_queued_frame = true;
+  m_queued_texture = frame.texture.get();
+  m_xfb_rect = frame.rect;
+  m_last_xfb_width = frame.width;
+  m_last_xfb_height = frame.height;
+  frame.info.intended_present_time = presentation_time;
+  auto& events = GetVideoEvents();
+  events.before_present_event.Trigger(frame.info);
+  Present(&frame.info);
+  ProcessFrameDumping(frame.info.emulated_timestamp, frame.info.frame_count + 1);
+  events.after_present_event.Trigger(frame.info);
+  m_presenting_queued_frame = false;
+  m_queued_texture = nullptr;
+  m_xfb_rect = current_rect;
+  m_last_xfb_width = current_width;
+  m_last_xfb_height = current_height;
+  if (frame.texture && m_queue_texture_pool.size() < 6)
+    m_queue_texture_pool.push_back(std::move(frame.texture));
+  m_presentation_queue.pop_front();
+  ++m_queue_displayed;
+}
+
+void Presenter::ClearPresentationQueue()
+{
+  m_presentation_queue.clear();
+  m_queue_texture_pool.clear();
+  m_queue_clock.Reset();
 }
 
 void Presenter::ImmediateSwap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height)
@@ -244,7 +381,7 @@ void Presenter::ImmediateSwap(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_
   video_events.before_present_event.Trigger(present_info);
 
   Present(&present_info);
-  ProcessFrameDumping(ticks);
+  ProcessFrameDumping(ticks, present_info.frame_count + 1);
 
   video_events.after_present_event.Trigger(present_info);
 }
@@ -255,9 +392,10 @@ void Presenter::SetNextSwapEstimatedTime(u64 ticks, TimePoint host_time)
   m_next_swap_estimated_time = host_time;
 }
 
-void Presenter::ProcessFrameDumping(u64 ticks) const
+void Presenter::ProcessFrameDumping(u64 ticks, u64 frame_count) const
 {
-  if (g_frame_dumper->IsFrameDumping() && m_xfb_entry)
+  auto* texture = GetPresentedXFBTexture();
+  if (g_frame_dumper->IsFrameDumping() && texture)
   {
     MathUtil::Rectangle<int> target_rect;
     switch (Config::Get(Config::GFX_FRAME_DUMPS_RESOLUTION_TYPE))
@@ -315,8 +453,8 @@ void Presenter::ProcessFrameDumping(u64 ticks) const
 
     // TODO: any scaling done by this won't be gamma corrected,
     // we should either apply post processing as well, or port its gamma correction code
-    g_frame_dumper->DumpCurrentFrame(m_xfb_entry->texture.get(), m_xfb_rect, target_rect, ticks,
-                                     m_frame_count);
+    g_frame_dumper->DumpCurrentFrame(texture, m_xfb_rect, target_rect, ticks,
+                                     frame_count);
   }
 }
 
@@ -516,7 +654,7 @@ float Presenter::CalculateDrawAspectRatio(bool allow_stretch) const
     else if (aspect_mode == AspectMode::Raw)
     {
       resulting_aspect_ratio =
-          m_xfb_entry ? (static_cast<float>(m_last_xfb_width) / m_last_xfb_height) : 1.f;
+          GetPresentedXFBTexture() ? (static_cast<float>(m_last_xfb_width) / m_last_xfb_height) : 1.f;
     }
     else
     {
@@ -777,7 +915,7 @@ void Presenter::UpdateDrawRectangle()
   int int_draw_width;
   int int_draw_height;
 
-  if (g_ActiveConfig.aspect_mode != AspectMode::Raw || !m_xfb_entry)
+  if (g_ActiveConfig.aspect_mode != AspectMode::Raw || !GetPresentedXFBTexture())
   {
     // Find the best integer resolution: the closest aspect ratio with the least black bars.
     // This should have no influence if "AspectMode::Stretch" is active.
@@ -902,18 +1040,19 @@ void Presenter::RenderXFBToScreen(const MathUtil::Rectangle<int>& target_rc,
 void Presenter::Present(PresentInfo* present_info)
 {
   m_present_count++;
+  auto* texture = GetPresentedXFBTexture();
 
-  if (g_gfx->IsHeadless() || (!m_onscreen_ui && !m_xfb_entry))
+  if (g_gfx->IsHeadless() || (!m_onscreen_ui && !texture))
     return;
 
   if (!g_gfx->SupportsUtilityDrawing())
   {
     // Video Software doesn't support drawing a UI or doing post-processing
     // So just show the XFB
-    if (m_xfb_entry)
+    if (texture)
     {
       const MathUtil::Rectangle<int> rect = AdjustForCustomCrop(m_xfb_rect);
-      g_gfx->ShowImage(m_xfb_entry->texture.get(), rect);
+      g_gfx->ShowImage(texture, rect);
 
       // Update the window size based on the frame that was just rendered.
       // Due to depending on guest state, we need to call this every frame.
@@ -933,14 +1072,14 @@ void Presenter::Present(PresentInfo* present_info)
   const bool backbuffer_bound = g_gfx->BindBackbuffer({{0.0f, 0.0f, 0.0f, 1.0f}});
 
   // Render the XFB to the screen.
-  if (backbuffer_bound && m_xfb_entry)
+  if (backbuffer_bound && texture)
   {
     // Adjust the source rectangle instead of using an oversized viewport to render the XFB.
     MathUtil::Rectangle<int> render_target_rc = GetTargetRectangle();
     MathUtil::Rectangle<int> render_source_rc = AdjustForCustomCrop(m_xfb_rect);
     AdjustRectanglesToFitBounds(&render_target_rc, &render_source_rc, m_backbuffer_width,
                                 m_backbuffer_height);
-    RenderXFBToScreen(render_target_rc, m_xfb_entry->texture.get(), render_source_rc);
+    RenderXFBToScreen(render_target_rc, texture, render_source_rc);
   }
 
   if (m_onscreen_ui)
@@ -968,7 +1107,7 @@ void Presenter::Present(PresentInfo* present_info)
     g_gfx->PresentBackbuffer();
   }
 
-  if (m_xfb_entry)
+  if (texture)
   {
     // Update the window size based on the frame that was just rendered.
     // Due to depending on guest state, we need to call this every frame.
@@ -1036,6 +1175,11 @@ void Presenter::SetMousePress(u32 button_mask)
 
 void Presenter::DoState(PointerWrap& p)
 {
+  if (p.IsReadMode())
+  {
+    m_queue_state_discards += m_presentation_queue.size();
+    ClearPresentationQueue();
+  }
   p.Do(m_frame_count);
   p.Do(m_last_xfb_ticks);
   p.Do(m_last_xfb_addr);

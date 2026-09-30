@@ -1,0 +1,572 @@
+{
+  "date": "2026-09-30",
+  "goal": "active, unmet",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "runner": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+    "runner_sha256": "05841f688879dd9e707823630641f82b7beedebe00a1a4db17fde39efd82fc25",
+    "runner_bytes": 15581184,
+    "runtime_tests": {
+      "passed": 34,
+      "failed": 0
+    },
+    "combat_tooling_tests": {
+      "passed": 6,
+      "failed": 0
+    },
+    "warnings": [
+      "CMake deprecations",
+      "Wayland unavailable on Windows",
+      "CMake object-path-length warnings"
+    ],
+    "compiler_diagnostics": "No compiler warning/error diagnostics found",
+    "private_log": ".local/logs/jit-native-shake-input-build.log"
+  },
+  "changes": [
+    "Default-off bounded FIFO presentation experiment with independent GPU texture snapshots and a half-refresh clock. Preserves source duplicate detection; logs shortages, overflow and state-load discards.",
+    "Process-local additive Wii/Nunchuk acceleration, native Nunchuk shake waveform, atomic controller state updates, and optional release=0 for pad_frames chords.",
+    "Per-command failure reasons published before failed receipts and retained in benchmark results.",
+    "Tests cover clock overflow/cadence/underflow, input parsing, and actual serialized Nunchuk motion/button reports without host input.",
+    "PS2-derived Xbox target controls appended to the performance plan; full Xbox translation remains pending."
+  ],
+  "short_queue_runs": [
+    {
+      "private_run": ".local/automation/jit-queue-snapshot-control-20260930",
+      "runner_sha256": "a58b1efdb807dd1af43a720b6242bceac2551529eade6c4eb9a687d8a4f8cf77",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds_including_startup": 30.90600000001723,
+      "queue_enabled": false,
+      "effective_config": "Effective video: dual_core=1 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "queue_summary": null,
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3721617900,
+          "intervals": 153,
+          "seconds": 5.1048617,
+          "average_fps": 29.971429000711225,
+          "frame_ms": {
+            "median": 33.368100000000126,
+            "p95": 49.906899999999865,
+            "p99": 50.23359999999999,
+            "max": 54.49060000000006
+          },
+          "one_percent_low_fps": 19.09778255646736,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 91,
+          "frames_over_50ms": 5,
+          "longest_consecutive_over_50ms_seconds": 0.054490600000000056,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.1051,
+          "emulation_speed_percent": 100.00466809903979,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 127,
+            "16.683": 13,
+            "50.050": 13
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0011333333330559858,
+            "p99": 2.700333333333291,
+            "min": -3.3951666666666296,
+            "max": 4.4406000000000585
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 22.8522,
+          "median": 32.86345,
+          "p99": 43.2633,
+          "max": 44.8905
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1879,
+          "median": 0.36625,
+          "p99": 0.648,
+          "max": 0.6572
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -0.583867,
+          "median": -0.2185665,
+          "p99": 3.197367,
+          "max": 4.136933
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": 0.037833,
+          "median": 0.11665,
+          "p99": 3.446467,
+          "max": 4.487133
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": 0.0,
+          "median": 0.0287165,
+          "p99": 3.404967,
+          "max": 4.409233
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "private_run": ".local/automation/jit-queue-snapshot-test-20260930",
+      "runner_sha256": "a58b1efdb807dd1af43a720b6242bceac2551529eade6c4eb9a687d8a4f8cf77",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds_including_startup": 28.95299999997951,
+      "queue_enabled": true,
+      "effective_config": "Effective video: dual_core=1 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "queue_summary": "Presentation queue: enqueued=210 displayed=209 pending=1 underflows=0 overflows=0 state_discards=0",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 5.1052211,
+          "average_fps": 29.969319056524313,
+          "frame_ms": {
+            "median": 33.369800000000005,
+            "p95": 34.87550000000006,
+            "p99": 40.33200000000001,
+            "max": 42.3404
+          },
+          "one_percent_low_fps": 24.191870563815733,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 99,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666667,
+          "emulation_speed_percent": 99.67083828488187,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 104,
+            "16.683": 25,
+            "50.050": 24
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.002833333333271404,
+            "p99": 18.48526666666666,
+            "min": -18.125100000000074,
+            "max": 18.85246666666656
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 24.6589,
+          "median": 32.68105,
+          "p99": 44.159,
+          "max": 49.7507
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1747,
+          "median": 0.37605,
+          "p99": 0.8215,
+          "max": 0.9094
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -0.677344,
+          "median": -0.1862435,
+          "p99": 6.602423,
+          "max": 9.47079
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": 0.03879,
+          "median": 0.140073,
+          "p99": 7.015323,
+          "max": 9.97819
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": 2.3e-05,
+          "median": 0.0641395,
+          "p99": 6.948823,
+          "max": 9.88039
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "private_run": ".local/automation/jit-queue-single-20260930",
+      "runner_sha256": "a58b1efdb807dd1af43a720b6242bceac2551529eade6c4eb9a687d8a4f8cf77",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds_including_startup": 29.82800000003772,
+      "queue_enabled": true,
+      "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "queue_summary": "Presentation queue: enqueued=209 displayed=208 pending=1 underflows=0 overflows=0 state_discards=0",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3721617900,
+          "intervals": 153,
+          "seconds": 5.1052997,
+          "average_fps": 29.968857655898244,
+          "frame_ms": {
+            "median": 33.36530000000004,
+            "p95": 34.406200000000275,
+            "p99": 36.18310000000014,
+            "max": 41.240900000000025
+          },
+          "one_percent_low_fps": 25.8317834263277,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 96,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.1051,
+          "emulation_speed_percent": 99.9960883785138,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 113,
+            "16.683": 20,
+            "50.050": 20
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0016333333333479194,
+            "p99": 16.9966666666666,
+            "min": -17.811199999999985,
+            "max": 17.2341666666666
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 154,
+        "copy_interval_ms": {
+          "n": 153,
+          "min": 21.0542,
+          "median": 32.7472,
+          "p99": 45.2886,
+          "max": 45.4939
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1177,
+          "median": 0.2342,
+          "p99": 0.73,
+          "max": 0.865
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -0.609417,
+          "median": 0.007683,
+          "p99": 6.615983,
+          "max": 7.78045
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": 0.039617,
+          "median": 0.23435,
+          "p99": 6.798683,
+          "max": 7.92655
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": 1.7e-05,
+          "median": 0.1532,
+          "p99": 6.755183,
+          "max": 7.88475
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout.",
+        "copy_guest_interval_ms": {
+          "n": 153,
+          "min": 27.579739368998627,
+          "median": 33.2519012345679,
+          "p99": 40.27743072702332,
+          "max": 45.45827023319616
+        }
+      }
+    },
+    {
+      "private_run": ".local/automation/jit-queue-rush-smooth-20260930",
+      "runner_sha256": "a58b1efdb807dd1af43a720b6242bceac2551529eade6c4eb9a687d8a4f8cf77",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds_including_startup": 32.40700000000652,
+      "queue_enabled": true,
+      "effective_config": "Effective video: dual_core=1 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=1 rush=1 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "queue_summary": "Presentation queue: enqueued=200 displayed=200 pending=0 underflows=35 overflows=0 state_discards=0",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 4828373550,
+          "intervals": 153,
+          "seconds": 6.6227706,
+          "average_fps": 23.102113789053785,
+          "frame_ms": {
+            "median": 33.36559999999999,
+            "p95": 99.95509999999996,
+            "p99": 101.17439999999966,
+            "max": 102.30960000000012
+          },
+          "one_percent_low_fps": 9.828782606986309,
+          "rolling_1s_fps_min": 19,
+          "rolling_1s_fps_median": 23,
+          "frames_over_33_334ms": 78,
+          "frames_over_50ms": 29,
+          "longest_consecutive_over_50ms_seconds": 0.10230960000000011,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 6.623283333333334,
+          "emulation_speed_percent": 100.00774197634648,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 66.73333333333333,
+            "max": 66.73333333333333
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 67,
+            "66.733": 37,
+            "50.050": 33,
+            "16.683": 16
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.1591333333335332,
+            "p99": 34.44106666666632,
+            "min": -36.47943333333317,
+            "max": 35.576266666666776
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 8.8523,
+          "median": 45.8863,
+          "p99": 76.4441,
+          "max": 82.7019
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1178,
+          "median": 13.31785,
+          "p99": 39.056,
+          "max": 39.7724
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -40.202434,
+          "median": -14.4125675,
+          "p99": 2.495933,
+          "max": 2.558333
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": -2.652201,
+          "median": -0.5825675,
+          "p99": 2.695433,
+          "max": 2.750433
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": -2.718501,
+          "median": -0.7348005,
+          "p99": 2.617933,
+          "max": 2.674233
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    }
+  ],
+  "short_queue_scope": "One short diagnostic run per configuration, frames 11472-11625, ~5.1 seconds, 1920x1080 preset / 3x EFB, Cubeb. No sustained acceptance. The best queue run still reached 41.24 ms; added latency and more complex scene behavior remain concerns.",
+  "rejected_queue_prototype": "An earlier retained-cache-entry prototype invalidated cache duplicate detection and falsely counted ~60 FPS. Rejected; replaced by independent texture copies. Its metrics are not performance evidence. A 32-bit clock multiplication was also fixed and regression-tested.",
+  "crowded_control": {
+    "private_run": ".local/automation/jit-crowded-errors-20260930",
+    "runner_sha256": "f0a6502abb86e0c3be2de0be2ab0ac6f5447c820ada80ea721211aa633eea0aa",
+    "route_completed": true,
+    "exit_code": 0,
+    "elapsed_seconds_including_startup": 72.70299999997951,
+    "queue_enabled": false,
+    "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+    "queue_summary": null,
+    "analysis": {
+      "frame_metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13690,
+        "emulated_ticks": 29991861900,
+        "intervals": 1070,
+        "seconds": 41.1378187,
+        "average_fps": 26.01012970092165,
+        "frame_ms": {
+          "median": 33.47644999999666,
+          "p95": 50.259499999999235,
+          "p99": 66.42629999999983,
+          "max": 107.18840000000007
+        },
+        "one_percent_low_fps": 12.821291362797297,
+        "rolling_1s_fps_min": 22,
+        "rolling_1s_fps_median": 26.0,
+        "frames_over_33_334ms": 810,
+        "frames_over_50ms": 191,
+        "longest_consecutive_over_50ms_seconds": 0.1668172000000041,
+        "warmup_seconds": 0.0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.1411,
+        "emulation_speed_percent": 100.00797635874653,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 756,
+          "50.050": 303,
+          "66.733": 6,
+          "83.417": 4,
+          "16.683": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0012833333303680083,
+          "p99": 1.023800000000172,
+          "min": -14.754799999999804,
+          "max": 40.45506666666673
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "copy_event_count": 1070,
+      "copy_interval_ms": {
+        "n": 1069,
+        "min": 26.3131,
+        "median": 37.5149,
+        "p99": 64.1186,
+        "max": 112.6568
+      },
+      "before_to_after_ms": {
+        "n": 1071,
+        "min": 0.1428,
+        "median": 0.2609,
+        "p99": 0.6892,
+        "max": 0.8227
+      },
+      "before_minus_intended_ms": {
+        "n": 1071,
+        "min": -0.596367,
+        "median": -0.115133,
+        "p99": 17.7259,
+        "max": 46.2829
+      },
+      "after_minus_intended_ms": {
+        "n": 1071,
+        "min": 0.047033,
+        "median": 0.123167,
+        "p99": 17.9796,
+        "max": 46.55
+      },
+      "actual_minus_intended_ms": {
+        "n": 1071,
+        "min": 0.0,
+        "median": 0.0371,
+        "p99": 17.8965,
+        "max": 46.47
+      },
+      "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout.",
+      "copy_guest_interval_ms": {
+        "n": 1069,
+        "min": 30.264836762688613,
+        "median": 37.68859122085048,
+        "p99": 62.807381344307274,
+        "max": 80.6426803840878
+      }
+    }
+  },
+  "crowded_scope": "Clean 41.14-second analyzed interval at normal emulation speed, no screenshots during timing. 26.0101 FPS, P99 66.43 ms, maximum 107.19 ms. Guest copy production also slows; presentation smoothing alone is insufficient. This is not three repeats or ten-minute acceptance.",
+  "earlier_failed_crowded_run": {
+    "private_run": ".local/automation/jit-crowded-control-20260930",
+    "runner_sha256": "540938756c26813e8f2380373f69ad514b275ff2db3a5059baec339b8f110cf5",
+    "route_completed": false,
+    "exit_code": 0,
+    "elapsed_seconds_including_startup": 56.59400000004098,
+    "queue_enabled": false,
+    "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+    "queue_summary": null
+  },
+  "earlier_failure_scope": "Failed receipt 000128.txt. Old status handling lost the exact reason. The later successful replay does not retroactively turn this into a pass or prove the underlying cause fixed.",
+  "fusion_entry": {
+    "private_run": ".local/automation/jit-held-shake-20260930",
+    "runner_sha256": "05841f688879dd9e707823630641f82b7beedebe00a1a4db17fde39efd82fc25",
+    "route_completed": true,
+    "exit_code": 0,
+    "elapsed_seconds_including_startup": 29.60899999999674,
+    "queue_enabled": false,
+    "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+    "queue_summary": null
+  },
+  "fusion_selection": {
+    "private_run": ".local/automation/jit-fusion-ready-20260930",
+    "runner_sha256": "05841f688879dd9e707823630641f82b7beedebe00a1a4db17fde39efd82fc25",
+    "route_completed": true,
+    "exit_code": 0,
+    "elapsed_seconds_including_startup": 31.07800000003772,
+    "queue_enabled": false,
+    "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+    "queue_summary": null
+  },
+  "visual_validation": [
+    "Four held-shake captures inspected sequentially: X-axis native shake opened the fusion tutorial; remaining captures stayed in that modal. Not combat FPS evidence.",
+    "Four intermediate selection captures inspected sequentially: the game required a pointer readiness confirmation; first attempted portrait aim was outside the screen. Not a successful selection.",
+    "Five corrected selection captures inspected sequentially: readiness icon targeted and accepted, Captain America portrait targeted, stars consumed and web/attack effects visible after selection. Tutorial banner remained; no claim of full tutorial completion.",
+    "Earlier native constant-binding shake probe did not activate fusion; background input gating makes it insufficient to assess the native waveform. New process-local shake test bypasses that dependency."
+  ],
+  "audio_scope": "Cubeb backend confirmed. Audible quality/synchronization not verified.",
+  "controller_scope": "Process-local gesture and portrait-selection proof only. No physical Xbox button validation, completed XInput layout, direct hero selection, or camera validation yet.",
+  "private_data": "Original game data, generated translations, saves, captures, raw traces, reference manuals and logs remain ignored under .local. Existing user static diagnostics and Build-With-Log.cmd are excluded from this commit.",
+  "next": [
+    "Implement and validate the PS2-style Xbox adapter using the proven native shake and pointer path.",
+    "Profile guest frame production in the crowded fight; retain normal speed, original effects and 3x EFB.",
+    "Finish three repeats and ten-minute varied combat acceptance only after candidate improvements."
+  ],
+  "intentional_negative_test": {
+    "private_run": ".local/automation/jit-command-error-negative-20260930",
+    "runner_sha256": "05841f688879dd9e707823630641f82b7beedebe00a1a4db17fde39efd82fc25",
+    "route_completed": false,
+    "exit_code": 0,
+    "elapsed_seconds_including_startup": 22.09399999998277,
+    "queue_enabled": false,
+    "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+    "queue_summary": null,
+    "error": "RuntimeError: 000002.txt: pad_frames requires a running emulated core",
+    "scope": "Explicit pause followed by pad_frames is correctly rejected. Exact reason persisted before clean stop. Harness exit 1 is expected."
+  }
+}

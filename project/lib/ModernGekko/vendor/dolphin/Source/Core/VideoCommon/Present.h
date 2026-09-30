@@ -7,14 +7,19 @@
 #include "Common/MathUtil.h"
 
 #include "VideoCommon/OnScreenUIKeyMap.h"
+#include "VideoCommon/PresentationQueueClock.h"
 #include "VideoCommon/TextureCacheBase.h"
 #include "VideoCommon/TextureConfig.h"
 #include "VideoCommon/VideoCommon.h"
+#include "VideoCommon/VideoEvents.h"
 
 #include <array>
+#include <deque>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <tuple>
+#include <vector>
 
 class AbstractTexture;
 struct SurfaceInfo;
@@ -114,7 +119,12 @@ private:
   // Returns true the contents have changed since last time
   bool FetchXFB(u32 xfb_addr, u32 fb_width, u32 fb_stride, u32 fb_height, u64 ticks);
 
-  void ProcessFrameDumping(u64 ticks) const;
+  void ProcessFrameDumping(u64 ticks, u64 frame_count) const;
+
+  void PresentQueuedFrame(TimePoint presentation_time);
+  bool QueueXFB(PresentInfo present_info);
+  AbstractTexture* GetPresentedXFBTexture() const;
+  void ClearPresentationQueue();
 
   void OnBackBufferSizeChanged();
 
@@ -167,6 +177,24 @@ private:
 
   u64 m_frame_count = 0;
   u64 m_present_count = 0;
+
+  struct QueuedXFB
+  {
+    std::unique_ptr<AbstractTexture> texture;
+    MathUtil::Rectangle<int> rect;
+    u32 width, height;
+    PresentInfo info;
+    std::vector<std::string> copy_hashes;
+  };
+  std::deque<QueuedXFB> m_presentation_queue;
+  std::vector<std::unique_ptr<AbstractTexture>> m_queue_texture_pool;
+  bool m_presenting_queued_frame = false;
+  AbstractTexture* m_queued_texture = nullptr;
+  PresentationQueueClock m_queue_clock;
+  bool m_queue_enabled = false;
+  bool m_queue_requested = false;
+  u64 m_queue_enqueued = 0, m_queue_displayed = 0, m_queue_overflows = 0;
+  u64 m_queue_state_discards = 0;
 
   // XFB tracking
   u64 m_last_xfb_ticks = 0;

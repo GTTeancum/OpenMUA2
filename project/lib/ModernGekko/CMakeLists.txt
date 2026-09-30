@@ -728,6 +728,12 @@ if(BUILD_TESTING)
     target_compile_features(moderngekko_frame_timing_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.frame_timing COMMAND moderngekko_frame_timing_test)
 
+    add_executable(moderngekko_presentation_queue_test tests/presentation_queue_test.cpp)
+    target_include_directories(moderngekko_presentation_queue_test PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+    target_compile_features(moderngekko_presentation_queue_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.presentation_queue COMMAND moderngekko_presentation_queue_test)
+
     if(MODERNGEKKO_ENABLE_DOLPHIN_RUNTIME)
         add_executable(moderngekko_automation_protocol_test
             tests/automation_protocol_test.cpp
@@ -789,6 +795,26 @@ if(BUILD_TESTING)
             endif()
         endif()
         add_test(NAME moderngekko.netplay_protocol COMMAND moderngekko_netplay_protocol_test)
+
+        add_executable(moderngekko_nunchuk_input_test tests/nunchuk_input_test.cpp)
+        target_include_directories(moderngekko_nunchuk_input_test PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+        target_compile_features(moderngekko_nunchuk_input_test PRIVATE cxx_std_23)
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            target_link_libraries(moderngekko_nunchuk_input_test PRIVATE
+                "$<LINK_LIBRARY:WHOLE_ARCHIVE,moderngekko>" core uicommon)
+        else()
+            target_link_libraries(moderngekko_nunchuk_input_test PRIVATE
+                ModernGekko::Runtime core uicommon)
+        endif()
+        if(WIN32)
+            target_compile_definitions(moderngekko_nunchuk_input_test PRIVATE
+                WIN32_LEAN_AND_MEAN NOMINMAX)
+            if(MSVC)
+                target_compile_options(moderngekko_nunchuk_input_test PRIVATE /Zc:preprocessor)
+            endif()
+        endif()
+        add_test(NAME moderngekko.nunchuk_input COMMAND moderngekko_nunchuk_input_test)
     endif()
 
     add_executable(moderngekko_game_inspect_test tests/game_inspect_test.cpp)

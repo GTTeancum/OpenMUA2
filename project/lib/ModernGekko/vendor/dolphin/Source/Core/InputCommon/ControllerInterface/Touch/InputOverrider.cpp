@@ -69,6 +69,12 @@ const ControlsMap s_gcpad_controls_map = {{
 }};
 
 const ControlsMap s_wiimote_controls_map = {{
+    {{WiimoteEmu::Wiimote::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::X_INPUT_OVERRIDE},
+     ControlID::WIIMOTE_ACCEL_DELTA_X},
+    {{WiimoteEmu::Wiimote::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::Y_INPUT_OVERRIDE},
+     ControlID::WIIMOTE_ACCEL_DELTA_Y},
+    {{WiimoteEmu::Wiimote::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::Z_INPUT_OVERRIDE},
+     ControlID::WIIMOTE_ACCEL_DELTA_Z},
     {{WiimoteEmu::Wiimote::BUTTONS_GROUP, WiimoteEmu::Wiimote::A_BUTTON},
      ControlID::WIIMOTE_A_BUTTON},
     {{WiimoteEmu::Wiimote::BUTTONS_GROUP, WiimoteEmu::Wiimote::B_BUTTON},
@@ -94,6 +100,9 @@ const ControlsMap s_wiimote_controls_map = {{
 }};
 
 const ControlsMap s_nunchuk_controls_map = {{
+    {{"Shake", ControllerEmu::ReshapableInput::X_INPUT_OVERRIDE}, ControlID::NUNCHUK_SHAKE_X},
+    {{"Shake", ControllerEmu::ReshapableInput::Y_INPUT_OVERRIDE}, ControlID::NUNCHUK_SHAKE_Y},
+    {{"Shake", ControllerEmu::ReshapableInput::Z_INPUT_OVERRIDE}, ControlID::NUNCHUK_SHAKE_Z},
     {{WiimoteEmu::Nunchuk::BUTTONS_GROUP, WiimoteEmu::Nunchuk::C_BUTTON},
      ControlID::NUNCHUK_C_BUTTON},
     {{WiimoteEmu::Nunchuk::BUTTONS_GROUP, WiimoteEmu::Nunchuk::Z_BUTTON},
@@ -102,6 +111,12 @@ const ControlsMap s_nunchuk_controls_map = {{
      ControlID::NUNCHUK_STICK_X},
     {{WiimoteEmu::Nunchuk::STICK_GROUP, ControllerEmu::ReshapableInput::Y_INPUT_OVERRIDE},
      ControlID::NUNCHUK_STICK_Y},
+    {{WiimoteEmu::Nunchuk::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::X_INPUT_OVERRIDE},
+     ControlID::NUNCHUK_ACCEL_DELTA_X},
+    {{WiimoteEmu::Nunchuk::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::Y_INPUT_OVERRIDE},
+     ControlID::NUNCHUK_ACCEL_DELTA_Y},
+    {{WiimoteEmu::Nunchuk::ACCELEROMETER_GROUP, ControllerEmu::ReshapableInput::Z_INPUT_OVERRIDE},
+     ControlID::NUNCHUK_ACCEL_DELTA_Z},
 }};
 
 const ControlsMap s_classic_controls_map = {{
@@ -158,6 +173,14 @@ ControllerEmu::InputOverrideFunction GetInputOverrideFunction(const ControlsMap&
 
     const ControlID control = it->second;
     InputState& input_state = state_array[control];
+    if (control >= ControlID::NUNCHUK_ACCEL_DELTA_X &&
+        control <= ControlID::WIIMOTE_ACCEL_DELTA_Z)
+    {
+      // Process-local motion is added to the normal emulated acceleration;
+      // clearing an input must not erase gravity or inject a persistent tilt.
+      return input_state.overriding ?
+          std::make_optional(controller_state + input_state.override_state) : std::nullopt;
+    }
     if (input_state.normal_state != controller_state)
     {
       input_state.normal_state = controller_state;
@@ -197,6 +220,7 @@ void RegisterWiiInputOverrider(int controller_index)
 
 void UnregisterGameCubeInputOverrider(int controller_index)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   Pad::GetConfig()->GetController(controller_index)->ClearInputOverrideFunction();
 
   for (size_t i = ControlID::FIRST_GC_CONTROL; i <= ControlID::LAST_GC_CONTROL; ++i)
@@ -205,6 +229,7 @@ void UnregisterGameCubeInputOverrider(int controller_index)
 
 void UnregisterWiiInputOverrider(int controller_index)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   auto* wiimote =
       static_cast<WiimoteEmu::Wiimote*>(Wiimote::GetConfig()->GetController(controller_index));
 
@@ -223,6 +248,7 @@ void UnregisterWiiInputOverrider(int controller_index)
 
 void SetControlState(int controller_index, ControlID control, double state)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   InputState& input_state = s_state_arrays[controller_index][control];
 
   input_state.override_state = state;
@@ -231,6 +257,7 @@ void SetControlState(int controller_index, ControlID control, double state)
 
 void ClearControlState(int controller_index, ControlID control)
 {
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
   InputState& input_state = s_state_arrays[controller_index][control];
 
   input_state.overriding = false;

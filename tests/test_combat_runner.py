@@ -57,6 +57,17 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_failure_detail_is_tied_to_failed_receipt_not_stale_status(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'status.txt').write_text('last_error=unrelated earlier failure\n')
+            (root / 'errors').mkdir()
+            (root / 'errors/000128.txt').write_text('000128.txt: pad_frames requires a running emulated core\n')
+            self.assertEqual(mod.command_failure_detail(root, '000128.txt'),
+                             '000128.txt: pad_frames requires a running emulated core')
+            self.assertIn('000129.txt failed', mod.command_failure_detail(root, '000129.txt'))
+            self.assertNotIn('unrelated', mod.command_failure_detail(root, '000129.txt'))
+
     def test_invalid_ranges_and_conflicting_modes_fail_before_launch(self):
         required = [item for name in ("runner", "module", "game", "user", "state", "route", "output")
                     for item in ("--" + name, "unused")]

@@ -42,6 +42,14 @@ def validate_command_receipts(root, count):
         raise RuntimeError(f"command receipt mismatch: failed={failed}, missing={sorted(expected-processed)}, unexpected={sorted(processed-expected)}")
 
 
+def command_failure_detail(root, name):
+    try:
+        detail = (root / "errors" / name).read_text(encoding="utf-8").strip()
+    except OSError:
+        detail = ""
+    return detail or f"automation command {name} failed; inspect runtime.log"
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ("runner","game","user","state","route","output"):
@@ -54,6 +62,7 @@ def main():
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
     p.add_argument("--trace-presentation",action="store_true",help="Diagnostic copy/before/after events; copy counts are not FPS.")
+    p.add_argument("--present-queue",action="store_true",help="Experimental half-refresh FIFO presentation; adds latency, logs shortages/overflow.")
     p.add_argument("--no-screenshots",action="store_true")
     p.add_argument("--jit-diagnostic",action="store_true")
     p.add_argument("--profile-dispatch",action="store_true")
@@ -85,6 +94,8 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
+    env.pop("MODERNGEKKO_PRESENT_QUEUE",None)
+    if args.present_queue:env["MODERNGEKKO_PRESENT_QUEUE"]="1"
     env.pop("MODERNGEKKO_PRESENT_TIMES",None)
     if args.trace_presentation:env["MODERNGEKKO_PRESENT_TIMES"]=str(root/"presentation.csv")
     for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_PROFILE_GATE_FILE","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
@@ -101,6 +112,7 @@ def main():
     if not args.windowed:cmd.append("--headless")
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["presentation_trace"] = args.trace_presentation
+    metadata["presentation_queue"] = args.present_queue
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:
@@ -120,10 +132,11 @@ def main():
             publish_command(root,name,item)
             while not (root/"processed"/name).exists():
                 check()
-                if (root/"failed"/name).exists():raise RuntimeError(read_status() or "automation command failed")
+                if (root/"failed"/name).exists():raise RuntimeError(command_failure_detail(root, name))
                 time.sleep(.05)
             timeline.append({"command":item,"elapsed":time.monotonic()-started,"status":read_status()})
         completed=False
+        failure=None
         try:
             # A booted flag precedes LoadState completion. Require a restored frame ID.
             while True:
@@ -144,13 +157,16 @@ def main():
             if expected_cpu not in (root/"runtime.log").read_text():
                 raise RuntimeError("runtime did not confirm the requested CPU backend")
             completed=True
+        except Exception as exc:
+            failure = f"{type(exc).__name__}: {exc}"
+            raise
         finally:
             if child.poll() is None:
                 try:publish_command(root,"999999-stop.txt",{"command":"stop"})
                 except OSError as exc:print(f"Unable to publish cleanup stop: {exc}",flush=True)
                 try:child.wait(timeout=20)
                 except subprocess.TimeoutExpired:child.terminate();child.wait(timeout=10)
-            (root/"result.json").write_text(json.dumps({"route_completed":completed,"exit_code":child.returncode,"elapsed":time.monotonic()-started,"timeline":timeline},indent=2))
+            (root/"result.json").write_text(json.dumps({"route_completed":completed,"exit_code":child.returncode,"error":failure,"elapsed":time.monotonic()-started,"timeline":timeline},indent=2))
     print(root,flush=True)
 
 if __name__=="__main__":main()

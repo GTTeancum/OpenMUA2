@@ -2,6 +2,56 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Presentation experiment and native fusion input — 2026-09-30
+
+Full JIT remains primary. Goal active/unmet. A clean heavier fight measured
+26.0101 FPS over 41.14 seconds at the same 1920x1080 preset / 3x EFB and
+100.008% emulation speed: P99 66.43 ms, maximum 107.19 ms, rolling one-second
+minimum 22 FPS. Guest copy intervals also slow (median 37.69 ms, P99 62.81 ms).
+Next profile guest frame production; presentation smoothing alone cannot fix it.
+
+The default-off `MODERNGEKKO_PRESENT_QUEUE=1` / `--present-queue` experiment
+copies XFBs into independent GPU textures and presents a bounded FIFO at half
+refresh. It never advances the game or invents frames. One short single-core
+test retained 29.969 FPS and reduced P99 to 36.18 ms / maximum 41.24 ms.
+This is not a solid-30 pass and adds latency. Rush+smoothing regressed to
+23.10 FPS with 35 queue underflows and is rejected. The earlier cache-lock
+prototype falsely counted duplicates at ~60 FPS and is explicitly rejected.
+The final snapshot design preserves cache identity and duplicate detection.
+
+Added process-local Wii/Nunchuk acceleration and native Nunchuk shake inputs.
+`pad_frames` accepts `release=0` to retain a chord across captures; its default
+still releases. Updates use the controller state lock. The new input test checks
+actual serialized Nunchuk acceleration/buttons, clearing, and shake waveform.
+Native X-axis shake with Z opened the fusion tutorial. Subsequent pointer-ready
+confirmation and Captain America portrait selection consumed stars and showed
+attack effects. All four entry, four intermediate and five corrected-selection
+captures were inspected sequentially. The tutorial banner remained. This proves
+the tested input path, not completed Xbox controls or every-frame correctness.
+
+The PS2-derived Xbox target table is at the bottom of docs/PERFORMANCE-GOAL.md.
+Full mapping, camera and direct hero selection remain pending. No UI changes.
+The user does not need to test yet. Fusion now has a usable process-local route
+for extending combat: .local/automation/jit-fusion-ready-20260930/fusion-ready.sav.
+
+An earlier crowded replay failed command 128; its exact cause was lost by the
+old status-file handling. Failed commands now retain a per-command reason before
+publishing their receipt, and the harness saves exceptions in result.json.
+An intentional pause/pad_frames negative run confirmed correct rejection and
+preserved detail; a later full crowded replay completed. The old failure is not
+reclassified as a pass or claimed fixed without a diagnosis.
+
+Windows `Build.cmd --cpu jit --jobs 2` exited 0; 34/34 runtime tests and 6/6
+combat tooling tests passed. Runner: 15581184 bytes, SHA256
+05841f688879dd9e707823630641f82b7beedebe00a1a4db17fde39efd82fc25.
+CMake deprecation/Wayland/object-path warnings remain; no compiler warning/error
+diagnostics found. Private build log: .local/logs/jit-native-shake-input-build.log.
+Cubeb activation verified; audible quality/sync unverified. Three-repeat and
+ten-minute sustained combat acceptance remain outstanding. Evidence:
+evidence/windows-20260930/JIT-QUEUE-AND-INPUT.json.
+All proprietary data stays private. User static diagnostics and Build-With-Log.cmd
+remain uncommitted; the unfinished static experiment remains stashed.
+
 ## JIT pacing diagnostics and profile-directory fix — 2026-09-30
 
 The JIT primary path is committed at 0642cd3e. Additional opt-in

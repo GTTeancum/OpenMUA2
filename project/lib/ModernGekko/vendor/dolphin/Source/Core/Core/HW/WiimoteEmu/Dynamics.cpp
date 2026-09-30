@@ -82,7 +82,13 @@ Common::Quaternion ComplementaryFilter(const Common::Quaternion& gyroscope,
 void EmulateShake(PositionalState* state, ControllerEmu::Shake* const shake_group,
                   float time_elapsed)
 {
-  auto target_position = shake_group->GetState() * float(shake_group->GetIntensity() / 2);
+  EmulateShake(state, shake_group, time_elapsed, shake_group->GetState());
+}
+
+void EmulateShake(PositionalState* state, ControllerEmu::Shake* const shake_group,
+                  float time_elapsed, const Common::Vec3& controls)
+{
+  auto target_position = controls * float(shake_group->GetIntensity() / 2);
   for (std::size_t i = 0; i != target_position.data.size(); ++i)
   {
     if (state->velocity.data[i] * std::copysign(1.f, target_position.data[i]) < 0 ||

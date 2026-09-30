@@ -62,6 +62,15 @@ constexpr std::array kPadFields = {
     PadField{"nunchuk_z", ControlID::NUNCHUK_Z_BUTTON, 0.0, 1.0},
     PadField{"nunchuk_x", ControlID::NUNCHUK_STICK_X, -1.0, 1.0},
     PadField{"nunchuk_y", ControlID::NUNCHUK_STICK_Y, -1.0, 1.0},
+    PadField{"nunchuk_accel_dx", ControlID::NUNCHUK_ACCEL_DELTA_X, -30.0, 30.0},
+    PadField{"nunchuk_accel_dy", ControlID::NUNCHUK_ACCEL_DELTA_Y, -30.0, 30.0},
+    PadField{"nunchuk_accel_dz", ControlID::NUNCHUK_ACCEL_DELTA_Z, -30.0, 30.0},
+    PadField{"wii_accel_dx", ControlID::WIIMOTE_ACCEL_DELTA_X, -30.0, 30.0},
+    PadField{"wii_accel_dy", ControlID::WIIMOTE_ACCEL_DELTA_Y, -30.0, 30.0},
+    PadField{"wii_accel_dz", ControlID::WIIMOTE_ACCEL_DELTA_Z, -30.0, 30.0},
+    PadField{"nunchuk_shake_x", ControlID::NUNCHUK_SHAKE_X, 0.0, 1.0},
+    PadField{"nunchuk_shake_y", ControlID::NUNCHUK_SHAKE_Y, 0.0, 1.0},
+    PadField{"nunchuk_shake_z", ControlID::NUNCHUK_SHAKE_Z, 0.0, 1.0},
 };
 
 std::string Trim(std::string_view value)
@@ -263,6 +272,17 @@ bool ParsePadCommand(const std::map<std::string, std::string>& values, Command* 
   {
     if (key == "command" || key == "port" || (require_frames && key == "frames"))
       continue;
+    if (require_frames && key == "release")
+    {
+      if (value != "0" && value != "1")
+      {
+        if (error)
+          *error = "release must be 0 or 1";
+        return false;
+      }
+      command->release_pad = value == "1";
+      continue;
+    }
     const PadField* field = FindPadField(key);
     if (!field)
     {

@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <fstream>
 
+#include "InputCommon/ControllerInterface/Touch/InputOverrider.h"
+
 namespace
 {
 std::filesystem::path MakeTempDirectory()
@@ -84,6 +86,40 @@ int main()
     return 21;
 
   automation::Status status;
+  {
+    std::ofstream output(commands / "012_motion.txt");
+    output << "command=pad_frames\nport=0\nframes=3\nnunchuk_z=1\n"
+              "nunchuk_accel_dx=-30\nnunchuk_accel_dz=24\nwii_accel_dy=25\n"
+              "nunchuk_shake_x=1\nrelease=0\n";
+  }
+  if (!automation::ParseCommandFile(commands / "012_motion.txt", &command, &error) ||
+      command.pad.controls[ciface::Touch::NUNCHUK_ACCEL_DELTA_X] != -30 ||
+      command.pad.controls[ciface::Touch::NUNCHUK_ACCEL_DELTA_Z] != 24 ||
+      command.pad.controls[ciface::Touch::NUNCHUK_ACCEL_DELTA_Y] != 0 ||
+      command.pad.controls[ciface::Touch::WIIMOTE_ACCEL_DELTA_Y] != 25 ||
+      command.pad.controls[ciface::Touch::WIIMOTE_ACCEL_DELTA_Z] != 0 ||
+      command.pad.controls[ciface::Touch::NUNCHUK_SHAKE_X] != 1 ||
+      command.pad.controls[ciface::Touch::NUNCHUK_SHAKE_Y] != 0 || command.release_pad)
+    return 22;
+  {
+    std::ofstream output(commands / "013_bad_motion.txt");
+    output << "command=pad\nport=0\nnunchuk_accel_dx=31\n";
+  }
+  if (automation::ParseCommandFile(commands / "013_bad_motion.txt", &command, &error))
+    return 23;
+  {
+    std::ofstream output(commands / "014_release.txt");
+    output << "command=pad_frames\nport=0\nframes=2\n";
+  }
+  if (!automation::ParseCommandFile(commands / "014_release.txt", &command, &error) ||
+      !command.release_pad)
+    return 24;
+  {
+    std::ofstream output(commands / "015_bad_release.txt");
+    output << "command=pad_frames\nport=0\nframes=2\nrelease=2\n";
+  }
+  if (automation::ParseCommandFile(commands / "015_bad_release.txt", &command, &error))
+    return 25;
   status.state = "running";
   status.booted = true;
   status.fps = 60.0;
