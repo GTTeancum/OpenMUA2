@@ -1,5 +1,16 @@
 # OpenMUA2 — LOCAL01 local source workspace
 
+> **Current Windows performance path (2026-09-30):** full JIT is now the selected
+> OpenMUA2 CPU backend. `Build.cmd --cpu jit --jobs 2` builds/tests the runtime
+> and validates the local game extraction without generating a native game DLL.
+> `Run.cmd --cpu jit` launches it. Both commands default to JIT. The explicit
+> static path remains `Build.cmd --cpu staticrecomp --native-rel`, followed by
+> `Run.cmd --cpu staticrecomp`. `--native-rel` alone retains the static build path.
+> Separate backend receipts preserve module verification for static execution.
+> Sustained 30 FPS combat is still being validated; see `docs/PERFORMANCE-GOAL.md`
+> and the latest section of `MUA2-CANONICAL-HANDOFF.md`. The LOCAL01 description
+> below is historical background.
+
 **Target folder:** `D:\Programming\GitHub\OpenMUA2\`  
 **Input:** your Wii USA `RMSE52` `.wbfs` image, kept at that folder's root.  
 **Delivery:** September 22, 2026. Offline source snapshot; no remote repository is created.

@@ -1,0 +1,237 @@
+{
+  "date": "2026-09-30",
+  "goal": "active, unmet: steady pacing and ten-minute combat remain",
+  "authorization": "User selected full JIT as the primary performance path and requested a goal and execution.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "runner": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+    "runner_bytes": 15569920,
+    "runner_sha256": "d8f0e926a4a827dfdc30a410d28f3c8e6f6412a25f8a8ef9f571f8df7e9a62c7",
+    "linked_executables": [
+      "moderngekko-module-info.exe",
+      "moderngekko_netplay_protocol_test.exe",
+      "moderngekko-run.exe",
+      "moderngekko-port.exe",
+      "ModernGekko.exe"
+    ],
+    "runtime_tests": {
+      "passed": 32,
+      "failed": 0
+    },
+    "tooling_tests": {
+      "run": 123,
+      "passed": 122,
+      "skipped": 1,
+      "failed": 0
+    },
+    "additional_workspace_validation": {
+      "run": 47,
+      "passed": 46,
+      "skipped": 1,
+      "failed": 0,
+      "scope": "Targeted workspace suite after adding legacy native receipt preservation coverage; not a new full-suite run."
+    },
+    "native_module": "Not generated or loaded for JIT. Native audit not applicable to this path.",
+    "game": "Existing extraction source receipt plus original DOL/REL audit validated by build.",
+    "warnings": [
+      "CMake policy/minimum-version deprecations",
+      "Wayland unavailable on this Windows build",
+      "CMake object-path-length warnings"
+    ],
+    "compiler_warning_error_diagnostics": "None found",
+    "private_log": ".local/logs/jit-primary-build.log",
+    "source_note": "Build includes restored pre-existing static-core diagnostics; these are not committed with the JIT changes."
+  },
+  "selection_negative_tests": [
+    {
+      "case": "invalid-backend",
+      "exit_code": 2,
+      "expected_diagnostic_found": true,
+      "output": "--cpu requires jit or staticrecomp\n"
+    },
+    {
+      "case": "explicit-static-overrides-jit-environment",
+      "exit_code": 1,
+      "expected_diagnostic_found": true,
+      "output": "initialization failed: native module was rejected\n"
+    }
+  ],
+  "repeats": [
+    {
+      "private_run": ".local/automation/jit-primary-repeat-1-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "runner_sha256": "d8f0e926a4a827dfdc30a410d28f3c8e6f6412a25f8a8ef9f571f8df7e9a62c7",
+      "cpu": "jit",
+      "audio": "Cubeb",
+      "resolution": "1920x1080",
+      "module_loaded": false,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3721617900,
+        "intervals": 153,
+        "seconds": 5.1049054,
+        "average_fps": 29.971172433479374,
+        "frame_ms": {
+          "median": 33.35799999999978,
+          "p95": 50.15400000000003,
+          "p99": 51.01639999999996,
+          "max": 52.02610000000002
+        },
+        "one_percent_low_fps": 19.40946696751341,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 85,
+        "frames_over_50ms": 12,
+        "longest_consecutive_over_50ms_seconds": 0.05202610000000002,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.1051,
+        "emulation_speed_percent": 100.00381201970951,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 111,
+          "16.683": 21,
+          "50.050": 21
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.00356666666680161,
+          "p99": 1.9761000000000224,
+          "min": -4.353966666666667,
+          "max": 4.215033333333381
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    {
+      "private_run": ".local/automation/jit-primary-repeat-2-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "runner_sha256": "d8f0e926a4a827dfdc30a410d28f3c8e6f6412a25f8a8ef9f571f8df7e9a62c7",
+      "cpu": "jit",
+      "audio": "Cubeb",
+      "resolution": "1920x1080",
+      "module_loaded": false,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3721617900,
+        "intervals": 153,
+        "seconds": 5.1051607,
+        "average_fps": 29.969673628491265,
+        "frame_ms": {
+          "median": 33.36510000000015,
+          "p95": 50.04180000000002,
+          "p99": 51.232500000000016,
+          "max": 53.9037
+        },
+        "one_percent_low_fps": 19.02294357224248,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 86,
+        "frames_over_50ms": 9,
+        "longest_consecutive_over_50ms_seconds": 0.0539037,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.1051,
+        "emulation_speed_percent": 99.99881100706585,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 115,
+          "16.683": 19,
+          "50.050": 19
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.004666666666333641,
+          "p99": 3.8537000000000017,
+          "min": -9.993366666666628,
+          "max": 5.98853333333331
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    {
+      "private_run": ".local/automation/jit-primary-repeat-3-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "runner_sha256": "d8f0e926a4a827dfdc30a410d28f3c8e6f6412a25f8a8ef9f571f8df7e9a62c7",
+      "cpu": "jit",
+      "audio": "Cubeb",
+      "resolution": "1920x1080",
+      "module_loaded": false,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3709455750,
+        "intervals": 153,
+        "seconds": 5.0885352,
+        "average_fps": 30.067591946696172,
+        "frame_ms": {
+          "median": 33.36170000000038,
+          "p95": 50.064099999999726,
+          "p99": 50.509899999999995,
+          "max": 54.05939999999998
+        },
+        "one_percent_low_fps": 19.12607237497048,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 85,
+        "frames_over_50ms": 10,
+        "longest_consecutive_over_50ms_seconds": 0.05405939999999998,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.088416666666667,
+        "emulation_speed_percent": 99.99767058045835,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 116,
+          "16.683": 19,
+          "50.050": 18
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0014333333334531906,
+          "p99": 3.1562333333333554,
+          "min": -7.624166666666668,
+          "max": 4.0093999999999825
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    }
+  ],
+  "repeat_scope": "Three short combat windows, frames 11472-11625, with profiling disabled and no own compiler/test load. Existing unrelated background activity was not terminated. Not a ten-minute acceptance pass.",
+  "visual_validation": {
+    "private_run": ".local/automation/jit-primary-built-visual-20260930",
+    "exit_code": 0,
+    "captures_inspected_in_order": [
+      "00-start.png",
+      "01-position.png",
+      "02-combo.png",
+      "03-combo.png",
+      "04-power.png"
+    ],
+    "observed": "Heroes and Doombots, movement, combat, damage/effects including bright energy effects, HUD, street/cars/fountain, Captain America knocked down and Iron Man selected.",
+    "limits": "Five sampled captures, not every frame. Power-selection HUD observed; no claim every requested power triggered. Tooling tests overlapped this visual run; it is not timing evidence. Cubeb active; audible quality/sync unverified."
+  },
+  "cadence_finding": "All three repeats retain 16.683/33.367/50.050 ms guest VI/presentation intervals. P99 host intervals 50.51-51.23 ms; maxima 52.03-54.06 ms. These are not solid frame pacing. Guest timing is not proof the game simulation itself caused all variation.",
+  "next": "Instrument producer/presentation timing and effective configuration; distinguish guest scheduling from host delay. Extend combat route with movement/powers/recovery to obtain genuine sustained combat without repeated-save-load substitution."
+}

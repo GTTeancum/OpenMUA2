@@ -97,11 +97,10 @@ std::string FormatWindowTitle(const std::string &title, double fps) {
                      s_net_wait_ms_per_second, telemetry.buffer_size);
 }
 
-PowerPC::CPUCore SelectCPUCore() {
-  static const bool static_recomp = [] {
-    const char *v = std::getenv("MODERNGEKKO_STATICRECOMP");
-    return !v || !*v || *v != '0';
-  }();
+PowerPC::CPUCore SelectCPUCore(moderngekko::CPUBackend backend) {
+  const char *v = std::getenv("MODERNGEKKO_STATICRECOMP");
+  const bool static_recomp = backend == moderngekko::CPUBackend::StaticRecomp ||
+      (backend == moderngekko::CPUBackend::Default && (!v || !*v || *v != '0'));
   if (static_recomp)
     return PowerPC::CPUCore::StaticRecomp;
 #ifdef _M_ARM_64
@@ -593,6 +592,12 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   if (!inspected)
     return {{}, RuntimeError{RuntimeErrorCode::InvalidGame, inspected.error}};
 
+  const auto cpu_core = SelectCPUCore(config.cpu_backend);
+  const bool uses_native_module = cpu_core == PowerPC::CPUCore::StaticRecomp;
+  // JIT executes the audited game image and does not load a generated DLL.
+  if (!uses_native_module)
+    config.module = {};
+
   const ModernGekkoModuleRequirements requirements = {
       MODERNGEKKO_CPU_ABI_VERSION, static_cast<std::uint32_t>(sizeof(CPUState)),
       inspected.metadata->disc_id.c_str()};
@@ -604,7 +609,7 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   else if (config.module.kind == ModuleSource::Kind::AttachedDescriptor)
     module_result =
         validation_library.Attach(config.module.descriptor, requirements);
-  else if (!config.allow_interpreter)
+  else if (uses_native_module && !config.allow_interpreter)
     return {
         {},
         RuntimeError{
@@ -692,7 +697,9 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   }
   impl->platform->SetTitle(impl->title);
 
-  Config::SetBase(Config::MAIN_CPU_CORE, SelectCPUCore());
+  Config::SetBase(Config::MAIN_CPU_CORE, cpu_core);
+  std::fprintf(stderr, "CPU backend: %s\n",
+               uses_native_module ? "StaticRecomp" : "JIT");
   if (!impl->config.graphics.backend.empty())
     Config::SetBase(Config::MAIN_GFX_BACKEND, impl->config.graphics.backend);
   else if (impl->config.headless)

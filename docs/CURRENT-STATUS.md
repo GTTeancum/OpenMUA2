@@ -2,6 +2,47 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## JIT primary path built and repeated — 2026-09-30
+
+The user explicitly selected full JIT. Build.cmd and Run.cmd now default to JIT;
+--cpu staticrecomp retains the native path and --native-rel still implies it.
+The runner accepts --cpu jit|staticrecomp, overriding legacy environment selection.
+JIT validates the original local game and runs without a generated module DLL.
+Backend-specific build receipts retain binary verification. The combat runner
+requires the selected CPU backend to be confirmed in runtime.log.
+
+Build.cmd --cpu jit --jobs 2 exited 0: 32/32 Windows runtime tests passed.
+Tooling: 123 run, 122 passed, one existing skip. After adding legacy receipt
+preservation coverage, targeted workspace tests: 46 passed, one existing skip.
+Actual runner negative checks
+rejected invalid backend names and rejected a missing static module despite a
+conflicting JIT environment setting. CMake reported deprecations, unavailable
+Wayland and object-path-length warnings; no compiler error/warning diagnostics.
+Runner: 15569920 bytes, SHA256
+d8f0e926a4a827dfdc30a410d28f3c8e6f6412a25f8a8ef9f571f8df7e9a62c7.
+
+Three module-free JIT/Cubeb combat repeats at the same 1920x1080 preset / 3x EFB
+completed with clean receipts and exit 0: 29.9712, 29.9697, 30.0676 FPS over
+frames 11472-11625, approximately 100% game speed. P99: 51.02, 51.23, 50.51 ms;
+maximum: 52.03, 53.90, 54.06 ms. These short runs do NOT prove solid 30 FPS.
+Guest VI/presentation intervals also alternate among 16.683/33.367/50.050 ms.
+The analyzer now reports guest cadence and host-minus-guest interval residuals;
+these are not a CPU-only profile or proof of game-simulation causality.
+
+A rebuilt-runner extended visual replay completed with Cubeb and exit 0. All
+five native captures were inspected in sequence: heroes/enemies, movement,
+damage/effects, HUD, scenery and a downed hero were visible. This sampled review
+does not establish every-frame correctness or audible audio quality/sync.
+Tooling tests overlapped the visual run, which is excluded from FPS comparisons.
+
+Goal active/unmet: next investigate presentation/producer timing and extend the
+route for genuine ten-minute combat. No repeated-save-load substitute for that
+acceptance. No proprietary assets, translations, captures or raw logs committed.
+The unfinished direct-chunk patch is retained in the stash named "Preserve
+unfinished direct chunk experiment before JIT priority". The user's three static
+diagnostic edits are restored and remain uncommitted; Build-With-Log.cmd retained.
+Evidence: evidence/windows-20260930/JIT-PRIMARY-CHECKPOINT.json.
+
 ## Aggregate native execution profile — 2026-09-30
 
 The opt-in dispatch profiler now totals every PC before truncating its ranking.

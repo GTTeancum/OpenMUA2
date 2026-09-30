@@ -696,6 +696,29 @@ def build_module(root: Path, options: argparse.Namespace, generated: Path, game:
 
 def build(root: Path, options: argparse.Namespace) -> None:
     doctor(root, options)
+    cpu = getattr(options, 'cpu', None) or ('staticrecomp' if options.native_rel else 'jit')
+    if cpu == 'jit':
+        if options.native_rel:
+            raise ValueError('--native-rel requires --cpu staticrecomp')
+        legacy_receipt = within(root, '.local/receipts/build.json')
+        native_receipt = within(root, '.local/receipts/build-staticrecomp.json')
+        if legacy_receipt.is_file() and not native_receipt.exists():
+            previous = json.loads(legacy_receipt.read_text())
+            if previous.get('module'):
+                write_json(native_receipt, previous)
+        # Reuse the validated extraction without compiling generated game code.
+        recompiler = None if within(root, '.local/game').exists() else build_recompiler(root, options)
+        game = extract_game(root, options, recompiler)
+        runner = build_runtime(root, options)
+        receipt = {'schema': 2, 'baseline': BASELINE, 'created_utc': stamp(),
+                   'cpu': cpu, 'platform': platform.platform(),
+                   'game': game.relative_to(root).as_posix(),
+                   'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
+                   'gameplay_verified': False, 'native_module_required': False}
+        write_json(within(root, '.local/receipts/build-jit.json'), receipt)
+        write_json(within(root, '.local/receipts/build.json'), receipt)
+        print('\nOpenMUA2 JIT runtime build and tests completed. Gameplay validation is separate.')
+        return
     recompiler = build_recompiler(root, options)
     game = extract_game(root, options, recompiler)
     generated = generate(root, options, recompiler, game)
@@ -703,7 +726,7 @@ def build(root: Path, options: argparse.Namespace) -> None:
         generated = generate_native_rel(root, options, recompiler, game, generated)
     runner = build_runtime(root, options)
     module = build_module(root, options, generated, game)
-    receipt = {'schema': 1, 'baseline': BASELINE, 'created_utc': stamp(),
+    receipt = {'schema': 2, 'cpu': 'staticrecomp', 'baseline': BASELINE, 'created_utc': stamp(),
                'platform': platform.platform(), 'game': game.relative_to(root).as_posix(),
                'runner': runner.relative_to(root).as_posix(), 'runner_sha256': sha256(runner),
                'module': module.relative_to(root).as_posix(), 'module_sha256': sha256(module),
@@ -711,23 +734,41 @@ def build(root: Path, options: argparse.Namespace) -> None:
                'module_opt': options.module_opt, 'dispatch_lookup': options.dispatch_lookup,
                'module_msvc_inline': options.module_msvc_inline,
                'c_chunk_instructions': options.c_chunk_instructions}
+    write_json(within(root, '.local/receipts/build-staticrecomp.json'), receipt)
     write_json(within(root, '.local/receipts/build.json'), receipt)
     print('\nOpenMUA2 diagnostic build completed. No gameplay test was performed.\n' + BANNER)
 
 
-def run_game(root: Path, options: argparse.Namespace) -> None:
-    print(BANNER)
-    record_path = within(root, '.local/receipts/build.json')
+def verified_run_inputs(root: Path, cpu: str) -> tuple[Path, Path, Path | None]:
+    record_path = within(root, f'.local/receipts/build-{cpu}.json')
+    if not record_path.is_file():
+        record_path = within(root, '.local/receipts/build.json')
     if not record_path.is_file():
         raise ValueError('No successful local build receipt. Run Build.cmd first.')
     record = json.loads(record_path.read_text())
-    runner, module = within(root, record['runner']), within(root, record['module'])
-    for p, key in [(runner, 'runner_sha256'), (module, 'module_sha256')]:
+    runner = within(root, record['runner'])
+    module = None
+    checks = [(runner, 'runner_sha256')]
+    if cpu == 'staticrecomp':
+        if not record.get('module'):
+            raise ValueError('No native module receipt; run Build.cmd --cpu staticrecomp --native-rel first.')
+        module = within(root, record['module'])
+        checks.append((module, 'module_sha256'))
+    for p, key in checks:
         if not p.is_file() or sha256(p) != record[key]:
             raise ValueError('Build output changed after verification; rebuild/verify before running: ' + str(p))
     game = within(root, record['game']); game_audit(root, game)
+    return runner, game, module
+
+
+def run_game(root: Path, options: argparse.Namespace) -> None:
+    print(BANNER)
+    cpu = getattr(options, 'cpu', 'jit')
+    runner, game, module = verified_run_inputs(root, cpu)
     user = within(root, '.local/user'); user.mkdir(parents=True, exist_ok=True)
-    args = [runner, '--game', game, '--module', module, '--user-dir', user]
+    args = [runner, '--game', game, '--cpu', cpu, '--user-dir', user]
+    if module is not None:
+        args += ['--module', module]
     if options.graphics:
         args += ['--graphics', options.graphics]
     if options.audio:
@@ -750,17 +791,8 @@ def parse_status_file(path: Path) -> dict[str, str]:
 
 def benchmark(root: Path, options: argparse.Namespace) -> None:
     print(BANNER)
-    record_path = within(root, '.local/receipts/build.json')
-    if not record_path.is_file():
-        raise ValueError('No successful local build receipt. Run Build.cmd first.')
-    record = json.loads(record_path.read_text())
-    runner = within(root, record['runner'])
-    module = within(root, record['module'])
-    for p, key in [(runner, 'runner_sha256'), (module, 'module_sha256')]:
-        if not p.is_file() or sha256(p) != record[key]:
-            raise ValueError('Build output changed after verification; rebuild/verify before benchmarking: ' + str(p))
-    game = within(root, record['game'])
-    game_audit(root, game)
+    cpu = getattr(options, 'cpu', 'jit')
+    runner, game, module = verified_run_inputs(root, cpu)
     user = within(root, options.user_dir or '.local/user')
     user.mkdir(parents=True, exist_ok=True)
     token = stamp() + '-benchmark'
@@ -768,8 +800,10 @@ def benchmark(root: Path, options: argparse.Namespace) -> None:
     for child in ('commands', 'processed', 'failed'):
         (automation / child).mkdir(parents=True, exist_ok=True)
     logfile = within(root, '.local/logs/' + token + '.log')
-    args = [str(runner), '--game', str(game), '--module', str(module), '--user-dir', str(user),
+    args = [str(runner), '--game', str(game), '--cpu', cpu, '--user-dir', str(user),
             '--automation-dir', str(automation)]
+    if module is not None:
+        args += ['--module', str(module)]
     if options.graphics:
         args += ['--graphics', options.graphics]
     if options.audio:
@@ -830,9 +864,10 @@ def benchmark(root: Path, options: argparse.Namespace) -> None:
         'schema': 1,
         'created_utc': stamp(),
         'baseline': BASELINE,
-        'runner': record['runner'],
-        'module': record['module'],
-        'module_sha256': record['module_sha256'],
+        'cpu': cpu,
+        'runner': runner.relative_to(root).as_posix(),
+        'module': module.relative_to(root).as_posix() if module else None,
+        'module_sha256': sha256(module) if module else None,
         'headless': options.headless,
         'graphics': options.graphics,
         'audio': options.audio,
@@ -883,6 +918,8 @@ def make_parser() -> argparse.ArgumentParser:
     s = sub.add_parser('backup'); s.add_argument('--destination')
     for action in ('doctor', 'build', 'build-tools', 'extract', 'generate'):
         s = sub.add_parser(action)
+        s.add_argument('--cpu', choices=('jit', 'staticrecomp'),
+                       help='Build defaults to JIT; --native-rel retains the explicit static build path.')
         s.add_argument('--jobs', type=int, default=2)
         s.add_argument('--config', choices=('Debug', 'Release', 'RelWithDebInfo'), default='Release')
         s.add_argument('--cc', default=os.environ.get('CC', 'cl' if os.name == 'nt' else 'gcc'))
@@ -904,7 +941,9 @@ def make_parser() -> argparse.ArgumentParser:
         s.add_argument('--image', help='Exact .wbfs filename at repository root (optional if unique)')
         s.add_argument('--sdk', help='Optional Linux-only private SDK root')
     s = sub.add_parser('run'); s.add_argument('--graphics'); s.add_argument('--audio')
+    s.add_argument('--cpu', choices=('jit', 'staticrecomp'), default='jit')
     s = sub.add_parser('benchmark')
+    s.add_argument('--cpu', choices=('jit', 'staticrecomp'), default='jit')
     s.add_argument('--seconds', type=float, default=20.0)
     s.add_argument('--warmup', type=float, default=5.0)
     s.add_argument('--interval', type=float, default=0.5)

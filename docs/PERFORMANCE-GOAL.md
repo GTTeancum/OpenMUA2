@@ -1,5 +1,37 @@
 # OpenMUA2 sustained combat performance goal
 
+## JIT direction authorized 2026-09-30
+
+The user explicitly selected full JIT as the primary performance path. The
+30 FPS combat, pacing, resolution, correctness, three-repeat and ten-minute
+acceptance requirements below remain in force. Full JIT results now qualify
+as candidate acceptance evidence; earlier statements limiting JIT to diagnostics
+describe the superseded static-only direction. Average FPS alone is insufficient.
+
+1. Preserve the unfinished direct-chunk experiment and existing user edits.
+2. Add explicit CPU selection and a Windows JIT build/launch path that does not
+   require generating or compiling a proprietary native game DLL.
+3. Build/test that path; verify actual JIT activation, original game validation,
+   native captures and audio-enabled combat. Retain explicit static recompilation.
+4. Measure repeated and longer fights with host and guest frame timestamps;
+   separate game cadence from host stalls and profile the slow-frame causes.
+5. Implement measured pacing/performance improvements without speed hacks,
+   omitted work, duplicated frames, reduced resolution or weakened correctness.
+6. Complete three repeats and ten minutes of actual combat, then publish exact
+   results, limitations, source/handoff checkpoints and a verified source backup.
+
+For JIT-only execution no generated module is loaded, so module ABI/hash audit
+is not applicable to that path. Original game DOL/REL validation and JIT memory,
+code-invalidation, exception and timing protections remain required. Native
+module audits remain required for static-mode changes and comparisons.
+
+Use `Build.cmd --cpu jit --jobs 2` and `Run.cmd --cpu jit` (both default to
+JIT). The combat runner now defaults to `--cpu jit` without `--module`.
+For historical static experiments specify `--cpu staticrecomp --module ...`.
+`--jit-diagnostic` remains a compatibility alias; it no longer requires an
+environment override. Every completed replay must confirm the selected backend
+in runtime.log. Explicit CLI selection overrides the legacy environment value.
+
 Requested 2026-09-29. Target: sustained nominal 30 newly rendered FPS during
 actual combat on the Ryzen 7 8745HS / Radeon 780M Windows host, at normal game
 speed and the existing 1920x1080 preset / 3x EFB scale. The existing 6.223 FPS

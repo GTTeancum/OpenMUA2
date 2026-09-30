@@ -51,6 +51,54 @@ class WorkspaceTests(unittest.TestCase):
         p=self.root/name;p.write_bytes(b'WBFS'+bytes(512));return p
     def test_manifest_passes(self):
         self.assertEqual(w.verify_manifest(self.root),4)
+    def jit_receipt(self):
+        runner = self.root / '.local/build/runner.exe'
+        runner.parent.mkdir(parents=True)
+        runner.write_bytes(b'fixture runner')
+        receipts = self.root / '.local/receipts'
+        receipts.mkdir(parents=True)
+        record = {'runner': '.local/build/runner.exe', 'runner_sha256': w.sha256(runner),
+                  'game': '.local/game', 'cpu': 'jit'}
+        (receipts / 'build.json').write_text(json.dumps(record))
+        return runner
+    def test_jit_launch_requires_verified_runner_but_no_generated_module(self):
+        runner = self.jit_receipt()
+        with patch.object(w, 'game_audit') as audit, patch.object(w, 'logged') as launch:
+            w.run_game(self.root, argparse.Namespace(cpu='jit', graphics=None, audio=None))
+        command = launch.call_args.args[2]
+        self.assertEqual(command[0], runner)
+        self.assertEqual(command[command.index('--cpu') + 1], 'jit')
+        self.assertNotIn('--module', command)
+        audit.assert_called_once_with(self.root, self.root / '.local/game')
+    def test_jit_receipt_does_not_authorize_static_launch(self):
+        self.jit_receipt()
+        with self.assertRaisesRegex(ValueError, 'No native module receipt'):
+            w.verified_run_inputs(self.root, 'staticrecomp')
+    def test_jit_runner_tampering_stops_before_launch(self):
+        runner = self.jit_receipt()
+        runner.write_bytes(b'changed')
+        with patch.object(w, 'logged') as launch, self.assertRaisesRegex(ValueError, 'changed'):
+            w.run_game(self.root, argparse.Namespace(cpu='jit', graphics=None, audio=None))
+        launch.assert_not_called()
+    def test_jit_build_preserves_legacy_receipt_without_generating_module(self):
+        runner = self.jit_receipt()
+        receipts = self.root / '.local/receipts'
+        previous = json.loads((receipts/'build.json').read_text())
+        previous.update(cpu='staticrecomp', module='.local/old.dll', module_sha256='old-hash')
+        (receipts/'build.json').write_text(json.dumps(previous))
+        game = self.root / '.local/game'
+        game.mkdir()
+        options = argparse.Namespace(cpu='jit', native_rel=False)
+        with patch.object(w, 'doctor'), patch.object(w, 'extract_game', return_value=game), \
+             patch.object(w, 'build_runtime', return_value=runner), \
+             patch.object(w, 'build_recompiler') as recompiler, \
+             patch.object(w, 'generate') as generate, patch.object(w, 'build_module') as module:
+            w.build(self.root, options)
+        recompiler.assert_not_called()
+        generate.assert_not_called()
+        module.assert_not_called()
+        self.assertEqual(json.loads((receipts/'build-staticrecomp.json').read_text()), previous)
+        self.assertNotIn('module', json.loads((receipts/'build-jit.json').read_text()))
     def test_manifest_detects_corruption_without_repair(self):
         p=self.root/'project/example.c';p.write_text('my code edit')
         with self.assertRaises(ValueError):w.verify_manifest(self.root)

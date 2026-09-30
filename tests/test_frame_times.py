@@ -38,5 +38,18 @@ class FrameTimesTest(unittest.TestCase):
         r=mod.analyze(trace([0,1,2,3,4]),warmup=2)
         self.assertEqual(r["first_frame"],2)
         self.assertEqual(r["seconds"],2)
+    def test_guest_cadence_is_separate_from_host_stall(self):
+        text = ("# dropped_samples=0\nepoch,frame,present,guest_ticks,host_ns\n"
+                "0,0,0,0,0\n0,1,2,33,33000000\n"
+                "0,2,5,83,133000000\n0,3,6,100,150000000\n")
+        result = mod.analyze(text, guest_ticks_per_second=1000)
+        self.assertEqual(result["guest_frame_ms"]["max"], 50)
+        self.assertEqual(result["guest_interval_counts_ms"],
+                         {"33.000": 1, "50.000": 1, "17.000": 1})
+        self.assertAlmostEqual(result["host_minus_guest_interval_ms"]["max"], 50)
+        self.assertAlmostEqual(result["emulation_speed_percent"], 100*.1/.15)
+    def test_invalid_guest_clock_rejected_when_analyzing_cadence(self):
+        with self.assertRaisesRegex(ValueError, 'non-increasing guest'):
+            mod.analyze(trace([0,.03,.06]), guest_ticks_per_second=1000)
 
 if __name__ == "__main__": unittest.main()

@@ -57,11 +57,19 @@ enum class WindowSystem
   X11,
 };
 
+enum class CPUBackend
+{
+  Default, // Retain the embedding application's environment-based selection.
+  Jit,
+  StaticRecomp,
+};
+
 struct RuntimeConfig
 {
   std::filesystem::path game_root;
   std::filesystem::path user_directory;
   ModuleSource module;
+  CPUBackend cpu_backend = CPUBackend::Default;
   std::vector<std::filesystem::path> mod_directories;
   GraphicsSettings graphics;
   AudioSettings audio;

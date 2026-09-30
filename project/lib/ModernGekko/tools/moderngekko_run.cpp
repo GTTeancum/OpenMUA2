@@ -51,6 +51,7 @@ void HandleStopSignal(int) { s_stop_requested = 1; }
 void Usage() {
   std::cerr << "usage: " MODERNGEKKO_RUNNER_NAME
                " [--game <extracted-root>] [--module <path>]\n"
+               "       [--cpu jit|staticrecomp]\n"
                "       [--user-dir <path>] [--title <text>] [--load-state <path>]\n"
                "       [--graphics <backend>] [--audio <backend>]\n"
                "       [--mods <directory>] [--no-mods]\n"
@@ -339,6 +340,17 @@ int RunMain(int argc, char **argv) {
       config.game_root = value("--game");
     else if (arg == "--module")
       module_path = value("--module");
+    else if (arg == "--cpu") {
+      const std::string backend = value("--cpu");
+      if (backend == "jit")
+        config.cpu_backend = moderngekko::CPUBackend::Jit;
+      else if (backend == "staticrecomp")
+        config.cpu_backend = moderngekko::CPUBackend::StaticRecomp;
+      else {
+        std::cerr << "--cpu requires jit or staticrecomp\n";
+        return 2;
+      }
+    }
     else if (arg == "--user-dir")
       config.user_directory = value("--user-dir");
     else if (arg == "--title")

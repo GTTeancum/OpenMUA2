@@ -44,8 +44,10 @@ def validate_command_receipts(root, count):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    for name in ("runner","module","game","user","state","route","output"):
+    for name in ("runner","game","user","state","route","output"):
         p.add_argument("--"+name,required=True,type=Path)
+    p.add_argument("--module",type=Path,help="Required only for static recompilation.")
+    p.add_argument("--cpu",choices=("jit","staticrecomp"),help="Defaults to jit; selective native diagnostics imply staticrecomp.")
     p.add_argument("--windowed",action="store_true",help="Create the game window; inputs remain process-local.")
     p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed for sound.")
     p.add_argument("--resolution",default="1920x1080")
@@ -58,6 +60,13 @@ def main():
     args=p.parse_args()
     if args.jit_ranges and args.jit_diagnostic:
         p.error("--jit-ranges and --jit-diagnostic are mutually exclusive")
+    cpu = args.cpu or ("staticrecomp" if args.jit_ranges or args.profile_dispatch else "jit")
+    if args.jit_diagnostic and cpu != "jit":
+        p.error("--jit-diagnostic requires the jit CPU backend")
+    if (args.jit_ranges or args.profile_dispatch) and cpu != "staticrecomp":
+        p.error("native profiling and selective JIT require --cpu staticrecomp")
+    if cpu == "staticrecomp" and args.module is None:
+        p.error("--cpu staticrecomp requires --module")
     if args.jit_ranges:
         import re
         for item in args.jit_ranges.split(","):
@@ -78,16 +87,16 @@ def main():
     for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_PROFILE_GATE_FILE","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
         env.pop(key,None)
     if not args.no_trace:env["MODERNGEKKO_FRAME_TIMES"]=str(root/"frames.csv")
-    if args.jit_diagnostic:env["MODERNGEKKO_STATICRECOMP"]="0"
     if args.jit_ranges:
         env["STATICRECOMP_FALLBACK_RANGES"]=args.jit_ranges
         env["STATICRECOMP_FALLBACK_USE_JIT"]="1"
     if args.profile_dispatch:
         env["STATICRECOMP_PROFILE_DISPATCH"]="1"
         env["STATICRECOMP_PROFILE_GATE_FILE"]=str(root/"profile.enabled")
-    cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--module",str(args.module.resolve()),"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio",args.audio,"--load-state",str(args.state.resolve())]
+    cmd=[str(args.runner.resolve()),"--game",str(args.game.resolve()),"--cpu",cpu,"--user-dir",str(root/"user"),"--automation-dir",str(root),"--graphics","Vulkan","--audio",args.audio,"--load-state",str(args.state.resolve())]
+    if cpu == "staticrecomp":cmd += ["--module",str(args.module.resolve())]
     if not args.windowed:cmd.append("--headless")
-    metadata={"command":cmd,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module),"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
+    metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:
@@ -127,6 +136,9 @@ def main():
             child.wait(timeout=30)
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
+            expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
+            if expected_cpu not in (root/"runtime.log").read_text():
+                raise RuntimeError("runtime did not confirm the requested CPU backend")
             completed=True
         finally:
             if child.poll() is None:
