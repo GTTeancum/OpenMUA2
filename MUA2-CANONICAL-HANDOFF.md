@@ -9,6 +9,46 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Windows optional LTO trial - 2026-09-30
+
+The existing ENABLE_LTO option failed with MSVC C2220/C5049 because the shared
+PCH embedded absolute build paths under deterministic compilation. A conditional
+PUBLIC /pathmap on build_pch maps the build root to a relative prefix; consumers
+inherit the same mapping. Deterministic mode and warning-as-error checks remain.
+The supported Build.cmd --cpu jit --jobs 2 path then completed: 39/39 native tests
+in 17.07s. Existing CMake warnings, D9025 (/W3 overridden by /W0), and D9002
+(ignored -fexceptions in a dependency) remain. No final build errors.
+
+Short statue-route comparisons after the same two-second warmup:
+
+| Build/run | Average FPS | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- |
+| Baseline earlier | 29.8588 | 46.4992 | 60.6316 | 2 | 29 |
+| Baseline repeat | 29.9659 | 48.5620 | 55.5134 | 2 | 29 |
+| LTO first | 29.9710 | 42.9138 | 46.8131 | 0 | 29 |
+| LTO repeat | 30.0332 | 46.7293 | 51.0239 | 2 | 29 |
+
+These approximately ten-second segments are not deterministic movies or qualifying
+acceptance repeats. Full restored-route maxima were 270.1/293.8ms baseline and
+304.7/446.1ms LTO; cold restoration is reported separately, not mislabeled as a
+steady combat stall. LTO is not established as a major FPS improvement or a fix
+for pacing. No default was changed: ENABLE_LTO remains OFF in source; the local
+experimental CMake cache is ON and the current runner is the LTO candidate.
+Original runner retained at .local/build/windows-x64/runtime/moderngekko-run-pre-lto.exe.
+A renamed-baseline launch timed out before restoration; using its original name
+completed. Cause unproven; future comparisons should use the original filename.
+
+All five candidate native captures inspected sequentially: statue/street, enemies,
+team, HUD and hit effects present. Tree obscures the player, health becomes low,
+and statue remains intact. This route needs clearer visibility and progression.
+Cubeb enabled/muted; first LTO timing run had eight full interior seconds with no
+DMA/streaming empty dequeues and 10.7509ms maximum callback gap. Not a listening
+or device-output check; crackling unresolved. JIT, one logical CPU, normal clocks,
+3x EFB and opt-in formatter retained. No proprietary captures/saves tracked.
+Evidence: evidence/windows-20260930/WINDOWS-LTO-TRIAL.json. Goal active/unmet;
+three qualifying repeats and ten-minute varied combat still required. Next pursue
+substantial runtime/compilation cost reductions and improve the varied route.
+
 ## Xbox fusion aiming and tutorial validation - 2026-09-30
 
 Generated Xbox profile v2 adds right-stick aiming while LB+RB are held. This

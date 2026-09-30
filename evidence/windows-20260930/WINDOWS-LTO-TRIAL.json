@@ -1,0 +1,421 @@
+{
+  "date": "2026-09-30",
+  "scope": "MSVC optional LTO feasibility and short nondeterministic statue-route comparison; not acceptance",
+  "fix": "Conditional PUBLIC /pathmap on shared PCH target removes MSVC C5049 under ENABLE_LTO while retaining deterministic and warning-as-error options",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2 after CMake ENABLE_LTO=ON",
+    "exit": 0,
+    "native_tests_passed": 39,
+    "native_test_seconds": 17.07,
+    "initial_failure": "C2220/C5049 shared PCH machine-specific paths",
+    "warnings": [
+      "CMake deprecation/Wayland/object-path warnings",
+      "D9025 /W3 overridden by /W0",
+      "D9002 ignored -fexceptions"
+    ],
+    "runner_sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc"
+  },
+  "runs": [
+    {
+      "private_run": ".local\\automation\\statue-combat-timing-20260930",
+      "runner_sha256": "00a858e5e10167c07682229e7a5de396792faa63b18fd734f47a847dd6d54b82",
+      "exit_code": 0,
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14910,
+          "emulated_ticks": 8452694250,
+          "intervals": 348,
+          "seconds": 11.8476793,
+          "average_fps": 29.372840974856572,
+          "frame_ms": {
+            "median": 33.35730000000048,
+            "p95": 38.9377999999998,
+            "p99": 56.35149999999989,
+            "max": 270.1323
+          },
+          "one_percent_low_fps": 8.722791432823156,
+          "rolling_1s_fps_min": 24,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 180,
+          "frames_over_50ms": 7,
+          "longest_consecutive_over_50ms_seconds": 0.3940848,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.594916666666668,
+          "emulation_speed_percent": 97.86656418583738,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 1,
+            "33.367": 347
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.009366666666191237,
+            "p99": 22.984833333333217,
+            "min": -13.378166666666594,
+            "max": 253.44896666666668
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14616,
+          "last_frame": 14910,
+          "emulated_ticks": 7151344200,
+          "intervals": 294,
+          "seconds": 9.8463435,
+          "average_fps": 29.858799868194726,
+          "frame_ms": {
+            "median": 33.37659999999998,
+            "p95": 36.85280000000013,
+            "p99": 46.49920000000041,
+            "max": 60.6315999999989
+          },
+          "one_percent_low_fps": 18.85509357782949,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 157,
+          "frames_over_50ms": 2,
+          "longest_consecutive_over_50ms_seconds": 0.0606315999999989,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 9.809800000000001,
+          "emulation_speed_percent": 99.62886222687642,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 294
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.009933333333309036,
+            "p99": 13.132533333333738,
+            "min": -10.067266666666699,
+            "max": 27.264933333332227
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    },
+    {
+      "private_run": ".local\\automation\\statue-combat-baseline-original-name-20260930",
+      "runner_sha256": "00a858e5e10167c07682229e7a5de396792faa63b18fd734f47a847dd6d54b82",
+      "exit_code": 0,
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14909,
+          "emulated_ticks": 8428369950,
+          "intervals": 347,
+          "seconds": 11.7901505,
+          "average_fps": 29.431346105378385,
+          "frame_ms": {
+            "median": 33.29880000000074,
+            "p95": 38.56269999999995,
+            "p99": 55.5134000000006,
+            "max": 293.83959999999996
+          },
+          "one_percent_low_fps": 8.455313562132698,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 163,
+          "frames_over_50ms": 6,
+          "longest_consecutive_over_50ms_seconds": 0.362037,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.56155,
+          "emulation_speed_percent": 98.06108921171108,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 1,
+            "33.367": 346
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.06786666666593055,
+            "p99": 22.14673333333393,
+            "min": -12.281266666666637,
+            "max": 277.1562666666666
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14616,
+          "last_frame": 14909,
+          "emulated_ticks": 7127019900,
+          "intervals": 293,
+          "seconds": 9.7777885,
+          "average_fps": 29.965876230601634,
+          "frame_ms": {
+            "median": 33.31829999999947,
+            "p95": 36.66530000000012,
+            "p99": 48.56200000000044,
+            "max": 55.51339999999971
+          },
+          "one_percent_low_fps": 18.90976386747533,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 142,
+          "frames_over_50ms": 2,
+          "longest_consecutive_over_50ms_seconds": 0.05551339999999971,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 9.776433333333333,
+          "emulation_speed_percent": 99.98614035610746,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 293
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.048366666667201685,
+            "p99": 15.19533333333377,
+            "min": -9.72506666666674,
+            "max": 22.146733333333042
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    },
+    {
+      "private_run": ".local\\automation\\statue-combat-lto-timing-20260930",
+      "runner_sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc",
+      "exit_code": 0,
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14904,
+          "emulated_ticks": 8306748450,
+          "intervals": 342,
+          "seconds": 11.6349136,
+          "average_fps": 29.3942878957004,
+          "frame_ms": {
+            "median": 33.31940000000011,
+            "p95": 36.16600000000003,
+            "p99": 51.3325,
+            "max": 304.65340000000003
+          },
+          "one_percent_low_fps": 8.247718577944857,
+          "rolling_1s_fps_min": 23,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 164,
+          "frames_over_50ms": 4,
+          "longest_consecutive_over_50ms_seconds": 0.3752173,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.394716666666667,
+          "emulation_speed_percent": 97.93555034793441,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 1,
+            "33.367": 341
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.04726666666655943,
+            "p99": 17.965833333333332,
+            "min": -13.600966666666672,
+            "max": 287.9700666666667
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14616,
+          "last_frame": 14904,
+          "emulated_ticks": 7005398400,
+          "intervals": 288,
+          "seconds": 9.6092945,
+          "average_fps": 29.97098278130616,
+          "frame_ms": {
+            "median": 33.33235000000012,
+            "p95": 34.89220000000026,
+            "p99": 42.913799999999114,
+            "max": 46.81309999999961
+          },
+          "one_percent_low_fps": 22.599619121086008,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 143,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 9.6096,
+          "emulation_speed_percent": 100.00317921362489,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 288
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.03431666666654787,
+            "p99": 9.547133333332445,
+            "min": -9.552466666666328,
+            "max": 13.446433333332939
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    },
+    {
+      "private_run": ".local\\automation\\statue-combat-lto-repeat-20260930",
+      "runner_sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc",
+      "exit_code": 0,
+      "analysis": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14905,
+          "emulated_ticks": 8331072750,
+          "intervals": 343,
+          "seconds": 11.8766383,
+          "average_fps": 28.880226149515728,
+          "frame_ms": {
+            "median": 33.35899999999903,
+            "p95": 38.10369999999974,
+            "p99": 54.83320000000025,
+            "max": 446.0522
+          },
+          "one_percent_low_fps": 5.858749075049988,
+          "rolling_1s_fps_min": 15,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 173,
+          "frames_over_50ms": 6,
+          "longest_consecutive_over_50ms_seconds": 0.6279064,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.428083333333335,
+          "emulation_speed_percent": 96.22321607060591,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 1,
+            "33.367": 342
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.007666666667641153,
+            "p99": 21.46653333333358,
+            "min": -12.034466666666646,
+            "max": 429.3688666666667
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14610,
+          "last_frame": 14905,
+          "emulated_ticks": 7175668500,
+          "intervals": 295,
+          "seconds": 9.8224757,
+          "average_fps": 30.033161598964302,
+          "frame_ms": {
+            "median": 33.38609999999997,
+            "p95": 36.7267,
+            "p99": 46.729299999999974,
+            "max": 51.02389999999968
+          },
+          "one_percent_low_fps": 20.256884302130146,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 155,
+          "frames_over_50ms": 2,
+          "longest_consecutive_over_50ms_seconds": 0.05102389999999968,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 9.843166666666667,
+          "emulation_speed_percent": 100.21064920187756,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 295
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.01943333333330466,
+            "p99": 13.362633333333305,
+            "min": -10.494966666667063,
+            "max": 17.657233333333007
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    }
+  ],
+  "visual": {
+    "exit_code": 0,
+    "captures_reviewed_sequentially": [
+      {
+        "path": ".local\\automation\\statue-combat-lto-visual-20260930\\shots\\00-statue.png",
+        "sha256": "f327577ec5a26c9da073b8a391338fbc8319925318d7ba90a5a62245894705ad"
+      },
+      {
+        "path": ".local\\automation\\statue-combat-lto-visual-20260930\\shots\\01-combat.png",
+        "sha256": "1f35d5268c989716566b9062fbe36d3769898612b271ba21010b4a36f0479ef3"
+      },
+      {
+        "path": ".local\\automation\\statue-combat-lto-visual-20260930\\shots\\02-combat.png",
+        "sha256": "7753521e3ffba64efe86c7e89c94adf5fd1f43a512c5b8bff983458949c175c9"
+      },
+      {
+        "path": ".local\\automation\\statue-combat-lto-visual-20260930\\shots\\03-combat.png",
+        "sha256": "8a3767f80f05652b15651a009f6017b2263701c989209cb270369a91812a644d"
+      },
+      {
+        "path": ".local\\automation\\statue-combat-lto-visual-20260930\\shots\\04-combat.png",
+        "sha256": "7fdb9523bf262e8f7f58534f2f36889ea706e7f866e6fab3555253efdac5b728"
+      }
+    ],
+    "observed": "Statue/street, Doombots, team, HUD, movement and hit effects; player heavily tree-occluded, low health, statue intact. Not full animation/flow validation."
+  },
+  "failed_baseline_repeat": {
+    "private_run": ".local/automation/statue-combat-baseline-repeat-20260930",
+    "exit": 1,
+    "error": "Timed out before restored frame when baseline runner used renamed executable; original-filename retry completed; root cause unproven"
+  },
+  "audio": {
+    "backend": "Cubeb",
+    "muted": true,
+    "candidate_first_run_full_interior_seconds": 8,
+    "dma_empty_dequeues": 0,
+    "streaming_empty_dequeues": 0,
+    "max_callback_gap_ms": 10.7509,
+    "listening_verified": false
+  },
+  "conclusion": "LTO builds and runs after fix, but short repeats do not establish major improvement or meet full pacing/varied combat acceptance. Remains opt-in; upstream default OFF, local experiment cache ON. Goal unmet."
+}

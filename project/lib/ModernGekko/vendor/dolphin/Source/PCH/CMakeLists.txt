@@ -10,6 +10,12 @@ add_library(use_pch INTERFACE)
 
 add_library(build_pch pch.h pch.cpp)
 
+# Whole-program objects retain their shared PCH path. Map the build root so
+# deterministic MSVC LTO does not embed a machine-specific absolute prefix.
+if(ENABLE_LTO AND MSVC)
+  target_compile_options(build_pch PUBLIC "/pathmap:${CMAKE_BINARY_DIR}=.")
+endif()
+
 # fmt/format.h is included in the PCH
 target_link_libraries(build_pch PUBLIC fmt::fmt)
 
