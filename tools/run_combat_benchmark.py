@@ -146,6 +146,29 @@ def validate_formatter(log, mode):
         raise RuntimeError('formatter counters do not reconcile')
 
 
+def validate_timed_inputs(root, commands):
+    seen = set()
+    for command in commands:
+        if command.get('command') != 'xbox_time':
+            continue
+        path = (root / command['path']).resolve()
+        if path in seen:
+            raise RuntimeError('timed input receipts must have unique paths')
+        seen.add(path)
+        try:
+            fields = dict(line.split('=', 1) for line in path.read_text().splitlines())
+            start, end, duration, hz, late, completed, release = (
+                int(fields[k]) for k in ('start_ticks', 'end_ticks', 'duration_ticks',
+                                        'ticks_per_second', 'cycles_late', 'completed', 'release'))
+        except (OSError, KeyError, ValueError) as exc:
+            raise RuntimeError('missing or invalid timed input receipt') from exc
+        if (completed != 1 or hz <= 0 or start < 0 or duration <= 0 or late < 0 or
+                duration != hz * int(command['milliseconds']) // 1000 or
+                end - start != duration + late or late > hz // 1000 or
+                release != int(command.get('release', 1))):
+            raise RuntimeError('timed input incomplete, inconsistent, or more than 1ms late')
+
+
 def validate_runtime_settings(log, cpu):
     import re
     expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
@@ -327,6 +350,7 @@ def main():
             child.wait(timeout=30)
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
+            validate_timed_inputs(root, route['commands'])
             validate_runtime_settings((root/"runtime.log").read_text(), cpu)
             validate_formatter((root/"runtime.log").read_text(), args.simple_format)
             if args.profile_audio:

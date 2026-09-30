@@ -2,6 +2,41 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Guest-clock input timing and movement comparison - 2026-09-30
+
+Added process-local xbox_time commands: port, milliseconds (1..600000), input
+fields, optional release, and a required path for the timing receipt. Input
+release runs in CoreTiming rather than waiting for rendered frames or a host
+sleep. Receipts record start/end ticks, requested duration, clock rate, lateness
+and completion. The benchmark rejects inconsistent/incomplete receipts, reused
+receipt paths and releases more than 1ms late. Controller polling retains its
+usual guest cadence. Between-command gaps are not a deterministic input movie.
+
+First live testing caught event-name reuse: RegisterEvent keeps the old callback,
+so the second hold stalled. Original timed out; an initial candidate was started
+too early and terminated. Neither attempt is accepted. Fixed one registered
+event per core lifetime with a current hold, rebuilt, then ran the retries serially.
+Final Windows build exited 0: 39/39 native tests in 7.46s; tooling 138 passed,
+one skipped of 139 in 20.767s. No compiler warnings/errors; existing CMake
+deprecation, Wayland, long-path and lz4 IPO warnings remain. Local LTO stays ON,
+source default OFF. Runtime executables rebuilt; hashes are in the evidence.
+
+Both fixed runs exited 0 using JIT, one logical processor, 3x EFB and Cubeb muted.
+Two-second movement hold: original 9 guest cycles late, candidate 0. Half-second
+neutral hold: original 50 cycles late, candidate 0 (729000000 ticks/second).
+Movement window contained 56 new frames original versus 60 candidate; neutral
+contained 12 versus 15. These are counts in guest-clock windows, not host FPS.
+All six native captures inspected sequentially. Spider-Man moves from the street
+to the same curbside area in both modes; scene, enemies, team, HUD and effects
+remain present. This supports a bounded movement comparison, not numeric position,
+full world-speed or interrupt equivalence. No audible/device-output verification.
+
+Route: tools/routes/xbox-timed-movement.json, using the private prepared statue
+state. Evidence: evidence/windows-20260930/GUEST-TIMED-INPUT.json. Next broaden
+guest-timed movement/animation/combat comparisons and establish a healthy visible
+varied route. Formatter remains default OFF; crackling and solid-30 combat remain
+unresolved. Three qualifying repeats and ten-minute varied combat still required.
+
 ## Formatter contract guards and combat shadow validation - 2026-09-30
 
 The default-off formatter now hashes the known caller epilogue as well as its

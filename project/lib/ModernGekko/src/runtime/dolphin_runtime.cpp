@@ -10,6 +10,7 @@
 #include "Core/Config/GraphicsSettings.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/CoreTiming.h"
+#include "Core/HW/SystemTimers.h"
 #include "Core/Core.h"
 #include "Common/RuntimeTiming.h"
 #include "Core/HW/GBACore.h"
@@ -165,6 +166,15 @@ Host_CreateGBAHost(std::weak_ptr<HW::GBA::Core>) {
 
 namespace moderngekko {
 namespace {
+struct TimedXboxHold
+{
+  std::atomic<bool> complete{false};
+  std::shared_ptr<automation::XboxTestDevice> device;
+  bool release = true;
+  u64 end_ticks = 0;
+  s64 cycles_late = 0;
+};
+
 struct RuntimeAutomationState
 {
   mutable std::mutex mutex;
@@ -174,6 +184,9 @@ struct RuntimeAutomationState
   std::string last_command;
   std::string last_error;
   std::array<std::shared_ptr<automation::XboxTestDevice>, 4> xbox_devices;
+  // Accessed only while holding the CPU guard or from the CPU event callback.
+  CoreTiming::EventType* xbox_hold_event = nullptr;
+  std::shared_ptr<TimedXboxHold> xbox_hold;
 };
 
 void EnsureAutomationDirectories(const std::filesystem::path& root)
@@ -382,6 +395,77 @@ std::optional<RuntimeError> WriteAutomationMemory(u32 address,
   return {};
 }
 
+std::optional<RuntimeError> ApplyTimedXboxHold(
+    RuntimeAutomationState& state,
+    const std::shared_ptr<automation::XboxTestDevice>& device,
+    const automation::Command& command, std::stop_token stop_token)
+{
+  auto hold = std::make_shared<TimedXboxHold>();
+  hold->device = device;
+  hold->release = command.release_pad;
+  auto& system = Core::System::GetInstance();
+  auto& timing = system.GetCoreTiming();
+  u64 start_ticks, duration_ticks;
+  u32 ticks_per_second;
+  {
+    const Core::CPUThreadGuard guard(system);
+    // Register once per core lifetime; re-registering the same name does not
+    // replace CoreTiming's callback. No pointers are serialized as userdata.
+    if (!state.xbox_hold_event)
+      state.xbox_hold_event = timing.RegisterEvent("OpenMUA2XboxTimedHold",
+        [&state](Core::System& callback_system, u64, s64 late) {
+          const auto active = state.xbox_hold;
+          if (!active) return;
+          if (active->release) {
+            const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+            active->device->values = {};
+          }
+          active->end_ticks = callback_system.GetCoreTiming().GetTicks();
+          active->cycles_late = late;
+          active->complete.store(true, std::memory_order_release);
+        });
+    state.xbox_hold = hold;
+    ticks_per_second = system.GetSystemTimers().GetTicksPerSecond();
+    duration_ticks = u64{ticks_per_second} * command.milliseconds / 1000;
+    const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+    ciface::Touch::UnregisterWiiInputOverrider(command.pad.port);
+    device->values = command.xbox;
+    start_ticks = timing.GetTicks();
+    timing.ScheduleEvent(static_cast<s64>(duration_ticks), state.xbox_hold_event);
+  }
+  // Host polling observes completion only. Input release occurs in the guest
+  // scheduler, independent of render frequency, host sleep and file I/O.
+  while (!hold->complete.load(std::memory_order_acquire) && !stop_token.stop_requested())
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  bool completed;
+  {
+    const Core::CPUThreadGuard guard(system);
+    timing.RemoveEvent(state.xbox_hold_event);
+    state.xbox_hold.reset();
+    completed = hold->complete.load(std::memory_order_acquire);
+    if (!completed) hold->end_ticks = timing.GetTicks();
+    if (!completed || stop_token.stop_requested()) {
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      device->values = {};
+    }
+  }
+  std::error_code ec;
+  std::filesystem::create_directories(command.path.parent_path(), ec);
+  if (ec)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed, "could not create Xbox timing receipt directory"};
+  std::ofstream output(command.path);
+  output << "start_ticks=" << start_ticks << "\nend_ticks=" << hold->end_ticks
+         << "\nduration_ticks=" << duration_ticks << "\nticks_per_second=" << ticks_per_second
+         << "\ncycles_late=" << hold->cycles_late << "\ncompleted=" << completed
+         << "\nrelease=" << command.release_pad << '\n';
+  output.close();
+  if (!output)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed, "could not write Xbox timing receipt"};
+  if (!completed)
+    return RuntimeError{RuntimeErrorCode::InvalidState, "Xbox timed hold interrupted"};
+  return {};
+}
+
 std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
                                                    RuntimeAutomationState& state,
                                                    const automation::Command& command,
@@ -391,9 +475,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   switch (command.type)
   {
   case automation::CommandType::XboxFrames:
+  case automation::CommandType::XboxTime:
   {
     if (Core::GetState(system) != Core::State::Running)
-      return RuntimeError{RuntimeErrorCode::InvalidState, "xbox_frames requires a running core"};
+      return RuntimeError{RuntimeErrorCode::InvalidState, "Xbox input requires a running core"};
     const int port = command.pad.port;
     auto& device = state.xbox_devices[port];
     if (!device) {
@@ -409,6 +494,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
       controller->UpdateReferences(g_controller_interface);
       // Only this process-local synthetic device is mapped to the tested port.
       Config::SetBase(Config::MAIN_INPUT_BACKGROUND_INPUT, true);
+    }
+    if (command.type == automation::CommandType::XboxTime) {
+      if (auto error = ApplyTimedXboxHold(state, device, command, stop_token)) return error;
+      break;
     }
     {
       const auto lock = ControllerEmu::EmulatedController::GetStateLock();
@@ -517,6 +606,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   case automation::CommandType::WriteMemory:
   case automation::CommandType::PadFrames:
   case automation::CommandType::XboxFrames:
+  case automation::CommandType::XboxTime:
     return true;
   case automation::CommandType::Pad:
   case automation::CommandType::ClearPad:
@@ -1064,6 +1154,9 @@ RuntimeRunResult Runtime::Run() {
                                                      std::memory_order_relaxed);
       });
   if (!m_impl->config.automation.directory.empty()) {
+    // CoreTiming clears its registered event types between core lifetimes.
+    m_impl->automation_state.xbox_hold_event = nullptr;
+    m_impl->automation_state.xbox_hold.reset();
     m_impl->automation_thread =
         std::jthread([this](std::stop_token stop_token) {
           AutomationLoop(*this, *m_impl, std::move(stop_token));

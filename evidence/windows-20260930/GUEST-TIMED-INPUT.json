@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "base_commit": "16c11d0edfa164e7ce6fe666c1f1c2de5128c3f1",
+  "goal_complete": false,
+  "scope": "Guest-clock controller timing and short movement comparison, not FPS acceptance",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 39,
+    "native_seconds": 7.46,
+    "tooling_tests_run": 139,
+    "tooling_tests_passed": 138,
+    "tooling_tests_skipped": 1,
+    "tooling_seconds": 20.767,
+    "compiler_warnings": [],
+    "errors": [],
+    "cmake_warnings": [
+      "Deprecations",
+      "Wayland unavailable",
+      "Long object paths",
+      "lz4 CMP0069 IPO ignored"
+    ],
+    "local_enable_lto": true,
+    "source_enable_lto_default": false,
+    "log_sha256": "1a3a2b05f9d5fe78e3dfd6f4aa7e4fb3301075929849774ea3fe0023e7db1794"
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16062464,
+      "sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "bda4423d8312d649149048d435cf3531a637379e46424d20f4f39ae44ea06f5d"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "c6e5f2e5d6aa9ba65ac134aa360d5b51b03b4a4e19659728abc5afc2639b6d9a"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12199424,
+      "sha256": "07cdc56c6b78001e56700b0c9ee0bf56b534939fcc4e933300a3abf2367fc162"
+    }
+  },
+  "runs": [
+    {
+      "mode": "original",
+      "private_directory": ".local/automation/guest-timed-original-fixed-20260930",
+      "exit_code": 0,
+      "settings": {
+        "cpu": "jit",
+        "resolution": "1920x1080",
+        "simple_format": "off",
+        "host_logical_processors_required": 1,
+        "requested_audio_backend": "Cubeb",
+        "audio_profile": true,
+        "screenshots": true
+      },
+      "holds": [
+        {
+          "start_ticks": 371191771671,
+          "end_ticks": 372649771680,
+          "duration_ticks": 1458000000,
+          "ticks_per_second": 729000000,
+          "cycles_late": 9,
+          "completed": 1,
+          "release": 1,
+          "name": "movement",
+          "actual_guest_seconds": 2.000000012345679,
+          "new_frames_in_guest_window": 56
+        },
+        {
+          "start_ticks": 372654959445,
+          "end_ticks": 373019459495,
+          "duration_ticks": 364500000,
+          "ticks_per_second": 729000000,
+          "cycles_late": 50,
+          "completed": 1,
+          "release": 1,
+          "name": "neutral",
+          "actual_guest_seconds": 0.5000000685871057,
+          "new_frames_in_guest_window": 12
+        }
+      ],
+      "captures": [
+        {
+          "name": "00-start.png",
+          "sha256": "822acf955d22ea2663462aa58bda696d9c07f5fea074fd759a65cae1164ee90b"
+        },
+        {
+          "name": "01-movement.png",
+          "sha256": "d6a4313fa44c4f384d98a05b8a221e81dc9a457fb7146e76de205f4e43b48e63"
+        },
+        {
+          "name": "02-neutral.png",
+          "sha256": "d5c192de0c158de55524c9b0407db0170d2db1fab470dbea9a6b0824e0edb9fe"
+        }
+      ],
+      "artifact_sha256": {
+        "frames.csv": "22f5c4bb00b5abb3a36ec36434be69b3bfe98f33800c7afbc1c6458e2ba72f4d",
+        "run.json": "c116d380f85b7da1f67ef6d47ea795aed9bab9628849849f85ac9fc92090bd5f",
+        "result.json": "1eb797c17fd9161289afa8e3ea8d6b3e89114fe6092667dcffd1e23f9a0c6083",
+        "runtime.log": "7c9c8415fffc032c6f893400c6ede16d81b0739c4138aff943a7a045f2ef86fb",
+        "audio-profile.csv": "9c2ee9165a17209900355c8ab90021b796d4726fc1b77b448ab10baeb32eaa1d"
+      },
+      "visual_review": "All three captures inspected sequentially: Spider-Man starts in street, moves to the curb in front of the statue/tree island, then remains around that curb during neutral input. Heroes, Doombots, scene, HUD, dialog and damage effects present. Same curbside area in both runs, not a numeric position or full animation equivalence test."
+    },
+    {
+      "mode": "candidate",
+      "private_directory": ".local/automation/guest-timed-candidate-fixed-20260930",
+      "exit_code": 0,
+      "settings": {
+        "cpu": "jit",
+        "resolution": "1920x1080",
+        "simple_format": "on",
+        "host_logical_processors_required": 1,
+        "requested_audio_backend": "Cubeb",
+        "audio_profile": true,
+        "screenshots": true
+      },
+      "holds": [
+        {
+          "start_ticks": 371207382383,
+          "end_ticks": 372665382383,
+          "duration_ticks": 1458000000,
+          "ticks_per_second": 729000000,
+          "cycles_late": 0,
+          "completed": 1,
+          "release": 1,
+          "name": "movement",
+          "actual_guest_seconds": 2.0,
+          "new_frames_in_guest_window": 60
+        },
+        {
+          "start_ticks": 372666099095,
+          "end_ticks": 373030599095,
+          "duration_ticks": 364500000,
+          "ticks_per_second": 729000000,
+          "cycles_late": 0,
+          "completed": 1,
+          "release": 1,
+          "name": "neutral",
+          "actual_guest_seconds": 0.5,
+          "new_frames_in_guest_window": 15
+        }
+      ],
+      "captures": [
+        {
+          "name": "00-start.png",
+          "sha256": "d53b77863092479d4bf2545e73698a2d6d2681d89e420e9cbf6a5e3e9bbd2af4"
+        },
+        {
+          "name": "01-movement.png",
+          "sha256": "60a0bee71acf66535a3c86db47d5e4b74168a4f0d244f800ac1af35f80c71d9d"
+        },
+        {
+          "name": "02-neutral.png",
+          "sha256": "624bf6921f92f9aa12e7a198d2dfd1727062299fb930cf805a6506ceb1c1f21f"
+        }
+      ],
+      "artifact_sha256": {
+        "frames.csv": "32ddbd0862afda78e6fcaf02c3df7e131d56063a9f42abdcbdfeccb1143ec948",
+        "run.json": "6303d76fa7e98181ed0d6aa930698a3c3c7d562c0f1d5476438064e9853ab932",
+        "result.json": "4bb557b20c8af677252a1d8782f37ddcd5cf28c020f0d0179332a5e7ad6e0de8",
+        "runtime.log": "81cfb91d689c34411daa1aaf4edcb2b2930df6bfec4c26b80a00bbbafaf52aea",
+        "audio-profile.csv": "bbce70d5e344cbd083e1b702531e69326a348ddf2ea4cc4b62fe408a142e5c59"
+      },
+      "visual_review": "All three captures inspected sequentially: Spider-Man starts in street, moves to the curb in front of the statue/tree island, then remains around that curb during neutral input. Heroes, Doombots, scene, HUD, dialog and damage effects present. Same curbside area in both runs, not a numeric position or full animation equivalence test."
+    }
+  ],
+  "failed_attempts": [
+    {
+      "private_directory": ".local/automation/guest-timed-original-20260930",
+      "route_completed": false,
+      "exit_code": 1,
+      "error": "TimeoutError: benchmark deadline",
+      "result_sha256": "c09d7aa349499f329ed0f772cb71f4d13a018d192921469bc7ad8d3a891bd57b"
+    },
+    {
+      "private_directory": ".local/automation/guest-timed-candidate-20260930",
+      "route_completed": false,
+      "exit_code": 4294967295,
+      "error": "RuntimeError: runtime exited 4294967295",
+      "result_sha256": "658dddb48cb398a44f7d064b35e10af25e48fe8cacb07736d7acd0f3a8d2ec7d"
+    }
+  ],
+  "failure_and_fix": "Initial original run completed the first hold then hung on the second: CoreTiming RegisterEvent does not replace an existing callback. Original timed out; candidate was prematurely started before the original became terminal and was terminated. Both attempts are excluded. Fixed to one registered event per core lifetime with a current shared hold, removed pending events on completion/cancellation, then rebuilt and reran both modes serially to exit 0.",
+  "limits": [
+    "Native screenshots and numeric audio diagnostics were enabled, so this is not a performance acceptance run. New-frame counts within guest-clock windows are not measured host FPS.",
+    "Scheduled input-state release is precise; controller polling still occurs at its usual guest cadence. Between-command host gaps and scene evolution remain nondeterministic.",
+    "Interrupted holds have a cleanup/error path but forced cancellation was not positively validated in the fixed live run. Saving/loading a state during an active hold is outside this serial test workflow.",
+    "Cubeb active/muted; no audible or device playback verification. Crackling unresolved.",
+    "Formatter stays default off. Need broader world-state/timing validation, improved varied combat routing, three qualifying repeats and ten-minute combat."
+  ]
+}

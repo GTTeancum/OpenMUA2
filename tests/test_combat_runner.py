@@ -9,6 +9,27 @@ mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
 class CommandPublicationTest(unittest.TestCase):
+    def test_guest_timed_input_requires_accurate_completed_receipt(self):
+        command = {'command': 'xbox_time', 'milliseconds': 1000, 'path': 'hold.txt'}
+        good = ('start_ticks=100\nend_ticks=729000110\nduration_ticks=729000000\n'
+                'ticks_per_second=729000000\ncycles_late=10\ncompleted=1\nrelease=1\n')
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for bad in ('', good.replace('completed=1', 'completed=0'),
+                        good.replace('end_ticks=729000110', 'end_ticks=729000109'),
+                        good.replace('duration_ticks=729000000', 'duration_ticks=728000000'),
+                        good.replace('cycles_late=10', 'cycles_late=-1'),
+                        good.replace('release=1', 'release=0'),
+                        good.replace('end_ticks=729000110', 'end_ticks=730000100').replace(
+                            'cycles_late=10', 'cycles_late=1000000')):
+                (root/'hold.txt').write_text(bad)
+                with self.subTest(bad=bad), self.assertRaises(RuntimeError):
+                    mod.validate_timed_inputs(root, [command])
+            (root/'hold.txt').write_text(good)
+            mod.validate_timed_inputs(root, [command])
+            with self.assertRaises(RuntimeError):
+                mod.validate_timed_inputs(root, [command, command])
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

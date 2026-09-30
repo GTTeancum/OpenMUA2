@@ -18,6 +18,7 @@ enum class CommandType
   Pad,
   PadFrames,
   XboxFrames,
+  XboxTime,
   ClearPad,
   Pause,
   Resume,
@@ -49,6 +50,7 @@ struct Command
   std::uint32_t address = 0;
   std::uint32_t size = 0;
   std::uint32_t frames = 0;
+  std::uint32_t milliseconds = 0;
   // pad_frames may retain a chord across captures and following commands.
   bool release_pad = true;
   std::vector<std::uint8_t> data;

@@ -1,0 +1,11 @@
+{
+  "restored_frame_min": 12500,
+  "commands": [
+    {"command": "screenshot", "path": "shots/00-start.png"},
+    {"command": "xbox_time", "port": 0, "milliseconds": 2000, "left_left": 1, "path": "movement-timing.txt"},
+    {"command": "screenshot", "path": "shots/01-movement.png"},
+    {"command": "xbox_time", "port": 0, "milliseconds": 500, "path": "neutral-timing.txt"},
+    {"command": "screenshot", "path": "shots/02-neutral.png"},
+    {"command": "read_timing", "path": "measurement-end.txt"}
+  ]
+}

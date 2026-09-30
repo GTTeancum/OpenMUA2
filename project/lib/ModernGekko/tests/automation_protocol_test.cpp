@@ -271,6 +271,22 @@ int main()
     }
     if (automation::ParseCommandFile(commands / "xbox.txt", &command, &error)) return 31;
   }
+  {
+    std::ofstream output(commands / "xbox.txt");
+    output << "command=xbox_time\nport=0\nmilliseconds=1250\npath=hold.txt\nleft_right=0.5\n";
+  }
+  if (!automation::ParseCommandFile(commands / "xbox.txt", &command, &error) ||
+      command.type != automation::CommandType::XboxTime || command.milliseconds != 1250 ||
+      command.frames != 0 || command.path != "hold.txt" || !command.release_pad) return 32;
+  for (const char* invalid : {"milliseconds=0\npath=hold.txt", "milliseconds=600001\npath=hold.txt",
+                             "milliseconds=-1\npath=hold.txt", "milliseconds=5",
+                             "milliseconds=5\npath=hold.txt\nframes=5"}) {
+    {
+      std::ofstream output(commands / "xbox.txt");
+      output << "command=xbox_time\nport=0\n" << invalid << '\n';
+    }
+    if (automation::ParseCommandFile(commands / "xbox.txt", &command, &error)) return 33;
+  }
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return 0;

@@ -163,6 +163,7 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
 {
   const std::string text = Trim(value);
   if (text == "xbox_frames") return CommandType::XboxFrames;
+  if (text == "xbox_time") return CommandType::XboxTime;
   if (text == "pad")
     return CommandType::Pad;
   if (text == "pad_frames")
@@ -478,19 +479,34 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
   switch (*type)
   {
   case CommandType::XboxFrames:
+  case CommandType::XboxTime:
   {
+    const bool timed = *type == CommandType::XboxTime;
+    const std::string duration_key = timed ? "milliseconds" : "frames";
     const auto port = values.find("port");
-    const auto frames = values.find("frames");
+    const auto frames = values.find(duration_key);
     if (port == values.end() || frames == values.end() || !ParsePort(port->second) ||
         !ParseUnsigned(frames->second) || *ParseUnsigned(frames->second) == 0 ||
-        *ParseUnsigned(frames->second) > 36000) {
-      if (error) *error = "xbox_frames requires port=0..3 and frames=1..36000";
+        *ParseUnsigned(frames->second) > (timed ? 600000u : 36000u)) {
+      if (error) *error = timed ? "xbox_time requires port=0..3 and milliseconds=1..600000" :
+                                 "xbox_frames requires port=0..3 and frames=1..36000";
       return false;
     }
     parsed.pad.port = *ParsePort(port->second);
-    parsed.frames = *ParseUnsigned(frames->second);
+    if (timed) {
+      parsed.milliseconds = *ParseUnsigned(frames->second);
+      const auto path = values.find("path");
+      if (path == values.end() || Trim(path->second).empty()) {
+        if (error) *error = "xbox_time requires path=<timing receipt>";
+        return false;
+      }
+      parsed.path = Trim(path->second);
+    } else {
+      parsed.frames = *ParseUnsigned(frames->second);
+    }
     for (const auto& [key, value] : values) {
-      if (key == "command" || key == "port" || key == "frames") continue;
+      if (key == "command" || key == "port" || key == duration_key ||
+          (timed && key == "path")) continue;
       if (key == "release" && (value == "0" || value == "1")) {
         parsed.release_pad = value == "1";
         continue;
