@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "Core/PowerPC/JitCommon/SimpleFormat.h"
+#include "Core/PowerPC/JitCommon/SimpleFormatContract.h"
 
 int main()
 {
@@ -101,5 +102,30 @@ int main()
       [](u8, std::span<u8> target) -> std::optional<u32> {
         target[0] = 'x'; return {}; // Failed reader cannot partially publish output.
       }) || rejected != untouched) return 10;
+  // Realistic disjoint stack/output/format, then argument aliasing, boundary
+  // overlap, misalignment and 32-bit wrap cases that must retain original code.
+  constexpr u32 sp = 0x817fe000, destination = 0x806b3af0, text = 0x80500000;
+  if (!JitCommon::SimpleFormatLayoutSafe(sp, destination, text, sp + 0x68)) return 11;
+  for (const u32 alias : {sp, sp + 8, sp + 0x68, sp + 0x97, sp - 511})
+    if (JitCommon::SimpleFormatLayoutSafe(sp, destination, alias, sp + 0x68)) return 12;
+  for (const u32 alias : {sp, sp + 8, sp + 0x97, sp - 1023})
+    if (JitCommon::SimpleFormatLayoutSafe(sp, alias, text, sp + 0x68)) return 13;
+  if (JitCommon::SimpleFormatLayoutSafe(sp + 8, destination, text, sp + 0x70) ||
+      JitCommon::SimpleFormatLayoutSafe(0xfffffff0, destination, text, 0x58) ||
+      JitCommon::SimpleFormatLayoutSafe(sp, destination, destination + 1023, sp + 0x68) ||
+      !JitCommon::SimpleFormatRangesDisjoint(0x1000, 16, 0x1010, 16) ||
+      JitCommon::SimpleFormatRangesDisjoint(0xfffffff0, 32, 0x1000, 16)) return 14;
+  if (JitCommon::SimpleFormatPreservedStateChanged(0x1ff9, 3, 3, 0xe3)) return 15;
+  for (u32 i = 0; i < 32; ++i)
+  {
+    const bool preserved_gpr = i == 1 || i == 2 || i >= 13;
+    const bool preserved_fpr = i >= 14;
+    if (JitCommon::SimpleFormatPreservedStateChanged(u32{1} << i, 0, 0, 0) != preserved_gpr ||
+        JitCommon::SimpleFormatPreservedStateChanged(0, u32{1} << i, 0, 0) != preserved_fpr ||
+        JitCommon::SimpleFormatPreservedStateChanged(0, 0, u32{1} << i, 0) != preserved_fpr) return 16;
+  }
+  for (u32 i = 0; i < 8; ++i)
+    if (JitCommon::SimpleFormatPreservedStateChanged(0, 0, 0, u32{1} << i) !=
+        (i >= 2 && i <= 4)) return 17;
   return 0;
 }

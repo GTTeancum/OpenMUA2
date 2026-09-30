@@ -100,7 +100,7 @@ class DiagnosticArgumentsTest(unittest.TestCase):
 
     def test_formatter_summary_must_prove_requested_mode_and_clean_comparisons(self):
         good = ('Simple formatter: mode=shadow eligible=12 replaced=0 compared=12 '
-                'mismatches=0 fpscr_mismatches=0 abandoned=0 pending=0')
+                'mismatches=0 fpscr_mismatches=0 abi_mismatches=0 abandoned=0 pending=0')
         mod.validate_formatter(good, 'shadow')
         mod.validate_formatter(good.replace('compared=12', 'compared=11').replace(
             'pending=0', 'pending=1'), 'shadow')
@@ -112,6 +112,8 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                     good.replace('eligible=12', 'eligible=0'),
                     good.replace('pending=0', 'pending=1'),
                     good.replace('abandoned=0', 'abandoned=1'),
+                    good.replace('abi_mismatches=0', 'abi_mismatches=1'),
+                    good.replace(' abi_mismatches=0', ''),
                     good.replace('mismatches=0', 'mismatches=1')):
             with self.subTest(bad=bad), self.assertRaises(RuntimeError):
                 mod.validate_formatter(bad, 'shadow')

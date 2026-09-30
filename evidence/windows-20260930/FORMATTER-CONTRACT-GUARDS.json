@@ -1,0 +1,327 @@
+{
+  "schema": 1,
+  "base_commit": "7fb5a4db057af071b4ffdded93812e713c9886e5",
+  "goal_complete": false,
+  "scope": "Formatter guard and ABI shadow validation; not sustained FPS acceptance",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 39,
+    "native_tests_seconds": 7.67,
+    "tooling_tests_run": 138,
+    "tooling_tests_passed": 137,
+    "tooling_tests_skipped": 1,
+    "tooling_seconds": 20.896,
+    "local_enable_lto": true,
+    "source_enable_lto_default": false,
+    "compiler_warnings": [],
+    "errors": [],
+    "cmake_warnings": [
+      "Deprecated policies/minimum versions",
+      "Wayland unavailable on Windows",
+      "Long object paths",
+      "lz4 CMP0069 IPO property ignored"
+    ],
+    "log_sha256": "5455f48442be093f726ec684e42df0d3769dbd3de73ca3b099abb34415ed146d",
+    "linked_outputs": [
+      "moderngekko_missing_export_module.dll",
+      "moderngekko_simple_format_test.exe",
+      "moderngekko_xbox_action_profile_test.exe",
+      "moderngekko-module-info.exe",
+      "moderngekko_netplay_protocol_test.exe",
+      "moderngekko_nunchuk_input_test.exe",
+      "moderngekko-run.exe",
+      "moderngekko_audio_mixer_benchmark.exe",
+      "moderngekko-port.exe",
+      "ModernGekko.exe"
+    ]
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16056832,
+      "sha256": "1c0705988a538e90b82decbb7c8f5cb4808445d0d18499a3ca905425e43d9a4e"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "502be10272d4edd5738ca67b5c4022039319d4e94ed9ffbc92b2303df8aeba83"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "6a729a56f6d5ff3303c54e88a243b005d0b987b840a23ed68906df22ee03ab81"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12199424,
+      "sha256": "5a6474ad838e6d4e82803ea1965feda382a08fa1d1f786f654b6d24bfad5a594"
+    }
+  },
+  "runs": [
+    {
+      "label": "shadow",
+      "exit_code": 0,
+      "formatter_summary": "Simple formatter: mode=shadow entries=506393 eligible=469646 replaced=0 compared=469646 mismatches=0 guard_rejects=3334 unsupported=33413 abandoned=0 pending=0 floating=179931 fpscr_mismatches=0 abi_mismatches=0 changed_gpr=00001ff9 changed_ps0=00000003 changed_ps1=00000000 changed_cr=23",
+      "settings": {
+        "cpu": "jit",
+        "resolution": "1920x1080",
+        "simple_format": "shadow",
+        "host_logical_processors_required": 1,
+        "audio_profile": true,
+        "audio_capture": false,
+        "screenshots": true
+      },
+      "private_directory": ".local/automation/formatter-contract-shadow-20260930",
+      "audio_profile": {
+        "0": {
+          "seconds": 14,
+          "empty_dequeues": 75,
+          "max_callback_gap_ms": 0.0
+        },
+        "1": {
+          "seconds": 14,
+          "empty_dequeues": 86,
+          "max_callback_gap_ms": 0.0
+        },
+        "11": {
+          "seconds": 14,
+          "empty_dequeues": 0,
+          "max_callback_gap_ms": 11.6725
+        }
+      },
+      "audio_scope": "Cubeb muted; seconds >=2 excluding last bucket, not aligned to FPS window. 0=DMA,1=streaming,11=callback. Empty mixer dequeues are not device underruns or audible clicks.",
+      "captures": [
+        {
+          "file": "00-statue.png",
+          "sha256": "e9071eb0d978549a9a5abaf975bccb9f45f35b0591f243dd353a4a855f4cb348"
+        },
+        {
+          "file": "01-combat.png",
+          "sha256": "396fd72cc7ae278dfc9db347322be25d67551e6c063b37b94dc46545d9d60a22"
+        },
+        {
+          "file": "02-combat.png",
+          "sha256": "2cc0fdcbd00aea71b0b23ff977715dd6673eadd8187fd1ec54801d1fc63cda42"
+        },
+        {
+          "file": "03-combat.png",
+          "sha256": "edfc8cdfd844c17ddf2a770f24e6e32229eebf5bcf99ab86fb596dbdb8366688"
+        },
+        {
+          "file": "04-combat.png",
+          "sha256": "e3d811a2ac3425982cf2858c22d2b00832f09806a6690257a4f998b9b6252e0d"
+        }
+      ],
+      "artifact_sha256": {
+        "runtime.log": "2306fac81556d8b4129ec8e899d87221fbf338a08f4053fc27c440ebd77abf2d",
+        "frames.csv": "1978e1ad8b79ff08c3caf242e298a045e75c9266e7da598523b83be3ed7f5e09",
+        "run.json": "2b6f619384d01d0b33fc2553dd47b22f971ff6c03f3f7781e1f6d4f4d323d376",
+        "result.json": "3e16cb1323c21acd5a8aeb31bb440be0612e2a82c11791a6c5c4f0c77ddfd302",
+        "audio-profile.csv": "cbec7e8c96a16d3979be177f83d5a4af1053240a26026e8da1adbc039f7be097"
+      },
+      "visual_review": "All five captures inspected sequentially: statue/street, Doombots, heroes, HUD, damage and hit effects. Spider-Man initially tree-occluded then visible fighting; health becomes low, statue intact."
+    },
+    {
+      "label": "candidate",
+      "exit_code": 0,
+      "formatter_summary": "Simple formatter: mode=on entries=512583 eligible=475169 replaced=475169 compared=0 mismatches=0 guard_rejects=2470 unsupported=34944 abandoned=0 pending=0 floating=174832 fpscr_mismatches=0 abi_mismatches=0 changed_gpr=00000000 changed_ps0=00000000 changed_ps1=00000000 changed_cr=00",
+      "settings": {
+        "cpu": "jit",
+        "resolution": "1920x1080",
+        "simple_format": "on",
+        "host_logical_processors_required": 1,
+        "audio_profile": true,
+        "audio_capture": true,
+        "screenshots": true
+      },
+      "private_directory": ".local/automation/formatter-contract-candidate-20260930",
+      "audio_profile": {
+        "0": {
+          "seconds": 12,
+          "empty_dequeues": 59,
+          "max_callback_gap_ms": 0.0
+        },
+        "1": {
+          "seconds": 12,
+          "empty_dequeues": 57,
+          "max_callback_gap_ms": 0.0
+        },
+        "11": {
+          "seconds": 12,
+          "empty_dequeues": 0,
+          "max_callback_gap_ms": 12.4151
+        }
+      },
+      "audio_scope": "Cubeb muted; seconds >=2 excluding last bucket, not aligned to FPS window. 0=DMA,1=streaming,11=callback. Empty mixer dequeues are not device underruns or audible clicks.",
+      "captures": [
+        {
+          "file": "00-statue.png",
+          "sha256": "e50e2c9ec5644a914edce30c234b8e94fe12ba9aa98211b43cc208a3b5fbaff2"
+        },
+        {
+          "file": "01-combat.png",
+          "sha256": "9550e058dc0e2cbcfe6d8c48ab2611fe6e230ced36220f4485ac57aab2b3c399"
+        },
+        {
+          "file": "02-combat.png",
+          "sha256": "5bb30480d9e09c86fd8042818b9bfa5a0a34fdf0559df54189113073d48aab01"
+        },
+        {
+          "file": "03-combat.png",
+          "sha256": "affe2c55cf2d604dd78b7dc905eb0bb2b7df4f362c6619f9fc102780e7f9e11a"
+        },
+        {
+          "file": "04-combat.png",
+          "sha256": "a4b37891f453faced6741da70c66da422432cf859458084c4bc16c57bdb722f6"
+        }
+      ],
+      "artifact_sha256": {
+        "runtime.log": "408b7783e483003cf88e8abd17ca810067baf54d26659e8525116b91ae57b1a0",
+        "frames.csv": "5bf7bd33cafd985d3ccb9135f928b5c75faf2e3f6a3e464bbfbeebed91120c7e",
+        "run.json": "8e4c02471103cb2e79d0a6b6ab2c4167b6fb35c7364d1e5a5c1aa1a4b21425d5",
+        "result.json": "6e09fda3eb9a4414a1b75f412d9641dd26c6bd7c0977b7329b161a91bc84e048",
+        "audio-profile.csv": "559d3430bc7a94d7056e6029172464242698d7beaec1caa1ab7844115e944592"
+      },
+      "visual_review": "All five captures inspected sequentially: scene, team, enemies, HUD and hit/debris effects present. Spider-Man heavily tree-occluded and revive indicator appears by capture 02; route unsuitable for sustained controlled combat. No determinism or regression conclusion from divergent trajectories.",
+      "private_audio_capture": {
+        "frames": 693696,
+        "sample_rate": 48000,
+        "channels": 2,
+        "sample_width_bytes": 2,
+        "seconds": 14.452,
+        "sha256": "ea87b146b07bece52cec3daa403eb83071d0afa9b189b2136d830438981bc2c1",
+        "scope": "Pre-volume mixer PCM, not device playback. Captured and structurally validated; not listened to. Crackling unresolved."
+      }
+    },
+    {
+      "label": "timing",
+      "exit_code": 0,
+      "formatter_summary": "Simple formatter: mode=on entries=518240 eligible=480928 replaced=480928 compared=0 mismatches=0 guard_rejects=2315 unsupported=34997 abandoned=0 pending=0 floating=178540 fpscr_mismatches=0 abi_mismatches=0 changed_gpr=00000000 changed_ps0=00000000 changed_ps1=00000000 changed_cr=00",
+      "settings": {
+        "cpu": "jit",
+        "resolution": "1920x1080",
+        "simple_format": "on",
+        "host_logical_processors_required": 1,
+        "audio_profile": true,
+        "audio_capture": false,
+        "screenshots": false
+      },
+      "private_directory": ".local/automation/formatter-contract-timing-20260930",
+      "audio_profile": {
+        "0": {
+          "seconds": 10,
+          "empty_dequeues": 0,
+          "max_callback_gap_ms": 0.0
+        },
+        "1": {
+          "seconds": 10,
+          "empty_dequeues": 1,
+          "max_callback_gap_ms": 0.0
+        },
+        "11": {
+          "seconds": 10,
+          "empty_dequeues": 0,
+          "max_callback_gap_ms": 10.7608
+        }
+      },
+      "audio_scope": "Cubeb muted; seconds >=2 excluding last bucket, not aligned to FPS window. 0=DMA,1=streaming,11=callback. Empty mixer dequeues are not device underruns or audible clicks.",
+      "captures": [],
+      "artifact_sha256": {
+        "runtime.log": "4da5deec160aa2f5551424552526062bc4cf6225f8c987e906cc23f70cdf0403",
+        "frames.csv": "f633ba213db47ffb67c8190f0b21e259efb8692af27430078be97e034bb491b2",
+        "run.json": "d76c143351874a29b81e520ddac25bb318613cce035b1cf24701e4ba7463422e",
+        "result.json": "eb5fbb8e62171a25ed1a9fb7c022f32a44f92186fe69009abe3dcde41893d89d",
+        "audio-profile.csv": "477b2401b353402b6d51541a8c8863f8688d64d563f0dbe2b46505b53956aecc"
+      },
+      "timing": {
+        "0": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14562,
+          "last_frame": 14906,
+          "emulated_ticks": 8355397050,
+          "intervals": 344,
+          "seconds": 11.6650704,
+          "average_fps": 29.489749157450436,
+          "frame_ms": {
+            "median": 33.3464999999995,
+            "p95": 38.6495,
+            "p99": 50.37970000000014,
+            "max": 272.4009
+          },
+          "one_percent_low_fps": 8.876761260393573,
+          "rolling_1s_fps_min": 24,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 178,
+          "frames_over_50ms": 4,
+          "longest_consecutive_over_50ms_seconds": 0.3394475,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 11.461450000000001,
+          "emulation_speed_percent": 98.25444345368034,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "16.683": 1,
+            "33.367": 343
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.020166666667167932,
+            "p99": 17.013033333333468,
+            "min": -13.183866666666614,
+            "max": 255.71756666666667
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "2": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14617,
+          "last_frame": 14906,
+          "emulated_ticks": 7029722700,
+          "intervals": 289,
+          "seconds": 9.6462188,
+          "average_fps": 29.95992585198254,
+          "frame_ms": {
+            "median": 33.36320000000015,
+            "p95": 36.463900000001104,
+            "p99": 46.3252999999999,
+            "max": 47.44810000000044
+          },
+          "one_percent_low_fps": 21.341513298252583,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 158,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 9.642966666666668,
+          "emulation_speed_percent": 99.9662859261151,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 289
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0034666666665211787,
+            "p99": 12.958633333333234,
+            "min": -9.515766666667327,
+            "max": 14.081433333333768
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Formatter remains default off. ABI observations are not full architectural or interrupt/timing equivalence. Caller epilogue and existing formatter region are hashed; this is not full transitive helper-code coverage.",
+    "Short queued routes use rendered-frame input durations, so original/candidate holds differ in game time. Need guest-clock input timing before world-speed comparison.",
+    "Screenshots and PCM capture are intrusive; only separate no-screenshot/no-PCM timing run is summarized for pacing, still with audio diagnostics.",
+    "Three qualifying repeats and ten-minute varied combat remain outstanding; normal game-clock settings alone do not establish normal world speed under the replacement."
+  ],
+  "counter_scope": "Run-wide counters include boot/restore and the queued combat route, not only the timed combat window."
+}

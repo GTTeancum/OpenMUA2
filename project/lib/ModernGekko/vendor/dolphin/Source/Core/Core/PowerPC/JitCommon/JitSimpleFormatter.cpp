@@ -17,6 +17,7 @@
 #include "Core/HW/Memmap.h"
 #include "Core/PowerPC/BreakPoints.h"
 #include "Core/PowerPC/JitCommon/SimpleFormat.h"
+#include "Core/PowerPC/JitCommon/SimpleFormatContract.h"
 #include "Core/PowerPC/MMU.h"
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/System.h"
@@ -27,6 +28,12 @@ constexpr u32 ENTRY = 0x803c63bc;
 constexpr u32 RETURN = 0x801e844c;
 constexpr u32 CODE_BEGIN = 0x803c57c8;
 constexpr u32 CODE_SIZE = 3196;
+// Protect the caller epilogue on which the function-level ABI contract relies,
+// not just the formatter body. Keep these checks live, including in shadow mode.
+constexpr u32 RETURN_SIZE = 40;
+constexpr Common::SHA1::Digest RETURN_HASH = {
+    0xa5, 0x55, 0x4e, 0x8a, 0x55, 0xfd, 0xf4, 0xed, 0x16, 0x82,
+    0x1d, 0x75, 0x88, 0x20, 0xd4, 0xad, 0x54, 0xe5, 0x70, 0xeb};
 constexpr Common::SHA1::Digest CODE_HASH = {
     0x59, 0x8f, 0x6c, 0x17, 0xb1, 0xe0, 0xe7, 0x16, 0xfa, 0x9a,
     0xda, 0xc8, 0xe1, 0xbb, 0xc3, 0x03, 0x2e, 0xcc, 0x18, 0xdc};
@@ -91,11 +98,11 @@ void JitSimpleFormatter::Finish()
   if (m_mode != Mode::Disabled)
     fmt::print(stderr, "Simple formatter: mode={} entries={} eligible={} replaced={} "
                        "compared={} mismatches={} guard_rejects={} unsupported={} "
-                       "abandoned={} pending={} floating={} fpscr_mismatches={} "
+                       "abandoned={} pending={} floating={} fpscr_mismatches={} abi_mismatches={} "
                        "changed_gpr={:08x} changed_ps0={:08x} changed_ps1={:08x} changed_cr={:02x}\n",
                  m_mode == Mode::Shadow ? "shadow" : "on", m_entries, m_eligible, m_replaced,
                  m_compared, m_mismatches, m_guard_rejects, m_unsupported, m_abandoned, m_pending.size(),
-                 m_floating, m_fpscr_mismatches, m_changed_gpr, m_changed_ps0, m_changed_ps1,
+                 m_floating, m_fpscr_mismatches, m_abi_mismatches, m_changed_gpr, m_changed_ps0, m_changed_ps1,
                  m_changed_cr);
 }
 
@@ -120,20 +127,28 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
       // Aggregate register numbers only, never guest register contents. This
       // exposes state clobbered by the original that the replacement preserves;
       // an output-byte match alone cannot establish caller-state equivalence.
+      u32 changed_gpr = 0, changed_ps0 = 0, changed_ps1 = 0, changed_cr = 0;
       for (u32 i = 0; i < 32; ++i)
       {
-        if (state.gpr[i] != it->gpr[i]) m_changed_gpr |= u32{1} << i;
-        if (state.ps[i].PS0AsU64() != it->ps0[i]) m_changed_ps0 |= u32{1} << i;
-        if (state.ps[i].PS1AsU64() != it->ps1[i]) m_changed_ps1 |= u32{1} << i;
+        if (state.gpr[i] != it->gpr[i]) changed_gpr |= u32{1} << i;
+        if (state.ps[i].PS0AsU64() != it->ps0[i]) changed_ps0 |= u32{1} << i;
+        if (state.ps[i].PS1AsU64() != it->ps1[i]) changed_ps1 |= u32{1} << i;
       }
       for (u32 i = 0; i < 8; ++i)
-        if (state.cr.GetField(i) != it->cr[i]) m_changed_cr |= u32{1} << i;
+        if (state.cr.GetField(i) != it->cr[i]) changed_cr |= u32{1} << i;
+      m_changed_gpr |= changed_gpr;
+      m_changed_ps0 |= changed_ps0;
+      m_changed_ps1 |= changed_ps1;
+      m_changed_cr |= changed_cr;
+      const bool abi_mismatch = JitCommon::SimpleFormatPreservedStateChanged(
+          changed_gpr, changed_ps0, changed_ps1, changed_cr);
+      m_abi_mismatches += abi_mismatch;
       if (state.fpscr.Hex != it->fpscr)
         ++m_fpscr_mismatches;
       if (!output || !arguments || state.gpr[3] != it->length ||
           std::memcmp(output, it->expected.data(), it->expected.size()) ||
           std::memcmp(arguments, it->argument_state.data(), it->argument_state.size()) ||
-          state.fpscr.Hex != it->fpscr)
+          state.fpscr.Hex != it->fpscr || abi_mismatch)
         ++m_mismatches;
       m_pending.erase(it);
     }
@@ -149,7 +164,9 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
   if (LR(state) != RETURN || state.gpr[4] != 1024 ||
       destination < 0x806b3af0 || destination >= 0x806b4af0 ||
       (destination - 0x806b3af0) % 1024 || !format || !output || !arguments ||
-      state.gpr[6] != state.gpr[1] + 0x68 ||
+      !JitCommon::SimpleFormatLayoutSafe(state.gpr[1], destination, format_address, state.gpr[6]) ||
+      !DirectRAM(system, state.gpr[1], 0x98) ||
+      !state.msr.FP || state.msr.FE0 || state.msr.FE1 ||
       state.m_enable_dcache || system.GetPowerPC().GetMemChecks().HasAny() ||
       (format_address < destination + 1024 && destination < format_address + 512))
   {
@@ -252,7 +269,9 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
     return false;
   }
   const auto* code = DirectRAM(system, CODE_BEGIN, CODE_SIZE, true);
-  if (!code || Common::SHA1::CalculateDigest(code, CODE_SIZE) != CODE_HASH)
+  const auto* caller = DirectRAM(system, RETURN, RETURN_SIZE, true);
+  if (!code || Common::SHA1::CalculateDigest(code, CODE_SIZE) != CODE_HASH ||
+      !caller || Common::SHA1::CalculateDigest(caller, RETURN_SIZE) != RETURN_HASH)
   {
     ++m_guard_rejects;
     return false;

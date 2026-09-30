@@ -2,6 +2,42 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Formatter contract guards and combat shadow validation - 2026-09-30
+
+The default-off formatter now hashes the known caller epilogue as well as its
+existing formatter region. It rejects overlapping format/output/caller-frame
+storage, wrapped or misaligned frames, unavailable FPU and enabled FP exception
+modes. Shadow validation explicitly fails on changed caller-preserved GPR/FPR/CR
+state; the benchmark requires the new ABI mismatch counter. Volatile differences
+remain diagnostic. These checks do not establish interrupt/timing equivalence or
+full transitive helper-code identity; the experiment is still default OFF.
+
+Supported Windows build exited 0: 39/39 native tests in 7.67s. Tooling: 138 run,
+137 passed, one skipped in 20.896s. No compiler warnings/errors. Existing CMake
+deprecation, Wayland, long-path and lz4 CMP0069 IPO warnings remain. Local LTO
+cache remains ON, source default OFF. Produced runtime binaries include
+moderngekko-run.exe, moderngekko-port.exe and moderngekko-module-info.exe.
+
+Combat shadow: 469646 completed comparisons, 179931 floating calls, zero output,
+FPSCR or preserved-register mismatches, zero pending/abandoned. All five shadow
+and five replacement captures inspected sequentially: scene/HUD/enemies and hit
+effects present. Replacement Spider-Man becomes downed behind the tree; this is
+not a suitable sustained-combat route. All three runs exited 0. The separate
+no-screenshot/no-PCM timing run measured 29.9599 FPS after two seconds, P99
+46.3253ms, worst 47.4481ms, lowest rolling second 29, guest speed 99.9663%.
+Cold restore maximum was 272.4009ms. This is one short diagnostic, not acceptance
+or a new substantial performance gain. Cubeb enabled/muted; private pre-volume
+PCM captured in the visual run, structurally checked but not listened to. Audio
+crackling and device playback remain unverified.
+
+Next fix the measurement limitation: xbox_frames holds for newly rendered frames,
+so at 25 versus 30 FPS the input lasts different amounts of game time. Add
+guest-clock input timing for movement/animation speed comparison, then broaden
+correctness and varied combat validation. Goal active/unmet; three qualifying
+repeats and ten-minute varied combat remain required. Evidence and binary hashes:
+evidence/windows-20260930/FORMATTER-CONTRACT-GUARDS.json. Proprietary outputs stay
+private; unfinished static work remains untouched.
+
 ## Original formatter combat cadence - 2026-09-30
 
 The earlier near-30 statue/LTO measurements below used the opt-in formatter

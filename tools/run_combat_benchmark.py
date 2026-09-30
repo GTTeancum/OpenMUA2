@@ -130,11 +130,11 @@ def validate_formatter(log, mode):
     if fields.get('mode') != mode: raise RuntimeError('formatter mode mismatch')
     try:
         values = {key: int(fields[key]) for key in ('eligible', 'replaced', 'compared',
-                  'mismatches', 'fpscr_mismatches', 'abandoned', 'pending')}
+                  'mismatches', 'fpscr_mismatches', 'abi_mismatches', 'abandoned', 'pending')}
     except (KeyError, ValueError) as exc:
         raise RuntimeError('incomplete formatter counters') from exc
     if values['eligible'] <= 0 or any(values[k] != 0 for k in
-            ('mismatches', 'fpscr_mismatches', 'abandoned')):
+            ('mismatches', 'fpscr_mismatches', 'abi_mismatches', 'abandoned')):
         raise RuntimeError('formatter comparison failed or no eligible calls')
     active, inactive = ('compared', 'replaced') if mode == 'shadow' else ('replaced', 'compared')
     # Shutdown may interrupt an original call. Account for it explicitly without

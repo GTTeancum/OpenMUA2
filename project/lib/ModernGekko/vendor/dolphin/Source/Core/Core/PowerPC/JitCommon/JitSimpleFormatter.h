@@ -55,5 +55,6 @@ private:
   u64 m_abandoned = 0;
   u64 m_floating = 0;
   u64 m_fpscr_mismatches = 0;
+  u64 m_abi_mismatches = 0;
   u32 m_changed_gpr = 0, m_changed_ps0 = 0, m_changed_ps1 = 0, m_changed_cr = 0;
 };
