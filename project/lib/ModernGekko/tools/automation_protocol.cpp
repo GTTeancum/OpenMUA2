@@ -162,6 +162,7 @@ std::optional<std::vector<std::uint8_t>> ParseHexBytes(std::string_view value)
 std::optional<CommandType> ParseCommandType(std::string_view value)
 {
   const std::string text = Trim(value);
+  if (text == "xbox_frames") return CommandType::XboxFrames;
   if (text == "pad")
     return CommandType::Pad;
   if (text == "pad_frames")
@@ -476,6 +477,37 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
 
   switch (*type)
   {
+  case CommandType::XboxFrames:
+  {
+    const auto port = values.find("port");
+    const auto frames = values.find("frames");
+    if (port == values.end() || frames == values.end() || !ParsePort(port->second) ||
+        !ParseUnsigned(frames->second) || *ParseUnsigned(frames->second) == 0 ||
+        *ParseUnsigned(frames->second) > 36000) {
+      if (error) *error = "xbox_frames requires port=0..3 and frames=1..36000";
+      return false;
+    }
+    parsed.pad.port = *ParsePort(port->second);
+    parsed.frames = *ParseUnsigned(frames->second);
+    for (const auto& [key, value] : values) {
+      if (key == "command" || key == "port" || key == "frames") continue;
+      if (key == "release" && (value == "0" || value == "1")) {
+        parsed.release_pad = value == "1";
+        continue;
+      }
+      const auto field = std::ranges::find(XboxFieldNames, key);
+      double number = 0;
+      const auto result = std::from_chars(value.data(), value.data() + value.size(), number);
+      if (field == XboxFieldNames.end() || result.ec != std::errc{} ||
+          result.ptr != value.data() + value.size() || !std::isfinite(number) ||
+          number < 0 || number > 1) {
+        if (error) *error = "unknown or invalid Xbox input: " + key;
+        return false;
+      }
+      parsed.xbox[static_cast<std::size_t>(field - XboxFieldNames.begin())] = number;
+    }
+    break;
+  }
   case CommandType::Pad:
     if (!ParsePadCommand(values, &parsed, false, error))
       return false;

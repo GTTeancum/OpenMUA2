@@ -2,6 +2,61 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Xbox controls and failed user playtest — 2026-09-30
+
+The physical Xbox One controller was detected, but the first manual launch used
+the old generic mapping and a combat savestate. The user reported wrong controls,
+roughly 17–18 FPS and poor audio, and deferred further playtesting. That FPS is
+user-observed, not an instrumented interval. Earlier short 27–29 FPS results do
+not establish playability. Sustained 30 FPS and acceptable audio remain unmet.
+
+New profiles map actions: A attack/confirm, B heavy/back, X grab, Y jump, LB
+block/use, Start pause, RB+face powers and right-stick camera rotation. Power
+chords suppress ordinary face actions. LT/RT cycle heroes temporarily; D-pad
+still navigates menus/activates direct powers. Direct D-pad hero selection and
+contextual X use remain open. Physical Wiimotes are not a supported port target;
+physical motion and IR pass-through bindings were removed. Existing custom
+profiles are preserved, and fresh CLI profiles select a connected SDL gamepad.
+
+Fusion now has a gamepad-only candidate: LB+RB generates the internal request;
+face buttons provide preset aiming and delayed confirmation. A captured
+Spider-Man/Captain America sequence produced 723 damage, 6 KOs and completed
+Hero Training: Fusion. The final-binary repeat produced 738 damage and 6 KOs.
+Fusion was underway before the face-selection command,
+so this does not establish every partner choice or revive behavior. Wider
+validation remains required. Original UI prompts have not been rewritten.
+
+The new process-local Xbox test device exercises the actual generated profile
+and normal controller reports. It creates no OS controller or desktop input.
+Tests cover action/chord isolation, axes, release, delayed confirmation and bad
+automation values. Native captures confirm pause/resume, hero cycling and camera
+rotation. Crowded captures do not individually prove jump, grab or every power.
+All captures are reviewed sequentially; this is sampled evidence, not every frame.
+Cubeb was active in the action probe; audible quality failed per the user report.
+The fusion probe was headless/silent and provides no FPS or audio acceptance.
+
+Windows build: Build.cmd --cpu jit --jobs 2, exit 0; 37/37 runtime tests (6.89 s),
+29 profile cases, 127 tooling tests (126 passed, 1 skipped; 24.124 s).
+No final compiler errors/warnings found; existing CMake deprecation, Wayland and
+object-path warnings remain. An intermediate diagnostic compile error was fixed.
+Artifact hashes and scoped results: evidence/windows-20260930/XBOX-CONTROLS.json.
+
+Future manual launches must use normal boot/title, without --load-state. The
+requested relaunch was deferred after the user's FPS/audio feedback. No game is
+left running. Normal startup with the new profile is not newly visually verified.
+Before another manual test, select the new generated Xbox profile explicitly;
+existing old profiles were preserved and are not silently migrated.
+One logical processor, Vulkan, 3x EFB, widescreen and formatter default-off remain.
+
+Resolution correction: 1920x1080 names the 3x EFB preset, not a fixed output size.
+Earlier measured EFB: 1920x1584; raw game frame: 1920x1410; window image excluding
+borders: 1536x866. The 2501x1410 PNGs are aspect-corrected native captures.
+
+Next: correlate sustained frame times/guest speed with audio starvation and CPU
+costs under the whole-process one-core limit, then close remaining control gaps.
+Private assets, saves, captures and logs stay in .local. User StaticRecomp edits,
+Build-With-Log.cmd and the unfinished static experiment stash remain preserved.
+
 ## Whole-process one-core correction — 2026-09-30
 
 The user's requirement is to run the entire game on one CPU core. The earlier
@@ -101,7 +156,7 @@ measured 25.9815 versus 26.3175 FPS and was insufficient by itself.
 
 All 18 native captures from these six short runs were inspected sequentially:
 heroes/Doombots, attacks, beam/impact effects, damage, street/building/tree scenery,
-HUD and fusion tutorial were visible. Actual window captures are 2501x1410.
+HUD and fusion tutorial were visible. Aspect-corrected native captures are 2501x1410 (not window dimensions).
 This is sampled visual evidence, not every frame. Mid-route capture can add
 stalls. Cubeb activation is confirmed; audible quality/synchronization is unverified.
 

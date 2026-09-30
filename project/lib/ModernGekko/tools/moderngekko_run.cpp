@@ -465,6 +465,20 @@ int RunMain(int argc, char **argv) {
     config.mod_directories.push_back(config.user_directory / "Mods");
   }
 
+  if (!netplay_role && frontend_config.controller.empty() &&
+      !moderngekko::frontend::ControllerConfigExists(config.user_directory)) {
+    // First-run CLI launches have no launcher-selected controller. Select a
+    // connected gamepad, while leaving existing/custom profiles untouched.
+    if (SDL_InitSubSystem(SDL_INIT_GAMEPAD)) {
+      for (const auto& controller : EnumerateControllers()) {
+        if (controller.gamepad) {
+          frontend_config.controller = controller.device;
+          break;
+        }
+      }
+      SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
+    }
+  }
   if (!netplay_role && !frontend_config.controller.empty()) {
     std::string controller_message;
     if (!moderngekko::frontend::EnsureControllerConfig(

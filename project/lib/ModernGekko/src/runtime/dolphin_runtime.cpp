@@ -13,6 +13,10 @@
 #include "Core/Core.h"
 #include "Core/HW/GBACore.h"
 #include "Core/HW/Memmap.h"
+#include "Core/HW/Wiimote.h"
+#include "Core/HW/WiimoteEmu/WiimoteEmu.h"
+#include "InputCommon/InputConfig.h"
+#include "InputCommon/ControllerInterface/ControllerInterface.h"
 #include "Core/Host.h"
 #include "Core/NetPlay/NetPlayClient.h"
 #include "Core/PowerPC/JitInterface.h"
@@ -168,6 +172,7 @@ struct RuntimeAutomationState
   std::uint64_t processed_commands = 0;
   std::string last_command;
   std::string last_error;
+  std::array<std::shared_ptr<automation::XboxTestDevice>, 4> xbox_devices;
 };
 
 void EnsureAutomationDirectories(const std::filesystem::path& root)
@@ -225,6 +230,7 @@ void ClearAutomationPad(int port)
 void ApplyAutomationPad(const automation::PadState& pad)
 {
   const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+  ciface::Touch::RegisterWiiInputOverrider(pad.port);
   ClearAutomationPad(pad.port);
   for (std::size_t index = 0; index < pad.controls.size(); ++index)
   {
@@ -383,6 +389,44 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   auto& system = Core::System::GetInstance();
   switch (command.type)
   {
+  case automation::CommandType::XboxFrames:
+  {
+    if (Core::GetState(system) != Core::State::Running)
+      return RuntimeError{RuntimeErrorCode::InvalidState, "xbox_frames requires a running core"};
+    const int port = command.pad.port;
+    auto& device = state.xbox_devices[port];
+    if (!device) {
+      device = std::make_shared<automation::XboxTestDevice>();
+      if (!g_controller_interface.AddDevice(device)) {
+        device.reset();
+        return RuntimeError{RuntimeErrorCode::InvalidState, "could not create process-local Xbox test device"};
+      }
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      ciface::Touch::UnregisterWiiInputOverrider(port);
+      auto* controller = Wiimote::GetConfig()->GetController(port);
+      controller->SetDefaultDevice(device->GetQualifiedName());
+      controller->UpdateReferences(g_controller_interface);
+      // Only this process-local synthetic device is mapped to the tested port.
+      Config::SetBase(Config::MAIN_INPUT_BACKGROUND_INPUT, true);
+    }
+    {
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      ciface::Touch::UnregisterWiiInputOverrider(port);
+      device->values = command.xbox;
+    }
+    auto first = state.frame_count.load(std::memory_order_relaxed);
+    while (!stop_token.stop_requested()) {
+      const auto current = state.frame_count.load(std::memory_order_relaxed);
+      if (current < first) first = current;
+      else if (current - first >= command.frames) break;
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    if (command.release_pad || stop_token.stop_requested()) {
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      device->values = {};
+    }
+    break;
+  }
   case automation::CommandType::Pad:
     ApplyAutomationPad(command.pad);
     break;
@@ -471,6 +515,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   case automation::CommandType::ReadMemory:
   case automation::CommandType::WriteMemory:
   case automation::CommandType::PadFrames:
+  case automation::CommandType::XboxFrames:
     return true;
   case automation::CommandType::Pad:
   case automation::CommandType::ClearPad:

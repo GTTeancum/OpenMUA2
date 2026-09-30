@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-30",
+  "repository": "GTTeancum/OpenMUA2",
+  "base_commit": "3f53e39e7063a4970e5c415ac13f9048b56fe9cc",
+  "goal_status": "active and unmet; user has deferred further manual playtesting",
+  "user_playtest": {
+    "result": "failed",
+    "reported_fps": "approximately 17-18; user observation, not an instrumented interval",
+    "reported_audio": "poor",
+    "reported_controls": "nearly every control wrong",
+    "runner_sha256": "82e4896d898baf8f828a69e63a4220f46823c0962247b218870b77663bfc63fc",
+    "private_session": ".local/manual-tests/20260930T171325Z",
+    "launch_error": "Used the old generic controller profile and a combat savestate instead of normal startup",
+    "future_manual_launch": "Normal boot/title without --load-state; explicitly use the new generated Xbox profile while preserving saves and custom profiles",
+    "game_left_running": false
+  },
+  "source_changes": [
+    "Generate Xbox action mappings, suppress normal face actions while using RB powers, provide right-stick camera rotation and gamepad fusion request/aim candidate",
+    "Remove physical motion/IR pass-through bindings; physical Wiimotes are not a supported target",
+    "Fresh CLI profiles can select the first connected SDL gamepad; existing profiles remain untouched",
+    "Process-local synthetic Xbox device feeds the real mapping/report path for targeted automated validation; no host OS input",
+    "Add expression-parser action isolation tests and strict automation input validation"
+  ],
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "configuration": "Windows x64 Release, Ninja, MSVC 19.44.35225.0, CMake 4.3.1",
+    "log": ".local/logs/xbox-control-checkpoint-final-build.log",
+    "runtime_tests": {"passed": 37, "failed": 0, "seconds": 6.89},
+    "profile_test": "29 action/isolation cases plus delayed fusion-confirmation assertion; included in runtime suite",
+    "tooling_tests": {
+      "command": "python -m unittest discover -s tests -v",
+      "ran": 127, "passed": 126, "skipped": 1, "failed": 0, "seconds": 24.124,
+      "log": ".local/logs/xbox-action-tooling-tests.log"
+    },
+    "final_compiler_warnings": [],
+    "final_compiler_errors": [],
+    "configure_warnings": ["Vendored CMake policy/minimum-version deprecations", "Wayland unavailable on Windows", "Long object paths"],
+    "configure_notes": ["PkgConfig executable unavailable"],
+    "intermediate_failure": "Diagnostic build failed with C2440 after command-enum returns were accidentally inserted into numeric parsers. Fixed before all subsequent successful builds; retained in .local/logs/xbox-native-validation-build.log.",
+    "worktree_note": "Build includes preserved, uncommitted user StaticRecomp edits; these are not part of this source checkpoint. Full JIT was selected.",
+    "artifacts": [
+      {"path": ".local/build/windows-x64/runtime/moderngekko-run.exe", "bytes": 15729152, "sha256": "24605cce0252a8b1e3c911323a2860acd042d7ea954bcc5610185dd0fd0ea5eb"},
+      {"path": ".local/build/windows-x64/runtime/moderngekko-port.exe", "bytes": 243200, "sha256": "3101f93ad6e4b57804f179f741f113ebdf8ff2f5216209dede5ee0dd8b3ec08f"},
+      {"path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe", "bytes": 29696, "sha256": "30965695d6e58ba0016b5fee478d275284029875f5458c7e0022a8774da695aa"},
+      {"path": ".local/build/windows-x64/runtime/ModernGekko.exe", "bytes": 11944960, "sha256": "d322913b70ecfe3f6960e5de7af2d5eaf4c2f19121dba4fa5c0d695767ba034e"}
+    ]
+  },
+  "native_validation": [
+    {
+      "private_directory": ".local/automation/xbox-actions-20260930",
+      "route_completed": true, "exit_code": 0, "elapsed_seconds": 54.609,
+      "mode": "windowed Vulkan, Cubeb, one logical CPU, 3x EFB, formatter off",
+      "capture_review": "All 13 captures (00 through 12) inspected sequentially",
+      "confirmed": ["Start opens pause menu; B resumes", "RT cycles Spider-Man to Captain America", "Right stick rotates camera in both directions", "Street scenery, heroes, enemies, effects and HUD present"],
+      "limits": "Crowding/hitstun prevents separate visual confirmation of jump, grab, block and every power; fusion did not complete in this probe. Audio backend activation does not establish audible quality. No frame-time trace."
+    },
+    {
+      "private_directory": ".local/automation/xbox-fusion-actions-20260930",
+      "route_completed": true, "exit_code": 0, "elapsed_seconds": 39.907,
+      "mode": "headless Vulkan, No Audio Output, one logical CPU, 3x EFB, formatter off",
+      "capture_review": "All four captures inspected sequentially",
+      "confirmed": "Spider-Man/Captain America fusion: 723 damage, six KOs, Hero Training: Fusion complete",
+      "limits": "Prepared savestate; fusion underway before face-selection command, so specific partner selection is not proven. No FPS/audio acceptance."
+    },
+    {
+      "private_directory": ".local/automation/xbox-control-checkpoint-final-20260930",
+      "runner_sha256": "24605cce0252a8b1e3c911323a2860acd042d7ea954bcc5610185dd0fd0ea5eb",
+      "route_completed": true, "exit_code": 0, "elapsed_seconds": 31.062,
+      "mode": "headless Vulkan, No Audio Output, one logical CPU mask 0x1, 3x EFB, formatter off",
+      "capture_review": "All four captures inspected sequentially: initial combat/tutorial, fusion effects, damage/KO result, completed tutorial objective",
+      "confirmed": "Spider-Man/Captain America fusion: 738 damage, six KOs, Hero Training: Fusion complete",
+      "limits": "Fusion underway before face-selection command. Sampled captures are not every-frame review. No FPS/audio acceptance."
+    }
+  ],
+  "remaining": [
+    "Sustained nominal 30 newly rendered FPS at normal speed and acceptable audible output",
+    "Profile sustained combat frame times/guest speed alongside audio callback and mixer starvation under whole-process one-core constraint",
+    "Direct D-pad hero selection, contextual X use, all fusion partner choices and revive behavior",
+    "Physical-controller confirmation of the new profile and normal startup visual flow",
+    "Existing old generated profiles require deliberate migration before another manual test; custom profiles remain preserved"
+  ],
+  "resolution_correction": {
+    "source": "Earlier native resolution probes; not a new measurement",
+    "preset": "1920x1080 selects 3x EFB; not fixed output size",
+    "allocated_efb": [1920, 1584], "raw_game_frame": [1920, 1410],
+    "window_game_image_excluding_borders": [1536, 866],
+    "aspect_corrected_native_capture": [2501, 1410], "widescreen": true
+  },
+  "acceptance": {"sustained_30_fps": false, "audio_quality": false, "complete_xbox_controls": false, "new_performance_gain_claimed": false},
+  "preservation": "Proprietary assets, saves, generated output and raw captures/logs stay ignored. User StaticRecomp edits, Build-With-Log.cmd and unfinished static experiment stash are excluded from the commit."
+}

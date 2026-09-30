@@ -2,6 +2,8 @@
 
 #include "InputCommon/ControllerInterface/Touch/InputOverrider.h"
 
+#include "xbox_test_device.hpp"
+
 #include <array>
 #include <cstdint>
 #include <filesystem>
@@ -15,6 +17,7 @@ enum class CommandType
 {
   Pad,
   PadFrames,
+  XboxFrames,
   ClearPad,
   Pause,
   Resume,
@@ -41,6 +44,7 @@ struct Command
   CommandType type = CommandType::Pause;
   std::string source_name;
   PadState pad;
+  XboxState xbox{};
   std::filesystem::path path;
   std::uint32_t address = 0;
   std::uint32_t size = 0;

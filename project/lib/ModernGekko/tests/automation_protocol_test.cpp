@@ -257,6 +257,20 @@ int main()
       command.type != automation::CommandType::JitProfileReset)
     return 17;
 
+  {
+    std::ofstream output(commands / "xbox.txt");
+    output << "command=xbox_frames\nport=0\nframes=5\na=1\nright_left=0.6\nrelease=0\n";
+  }
+  if (!automation::ParseCommandFile(commands / "xbox.txt", &command, &error) ||
+      command.type != automation::CommandType::XboxFrames || command.frames != 5 ||
+      command.xbox[0] != 1 || command.xbox[19] != 0.6 || command.release_pad) return 30;
+  for (const char* invalid : {"a=nan", "a=2", "a=-1", "a=0.2garbage", "unknown=1", "release=2"}) {
+    {
+      std::ofstream output(commands / "xbox.txt");
+      output << "command=xbox_frames\nport=0\nframes=5\n" << invalid << '\n';
+    }
+    if (automation::ParseCommandFile(commands / "xbox.txt", &command, &error)) return 31;
+  }
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return 0;
