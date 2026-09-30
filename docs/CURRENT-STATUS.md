@@ -2,6 +2,41 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Headless GPU submission diagnosis — 2026-09-30
+
+The user's visible 17–18 FPS and poor-audio report still fails acceptance.
+Added opt-in bounded runtime spans (`--profile-runtime`, environment
+`OPENMUA2_RUNTIME_SPANS`) for throttle, GPU pacing, worker, Vulkan fence/submit/
+present and Presenter elapsed time. `tools/analyze_runtime_spans.py` merges
+nested spans and isolates CPU-thread waits; unclassified time is not CPU time.
+Traces are emitted after shutdown, capped at 262144 spans, and rejected when
+samples are dropped. Ordinary benchmark runs clear inherited span profiling.
+
+Found and fixed a headless-specific scheduling defect: Presenter returned before
+submitting GPU work, batching many frames until resources filled. Headless
+frames now flush pending vertices and submit through the existing nonblocking
+backend Flush path. Visible presentation is unchanged. Do not extrapolate this
+fix to the user's visible playtest or treat old headless stalls as its diagnosis.
+
+Matched route/profile diagnostics (one host CPU, JIT, Vulkan, 3x EFB, normal
+clocks, formatter off, Cubeb volume=0) reduced accumulated fence waits from
+5.041 s to 0.00694 s over frames 12620–13850. P99 fell from 93.493 to 50.777 ms;
+average FPS rose from 27.669 to 28.581, minimum rolling 1 s FPS from 21 to 24.
+Repeat: 27.679 FPS, P99 51.746 ms, total fence waits 0.00658 s.
+Scene progression differs; these are bounded diagnostics, not a controlled
+visible-game FPS gain. Guest cadence still includes 50.05 ms frames. The goal
+remains active/unmet, and sound is unresolved. Native endpoint captures were
+inspected; they show street scenery, heroes/Doombots, combat and HUD. This does
+not establish continuous varied combat, normal boot, or audible quality.
+
+Windows build: `Build.cmd --cpu jit --jobs 2`, exit 0; 37/37 CTest tests passed
+in 7.21 s. Python suite: 133 run, 132 passed, 1 skipped, 23.292 s. Configuration
+warns about vendored deprecations, missing Wayland and long object paths; no compiler errors/warnings
+found. Exact binaries, run hashes, repeat results and limits are recorded in
+`evidence/windows-20260930/HEADLESS-SUBMISSION-DIAGNOSIS.json`.
+Next: profile remaining guest frame-production stalls and the visible rendering
+path without host UI automation; do not request another manual test yet.
+
 ## Audio and frame-cadence diagnosis — 2026-09-30
 
 Added an offline synthetic mixer benchmark and opt-in numeric audio profiling.

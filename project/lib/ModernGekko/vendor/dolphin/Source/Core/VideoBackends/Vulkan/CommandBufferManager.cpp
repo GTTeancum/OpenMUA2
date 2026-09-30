@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "VideoBackends/Vulkan/CommandBufferManager.h"
+#include "Common/RuntimeTiming.h"
 
 #include <array>
 #include <cstdint>
@@ -245,6 +246,7 @@ void CommandBufferManager::WaitForWorkerThreadIdle()
   if (!m_use_threaded_submission)
     return;
 
+  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::GpuWorker);
   m_submit_thread.WaitForCompletion();
 }
 
@@ -280,8 +282,10 @@ void CommandBufferManager::WaitForCommandBufferCompletion(u32 index)
   }
 
   // Wait for this command buffer to be completed.
+  const auto fence_begin = Common::RuntimeTiming::Begin();
   VkResult res =
       vkWaitForFences(g_vulkan_context->GetDevice(), 1, &resources.fence, VK_TRUE, UINT64_MAX);
+  Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::GpuFence, fence_begin);
   if (res != VK_SUCCESS)
     LOG_VULKAN_ERROR(res, "vkWaitForFences failed: ");
 
@@ -426,8 +430,10 @@ void CommandBufferManager::SubmitCommandBuffer(u32 command_buffer_index,
     submit_info.pSignalSemaphores = &m_present_semaphores[present_image_index];
   }
 
+  const auto submit_begin = Common::RuntimeTiming::Begin();
   VkResult res =
       vkQueueSubmit(g_vulkan_context->GetGraphicsQueue(), 1, &submit_info, resources.fence);
+  Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::GpuSubmit, submit_begin);
   if (res != VK_SUCCESS)
   {
     LOG_VULKAN_ERROR(res, "vkQueueSubmit failed: ");
@@ -448,7 +454,9 @@ void CommandBufferManager::SubmitCommandBuffer(u32 command_buffer_index,
                                      &present_image_index,
                                      nullptr};
 
+    const auto present_begin = Common::RuntimeTiming::Begin();
     m_last_present_result = vkQueuePresentKHR(g_vulkan_context->GetPresentQueue(), &present_info);
+    Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::GpuPresent, present_begin);
     if (m_last_present_result != VK_SUCCESS)
     {
       // VK_ERROR_OUT_OF_DATE_KHR is not fatal, just means we need to recreate our swap chain.

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "VideoCommon/Present.h"
+#include "Common/RuntimeTiming.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -1039,10 +1040,20 @@ void Presenter::RenderXFBToScreen(const MathUtil::Rectangle<int>& target_rc,
 
 void Presenter::Present(PresentInfo* present_info)
 {
+  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::Present);
   m_present_count++;
   auto* texture = GetPresentedXFBTexture();
 
-  if (g_gfx->IsHeadless() || (!m_onscreen_ui && !texture))
+  if (g_gfx->IsHeadless())
+  {
+    // There is no backbuffer swap to submit this frame's work. Submit without
+    // waiting so headless runs do not batch many frames until a resource fills.
+    g_vertex_manager->Flush();
+    g_gfx->Flush();
+    return;
+  }
+
+  if (!m_onscreen_ui && !texture)
     return;
 
   if (!g_gfx->SupportsUtilityDrawing())

@@ -1,5 +1,7 @@
 #include "frame_timing.hpp"
+#include "../vendor/dolphin/Source/Core/Common/RuntimeTiming.h"
 #include <sstream>
+#include <array>
 #include <string>
 
 int main() {
@@ -32,5 +34,24 @@ int main() {
       "copy,0,0,0,1000,0,0,-1,-1\n"
       "before,101,202,12,1020,1040,0,1,3\n"
       "after,101,202,12,1050,1040,1045,1,2\n";
-  return phase_out.str() == phase_expected ? 0 : 2;
+  if (phase_out.str() != phase_expected) return 2;
+  Common::RuntimeTiming::Trace spans(5);
+  std::array<std::thread, 4> workers;
+  for (int i = 0; i < 4; ++i)
+    workers[i] = std::thread([&, i] {
+      for (int j = 0; j < 100; ++j)
+        spans.Record(Common::RuntimeTiming::Kind::GpuFence, 10, 20, 0, i + 1);
+    });
+  for (auto& thread : workers) thread.join();
+  std::ostringstream span_out;
+  spans.Write(span_out);
+  const auto text = span_out.str();
+  if (text.find("# dropped_samples=395\n") == std::string::npos) return 3;
+  std::size_t at = 0;
+  int count = 0;
+  while ((at = text.find("gpu_fence,10,20,0,", at)) != std::string::npos) {
+    ++count;
+    ++at;
+  }
+  return count == 5 ? 0 : 4;
 }

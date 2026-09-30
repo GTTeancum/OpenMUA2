@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Core/CoreTiming.h"
+#include "Common/RuntimeTiming.h"
 
 #include <algorithm>
 #include <mutex>
@@ -409,6 +410,9 @@ TimePoint CoreTimingManager::GetTargetHostTime(s64 target_cycle)
 
 void CoreTimingManager::SleepUntil(TimePoint time_point)
 {
+  Common::RuntimeTiming::Scope timing(
+      Core::IsCPUThread() ? Common::RuntimeTiming::Kind::Throttle : Common::RuntimeTiming::Kind::GpuPacing,
+      std::chrono::duration_cast<std::chrono::nanoseconds>(time_point.time_since_epoch()).count());
   const bool use_precision_timer = m_use_precision_timer.load(std::memory_order_relaxed);
 
   if (Core::IsCPUThread())

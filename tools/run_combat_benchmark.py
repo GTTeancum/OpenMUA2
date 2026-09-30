@@ -116,6 +116,7 @@ def main():
     p.add_argument("--windowed",action="store_true",help="Create the game window; inputs remain process-local.")
     p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed or --profile-audio for sound.")
     p.add_argument("--profile-audio",action="store_true",help="Opt-in numeric audio diagnostics; permits Cubeb without a game window. Not presentation/FPS acceptance.")
+    p.add_argument("--profile-runtime",action="store_true",help="Bounded throttle/GPU/presentation spans; diagnostic overhead, not acceptance.")
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
@@ -170,6 +171,8 @@ def main():
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
     configure_audio_profile(env, args.profile_audio, root)
+    env.pop("OPENMUA2_RUNTIME_SPANS", None)
+    if args.profile_runtime: env["OPENMUA2_RUNTIME_SPANS"] = str(root / "runtime-spans.csv")
     env.pop("MODERNGEKKO_SIMPLE_FORMAT",None)
     if args.simple_format:env["MODERNGEKKO_SIMPLE_FORMAT"]=args.simple_format
     env.pop("MODERNGEKKO_JIT_PROFILE_CALLERS",None)
@@ -193,6 +196,7 @@ def main():
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["presentation_trace"] = args.trace_presentation
     metadata["audio_profile"] = args.profile_audio
+    metadata["runtime_profile"] = args.profile_runtime
     metadata["presentation_queue"] = args.present_queue
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers
@@ -249,6 +253,10 @@ def main():
             validate_runtime_settings((root/"runtime.log").read_text(), cpu)
             if args.profile_audio:
                 validate_audio_profile(root, (root/"runtime.log").read_text())
+            if args.profile_runtime:
+                spans = (root / "runtime-spans.csv").read_text()
+                if "# dropped_samples=0\n" not in spans or "throttle," not in spans:
+                    raise RuntimeError("runtime span trace missing throttle events or dropped samples")
             completed=True
         except Exception as exc:
             failure = f"{type(exc).__name__}: {exc}"

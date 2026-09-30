@@ -11,6 +11,7 @@
 #include "Core/Config/MainSettings.h"
 #include "Core/CoreTiming.h"
 #include "Core/Core.h"
+#include "Common/RuntimeTiming.h"
 #include "Core/HW/GBACore.h"
 #include "Core/HW/Memmap.h"
 #include "Core/HW/Wiimote.h"
@@ -1100,6 +1101,7 @@ RuntimeRunResult Runtime::Run() {
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: shutting down core\n");
   Core::Shutdown(Core::System::GetInstance());
+  Common::RuntimeTiming::Get().Flush();
   if (m_impl->frame_timing) {
     std::ofstream output(m_impl->frame_timing_path);
     m_impl->frame_timing->Write(output);
