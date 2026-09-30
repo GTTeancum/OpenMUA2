@@ -1,0 +1,216 @@
+{
+  "restored_frame_min": 12500,
+  "commands": [
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/00-start.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2500,
+      "path": "holds/001.txt",
+      "left_left": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/002.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/01-approach.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1500,
+      "path": "holds/003.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/004.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/02-charged-heavy.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/005.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/006.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/007.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/008.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/009.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/03-power-heavy.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/010.txt",
+      "x": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/011.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/012.txt",
+      "right_right": 1
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/04-interact-camera.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/013.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/014.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/015.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/016.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/017.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/018.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/019.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/020.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/021.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/022.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/023.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/024.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/025.txt",
+      "rb": 1,
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/026.txt",
+      "lb": 1
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/05-combat.png"
+    },
+    {
+      "command": "save_state",
+      "path": "timed-combat.sav"
+    },
+    {
+      "command": "read_timing",
+      "path": "measurement-end.txt"
+    }
+  ]
+}

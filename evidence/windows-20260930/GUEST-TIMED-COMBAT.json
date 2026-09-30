@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "source_checkpoint": "7724a5283def628b9225623b879f9779b717f281",
+  "scope": "Short guest-timed visible combat diagnostic; not goal acceptance or a new runtime optimization.",
+  "route": "tools/routes/xbox-timed-clear-combat.json",
+  "runs": {
+    "timed-clear-original-20260930": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "simple_format": "off",
+      "screenshots": true,
+      "hold_count": 26,
+      "total_hold_seconds": 12.26,
+      "max_release_lateness_cycles": 60,
+      "all_completed": true,
+      "timing_scope": "2s warmup; endpoint last timed hold, before save; host after-present callbacks, not scanout; diagnostic only",
+      "timing": {
+        "average_fps": 23.643781173404424,
+        "frame_ms": {
+          "median": 33.84120000000007,
+          "p95": 52.92880000000011,
+          "p99": 437.6932999999994,
+          "max": 442.7289999999999
+        },
+        "rolling_1s_fps_min": 14,
+        "frames_over_50ms": 65,
+        "emulation_speed_percent": 91.31951637725234
+      },
+      "audio_interior_seconds": 11,
+      "audio_dma_empty_dequeues": 41,
+      "audio_stream_empty_dequeues": 36,
+      "max_audio_callback_gap_ms": 10.7515,
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    },
+    "timed-clear-candidate-20260930": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "simple_format": "on",
+      "screenshots": true,
+      "hold_count": 26,
+      "total_hold_seconds": 12.26,
+      "max_release_lateness_cycles": 62,
+      "all_completed": true,
+      "timing_scope": "2s warmup; endpoint last timed hold, before save; host after-present callbacks, not scanout; diagnostic only",
+      "timing": {
+        "average_fps": 26.585894773848942,
+        "frame_ms": {
+          "median": 33.23739999999997,
+          "p95": 39.893699999999924,
+          "p99": 452.369899999999,
+          "max": 500.46080000000035
+        },
+        "rolling_1s_fps_min": 16,
+        "frames_over_50ms": 6,
+        "emulation_speed_percent": 88.7082688954093
+      },
+      "audio_interior_seconds": 12,
+      "audio_dma_empty_dequeues": 49,
+      "audio_stream_empty_dequeues": 47,
+      "max_audio_callback_gap_ms": 11.7613,
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    },
+    "timed-clear-original-timing-20260930": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "simple_format": "off",
+      "screenshots": false,
+      "hold_count": 26,
+      "total_hold_seconds": 12.26,
+      "max_release_lateness_cycles": 72,
+      "all_completed": true,
+      "timing_scope": "2s warmup; endpoint last timed hold, before save; host after-present callbacks, not scanout; diagnostic only",
+      "timing": {
+        "average_fps": 26.143542935226293,
+        "frame_ms": {
+          "median": 33.82959999999979,
+          "p95": 50.67860000000124,
+          "p99": 59.630999999999545,
+          "max": 79.99979999999995
+        },
+        "rolling_1s_fps_min": 24,
+        "frames_over_50ms": 35,
+        "emulation_speed_percent": 100.14996160922439
+      },
+      "audio_interior_seconds": 10,
+      "audio_dma_empty_dequeues": 1,
+      "audio_stream_empty_dequeues": 0,
+      "max_audio_callback_gap_ms": 17.4256,
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    },
+    "timed-clear-candidate-timing-20260930": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "simple_format": "on",
+      "screenshots": false,
+      "hold_count": 26,
+      "total_hold_seconds": 12.26,
+      "max_release_lateness_cycles": 61,
+      "all_completed": true,
+      "timing_scope": "2s warmup; endpoint last timed hold, before save; host after-present callbacks, not scanout; diagnostic only",
+      "timing": {
+        "average_fps": 29.970771282813576,
+        "frame_ms": {
+          "median": 33.2821499999999,
+          "p95": 37.84900000000002,
+          "p99": 55.18219999999996,
+          "max": 70.99859999999936
+        },
+        "rolling_1s_fps_min": 28,
+        "frames_over_50ms": 5,
+        "emulation_speed_percent": 100.00247351365464
+      },
+      "audio_interior_seconds": 10,
+      "audio_dma_empty_dequeues": 1,
+      "audio_stream_empty_dequeues": 1,
+      "max_audio_callback_gap_ms": 12.8155,
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    }
+  },
+  "visual_review": {
+    "sequential_captures_per_mode": 6,
+    "original": "All six reviewed: valid street start, visible curbside approach, attack poses and effects, camera movement, web attack; player alive.",
+    "candidate": "All six reviewed in order: valid street start; curbside approach; kick pose; spinning kick with enemies/projectiles; rotated camera; web arc with team and enemies by sidewalk. Player alive, scene and HUD present.",
+    "limits": "Single captures do not prove animation speed, charged attack behavior, grab/use success, world-state or interrupt equivalence. Enemy positions and combat outcomes differ. No claim of deterministic replay.",
+    "rejected_prior_route": "timed-varied-original-20260930: first capture solid magenta restore output; tree obscures later actions. Revised route waits five new frames and moves across open street. This is a route workaround, not a general readiness fix."
+  },
+  "audio": "Cubeb enabled, Volume=0. Empty dequeue counts refer to DMA/stream mixers, not proven device underruns or audible clicks. No listening or device playback verification. Full one-second buckets within the post-warmup, pre-save window only.",
+  "acceptance": "Unmet. Formatter remains default OFF; original-code baseline below 30; experimental candidate still has >50ms frames. Three qualifying repeats and ten-minute varied combat missing.",
+  "build": "No runtime/source change; reused existing Windows build (39/39 native tests at preceding checkpoint). No rebuild or new native-test claim.",
+  "next": "Investigate remaining >50ms stalls and audio starvation without capture overhead; broaden timing/correctness comparison and extend healthy varied route."
+}

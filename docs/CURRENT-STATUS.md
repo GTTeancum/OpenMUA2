@@ -2,6 +2,42 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Visible guest-timed combat and audio comparison - 2026-09-30
+
+Added tools/routes/xbox-timed-clear-combat.json: 26 guest-clock holds totaling
+12.26 seconds, covering approach, light/heavy attacks, powers, block and camera.
+Five fresh frames before the first capture avoid the observed magenta restore
+frame; open-street movement avoids the previous tree occlusion. This is a short
+route improvement, not a general visual-readiness fix or ten-minute session.
+Both visual runs and both separate no-screenshot timing runs exited 0. Every
+hold completed; maximum release lateness was 72 guest cycles at 729MHz. All six
+native captures per visual run inspected sequentially: visible living player,
+combat poses/web effects, enemies/team, street background and HUD. Grab/use,
+charge behavior, exact animation speed and world/interrupt equivalence remain
+unproven. Combat outcomes differ; this is not a deterministic input movie.
+
+Same existing Windows runner, JIT, one logical CPU, Vulkan, 3x EFB, Cubeb muted.
+No runtime changes or rebuild this checkpoint. After two seconds warmup and
+ending at the last input hold (before saving), no-screenshot diagnostics:
+
+| Formatter | New FPS | Guest speed | P99 ms | Worst ms | >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Original/default | 26.1435 | 100.1500% | 59.6310 | 79.9998 | 35 | 24 |
+| Experimental on | 29.9708 | 100.0025% | 55.1822 | 70.9986 | 5 | 28 |
+
+Audio profiling remains enabled, so these are diagnostics, not acceptance runs.
+Ten full interior audio seconds: original DMA/stream empty dequeues 1/0,
+candidate 1/1; maximum callback gaps 17.4256/12.8155ms. Screenshot runs had
+41/36 and 49/47 empty dequeues respectively and substantial capture stalls;
+do not use those runs as unintrusive performance evidence. These counters do
+not establish audible crackling or device underruns. No listening/device-output
+verification; sound remains unresolved. Formatter remains default OFF and the
+solid-30 goal unmet. Three qualifying repeats and ten-minute varied combat are
+still required. Next investigate remaining stalls/audio starvation without
+capture overhead and extend healthy varied combat/correctness coverage.
+Evidence: evidence/windows-20260930/GUEST-TIMED-COMBAT.json. Private images,
+states and logs stay outside Git; user static work remains untouched.
+
 ## Guest-clock input timing and movement comparison - 2026-09-30
 
 Added process-local xbox_time commands: port, milliseconds (1..600000), input
