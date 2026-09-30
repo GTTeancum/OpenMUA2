@@ -71,12 +71,20 @@ def configure_benchmark_profile(user, enabled):
 
 
 def validate_runtime_settings(log, cpu):
+    import re
     expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
     if expected_cpu not in log.splitlines():
         raise RuntimeError("runtime did not confirm the requested CPU backend")
     video = [line for line in log.splitlines() if line.startswith("Effective video: ")]
     if not video or any(not line.startswith("Effective video: dual_core=0 ") for line in video):
-        raise RuntimeError("runtime did not confirm required single-core emulation")
+        raise RuntimeError("runtime did not confirm serial CPU/GPU execution")
+    affinity = [line for line in log.splitlines() if line.startswith("Host CPU affinity:")]
+    if not affinity:
+        raise RuntimeError("runtime did not confirm whole-process CPU affinity")
+    for line in affinity:
+        match = re.fullmatch(r"Host CPU affinity: logical_processors=1 mask=0x([0-9a-fA-F]+)", line)
+        if not match or int(match[1], 16).bit_count() != 1:
+            raise RuntimeError("runtime is not restricted to one host logical processor")
 
 
 def main():
@@ -164,6 +172,7 @@ def main():
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers
     metadata["single_core_required"] = True
+    metadata["host_logical_processors_required"] = 1
     metadata["simple_format"] = args.simple_format or "off"
     metadata["jit_block_profile_scope"] = "resident blocks after restored frame threshold; intrusive, invalidated blocks excluded" if args.jit_block_profile else None
     (root/"run.json").write_text(json.dumps(metadata,indent=2))

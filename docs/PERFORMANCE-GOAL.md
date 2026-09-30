@@ -1,6 +1,58 @@
 # OpenMUA2 sustained combat performance goal
 
-## Single-core and original Xbox constraint — 2026-09-30
+## Whole-process one-core correction — 2026-09-30
+
+The user's requirement is to run the entire game on one CPU core. The earlier
+CPUThread=False setting only serialized CPU/GPU runtime work; helper threads
+could still use other host cores. Earlier results do not demonstrate the required
+whole-process limit and are excluded from acceptance under that requirement.
+
+The Windows runner now selects one already-allowed logical processor before
+RunMain, applies process affinity and reads it back. It fails startup if the
+restriction cannot be confirmed. All game threads share this processor, including
+later audio/I/O/shader workers. It replaces the optional largest-cache mask and
+does not change any other process or global Windows setting. The benchmark now
+requires both this one-bit host affinity and serial CPU/GPU confirmation.
+This limits the game to one hardware thread, including on SMT processors.
+
+The existing JIT backend still translates Wii PowerPC instructions at runtime
+using Dolphin components. Affinity controls CPU placement; it does not change
+that architecture into a native original Xbox port. The future Xbox port remains
+an optimization/design constraint, not a demonstrated implementation.
+
+Windows build exited 0: 36/36 runtime tests in 7.15 s and 8/8 tooling tests.
+The OS test checked affinity and 1,000 CPU samples in each of four new workers.
+Independent process reads confirmed mask 0x1 at startup and during actual combat
+(the latter process had 52 threads, all confined by its process mask).
+Current runner: 15,722,496 bytes, SHA256
+82e4896d898baf8f828a69e63a4220f46823c0962247b218870b77663bfc63fc.
+No compiler warnings/errors found; existing CMake deprecation, Wayland and long
+object-path warnings remain. Build log: .local/logs/jit-one-host-core-build.log.
+Exact hashes of all four produced executables are in the evidence.
+
+Two short captured combat runs at 1920x1080 preset/3xEFB, Vulkan/Cubeb:
+
+| Formatter | Average FPS | P99 ms | Maximum ms | Lowest rolling 1 s FPS | Guest speed |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| off | 27.3288 | 60.63 | 488.54 | 16 | 97.471% |
+| on | 29.1423 | 58.33 | 461.83 | 18 | 97.370% |
+
+Frames 12620-12990, 370 intervals each; both routes completed and exited 0. Neither
+passes solid 30 or normal-speed acceptance. These one-off runs include a midpoint
+screenshot and varying combat progression. Severe stalls need a capture-overhead
+comparison before attributing them to gameplay. The live end-of-route counter
+was lower than the analyzed-window average; it is not the combat-window FPS.
+
+All six native captures were inspected sequentially for actual fights, effects,
+HUD and scenery. Actual captures are 2501x1410; sampled visuals and Cubeb activation
+do not establish every-frame correctness or audible quality/synchronization.
+The formatter remains default-off with its documented timing/correctness limits.
+Goal active/unmet; qualifying repeats, ten-minute varied combat and full Xbox
+controls remain open. Private assets, outputs, user edits and stash are preserved.
+
+Evidence: evidence/windows-20260930/JIT-ONE-HOST-CORE.json.
+
+## Earlier serial-runtime constraint — superseded by whole-process limit above
 
 Keep CPU/GPU emulation on one thread. Multicore emulation is excluded from
 the performance plan and acceptance results, including imported profiles.
@@ -58,7 +110,8 @@ work, not completion. No claim of feasibility or completion precedes measurement
 
 ## Acceptance
 
-- Single-core CPU/GPU emulation; no dependence on a second emulation thread.
+- Entire game process on one host logical processor; verify Windows affinity.
+  CPU/GPU runtime execution also remains serial.
 - Actual repeatable enemy combat with movement, attacks, damage and effects.
 - Per-frame timestamps, rolling FPS, frame-time percentiles, counts and longest
   duration of slow-frame episodes; exclude loading from combat statistics but

@@ -1,0 +1,188 @@
+{
+  "date": "2026-09-30",
+  "repository": "GTTeancum/OpenMUA2",
+  "base_commit": "0b83ca7a7d089019569c283a129de18b72d7642d",
+  "goal_status": "active; sustained nominal 30 FPS at normal speed remains unmet",
+  "correction": "CPUThread=False serializes CPU/GPU runtime work but did not limit all process workers to one host core. Earlier results do not establish the user requested whole-process single-core constraint.",
+  "current_requirement": "Entire Windows game runner is restricted to one logical processor, including all current/future helper threads. A single logical processor excludes using both SMT threads of a core. GPU execution remains on the GPU; no original Xbox performance is implied.",
+  "backend": "Existing full JIT translates Wii PowerPC instructions at runtime using Dolphin components; host processor affinity does not change that architecture into a native Xbox port.",
+  "source_changes": [
+    "Apply/read back one-bit process affinity before RunMain; fail startup if it cannot be confirmed",
+    "Replace runner largest-cache-domain opt-in with required one-processor limit; inherited cache affinity cannot broaden it",
+    "Benchmark requires both serial CPU/GPU confirmation and exactly one bit in logged host affinity; metadata distinguishes the constraints"
+  ],
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "log": ".local/logs/jit-one-host-core-build.log",
+    "runtime_tests": {
+      "passed": 36,
+      "failed": 0,
+      "seconds": 7.15
+    },
+    "tooling_tests": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 0.072
+    },
+    "compiler_warnings": [],
+    "compiler_errors": [],
+    "configure_warnings": [
+      "Vendored CMake deprecations",
+      "Missing Wayland on Windows",
+      "Long object paths"
+    ],
+    "artifacts": [
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+        "bytes": 15722496,
+        "sha256": "82e4896d898baf8f828a69e63a4220f46823c0962247b218870b77663bfc63fc"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+        "bytes": 243200,
+        "sha256": "c9d4c1a2d2be9b70c2afc489d658f4455ae917eb27d115b63775fc1f624c9e7d"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+        "bytes": 29696,
+        "sha256": "749e49d1b98ba6d91d88813573ff83785e82a800d50f5000a4f607d27f02f41d"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+        "bytes": 11942400,
+        "sha256": "31b6d570dd5faf124ff9d90e1d0ff6710f91e8181e195ead7bd5d2980bc3a15d"
+      }
+    ]
+  },
+  "affinity_test": "Existing Windows test now applies the real process restriction, creates four workers, checks each thread mask and 1,000 processor samples, then restores the test process affinity. All passed. Tooling rejects missing, zero-bit, multiple-bit or inconsistent claims.",
+  "runs": {
+    "off": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 41.89100000000326,
+      "root": ".local/automation/jit-one-host-core-off-20260930",
+      "runner_sha256": "82e4896d898baf8f828a69e63a4220f46823c0962247b218870b77663bfc63fc",
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 12990,
+        "emulated_ticks": 9620260650,
+        "intervals": 370,
+        "seconds": 13.5388464,
+        "average_fps": 27.32876857218795,
+        "frame_ms": {
+          "median": 33.41199999999933,
+          "p95": 50.39250000000006,
+          "p99": 60.63379999999996,
+          "max": 488.54090000000116
+        },
+        "one_percent_low_fps": 5.8692007527836845,
+        "rolling_1s_fps_min": 16,
+        "rolling_1s_fps_median": 28.0,
+        "frames_over_33_334ms": 208,
+        "frames_over_50ms": 32,
+        "longest_consecutive_over_50ms_seconds": 0.48854090000000117,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 13.196516666666668,
+        "emulation_speed_percent": 97.47149998442013,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 66.73333333333333
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 320,
+          "50.050": 49,
+          "66.733": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.027466666667211315,
+          "p99": 15.6277999999999,
+          "min": -19.578200000000948,
+          "max": 455.1742333333345
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "os_affinity": {
+        "pid": 4492,
+        "name": "moderngekko-run",
+        "affinity_mask": 1,
+        "threads": 6,
+        "captured_utc": "2026-09-30T16:14:47.1910437Z"
+      }
+    },
+    "on": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 40.76500000001397,
+      "root": ".local/automation/jit-one-host-core-on-20260930",
+      "runner_sha256": "82e4896d898baf8f828a69e63a4220f46823c0962247b218870b77663bfc63fc",
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 12990,
+        "emulated_ticks": 9012153150,
+        "intervals": 370,
+        "seconds": 12.6963011,
+        "average_fps": 29.142346033365577,
+        "frame_ms": {
+          "median": 33.385149999999975,
+          "p95": 50.19680000000015,
+          "p99": 58.32889999999979,
+          "max": 461.83070000000015
+        },
+        "one_percent_low_fps": 6.132697781419919,
+        "rolling_1s_fps_min": 18,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 196,
+        "frames_over_50ms": 25,
+        "longest_consecutive_over_50ms_seconds": 0.46183070000000015,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 12.362350000000001,
+        "emulation_speed_percent": 97.36969769880459,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 279,
+          "50.050": 46,
+          "16.683": 45
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.020116666666646077,
+          "p99": 19.717133333333344,
+          "min": -20.522700000000185,
+          "max": 428.4640333333335
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "os_affinity": {
+        "pid": 24564,
+        "name": "moderngekko-run",
+        "affinity_mask": 1,
+        "threads": 52,
+        "frame_count": 13048,
+        "captured_utc": "2026-09-30T16:16:25.3396046Z"
+      }
+    }
+  },
+  "measurement_scope": "One short run per mode; frames 12620-12990, 370 intervals, same runner/state/profile/input route, 1920x1080 preset/3xEFB/Vulkan/Cubeb. Mid-route native capture is included and may contribute to stalls. Scene/receipt timing varies; not a precise causal comparison or qualifying acceptance repeats.",
+  "visual_review": "All three native captures from each of the two runs inspected sequentially: heroes/Doombots, attacks, impact/beam effects, damage, street/building/tree scenery and HUD/fusion tutorial visible. Actual 2501x1410 captures. Sampled content only; no every-frame or audible-quality/synchronization validation.",
+  "formatter_status": "Remains default-off. Prior shadow state comparisons are bounded; original formatter instruction timing is not preserved by the high-level rewrite. No promotion or acceptance claim.",
+  "next": [
+    "Continue only under whole-process one-processor restriction",
+    "Investigate stalls with capture overhead separated from actual combat pacing",
+    "Repair long combat route and validate varied fights; three qualifying repeats/ten-minute acceptance remain open",
+    "Complete Xbox controller mappings, still planned in bottom-of-file reference"
+  ],
+  "preservation": "User StaticRecomp edits, untracked Build-With-Log.cmd, static experiment stash and original proprietary files preserved; private outputs are not staged"
+}

@@ -58,7 +58,7 @@ class CommandPublicationTest(unittest.TestCase):
 
 class DiagnosticArgumentsTest(unittest.TestCase):
     def test_runtime_must_confirm_backend_and_single_core(self):
-        video = "Effective video: dual_core=0 sync_gpu=0\n"
+        video = "Effective video: dual_core=0 sync_gpu=0\nHost CPU affinity: logical_processors=1 mask=0x1\n"
         mod.validate_runtime_settings("CPU backend: JIT\n" + video, "jit")
         mod.validate_runtime_settings("CPU backend: StaticRecomp\n" + video, "staticrecomp")
         for log in ("", "CPU backend: JIT\n", "CPU backend: StaticRecomp\n" + video,
@@ -66,6 +66,12 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                     "CPU backend: JIT\n" + video + video.replace("dual_core=0", "dual_core=1")):
             with self.subTest(log=log), self.assertRaises(RuntimeError):
                 mod.validate_runtime_settings(log, "jit")
+        for affinity in ("", "Host CPU affinity: logical_processors=1 mask=0x0\n",
+                         "Host CPU affinity: logical_processors=1 mask=0x3\n",
+                         "Host CPU affinity: logical_processors=2 mask=0x3\n"):
+            with self.subTest(affinity=affinity), self.assertRaises(RuntimeError):
+                mod.validate_runtime_settings("CPU backend: JIT\nEffective video: dual_core=0 sync_gpu=0\n" + affinity, "jit")
+        mod.validate_runtime_settings("CPU backend: JIT\n" + video.replace("mask=0x1", "mask=0x8000"), "jit")
 
     def test_block_profile_is_isolated_and_ordinary_runs_disable_inherited_diagnostics(self):
         with tempfile.TemporaryDirectory() as directory:

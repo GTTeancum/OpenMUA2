@@ -3,8 +3,12 @@
 // core shares a single cache -- so the buffer the OS would return is built by
 // hand and the selection rule is checked against it.
 #include "cache_affinity.hpp"
+#include "process_affinity.hpp"
 
+#include <array>
+#include <bit>
 #include <cstring>
+#include <thread>
 #include <vector>
 
 namespace {
@@ -192,5 +196,34 @@ int main() {
       return 16;
   }
 
+  // Verify the whole-process limit against Windows, including newly created
+  // worker threads, rather than treating a serial CPU/GPU setting as affinity.
+  {
+    DWORD_PTR original = 0, system = 0;
+    if (!GetProcessAffinityMask(GetCurrentProcess(), &original, &system))
+      return 17;
+    const auto result = moderngekko::frontend::PinProcessToOneProcessor();
+    std::array<DWORD_PTR, 4> masks{};
+    std::array<bool, 4> processors_match{};
+    std::array<std::thread, 4> workers;
+    for (std::size_t i = 0; i < workers.size(); ++i)
+      workers[i] = std::thread([&, i] {
+        GROUP_AFFINITY group{};
+        if (GetThreadGroupAffinity(GetCurrentThread(), &group))
+          masks[i] = group.Mask;
+        processors_match[i] = true;
+        for (int sample = 0; sample < 1000; ++sample)
+          processors_match[i] = processors_match[i] &&
+              GetCurrentProcessorNumber() == static_cast<DWORD>(std::countr_zero(result.mask));
+      });
+    for (auto& worker : workers)
+      worker.join();
+    const bool restored = SetProcessAffinityMask(GetCurrentProcess(), original) != FALSE;
+    if (!restored || result.error != ERROR_SUCCESS || !std::has_single_bit(result.mask))
+      return 18;
+    for (std::size_t i = 0; i < workers.size(); ++i)
+      if (masks[i] != result.mask || !processors_match[i])
+        return 19;
+  }
   return 0;
 }
