@@ -121,7 +121,21 @@ than silently removing them. It reports average and rolling FPS, frame-time
 tails, 1% lows, long-frame episodes and emulated/host elapsed time. No automatic
 pass flag substitutes for combat visuals, normal speed or sustained validation.
 
-## MSVC inline experiment
+## Presentation diagnostics added 2026-09-30
+
+Use `--trace-presentation` for opt-in buffered XFB-copy/before/after events.
+Effective CPU/GPU threading, presentation, resolution and speed settings appear
+in runtime.log. `actual_ns` is the renderer's queue-submission timestamp, not
+scanout. Copy guest ticks are available only in single-core mode. Immediate XFB
+mode counts copies and needs composition/visual verification before any FPS
+acceptance claim; one copy is not universally one visible game frame. No tested
+presentation-setting experiment has passed the pacing target or become a default.
+
+The runtime now creates Config/Cache parent directories before initialization.
+Fresh-profile config and shader-cache writes were observed in an actual run.
+This fixes persistence; no combat FPS improvement is attributed to it.
+
+## MSVC inline experiment (historical)
 
 `Build.cmd --native-rel --module-msvc-inline 1` builds an isolated O2/Ob1
 module through the existing Windows toolchain. The default remains Ob0;

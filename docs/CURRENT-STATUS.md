@@ -2,6 +2,55 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## JIT pacing diagnostics and profile-directory fix — 2026-09-30
+
+The JIT primary path is committed at 0642cd3e. Additional opt-in
+`MODERNGEKKO_PRESENT_TIMES` telemetry records XFB-copy, before-present and
+after-present events, intended/queued timestamps and effective runtime settings.
+`--trace-presentation` exposes it in the combat harness. Buffers report overflow;
+copy counts are not FPS, queued timestamps are not display scanout. Copy guest
+ticks are recorded only in single-core mode to avoid reading the CPU clock from
+a separate video thread. Guest/VI timestamps do not prove CPU-only causality.
+
+Fixed a startup omission: create the profile directories before UICommon Init.
+The previous fresh profiles lacked Config and Cache parents, preventing config
+and shader-cache persistence. Actual fresh-profile validation now found six
+shader-cache files and saved Dolphin.ini. This is not a claimed combat FPS gain.
+
+Windows `Build.cmd --cpu jit --jobs 2` exited 0; runtime tests 32/32, including
+bounded presentation-event serialization. Combat tooling tests 5/5 passed.
+Runner: 15572480 bytes, SHA256
+f7bc2cf579f763e8667345323e7506605ac0913026575114b05c6511213305e9.
+Same CMake deprecation/Wayland/path-length warnings; no compiler warning/error
+diagnostics. Private build log: .local/logs/jit-presentation-cache-build.log.
+
+At the same 1920x1080 preset / 3x EFB, one-off instrumented short runs measured:
+default max 52.89 ms; immediate 47.40 ms; immediate+smoothing 50.07 ms;
+dual-core+immediate 43.77 ms; dual-core+immediate+smoothing 49.98 ms.
+These private setting experiments were not promoted. Immediate mode needs
+further visual/composition validation and is not unique-frame acceptance proof.
+The final cache-fix runner's default run measured 29.9700 FPS, P99 51.29 ms,
+maximum 55.77 ms, 99.9998% emulation speed. No solid-30 pass.
+
+Default before-to-after presentation is usually below one millisecond. Copy
+production already varies: guest copy intervals in the final single-core run
+had median 33.2944 ms, P99 39.2912 ms and maximum 45.0064 ms. VI quantization
+adds 16.683/33.367/50.050 ms presentation intervals. More host CPU throughput
+alone cannot be assumed to remove this cadence. Next profile production and
+extend real continuous combat. Ten-minute acceptance remains unverified.
+
+Evidence: evidence/windows-20260930/JIT-PRESENTATION-DIAGNOSTIC.json.
+The final runner also completed a longer mixed visual route with Cubeb and exit
+0. All four native captures were inspected sequentially: Spider-Man selected,
+destructible scenery, an enemy-introduction cutscene, and crowded combat effects
+with a fusion tutorial. This is not continuous-combat FPS evidence. Native game
+Options confirmed A attack, B smash, D-pad powers, Z block/use, C jump, +/- hero
+switching, 1 camera, 2 pause, and Z plus Nunchuk motion for fusion. The existing
+harness exposes buttons/sticks, but not Nunchuk motion. Private route/save:
+.local/automation/jit-varied-visual-20260930/varied-combat.sav.
+All original data, generated output, caches, native captures and raw logs stay
+private. User static diagnostics and Build-With-Log.cmd remain uncommitted.
+
 ## JIT primary path built and repeated — 2026-09-30
 
 The user explicitly selected full JIT. Build.cmd and Run.cmd now default to JIT;

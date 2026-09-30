@@ -53,6 +53,7 @@ def main():
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
+    p.add_argument("--trace-presentation",action="store_true",help="Diagnostic copy/before/after events; copy counts are not FPS.")
     p.add_argument("--no-screenshots",action="store_true")
     p.add_argument("--jit-diagnostic",action="store_true")
     p.add_argument("--profile-dispatch",action="store_true")
@@ -84,6 +85,8 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
+    env.pop("MODERNGEKKO_PRESENT_TIMES",None)
+    if args.trace_presentation:env["MODERNGEKKO_PRESENT_TIMES"]=str(root/"presentation.csv")
     for key in ("STATICRECOMP_DISPATCH_SAMPLES","STATICRECOMP_FALLBACK_SAMPLES","STATICRECOMP_PROFILE_DISPATCH","STATICRECOMP_PROFILE_GATE_FILE","STATICRECOMP_TRACE_FILE","MODERNGEKKO_FRAME_TIMES","MODERNGEKKO_STATICRECOMP","STATICRECOMP_FALLBACK_RANGES","STATICRECOMP_FALLBACK_USE_JIT"):
         env.pop(key,None)
     if not args.no_trace:env["MODERNGEKKO_FRAME_TIMES"]=str(root/"frames.csv")
@@ -97,6 +100,7 @@ def main():
     if cpu == "staticrecomp":cmd += ["--module",str(args.module.resolve())]
     if not args.windowed:cmd.append("--headless")
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
+    metadata["presentation_trace"] = args.trace_presentation
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:

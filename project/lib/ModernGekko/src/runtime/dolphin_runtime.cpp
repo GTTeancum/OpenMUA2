@@ -545,8 +545,12 @@ struct Runtime::Impl {
   std::atomic<bool> running{false};
   RuntimeAutomationState automation_state;
   Common::EventHook present_hook;
+  Common::EventHook before_present_hook;
+  Common::EventHook xfb_copy_hook;
   std::unique_ptr<moderngekko::telemetry::FrameTiming> frame_timing;
   std::filesystem::path frame_timing_path;
+  std::unique_ptr<moderngekko::telemetry::PresentationTiming> presentation_timing;
+  std::filesystem::path presentation_timing_path;
   bool automation_registered = false;
   std::jthread automation_thread;
 };
@@ -649,6 +653,8 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
 
   if (!s_external_ui_common) {
     UICommon::SetUserDirectory(impl->config.user_directory.string());
+    // Config saves and shader-cache creation require their parent directories.
+    UICommon::CreateDirectories();
     UICommon::Init();
     impl->ui_initialized = true;
   }
@@ -813,6 +819,8 @@ void Runtime::StopAutomation() {
     m_impl->automation_thread.join();
   }
   m_impl->present_hook = {};
+  m_impl->before_present_hook = {};
+  m_impl->xfb_copy_hook = {};
 }
 
 RuntimeRunResult Runtime::Run() {
@@ -860,8 +868,62 @@ RuntimeRunResult Runtime::Run() {
     m_impl->frame_timing_path = path;
     m_impl->frame_timing = std::make_unique<moderngekko::telemetry::FrameTiming>();
   }
+  if (const char* path = std::getenv("MODERNGEKKO_PRESENT_TIMES"); path && *path) {
+    m_impl->presentation_timing_path = path;
+    m_impl->presentation_timing =
+        std::make_unique<moderngekko::telemetry::PresentationTiming>();
+    m_impl->xfb_copy_hook = GetVideoEvents().after_frame_event.Register(
+        [this](Core::System& system) {
+          const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              Clock::now().time_since_epoch()).count();
+          // Reading the CPU clock from a separate video thread is not safe.
+          const auto ticks = system.IsDualCoreMode() ? 0 : system.GetCoreTiming().GetTicks();
+          m_impl->presentation_timing->Record("copy", 0, 0, ticks, ns, 0, 0, -1, -1);
+        });
+  }
+  m_impl->before_present_hook = GetVideoEvents().before_present_event.Register(
+      [this, logged = false](const PresentInfo& info) mutable {
+        if (!logged) {
+          logged = true;
+          std::fprintf(stderr,
+              "Effective video: dual_core=%d sync_gpu=%d gpu_determinism=%s "
+              "immediate_xfb=%d skip_duplicate_xfb=%d vsync=%d efb_scale=%d msaa=%u "
+              "smooth_early=%d rush=%d emulation_speed=%.6f "
+              "cpu_overclock_enabled=%d cpu_overclock=%.6f "
+              "vi_overclock_enabled=%d vi_overclock=%.6f\n",
+              Core::System::GetInstance().IsDualCoreMode(), Config::Get(Config::MAIN_SYNC_GPU),
+              Config::Get(Config::MAIN_GPU_DETERMINISM_MODE).c_str(),
+              g_ActiveConfig.bImmediateXFB, g_ActiveConfig.bSkipPresentingDuplicateXFBs,
+              g_ActiveConfig.bVSyncActive, g_ActiveConfig.iEFBScale, g_ActiveConfig.iMultisamples,
+              Config::Get(Config::MAIN_SMOOTH_EARLY_PRESENTATION),
+              Config::Get(Config::MAIN_RUSH_FRAME_PRESENTATION),
+              Config::Get(Config::MAIN_EMULATION_SPEED), Config::Get(Config::MAIN_OVERCLOCK_ENABLE),
+              Config::Get(Config::MAIN_OVERCLOCK), Config::Get(Config::MAIN_VI_OVERCLOCK_ENABLE),
+              Config::Get(Config::MAIN_VI_OVERCLOCK));
+        }
+        if (m_impl->presentation_timing) {
+          const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              Clock::now().time_since_epoch()).count();
+          const auto intended = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              info.intended_present_time.time_since_epoch()).count();
+          m_impl->presentation_timing->Record("before", info.frame_count, info.present_count,
+              info.emulated_timestamp, ns, intended, 0, static_cast<int>(info.reason),
+              static_cast<int>(info.present_time_accuracy));
+        }
+      });
   m_impl->present_hook =
       GetVideoEvents().after_present_event.Register([this](const PresentInfo &info) {
+        if (m_impl->presentation_timing) {
+          const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              Clock::now().time_since_epoch()).count();
+          const auto intended = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              info.intended_present_time.time_since_epoch()).count();
+          const auto actual = std::chrono::duration_cast<std::chrono::nanoseconds>(
+              info.actual_present_time.time_since_epoch()).count();
+          m_impl->presentation_timing->Record("after", info.frame_count, info.present_count,
+              info.emulated_timestamp, ns, intended, actual, static_cast<int>(info.reason),
+              static_cast<int>(info.present_time_accuracy));
+        }
         if (m_impl->frame_timing &&
             info.reason != PresentInfo::PresentReason::VideoInterfaceDuplicate) {
           const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -919,6 +981,14 @@ RuntimeRunResult Runtime::Run() {
     if (!output)
       std::fprintf(stderr, "[moderngekko] failed to write frame timing trace\n");
     m_impl->frame_timing.reset();
+  }
+  if (m_impl->presentation_timing) {
+    std::ofstream output(m_impl->presentation_timing_path);
+    m_impl->presentation_timing->Write(output);
+    output.close();
+    if (!output)
+      std::fprintf(stderr, "[moderngekko] failed to write presentation timing trace\n");
+    m_impl->presentation_timing.reset();
   }
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: core shutdown complete\n");

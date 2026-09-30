@@ -1,0 +1,595 @@
+{
+  "date": "2026-09-30",
+  "goal": "active, unmet",
+  "changes": [
+    "Opt-in buffered copy/before/after presentation events and effective settings log.",
+    "Create the profile directories before UICommon initialization so config and shader-cache writes can succeed."
+  ],
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "runner": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+    "runner_sha256": "f7bc2cf579f763e8667345323e7506605ac0913026575114b05c6511213305e9",
+    "runner_bytes": 15572480,
+    "runtime_tests": {
+      "passed": 32,
+      "failed": 0
+    },
+    "combat_tooling_tests": {
+      "passed": 5,
+      "failed": 0
+    },
+    "warnings": [
+      "CMake deprecations",
+      "Wayland unavailable on Windows",
+      "CMake object-path-length warnings"
+    ],
+    "compiler_diagnostics": "No compiler warning/error diagnostics found",
+    "private_log": ".local/logs/jit-presentation-cache-build.log"
+  },
+  "cache_validation": {
+    "private_profile": ".local/automation/jit-presentation-cache-default-20260930/user",
+    "shader_files": 6,
+    "config_saved": true
+  },
+  "scope": "Single short diagnostic run per configuration at 1920x1080 preset / 3x EFB and Cubeb. Profiling enabled. No ten-minute or sustained-pacing pass.",
+  "immediate_caveat": "Immediate mode counts XFB copies. Counts tracked one copy per present in these short traces, but full visual/composition validation is still required; experimental FPS is not acceptance evidence.",
+  "runs": [
+    {
+      "name": "default",
+      "private_run": ".local/automation/jit-presentation-default-20260930",
+      "runner_sha256": "beb8f5f5a927402de268b0f6e78b848237e81fd97c70bda693d045ac84e9d78c",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 5.0884268,
+          "average_fps": 30.06823248395752,
+          "frame_ms": {
+            "median": 33.36499999999987,
+            "p95": 50.0604,
+            "p99": 50.95849999999991,
+            "max": 52.88680000000001
+          },
+          "one_percent_low_fps": 19.25941761447077,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 94,
+          "frames_over_50ms": 14,
+          "longest_consecutive_over_50ms_seconds": 0.05288680000000001,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666667,
+          "emulation_speed_percent": 99.99980085527942,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 114,
+            "16.683": 20,
+            "50.050": 19
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.00033333333333135373,
+            "p99": 4.591733333333334,
+            "min": -7.653866666666634,
+            "max": 5.176733333333336
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 21.8978,
+          "median": 33.12525,
+          "p99": 41.4555,
+          "max": 47.9948
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1167,
+          "median": 0.28859999999999997,
+          "p99": 0.6443,
+          "max": 0.6785
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -0.616856,
+          "median": -0.18707200000000002,
+          "p99": 5.024578,
+          "max": 7.572411
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": 0.040344,
+          "median": 0.073961,
+          "p99": 5.226378,
+          "max": 7.726811
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": 1.1e-05,
+          "median": 0.000161,
+          "p99": 5.158478,
+          "max": 7.683311
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "name": "immediate",
+      "private_run": ".local/automation/jit-presentation-immediate-20260930",
+      "runner_sha256": "beb8f5f5a927402de268b0f6e78b848237e81fd97c70bda693d045ac84e9d78c",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=1 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 5.1038536,
+          "average_fps": 29.97734888006976,
+          "frame_ms": {
+            "median": 32.807399999999376,
+            "p95": 40.94720000000018,
+            "p99": 42.43790000000036,
+            "max": 47.400700000000015
+          },
+          "one_percent_low_fps": 22.262145670123886,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 64,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666667,
+          "emulation_speed_percent": 99.69754357112961,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 110,
+            "16.683": 22,
+            "50.050": 21
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.5338666666666742,
+            "p99": 16.085666666666715,
+            "min": -16.413599999999988,
+            "max": 16.124066666666042
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 22.3332,
+          "median": 32.75815,
+          "p99": 42.443,
+          "max": 47.4092
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1171,
+          "median": 0.1624,
+          "p99": 0.4755,
+          "max": 1.1856
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -16.978033,
+          "median": -3.321833,
+          "p99": 1.619834,
+          "max": 8.944167
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": -16.830433,
+          "median": -3.1501330000000003,
+          "p99": 1.782534,
+          "max": 9.117667
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": -16.886933,
+          "median": -3.216383,
+          "p99": 1.738934,
+          "max": 9.062467
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "name": "immediate-smooth",
+      "private_run": ".local/automation/jit-presentation-immediate-smooth-20260930",
+      "runner_sha256": "beb8f5f5a927402de268b0f6e78b848237e81fd97c70bda693d045ac84e9d78c",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=1 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=1 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3709455750,
+          "intervals": 153,
+          "seconds": 5.0884447,
+          "average_fps": 30.068126710701993,
+          "frame_ms": {
+            "median": 33.317299999999996,
+            "p95": 49.96749999999972,
+            "p99": 50.05440000000006,
+            "max": 50.06639999999996
+          },
+          "one_percent_low_fps": 19.975869150066718,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 74,
+          "frames_over_50ms": 3,
+          "longest_consecutive_over_50ms_seconds": 0.050066399999999955,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.088416666666667,
+          "emulation_speed_percent": 99.99944907854982,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 94,
+            "16.683": 30,
+            "50.050": 29
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.04943333333335548,
+            "p99": 6.140866666666627,
+            "min": -9.52259999999995,
+            "max": 9.83783333333331
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 24.595,
+          "median": 33.09565,
+          "p99": 42.4559,
+          "max": 46.2456
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1232,
+          "median": 2.06685,
+          "p99": 16.668,
+          "max": 16.9581
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -17.034833,
+          "median": -2.5197830000000003,
+          "p99": 5.663134,
+          "max": 8.957467
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": -1.44,
+          "median": -0.4475165,
+          "p99": 5.827034,
+          "max": 9.208467
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": -1.5372,
+          "median": -0.5425665,
+          "p99": 5.784434,
+          "max": 9.127667
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "name": "dual-immediate",
+      "private_run": ".local/automation/jit-presentation-dual-immediate-20260930",
+      "runner_sha256": "beb8f5f5a927402de268b0f6e78b848237e81fd97c70bda693d045ac84e9d78c",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=1 sync_gpu=0 gpu_determinism=auto immediate_xfb=1 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3721617900,
+          "intervals": 153,
+          "seconds": 5.0997402,
+          "average_fps": 30.001528313148185,
+          "frame_ms": {
+            "median": 33.05729999999984,
+            "p95": 38.28190000000031,
+            "p99": 40.8055,
+            "max": 43.76709999999995
+          },
+          "one_percent_low_fps": 23.648321087444412,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 68,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.1051,
+          "emulation_speed_percent": 100.10509947153778,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 109,
+            "50.050": 22,
+            "16.683": 22
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.38356666666662653,
+            "p99": 16.93206666666663,
+            "min": -17.347599999999755,
+            "max": 18.386366666666426
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 25.4886,
+          "median": 33.0696,
+          "p99": 41.3157,
+          "max": 43.957
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1173,
+          "median": 0.2232,
+          "p99": 0.6594,
+          "max": 0.7485
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -17.05875,
+          "median": -2.992183,
+          "p99": 0.616217,
+          "max": 0.879517
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": -16.92585,
+          "median": -2.8008,
+          "p99": 1.275617,
+          "max": 1.460617
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": -16.97095,
+          "median": -2.8747,
+          "p99": 1.026317,
+          "max": 1.257417
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "name": "dual-immediate-smooth",
+      "private_run": ".local/automation/jit-presentation-dual-immediate-smooth-20260930",
+      "runner_sha256": "beb8f5f5a927402de268b0f6e78b848237e81fd97c70bda693d045ac84e9d78c",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=1 sync_gpu=0 gpu_determinism=auto immediate_xfb=1 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=1 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3794590800,
+          "intervals": 153,
+          "seconds": 5.198398,
+          "average_fps": 29.43214428752858,
+          "frame_ms": {
+            "median": 33.31089999999992,
+            "p95": 36.65200000000013,
+            "p99": 49.91369999999995,
+            "max": 49.9816
+          },
+          "one_percent_low_fps": 20.020961947158685,
+          "rolling_1s_fps_min": 26,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 54,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.2052000000000005,
+          "emulation_speed_percent": 100.13084800355804,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 147,
+            "50.050": 6
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.06506666666673822,
+            "p99": 3.2853333333334596,
+            "min": -11.47949999999999,
+            "max": 11.670133333333318
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 26.3418,
+          "median": 32.67,
+          "p99": 49.6164,
+          "max": 60.6834
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1724,
+          "median": 6.2063500000000005,
+          "p99": 15.824,
+          "max": 15.998
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -16.695082,
+          "median": -11.087399000000001,
+          "p99": -0.238949,
+          "max": 11.033318
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": -7.663482,
+          "median": -4.3500654999999995,
+          "p99": 0.010651,
+          "max": 11.205718
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": -7.747282,
+          "median": -4.441765500000001,
+          "p99": -0.065249,
+          "max": 11.146818
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+      }
+    },
+    {
+      "name": "cache-default",
+      "private_run": ".local/automation/jit-presentation-cache-default-20260930",
+      "runner_sha256": "f7bc2cf579f763e8667345323e7506605ac0913026575114b05c6511213305e9",
+      "route_completed": true,
+      "exit_code": 0,
+      "effective_config": "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "analysis": {
+        "frame_metrics": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 11472,
+          "last_frame": 11625,
+          "emulated_ticks": 3721617900,
+          "intervals": 153,
+          "seconds": 5.105108,
+          "average_fps": 29.969983005256694,
+          "frame_ms": {
+            "median": 33.35940000000015,
+            "p95": 50.0799999999999,
+            "p99": 51.29260000000002,
+            "max": 55.76510000000001
+          },
+          "one_percent_low_fps": 18.681514734577704,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 86,
+          "frames_over_50ms": 10,
+          "longest_consecutive_over_50ms_seconds": 0.05576510000000001,
+          "warmup_seconds": 0.0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 5.1051,
+          "emulation_speed_percent": 99.9998432942065,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 50.05,
+            "max": 50.05
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 117,
+            "16.683": 18,
+            "50.050": 18
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.005066666666567188,
+            "p99": 4.671033333333393,
+            "min": -8.553866666666647,
+            "max": 5.715100000000015
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "copy_event_count": 153,
+        "copy_interval_ms": {
+          "n": 152,
+          "min": 24.3799,
+          "median": 33.1853,
+          "p99": 43.6201,
+          "max": 50.3906
+        },
+        "before_to_after_ms": {
+          "n": 154,
+          "min": 0.1264,
+          "median": 0.26475,
+          "p99": 0.6767,
+          "max": 0.9083
+        },
+        "before_minus_intended_ms": {
+          "n": 154,
+          "min": -0.587989,
+          "median": -0.12702249999999998,
+          "p99": 6.419978,
+          "max": 9.284711
+        },
+        "after_minus_intended_ms": {
+          "n": 154,
+          "min": 0.041578,
+          "median": 0.091461,
+          "p99": 6.650578,
+          "max": 9.504111
+        },
+        "actual_minus_intended_ms": {
+          "n": 154,
+          "min": 1.1e-05,
+          "median": 0.00046100000000000004,
+          "p99": 6.576478,
+          "max": 9.439211
+        },
+        "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout.",
+        "copy_guest_interval_ms": {
+          "n": 152,
+          "min": 27.54386282578875,
+          "median": 33.294443072702336,
+          "p99": 39.29118792866941,
+          "max": 45.00640740740741
+        }
+      }
+    }
+  ],
+  "finding": "The default presentation function itself is generally sub-millisecond. VI presentation quantization and variable copy production both contribute. Single-core copy guest intervals reached 45.0064 ms. These timestamps are not a CPU-only or hardware GPU profile.",
+  "decision": "Keep normal presentation defaults. Best one-off experiment used separate CPU/GPU threads and immediate presentation: maximum 43.7671 ms, still above a solid nominal 30 FPS cadence. Built-in smoothing did not solve tails.",
+  "next": "Extend and visually verify a real continuous combat route, profile guest frame production, and test a presentation queue only if measurements justify it without skipping frames or changing game speed.",
+  "additional_visual_validation": {
+    "private_run": ".local/automation/jit-varied-visual-20260930",
+    "exit_code": 0,
+    "all_four_native_captures_inspected_in_order": true,
+    "observed": "Spider-Man selection, destructible scenery, enemy-introduction cutscene, crowded fight with effects and fusion tutorial.",
+    "limits": "Mixed gameplay and cutscene, not continuous-combat FPS evidence. Sampled captures, not every frame. Cubeb active; audible quality/sync unverified."
+  }
+}
