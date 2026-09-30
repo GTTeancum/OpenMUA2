@@ -1,0 +1,302 @@
+{
+  "date": "2026-09-30",
+  "scope": "Single sequential same-runner combat comparison at 1920x1080 preset / 3x EFB. No compiler load; XEMU was using CPU in background. Diagnostic, not repeated or sustained acceptance.",
+  "runs": {
+    "baseline": {
+      "private_run": ".local\\automation\\combat-compiler-baseline-20260930",
+      "runner_sha256": "7712303b6e31b2f98b6159fd131bcc63844963035a752c848610e4a2f906a33b",
+      "module_sha256": "0e12b95e31fd73656849532d494b612222ffa56899801170476efc4e2669ec2f",
+      "route_completed": true,
+      "exit_code": 0,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3709455750,
+        "intervals": 153,
+        "seconds": 24.7027821,
+        "average_fps": 6.193634359912846,
+        "frame_ms": {
+          "median": 161.53890000000004,
+          "p95": 248.3234000000003,
+          "p99": 283.17290000000025,
+          "max": 306.03789999999975
+        },
+        "one_percent_low_fps": 3.3943709110559412,
+        "rolling_1s_fps_min": 5,
+        "rolling_1s_fps_median": 6.0,
+        "frames_over_33_334ms": 153,
+        "frames_over_50ms": 153,
+        "longest_consecutive_over_50ms_seconds": 24.7027821,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.088416666666666,
+        "emulation_speed_percent": 20.598557061581605
+      }
+    },
+    "clang_o2": {
+      "private_run": ".local\\automation\\combat-clang-20260930",
+      "runner_sha256": "7712303b6e31b2f98b6159fd131bcc63844963035a752c848610e4a2f906a33b",
+      "module_sha256": "47922fb187294b601b2b8667805c42bfda639ecfe9ffc014d36b7d1a0bcb6d51",
+      "route_completed": true,
+      "exit_code": 0,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3721617900,
+        "intervals": 153,
+        "seconds": 13.9243301,
+        "average_fps": 10.987961280808761,
+        "frame_ms": {
+          "median": 87.74950000000015,
+          "p95": 136.96140000000057,
+          "p99": 167.95340000000004,
+          "max": 177.4432999999993
+        },
+        "one_percent_low_fps": 5.790443278699547,
+        "rolling_1s_fps_min": 10,
+        "rolling_1s_fps_median": 11.0,
+        "frames_over_33_334ms": 153,
+        "frames_over_50ms": 144,
+        "longest_consecutive_over_50ms_seconds": 5.4098178,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.1051,
+        "emulation_speed_percent": 36.66316414029857
+      }
+    },
+    "msvc_c1024_ob2": {
+      "private_run": ".local\\automation\\combat-c1024-20260930",
+      "runner_sha256": "7712303b6e31b2f98b6159fd131bcc63844963035a752c848610e4a2f906a33b",
+      "module_sha256": "bd4ea9876c137637a4d1947468dabd68aba4bde7c27ec881813a9e3ca18b6b00",
+      "route_completed": true,
+      "exit_code": 0,
+      "metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 11472,
+        "last_frame": 11625,
+        "emulated_ticks": 3721617900,
+        "intervals": 153,
+        "seconds": 16.1999119,
+        "average_fps": 9.44449580617781,
+        "frame_ms": {
+          "median": 102.71629999999999,
+          "p95": 155.09059999999943,
+          "p99": 170.1330000000001,
+          "max": 186.49260000000024
+        },
+        "one_percent_low_fps": 5.608122355770305,
+        "rolling_1s_fps_min": 8,
+        "rolling_1s_fps_median": 9.5,
+        "frames_over_33_334ms": 153,
+        "frames_over_50ms": 146,
+        "longest_consecutive_over_50ms_seconds": 10.0469057,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 5.1051,
+        "emulation_speed_percent": 31.513134339946625
+      }
+    }
+  },
+  "builds": {
+    "clang_o2": {
+      "exit_code": 0,
+      "module_bytes": 170525696,
+      "audit_verified_chunk_hashes": 524,
+      "module_abi": 3,
+      "cpu_abi": 4,
+      "warnings": [
+        "One -Wcomment warning in GXRuntime cpu.c",
+        "CMake unused FetchContent variables"
+      ],
+      "recompiler_tests": "19/19 passed with Clang",
+      "targeted_rounding_checks": "16/16 passed against actual compiled module helpers"
+    },
+    "msvc_c1024_ob2": {
+      "exit_code": 0,
+      "module_bytes": 407890432,
+      "audit_verified_chunk_hashes": 2094,
+      "module_abi": 3,
+      "cpu_abi": 4,
+      "recompiler_tests": "19/19 passed",
+      "runtime_tests": "32/32 passed",
+      "warnings": [
+        "Two generator executable-memory patching warnings; runtime hash/SMC protection retained",
+        "CMake policy/minimum-version deprecations, unavailable Wayland, object path lengths, unused FetchContent variables"
+      ],
+      "compiler_error_diagnostics": 0
+    }
+  },
+  "visual_audio": {
+    "private_run": ".local/automation/combat-clang-visual-20260930",
+    "route_completed": true,
+    "exit_code": 0,
+    "audio_backend": "Cubeb",
+    "captures_inspected_in_order": [
+      "start.png",
+      "attack-2.png",
+      "attack-5.png",
+      "attack-9.png"
+    ],
+    "observed": "Heroes and Doombots in combat, damage indicators, hit effects, HUD, street scenery and displaced prop.",
+    "limits": "Four sampled native captures; not every frame. Audible quality/synchronization not verified."
+  },
+  "decision": "Clang is the stronger compiler candidate, but 10.99 FPS does not meet the 30 FPS goal. Production default unchanged. Profile remaining native execution and dispatcher costs before further compiler sweeps.",
+  "goal_status": "active, unmet",
+  "clang_dispatch_profile": {
+    "private_run": ".local/automation/combat-clang-profile-20260930",
+    "route_completed": true,
+    "exit_code": 0,
+    "scope": "Intrusive post-restore profile including initial neutral frames. Ranking only; not release FPS or exact comparison against differently loaded prior profiles.",
+    "top_dispatch_samples": [
+      {
+        "pc": "803682c4",
+        "count": 404808,
+        "wall_ms": 405.841,
+        "average_ns": 1002.6
+      },
+      {
+        "pc": "8035ba00",
+        "count": 2798580,
+        "wall_ms": 366.044,
+        "average_ns": 130.8
+      },
+      {
+        "pc": "803ee9e8",
+        "count": 2912532,
+        "wall_ms": 279.314,
+        "average_ns": 95.9
+      },
+      {
+        "pc": "803f680c",
+        "count": 5825064,
+        "wall_ms": 235.894,
+        "average_ns": 40.5
+      },
+      {
+        "pc": "80010724",
+        "count": 453274,
+        "wall_ms": 229.627,
+        "average_ns": 506.6
+      },
+      {
+        "pc": "803eea68",
+        "count": 2952275,
+        "wall_ms": 223.958,
+        "average_ns": 75.9
+      },
+      {
+        "pc": "8036f560",
+        "count": 2844299,
+        "wall_ms": 214.685,
+        "average_ns": 75.5
+      },
+      {
+        "pc": "8036f490",
+        "count": 2844312,
+        "wall_ms": 211.612,
+        "average_ns": 74.4
+      },
+      {
+        "pc": "803f673c",
+        "count": 2913077,
+        "wall_ms": 203.452,
+        "average_ns": 69.8
+      },
+      {
+        "pc": "803ee364",
+        "count": 119110,
+        "wall_ms": 184.602,
+        "average_ns": 1549.8
+      },
+      {
+        "pc": "8036f650",
+        "count": 2844302,
+        "wall_ms": 182.244,
+        "average_ns": 64.1
+      },
+      {
+        "pc": "803ee3f0",
+        "count": 89637,
+        "wall_ms": 169.859,
+        "average_ns": 1895.0
+      },
+      {
+        "pc": "80381560",
+        "count": 1862807,
+        "wall_ms": 167.467,
+        "average_ns": 89.9
+      },
+      {
+        "pc": "803f2b60",
+        "count": 6045725,
+        "wall_ms": 152.092,
+        "average_ns": 25.2
+      },
+      {
+        "pc": "803f2b38",
+        "count": 6045725,
+        "wall_ms": 148.914,
+        "average_ns": 24.6
+      },
+      {
+        "pc": "80007448",
+        "count": 5825250,
+        "wall_ms": 134.971,
+        "average_ns": 23.2
+      },
+      {
+        "pc": "803ee980",
+        "count": 2988793,
+        "wall_ms": 133.827,
+        "average_ns": 44.8
+      },
+      {
+        "pc": "8000f7dc",
+        "count": 414448,
+        "wall_ms": 130.293,
+        "average_ns": 314.4
+      },
+      {
+        "pc": "803ee338",
+        "count": 63908,
+        "wall_ms": 119.963,
+        "average_ns": 1877.1
+      },
+      {
+        "pc": "805143bc",
+        "count": 1065134,
+        "wall_ms": 118.279,
+        "average_ns": 111.0
+      },
+      {
+        "pc": "80514198",
+        "count": 1065310,
+        "wall_ms": 117.517,
+        "average_ns": 110.3
+      },
+      {
+        "pc": "803c11a0",
+        "count": 1060345,
+        "wall_ms": 115.096,
+        "average_ns": 108.5
+      },
+      {
+        "pc": "803ab7ec",
+        "count": 84143,
+        "wall_ms": 101.602,
+        "average_ns": 1207.5
+      },
+      {
+        "pc": "803c6110",
+        "count": 1200514,
+        "wall_ms": 100.159,
+        "average_ns": 83.4
+      }
+    ]
+  }
+}

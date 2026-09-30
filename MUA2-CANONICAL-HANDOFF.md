@@ -3,11 +3,46 @@
 **Project:** Wii Marvel: Ultimate Alliance 2 USA (RMSE52) native-PC recompilation  
 **Repository:** `GTTeancum/OpenMUA2`  
 **Canonical branch:** `main`  
-**Date:** 2026-09-29
+**Date:** 2026-09-30
 
 **Latest local checkpoint:** Windows build and audit completed below. The older
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
+
+## Compiler candidates completed; combat still below target — 2026-09-30
+
+Both build sessions finished with exit 0. Clang/O2 produced a 170525696-byte
+module, SHA256 47922fb187294b601b2b8667805c42bfda639ecfe9ffc014d36b7d1a0bcb6d51,
+with all 524 chunk hashes verified. MSVC/O2/Ob2/c1024 produced a 407890432-byte
+module, SHA256 bd4ea9876c137637a4d1947468dabd68aba4bde7c27ec881813a9e3ca18b6b00,
+with all 2094 chunk hashes verified. Both use module ABI 3 / CPU ABI 4.
+MSVC pipeline tests: recompiler 19/19, runtime 32/32. Clang recompiler tests:
+19/19; a private probe of its actual module helpers passed 16/16 signed
+single/double halfway-rounding cases across all four guest RN modes. This is
+bounded validation, not complete floating-point or gameplay equivalence.
+
+At the existing 1920x1080 preset / 3x EFB, sequential same-runner combat tests
+measured baseline 6.1936 FPS, Clang 10.9880 FPS, MSVC c1024 9.4445 FPS over
+frames 11472–11625. P99 frame times: 283.17, 167.95, 170.13 ms respectively.
+All routes completed and exited 0 with command receipts validated. Compiler
+load had ended; XEMU was using CPU in the background. These single comparisons
+are diagnostic, not repeated or sustained acceptance. Goal remains unmet.
+Clang is the stronger compiler candidate; the production default is unchanged.
+
+A Clang windowed Cubeb run completed with exit 0. All four native captures were
+inspected sequentially: heroes/Doombots fighting, damage indicators, hit effects,
+HUD and scenery were visible. These are sampled images, not every frame.
+Audible quality/synchronization remains unverified. A gated Clang dispatch
+profile completed: leading entries include 803682c4 and 8035ba00; frequent
+scheduler/context entries remain. Next measure generated execution versus
+runtime dispatcher/continuation costs before another expensive compiler sweep.
+
+Exact metrics, hashes, warnings and profile samples are in
+`evidence/windows-20260930/COMPILER-COMBAT-COMPARISON.json`. Clang reported one
+nested-comment warning and unused CMake variables. MSVC reported generator
+SMC warnings and CMake deprecation/Wayland/path/unused-variable warnings; no
+compiler error diagnostics. Private assets, generated C, images and raw logs
+remain under .local. Earlier statements below about live builds are historical.
 
 ## Idle-cycle hypothesis ruled out for this fight — 2026-09-29
 
