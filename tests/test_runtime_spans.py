@@ -17,6 +17,15 @@ class RuntimeSpansTest(unittest.TestCase):
         self.assertAlmostEqual(result['cpu_thread_unclassified_seconds'], 100e-9)
         self.assertEqual(result['totals']['gpu_submit']['threads'], [2])
 
+    def test_cpu_counters_preserved_without_clipping_or_time_conversion(self):
+        spans = SPANS.replace('target_ns,thread', 'target_ns,thread,cpu_ns,cycles,address,instructions')
+        spans = spans.replace(',1\n', ',1,-1,-1,0,0\n').replace(',2\n', ',2,-1,-1,0,0\n')
+        spans += 'jit_emit,120,240,0,1,200,420,4096,7\n'
+        spans += 'jit_emit,90,250,0,1,250,450,8192,8\n'
+        measured = mod.analyze(FRAMES, spans)['longest_jit_emissions']
+        self.assertEqual(len(measured), 1)
+        self.assertEqual((measured[0]['cpu_ns'], measured[0]['cycles'], measured[0]['instructions']), (200, 420, 7))
+
     def test_union_clips_and_merges_unsorted_overlap(self):
         self.assertEqual(mod.union_ns([(90, 120), (105, 170), (160, 210), (250, 300)], 100, 200), 100)
 

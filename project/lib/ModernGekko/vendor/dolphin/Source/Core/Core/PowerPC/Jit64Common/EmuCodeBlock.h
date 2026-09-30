@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "Common/BitSet.h"
+#include "Common/ShardedPointerMap.h"
 #include "Common/CommonTypes.h"
 #include "Common/x64Emitter.h"
 
@@ -140,6 +141,6 @@ protected:
   u8* m_near_code_end = nullptr;
   bool m_near_code_write_failed = false;
 
-  std::unordered_map<u8*, TrampolineInfo> m_back_patch_info;
+  Common::ShardedPointerMap<TrampolineInfo> m_back_patch_info;
   std::unordered_map<u8*, u8*> m_exception_handler_at_loc;
 };

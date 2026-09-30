@@ -9,6 +9,47 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## JIT backpatch rehash spike reduction — 2026-09-30
+
+Thread CPU/cycle diagnostics isolated a 54.6 ms emission of only 29 guest
+instructions (181.7 million thread cycles). Slow-instruction tracing located
+a floating-point load; memory metadata tracing then measured a 51.0 ms map
+insertion. Growth thresholds were 65537, 131073 and 262145 entries: whole-table
+rehashing was a concrete source of the pause. Windows CPU time is quantized;
+cycles are not converted to wall time.
+
+Replaced the JIT backpatch table with 64 independent pointer hash tables.
+Value references remain stable through insertion; missing lookup and clear/reuse
+semantics are preserved. No extra threads or large up-front reserve is used.
+A native test covers 300000 entries, stable references through growth,
+replacement, missing keys, clearing/reuse and page-spaced keys. Fault lookup
+uses the returned value pointer. Game operations/protections are unchanged.
+
+Two candidate runs reduced maximum measured insertion from 51.0003 ms to
+3.5261/1.6944 ms and longest single compilation from 51.1061 ms to
+6.5887/6.9024 ms. The first candidate's affected frame12676 changed from
+85.4468 to 34.7919 ms. Overall P99 stayed about 42.2 ms; worst frames were
+97.1453/84.2682 ms, average FPS 29.9770/29.9711. Total compilation time did
+not improve. Remaining cold bursts compile many blocks in one frame; this
+is targeted spike reduction, not sustained solid-30 combat acceptance.
+
+Opt-in diagnostics add emission CPU ns/cycles/address/block-size fields;
+-1 means unavailable counters. --jit-emission-address selects one block,
+or 0xffffffff for all. Profiling must be enabled; instruction/backpatch
+spans below 100us are omitted. Nested spans overlap. Profiling adds overhead.
+
+Final Windows build exit0: 39/39 tests in 7.74s. Tooling137 ran:136 passed,
+1 skipped; final span6/6 passed. No compiler warnings/errors found; existing
+CMake configuration warnings remain. All seven endpoint captures inspected:
+scenery/HUD/characters present, varying attacks/downed heroes, some endpoints
+away from the crowd. Neutral route tails do not prove sustained varied combat.
+Cubeb was active but muted; private mixer recordings do not verify audible
+quality. Crackling unresolved. No qualifying repeats or ten-minute acceptance.
+
+Next address bulk-compilation bursts and improve the varied-combat route.
+Goal remains active. Evidence and binary hashes:
+evidence/windows-20260930/JIT-BACKPATCH-SHARDING.json.
+
 ## Audio capture and JIT compilation stalls — 2026-09-30
 
 Added explicit --capture-audio with --profile-audio --audio Cubeb: retain at most

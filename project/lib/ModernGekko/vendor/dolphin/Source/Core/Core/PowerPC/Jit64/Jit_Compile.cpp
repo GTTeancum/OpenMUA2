@@ -14,6 +14,7 @@
 
 #include "Common/CommonTypes.h"
 #include "Common/RuntimeTiming.h"
+#include "Core/PowerPC/Jit64/JitEmissionTiming.h"
 #include "Common/GekkoDisassembler.h"
 #include "Common/HostDisassembler.h"
 #include "Common/IOFile.h"
@@ -188,7 +189,7 @@ bool Jit64::SetEmitterStateToFreeCodeRegion()
 
 bool Jit64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
 {
-  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::JitEmit);
+  JitEmissionTiming timing(em_address, code_block.m_num_instructions);
   js.firstFPInstructionFound = false;
   js.isLastInstruction = false;
   js.blockStart = em_address;
@@ -271,6 +272,10 @@ bool Jit64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
   for (u32 i = 0; i < code_block.m_num_instructions; i++)
   {
     PPCAnalyst::CodeOp& op = m_code_buffer[i];
+    std::optional<JitEmissionTiming> instruction_timing;
+    if (timing.TraceInstructions())
+      instruction_timing.emplace(op.address, 1, Common::RuntimeTiming::Kind::JitInstruction);
+
 
     js.compilerPC = op.address;
     js.op = &op;

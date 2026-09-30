@@ -4,8 +4,10 @@
 #include "Core/PowerPC/Jit64Common/EmuCodeBlock.h"
 
 #include <functional>
+#include <cstdio>
 
 #include "Common/Assert.h"
+#include "Common/RuntimeTiming.h"
 #include "Common/CPUDetect.h"
 #include "Common/FloatUtils.h"
 #include "Common/Intrinsics.h"
@@ -336,7 +338,19 @@ void EmuCodeBlock::SafeLoadToReg(X64Reg reg_value, const Gen::OpArg& opAddress, 
     MovInfo mov;
     bool offsetAddedToAddress =
         UnsafeLoadToReg(reg_value, opAddress, accessSize, offset, signExtend, &mov);
-    TrampolineInfo& info = m_back_patch_info[mov.address];
+    TrampolineInfo& info = [&]() -> TrampolineInfo& {
+      const auto begin = Common::RuntimeTiming::Begin();
+      const auto buckets = begin ? m_back_patch_info.bucket_count(mov.address) : 0;
+      auto& result = m_back_patch_info[mov.address];
+      if (begin && Common::RuntimeTiming::Now() - begin >= 100000)
+      {
+        Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatch, begin);
+        if (Common::RuntimeTiming::Now() - begin >= 10000000)
+          std::fprintf(stderr, "JIT backpatch slow insertion: size=%zu buckets=%zu->%zu\n",
+                       m_back_patch_info.size(), buckets, m_back_patch_info.bucket_count(mov.address));
+      }
+      return result;
+    }();
     info.pc = js.compilerPC;
     info.nonAtomicSwapStoreSrc = mov.nonAtomicSwapStore ? mov.nonAtomicSwapStoreSrc : INVALID_REG;
     info.start = backpatchStart;
@@ -509,7 +523,19 @@ void EmuCodeBlock::SafeWriteRegToReg(OpArg reg_value, X64Reg reg_addr, int acces
     u8* backpatchStart = GetWritableCodePtr();
     MovInfo mov;
     UnsafeWriteRegToReg(reg_value, reg_addr, accessSize, offset, swap, &mov);
-    TrampolineInfo& info = m_back_patch_info[mov.address];
+    TrampolineInfo& info = [&]() -> TrampolineInfo& {
+      const auto begin = Common::RuntimeTiming::Begin();
+      const auto buckets = begin ? m_back_patch_info.bucket_count(mov.address) : 0;
+      auto& result = m_back_patch_info[mov.address];
+      if (begin && Common::RuntimeTiming::Now() - begin >= 100000)
+      {
+        Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatch, begin);
+        if (Common::RuntimeTiming::Now() - begin >= 10000000)
+          std::fprintf(stderr, "JIT backpatch slow insertion: size=%zu buckets=%zu->%zu\n",
+                       m_back_patch_info.size(), buckets, m_back_patch_info.bucket_count(mov.address));
+      }
+      return result;
+    }();
     info.pc = js.compilerPC;
     info.nonAtomicSwapStoreSrc = mov.nonAtomicSwapStore ? mov.nonAtomicSwapStoreSrc : INVALID_REG;
     info.start = backpatchStart;

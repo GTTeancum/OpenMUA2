@@ -1,0 +1,2271 @@
+{
+  "date": "2026-09-30",
+  "base_commit": "c577da75c05bba7285bdb812a3626c2d1a639f69",
+  "goal": "active/unmet",
+  "scope": "Diagnostic headless probes, one logical CPU, JIT, Vulkan, 1920x1080 preset/3x EFB, normal clocks, formatter opt-in ON, Cubeb volume0. Not qualifying varied combat.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "log": ".local/logs/jit-sharded-backpatch-build.log",
+    "runtime_tests": "39/39 passed in 7.74s",
+    "tooling_tests": "137 ran;136 passed,1skip in22.462s; final span6/6 passed",
+    "compiler_warnings": [],
+    "compiler_errors": [],
+    "configuration_warnings": [
+      "Vendored CMake deprecations",
+      "Missing Wayland",
+      "Long object paths"
+    ]
+  },
+  "runs": [
+    {
+      "name": "jit-emission-cpu",
+      "runner_sha256": "e45837d246400532652c60cd059dcd7ed35682be00be024acc93f677a9b79356",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.0403602,
+        "average_fps": 29.970497188764927,
+        "frame_ms": {
+          "median": 33.37364999999881,
+          "p95": 36.50379999999842,
+          "p99": 43.775700000001194,
+          "max": 83.63070000000006
+        },
+        "one_percent_low_fps": 17.169585848457597,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 651,
+        "frames_over_50ms": 7,
+        "longest_consecutive_over_50ms_seconds": 0.1342913000000001,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 100.00155895317897,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1228,
+          "50.050": 1,
+          "16.683": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.006983333332141739,
+          "p99": 9.945733333334692,
+          "min": -12.327166666666125,
+          "max": 50.26403333333339
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 7962.1702,
+          "max_span_ms": 5.4739,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "jit_analyze": {
+          "calls": 14084,
+          "union_ms": 50.2351,
+          "max_span_ms": 2.938,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "jit_emit": {
+          "calls": 14084,
+          "union_ms": 363.0742,
+          "max_span_ms": 54.6383,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "jit_finalize": {
+          "calls": 14084,
+          "union_ms": 97.6807,
+          "max_span_ms": 4.7284,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "jit_compile": {
+          "calls": 14084,
+          "union_ms": 538.6283,
+          "max_span_ms": 54.6673,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1107,
+          "union_ms": 6.2375,
+          "max_span_ms": 0.2112,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 95.1019,
+          "max_span_ms": 0.9914,
+          "threads": [
+            12671266475716370729
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 178.8332,
+          "max_span_ms": 1.0781,
+          "threads": [
+            13379803411610298634
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 13,
+          "union_ms": 5.9876,
+          "max_span_ms": 3.3873,
+          "threads": [
+            12170578843894703156,
+            13379803411610298634
+          ]
+        },
+        "shader_compile": {
+          "calls": 1,
+          "union_ms": 8.5649,
+          "max_span_ms": 8.5649,
+          "threads": [
+            12170578843894703156
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12662,
+          "host_ms": 83.6307,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 2.578,
+          "cpu_thread_unclassified_ms": 81.0527,
+          "cpu_thread_coverage_ms": {
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 3.9038,
+            "gpu_present": 0.0,
+            "gpu_fence": 0.0022,
+            "gpu_pacing": 0.0,
+            "jit_compile": 51.7838,
+            "jit_finalize": 12.3624,
+            "gpu_submit": 0.0,
+            "throttle": 2.5758,
+            "present": 0.0961,
+            "gpu_worker": 0.0,
+            "jit_emit": 33.1582
+          }
+        },
+        {
+          "frame": 12676,
+          "host_ms": 82.541,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.0056,
+          "cpu_thread_unclassified_ms": 82.5354,
+          "cpu_thread_coverage_ms": {
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 0.163,
+            "gpu_present": 0.0,
+            "gpu_fence": 0.003,
+            "gpu_pacing": 0.0,
+            "jit_compile": 56.7357,
+            "jit_finalize": 0.3981,
+            "gpu_submit": 0.0,
+            "throttle": 0.0026,
+            "present": 0.0934,
+            "gpu_worker": 0.0,
+            "jit_emit": 56.1142
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 80.1434,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.7493,
+          "cpu_thread_unclassified_ms": 74.3941,
+          "cpu_thread_coverage_ms": {
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 3.7244,
+            "gpu_present": 0.0,
+            "gpu_fence": 0.0052,
+            "gpu_pacing": 0.0,
+            "jit_compile": 46.0794,
+            "jit_finalize": 7.2553,
+            "gpu_submit": 0.0,
+            "throttle": 5.7441,
+            "present": 0.1307,
+            "gpu_worker": 0.0,
+            "jit_emit": 32.9822
+          }
+        },
+        {
+          "frame": 12753,
+          "host_ms": 64.2527,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 1.0861,
+          "cpu_thread_unclassified_ms": 63.1666,
+          "cpu_thread_coverage_ms": {
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 2.723,
+            "gpu_present": 0.0,
+            "gpu_fence": 0.0,
+            "gpu_pacing": 0.0,
+            "jit_compile": 31.064,
+            "jit_finalize": 6.3842,
+            "gpu_submit": 0.0,
+            "throttle": 1.0861,
+            "present": 0.2184,
+            "gpu_worker": 0.0,
+            "jit_emit": 20.588
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330256968158100,
+          "end_ns": 330257022796400,
+          "target_ns": 0,
+          "thread": 13379803411610298634,
+          "cpu_ns": 62500000,
+          "cycles": 181688105,
+          "address": 2148827908,
+          "instructions": 29
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330255372928100,
+          "end_ns": 330255374993900,
+          "target_ns": 0,
+          "thread": 13379803411610298634,
+          "cpu_ns": 0,
+          "cycles": 1178488,
+          "address": 2149928244,
+          "instructions": 34
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330280650782700,
+          "end_ns": 330280651960600,
+          "target_ns": 0,
+          "thread": 13379803411610298634,
+          "cpu_ns": 0,
+          "cycles": 344403,
+          "address": 2165254300,
+          "instructions": 55
+        }
+      ],
+      "slowest_instructions": [],
+      "selected_frame_ms": {
+        "12630": 80.1434,
+        "12662": 83.6307,
+        "12676": 82.541,
+        "12753": 64.2527
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2336256,
+        "seconds": 48.672,
+        "nonzero_samples": 4604582,
+        "total_samples": 4672512,
+        "peak": 25903,
+        "full_scale_samples": 0,
+        "rms": 3442.5666423790494
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "5fc57a1ce340096275b212757fd74b70dfb33f2be3b8b75b7bc2410a2fa10533"
+    },
+    {
+      "name": "jit-instruction-cpu",
+      "runner_sha256": "e8e855c2ead39938211c74e0989282093aa975186cc8e3a9d949f1cb2dba477e",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.0407216,
+        "average_fps": 29.97023327192181,
+        "frame_ms": {
+          "median": 33.356149999999474,
+          "p95": 36.04079999999854,
+          "p99": 42.02350000000088,
+          "max": 84.93839999999997
+        },
+        "one_percent_low_fps": 17.95891911067991,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 640,
+        "frames_over_50ms": 5,
+        "longest_consecutive_over_50ms_seconds": 0.08493839999999997,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 100.00067835064579,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1230
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.010516666667195751,
+          "p99": 8.65683333333421,
+          "min": -13.192166666666685,
+          "max": 51.5717333333333
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 9963.4145,
+          "max_span_ms": 12.3938,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "jit_analyze": {
+          "calls": 14025,
+          "union_ms": 47.676,
+          "max_span_ms": 0.4382,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "jit_emit": {
+          "calls": 14025,
+          "union_ms": 354.3718,
+          "max_span_ms": 52.3107,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "jit_finalize": {
+          "calls": 14025,
+          "union_ms": 91.2489,
+          "max_span_ms": 3.5601,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "jit_compile": {
+          "calls": 14025,
+          "union_ms": 520.7547,
+          "max_span_ms": 52.3467,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1087,
+          "union_ms": 7.1822,
+          "max_span_ms": 0.4502,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 94.4446,
+          "max_span_ms": 1.0922,
+          "threads": [
+            1077596603372457943
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 179.8587,
+          "max_span_ms": 1.4058,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "jit_instruction": {
+          "calls": 28,
+          "union_ms": 0.0606,
+          "max_span_ms": 0.0035,
+          "threads": [
+            11467813080946158491
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 2,
+          "union_ms": 2.0335,
+          "max_span_ms": 1.2586,
+          "threads": [
+            11467813080946158491,
+            13788855975209778971
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12676,
+          "host_ms": 84.9384,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.154,
+          "cpu_thread_unclassified_ms": 79.7844,
+          "cpu_thread_coverage_ms": {
+            "jit_finalize": 0.3094,
+            "jit_analyze": 0.3197,
+            "shader_compile": 0.0,
+            "gpu_fence": 0.004,
+            "present": 0.1461,
+            "jit_compile": 54.6716,
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 0.0606,
+            "throttle": 5.15,
+            "gpu_present": 0.0,
+            "jit_emit": 53.8472,
+            "gpu_worker": 0.0,
+            "gpu_pacing": 0.0
+          }
+        },
+        {
+          "frame": 12662,
+          "host_ms": 84.5127,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 4.3911,
+          "cpu_thread_unclassified_ms": 80.1216,
+          "cpu_thread_coverage_ms": {
+            "jit_finalize": 11.338,
+            "jit_analyze": 4.0482,
+            "shader_compile": 0.0,
+            "gpu_fence": 0.0022,
+            "present": 0.0952,
+            "jit_compile": 50.2241,
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 0.0,
+            "throttle": 4.3889,
+            "gpu_present": 0.0,
+            "jit_emit": 32.3684,
+            "gpu_worker": 0.0,
+            "gpu_pacing": 0.0
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 78.1046,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.5023,
+          "cpu_thread_unclassified_ms": 71.6023,
+          "cpu_thread_coverage_ms": {
+            "jit_finalize": 7.5949,
+            "jit_analyze": 3.6959,
+            "shader_compile": 0.0,
+            "gpu_fence": 0.0051,
+            "present": 0.1783,
+            "jit_compile": 44.9593,
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 0.0,
+            "throttle": 6.4972,
+            "gpu_present": 0.0,
+            "jit_emit": 31.8901,
+            "gpu_worker": 0.0,
+            "gpu_pacing": 0.0
+          }
+        },
+        {
+          "frame": 12753,
+          "host_ms": 65.3572,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 1.8158,
+          "cpu_thread_unclassified_ms": 63.5414,
+          "cpu_thread_coverage_ms": {
+            "jit_finalize": 6.7435,
+            "jit_analyze": 2.9367,
+            "shader_compile": 0.0,
+            "gpu_fence": 0.0,
+            "present": 0.1114,
+            "jit_compile": 33.2222,
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 0.0,
+            "throttle": 1.8158,
+            "gpu_present": 0.0,
+            "jit_emit": 21.3961,
+            "gpu_worker": 0.0,
+            "gpu_pacing": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330470677355000,
+          "end_ns": 330470729665700,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 46875000,
+          "cycles": 186753283,
+          "address": 2148827820,
+          "instructions": 32
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330491810047600,
+          "end_ns": 330491811040900,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 0,
+          "cycles": 2019394,
+          "address": 2150742116,
+          "instructions": 40
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330470465003700,
+          "end_ns": 330470465907300,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 0,
+          "cycles": 416093,
+          "address": 2165006760,
+          "instructions": 88
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330470729825100,
+          "end_ns": 330470729828600,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 0,
+          "cycles": 9862,
+          "address": 2148923936,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330470729786500,
+          "end_ns": 330470729789700,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 0,
+          "cycles": 9482,
+          "address": 2148827912,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330470729801800,
+          "end_ns": 330470729804900,
+          "target_ns": 0,
+          "thread": 11467813080946158491,
+          "cpu_ns": 0,
+          "cycles": 9103,
+          "address": 2148827936,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 78.1046,
+        "12662": 84.5127,
+        "12676": 84.9384,
+        "12753": 65.3572
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2346336,
+        "seconds": 48.882,
+        "nonzero_samples": 4624448,
+        "total_samples": 4692672,
+        "peak": 28125,
+        "full_scale_samples": 0,
+        "rms": 3425.4933497868087
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "d40fb588e8fded3a6f24b0b550c48b7e41584bea2ddcb618cb26b13950d19817"
+    },
+    {
+      "name": "jit-slow-instructions",
+      "runner_sha256": "5552687f1bd6cd77e89ef0be083600e28674fd8eb5ef6f7c938e2fda0b07c852",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.041105,
+        "average_fps": 29.9699532943862,
+        "frame_ms": {
+          "median": 33.34685000000004,
+          "p95": 35.56519999999708,
+          "p99": 44.214800000000665,
+          "max": 97.72369999999997
+        },
+        "one_percent_low_fps": 16.15141378915763,
+        "rolling_1s_fps_min": 27,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 634,
+        "frames_over_50ms": 8,
+        "longest_consecutive_over_50ms_seconds": 0.09772369999999997,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 99.9997441589353,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1230
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.01981666666663051,
+          "p99": 10.848133333333996,
+          "min": -15.18516666666593,
+          "max": 64.3570333333333
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 9796.6872,
+          "max_span_ms": 5.0818,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "jit_analyze": {
+          "calls": 13850,
+          "union_ms": 51.9537,
+          "max_span_ms": 3.5975,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "jit_emit": {
+          "calls": 13850,
+          "union_ms": 366.0524,
+          "max_span_ms": 53.5038,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13850,
+          "union_ms": 90.3169,
+          "max_span_ms": 2.9752,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "jit_compile": {
+          "calls": 13850,
+          "union_ms": 533.948,
+          "max_span_ms": 53.5303,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1059,
+          "union_ms": 5.796,
+          "max_span_ms": 0.2685,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 99.8937,
+          "max_span_ms": 1.0208,
+          "threads": [
+            16605494782667895681
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 182.8743,
+          "max_span_ms": 1.5721,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "jit_instruction": {
+          "calls": 71,
+          "union_ms": 72.7951,
+          "max_span_ms": 53.4488,
+          "threads": [
+            6876182433156173827
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 14,
+          "union_ms": 2.8669,
+          "max_span_ms": 0.5786,
+          "threads": [
+            6876182433156173827,
+            9427448817377906093
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12662,
+          "host_ms": 97.7237,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.8745,
+          "cpu_thread_unclassified_ms": 96.8492,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "gpu_present": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 37.9887,
+            "jit_analyze": 4.9962,
+            "throttle": 0.8718,
+            "jit_finalize": 11.2993,
+            "jit_compile": 56.71,
+            "gpu_fence": 0.0027,
+            "present": 0.0921,
+            "gpu_submit": 0.0,
+            "gpu_worker": 0.0,
+            "jit_instruction": 3.1622,
+            "shader_compile": 0.0
+          }
+        },
+        {
+          "frame": 12676,
+          "host_ms": 88.1575,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.0649,
+          "cpu_thread_unclassified_ms": 83.0926,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "gpu_present": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 54.7326,
+            "jit_analyze": 0.1544,
+            "throttle": 5.0612,
+            "jit_finalize": 0.2476,
+            "jit_compile": 55.1972,
+            "gpu_fence": 0.0037,
+            "present": 0.2309,
+            "gpu_submit": 0.0,
+            "gpu_worker": 0.0,
+            "jit_instruction": 53.4488,
+            "shader_compile": 0.0
+          }
+        },
+        {
+          "frame": 13172,
+          "host_ms": 84.5312,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.004,
+          "cpu_thread_unclassified_ms": 84.5272,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "gpu_present": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 0.0547,
+            "jit_analyze": 0.0121,
+            "throttle": 0.004,
+            "jit_finalize": 0.0116,
+            "jit_compile": 0.0872,
+            "gpu_fence": 0.0,
+            "present": 0.1794,
+            "gpu_submit": 0.0,
+            "gpu_worker": 0.0,
+            "jit_instruction": 0.0,
+            "shader_compile": 0.0
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 77.225,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.8373,
+          "cpu_thread_unclassified_ms": 69.3877,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "gpu_present": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 32.4527,
+            "jit_analyze": 3.5429,
+            "throttle": 7.834,
+            "jit_finalize": 7.2023,
+            "jit_compile": 45.2583,
+            "gpu_fence": 0.0033,
+            "present": 0.1245,
+            "gpu_submit": 0.0,
+            "gpu_worker": 0.0,
+            "jit_instruction": 1.1912,
+            "shader_compile": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330682771807100,
+          "end_ns": 330682825310900,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": 46875000,
+          "cycles": 188560271,
+          "address": 2148828144,
+          "instructions": 47
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330682397405000,
+          "end_ns": 330682399530000,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": 0,
+          "cycles": 214684,
+          "address": 2150399360,
+          "instructions": 16
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330682403948900,
+          "end_ns": 330682406038900,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": 0,
+          "cycles": 159685,
+          "address": 2150731176,
+          "instructions": 19
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330682771833800,
+          "end_ns": 330682825282600,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2151595256,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330682397431000,
+          "end_ns": 330682399515200,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2150305328,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330682404072500,
+          "end_ns": 330682406026100,
+          "target_ns": 0,
+          "thread": 6876182433156173827,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2152808816,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 77.225,
+        "12662": 97.7237,
+        "12676": 88.1575,
+        "12753": 62.3446
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2346816,
+        "seconds": 48.892,
+        "nonzero_samples": 4619288,
+        "total_samples": 4693632,
+        "peak": 26790,
+        "full_scale_samples": 0,
+        "rms": 3529.683389724928
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "fa101c2d72206f07f7f1a21b2e2f2db5ad564595bada945aa2797dd60dff93dc"
+    },
+    {
+      "name": "jit-backpatch",
+      "runner_sha256": "8107963c8df2031be7d464dae2f43ecc02788bcaa4c08087edde1ca0368d7a1f",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.0369783,
+        "average_fps": 29.97296708856363,
+        "frame_ms": {
+          "median": 33.36350000000188,
+          "p95": 36.19530000000282,
+          "p99": 42.12459999999929,
+          "max": 94.0103000000001
+        },
+        "one_percent_low_fps": 17.612832547213966,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 637,
+        "frames_over_50ms": 5,
+        "longest_consecutive_over_50ms_seconds": 0.0940103000000001,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 100.00980018550733,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 50.05
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1228,
+          "50.050": 1,
+          "16.683": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0031666666647917063,
+          "p99": 8.708133333333299,
+          "min": -11.587466666665671,
+          "max": 60.64363333333343
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 12854.4824,
+          "max_span_ms": 10.4427,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_analyze": {
+          "calls": 13809,
+          "union_ms": 47.3878,
+          "max_span_ms": 0.2668,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_emit": {
+          "calls": 13809,
+          "union_ms": 363.1655,
+          "max_span_ms": 51.0697,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13809,
+          "union_ms": 99.516,
+          "max_span_ms": 6.3582,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_compile": {
+          "calls": 13809,
+          "union_ms": 536.0673,
+          "max_span_ms": 51.1061,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1165,
+          "union_ms": 7.1244,
+          "max_span_ms": 0.8526,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 92.3338,
+          "max_span_ms": 1.0574,
+          "threads": [
+            13548904286540044731
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 173.8076,
+          "max_span_ms": 1.495,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_instruction": {
+          "calls": 71,
+          "union_ms": 68.1444,
+          "max_span_ms": 51.0075,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 26,
+          "union_ms": 57.0178,
+          "max_span_ms": 51.0003,
+          "threads": [
+            335434008540656755
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 3,
+          "union_ms": 2.0723,
+          "max_span_ms": 1.1968,
+          "threads": [
+            335434008540656755,
+            3671373025221498468
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12662,
+          "host_ms": 94.0103,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.511,
+          "cpu_thread_unclassified_ms": 88.4993,
+          "cpu_thread_coverage_ms": {
+            "gpu_present": 0.0,
+            "present": 0.1342,
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 36.0766,
+            "gpu_worker": 0.0,
+            "gpu_submit": 0.0,
+            "throttle": 5.507,
+            "jit_compile": 57.4135,
+            "jit_backpatch": 1.4205,
+            "jit_finalize": 14.7482,
+            "jit_instruction": 2.4505,
+            "jit_analyze": 3.8721,
+            "gpu_pacing": 0.0,
+            "gpu_fence": 0.004
+          }
+        },
+        {
+          "frame": 12676,
+          "host_ms": 85.4468,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.4263,
+          "cpu_thread_unclassified_ms": 80.0205,
+          "cpu_thread_coverage_ms": {
+            "gpu_present": 0.0,
+            "present": 0.1311,
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 53.0657,
+            "gpu_worker": 0.0,
+            "gpu_submit": 0.0,
+            "throttle": 5.4224,
+            "jit_compile": 53.6545,
+            "jit_backpatch": 51.0003,
+            "jit_finalize": 0.333,
+            "jit_instruction": 51.5898,
+            "jit_analyze": 0.1844,
+            "gpu_pacing": 0.0,
+            "gpu_fence": 0.0039
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 78.9782,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.1377,
+          "cpu_thread_unclassified_ms": 71.8405,
+          "cpu_thread_coverage_ms": {
+            "gpu_present": 0.0,
+            "present": 0.1268,
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 32.4492,
+            "gpu_worker": 0.0,
+            "gpu_submit": 0.0,
+            "throttle": 7.132,
+            "jit_compile": 45.7728,
+            "jit_backpatch": 0.1057,
+            "jit_finalize": 7.9426,
+            "jit_instruction": 1.0994,
+            "jit_analyze": 3.7132,
+            "gpu_pacing": 0.0,
+            "gpu_fence": 0.0057
+          }
+        },
+        {
+          "frame": 12753,
+          "host_ms": 67.303,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.159,
+          "cpu_thread_unclassified_ms": 61.144,
+          "cpu_thread_coverage_ms": {
+            "gpu_present": 0.0,
+            "present": 0.1116,
+            "shader_compile": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_emit": 21.5423,
+            "gpu_worker": 0.0,
+            "gpu_submit": 0.0,
+            "throttle": 6.159,
+            "jit_compile": 32.4858,
+            "jit_backpatch": 0.0,
+            "jit_finalize": 6.7491,
+            "jit_instruction": 0.7485,
+            "jit_analyze": 2.8109,
+            "gpu_pacing": 0.0,
+            "gpu_fence": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330900966166200,
+          "end_ns": 330901017235900,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": 62500000,
+          "cycles": 181570153,
+          "address": 2148827820,
+          "instructions": 32
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330909857277500,
+          "end_ns": 330909858137700,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": 0,
+          "cycles": 1000595,
+          "address": 2150245500,
+          "instructions": 44
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 330899380540800,
+          "end_ns": 330899381318200,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": 0,
+          "cycles": 1445510,
+          "address": 2149928244,
+          "instructions": 34
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330900966170800,
+          "end_ns": 330901017178300,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2149484796,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330900501110000,
+          "end_ns": 330900501780300,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2149194780,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 330906239772300,
+          "end_ns": 330906240366600,
+          "target_ns": 0,
+          "thread": 335434008540656755,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2163920496,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 78.9782,
+        "12662": 94.0103,
+        "12676": 85.4468,
+        "12753": 67.303
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2344416,
+        "seconds": 48.842,
+        "nonzero_samples": 4617887,
+        "total_samples": 4688832,
+        "peak": 26288,
+        "full_scale_samples": 0,
+        "rms": 2858.309416350805
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "068016a4c3bb2eef35a175679b04c456df8538735b4609a0a9debd982d6ee1de"
+    },
+    {
+      "name": "jit-backpatch-size",
+      "runner_sha256": "1a155069fe3932e29f66545c203870f9da38c51263feff2c1ea2416a3e49daa1",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13222,
+        "emulated_ticks": 14643228600,
+        "intervals": 602,
+        "seconds": 20.4872503,
+        "average_fps": 29.384128723218655,
+        "frame_ms": {
+          "median": 33.32204999999977,
+          "p95": 35.69830000000351,
+          "p99": 50.659899999999425,
+          "max": 522.3154000000001
+        },
+        "one_percent_low_fps": 7.447929661752277,
+        "rolling_1s_fps_min": 15,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 296,
+        "frames_over_50ms": 7,
+        "longest_consecutive_over_50ms_seconds": 0.5223154000000001,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 20.086733333333335,
+        "emulation_speed_percent": 98.04504283980626,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 602
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.04461666666689956,
+          "p99": 17.293233333332754,
+          "min": -13.872566666663824,
+          "max": 488.94873333333345
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 7379,
+          "union_ms": 4562.9557,
+          "max_span_ms": 38.5783,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_analyze": {
+          "calls": 12265,
+          "union_ms": 39.1167,
+          "max_span_ms": 0.411,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_emit": {
+          "calls": 12265,
+          "union_ms": 309.7329,
+          "max_span_ms": 36.9973,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_finalize": {
+          "calls": 12265,
+          "union_ms": 79.7716,
+          "max_span_ms": 6.5049,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_compile": {
+          "calls": 12265,
+          "union_ms": 450.8775,
+          "max_span_ms": 37.0249,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "gpu_fence": {
+          "calls": 540,
+          "union_ms": 16.9636,
+          "max_span_ms": 7.9106,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "gpu_submit": {
+          "calls": 604,
+          "union_ms": 47.7629,
+          "max_span_ms": 0.8062,
+          "threads": [
+            2828981856316819719,
+            6233404592375062722
+          ]
+        },
+        "present": {
+          "calls": 602,
+          "union_ms": 95.1301,
+          "max_span_ms": 1.47,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_instruction": {
+          "calls": 84,
+          "union_ms": 53.3733,
+          "max_span_ms": 36.9435,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 27,
+          "union_ms": 41.7227,
+          "max_span_ms": 36.8883,
+          "threads": [
+            2828981856316819719
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 8,
+          "union_ms": 3.388,
+          "max_span_ms": 2.3906,
+          "threads": [
+            2828981856316819719,
+            16093555677794206279
+          ]
+        },
+        "gpu_worker": {
+          "calls": 2,
+          "union_ms": 0.0008,
+          "max_span_ms": 0.0007,
+          "threads": [
+            2828981856316819719
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 13214,
+          "host_ms": 522.3154,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 48.8905,
+          "cpu_thread_unclassified_ms": 473.4249,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 0.0655,
+            "jit_compile": 0.1252,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "gpu_worker": 0.0007,
+            "present": 0.0309,
+            "gpu_fence": 7.9106,
+            "jit_backpatch": 0.0,
+            "shader_compile": 0.0,
+            "throttle": 40.9792,
+            "jit_instruction": 0.0,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 0.0191,
+            "jit_finalize": 0.0277,
+            "gpu_submit": 0.0793
+          }
+        },
+        {
+          "frame": 12662,
+          "host_ms": 95.0736,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 4.9552,
+          "cpu_thread_unclassified_ms": 90.1184,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 37.4472,
+            "jit_compile": 59.7388,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.1485,
+            "gpu_fence": 0.0034,
+            "jit_backpatch": 0.2585,
+            "shader_compile": 0.0,
+            "throttle": 4.9518,
+            "jit_instruction": 3.1589,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 4.9605,
+            "jit_finalize": 14.7048,
+            "gpu_submit": 0.0
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 85.9963,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 4.5582,
+          "cpu_thread_unclassified_ms": 81.4381,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 36.0418,
+            "jit_compile": 50.1711,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.127,
+            "gpu_fence": 0.0058,
+            "jit_backpatch": 0.6963,
+            "shader_compile": 0.0,
+            "throttle": 4.5524,
+            "jit_instruction": 2.7844,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 4.2536,
+            "jit_finalize": 7.8065,
+            "gpu_submit": 0.0
+          }
+        },
+        {
+          "frame": 12676,
+          "host_ms": 68.0394,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.008,
+          "cpu_thread_unclassified_ms": 68.0314,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 38.8266,
+            "jit_compile": 39.2438,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.2452,
+            "gpu_fence": 0.004,
+            "jit_backpatch": 37.0056,
+            "shader_compile": 0.0,
+            "throttle": 0.004,
+            "jit_instruction": 37.0616,
+            "pipeline_compile": 0.0,
+            "jit_analyze": 0.1365,
+            "jit_finalize": 0.2368,
+            "gpu_submit": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331100026310200,
+          "end_ns": 331100063307500,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": 15625000,
+          "cycles": 99620482,
+          "address": 2147563216,
+          "instructions": 45
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331099639067800,
+          "end_ns": 331099639992400,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": 0,
+          "cycles": 344404,
+          "address": 2148550448,
+          "instructions": 53
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331099582175200,
+          "end_ns": 331099582983500,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": 0,
+          "cycles": 161959,
+          "address": 2148009868,
+          "instructions": 25
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331100026318700,
+          "end_ns": 331100063262200,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2147563260,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331099582307600,
+          "end_ns": 331099582976600,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2149149312,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331099579988900,
+          "end_ns": 331099580450400,
+          "target_ns": 0,
+          "thread": 2828981856316819719,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2149483488,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 85.9963,
+        "12662": 95.0736,
+        "12676": 68.0394,
+        "12753": 65.4048
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 1087296,
+        "seconds": 22.652,
+        "nonzero_samples": 2108043,
+        "total_samples": 2174592,
+        "peak": 25326,
+        "full_scale_samples": 0,
+        "rms": 3379.625747687302
+      },
+      "slow_insert_log": [
+        "JIT backpatch slow insertion: size=65537 buckets=65536->131072",
+        "JIT backpatch slow insertion: size=131073 buckets=131072->262144",
+        "JIT backpatch slow insertion: size=262145 buckets=262144->524288"
+      ],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "ca95645c2b9aa25dc1289cd38d8e83078e3b8bac510af1e1592cee1ba0aad481"
+    },
+    {
+      "name": "jit-sharded-backpatch",
+      "runner_sha256": "1ce192e07c98f747955aa19b39a7c7fd05c377cacea970f5bf2c4db0f51a255e",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.0314972,
+        "average_fps": 29.97697095976308,
+        "frame_ms": {
+          "median": 33.362349999999985,
+          "p95": 35.95550000000003,
+          "p99": 42.203799999995795,
+          "max": 97.14529999999999
+        },
+        "one_percent_low_fps": 17.877190849738863,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 640,
+        "frames_over_50ms": 8,
+        "longest_consecutive_over_50ms_seconds": 0.09714529999999999,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 100.02315976907614,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1230
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.004316666666684399,
+          "p99": 8.837133333329126,
+          "min": -13.94336666666697,
+          "max": 63.77863333333332
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 8631.0247,
+          "max_span_ms": 5.757,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_analyze": {
+          "calls": 13797,
+          "union_ms": 47.1582,
+          "max_span_ms": 0.4488,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_emit": {
+          "calls": 13797,
+          "union_ms": 391.7278,
+          "max_span_ms": 3.8031,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13797,
+          "union_ms": 96.7485,
+          "max_span_ms": 6.5768,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_compile": {
+          "calls": 13797,
+          "union_ms": 562.8031,
+          "max_span_ms": 6.5887,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1057,
+          "union_ms": 6.7516,
+          "max_span_ms": 0.3254,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 100.5491,
+          "max_span_ms": 2.2415,
+          "threads": [
+            7734819085099323153
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 184.9364,
+          "max_span_ms": 2.3782,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_instruction": {
+          "calls": 152,
+          "union_ms": 91.3896,
+          "max_span_ms": 3.5281,
+          "threads": [
+            16577997826577403275
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 100,
+          "union_ms": 78.0425,
+          "max_span_ms": 3.5261,
+          "threads": [
+            16577997826577403275
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12662,
+          "host_ms": 97.1453,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.6619,
+          "cpu_thread_unclassified_ms": 90.4834,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "jit_compile": 60.3848,
+            "jit_analyze": 4.5757,
+            "jit_backpatch": 2.5504,
+            "gpu_fence": 0.0021,
+            "shader_compile": 0.0,
+            "throttle": 6.6598,
+            "gpu_submit": 0.0,
+            "pipeline_compile": 0.0,
+            "present": 0.0888,
+            "gpu_present": 0.0,
+            "jit_finalize": 15.828,
+            "jit_emit": 37.272,
+            "gpu_worker": 0.0,
+            "jit_instruction": 3.4531
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 87.2352,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.0705,
+          "cpu_thread_unclassified_ms": 80.1647,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "jit_compile": 53.3035,
+            "jit_analyze": 4.0021,
+            "jit_backpatch": 0.6807,
+            "gpu_fence": 0.0091,
+            "shader_compile": 0.0,
+            "throttle": 7.0614,
+            "gpu_submit": 0.0,
+            "pipeline_compile": 0.0,
+            "present": 0.1691,
+            "gpu_present": 0.0,
+            "jit_finalize": 8.1156,
+            "jit_emit": 39.0021,
+            "gpu_worker": 0.0,
+            "jit_instruction": 4.3776
+          }
+        },
+        {
+          "frame": 12753,
+          "host_ms": 66.994,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 2.98,
+          "cpu_thread_unclassified_ms": 64.014,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "jit_compile": 35.3396,
+            "jit_analyze": 2.8087,
+            "jit_backpatch": 1.0675,
+            "gpu_fence": 0.0,
+            "shader_compile": 0.0,
+            "throttle": 2.98,
+            "gpu_submit": 0.0,
+            "pipeline_compile": 0.0,
+            "present": 0.1029,
+            "gpu_present": 0.0,
+            "jit_finalize": 6.6331,
+            "jit_emit": 24.357,
+            "gpu_worker": 0.0,
+            "jit_instruction": 2.7536
+          }
+        },
+        {
+          "frame": 13100,
+          "host_ms": 55.3509,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 5.953,
+          "cpu_thread_unclassified_ms": 49.3979,
+          "cpu_thread_coverage_ms": {
+            "gpu_pacing": 0.0,
+            "jit_compile": 0.0,
+            "jit_analyze": 0.0,
+            "jit_backpatch": 0.0,
+            "gpu_fence": 0.0027,
+            "shader_compile": 0.0,
+            "throttle": 5.9503,
+            "gpu_submit": 0.0,
+            "pipeline_compile": 0.0,
+            "present": 0.1813,
+            "gpu_present": 0.0,
+            "jit_finalize": 0.0,
+            "jit_emit": 0.0,
+            "gpu_worker": 0.0,
+            "jit_instruction": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331289038845700,
+          "end_ns": 331289042648800,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": 0,
+          "cycles": 12173255,
+          "address": 2163465912,
+          "instructions": 75
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331288954012600,
+          "end_ns": 331288956837100,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": 0,
+          "cycles": 4437810,
+          "address": 2162738364,
+          "instructions": 43
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331290249715500,
+          "end_ns": 331290251758100,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": 15625000,
+          "cycles": 3802102,
+          "address": 2165291896,
+          "instructions": 30
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331289039074900,
+          "end_ns": 331289042603000,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2163467696,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331288954069600,
+          "end_ns": 331288956831200,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2152808848,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331290249725200,
+          "end_ns": 331290251737600,
+          "target_ns": 0,
+          "thread": 16577997826577403275,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2165292088,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 87.2352,
+        "12662": 97.1453,
+        "12676": 34.7919,
+        "12753": 66.994
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2354976,
+        "seconds": 49.062,
+        "nonzero_samples": 4642245,
+        "total_samples": 4709952,
+        "peak": 28079,
+        "full_scale_samples": 0,
+        "rms": 3739.238768245559
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "d856243d59c3d0624c4d101e56dd6bf5877652ffc1ab77b9f579a1be95f2d1d8"
+    },
+    {
+      "name": "jit-sharded-backpatch-repeat",
+      "runner_sha256": "1ce192e07c98f747955aa19b39a7c7fd05c377cacea970f5bf2c4db0f51a255e",
+      "frames": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 29918889000,
+        "intervals": 1230,
+        "seconds": 41.039488,
+        "average_fps": 29.97113414280412,
+        "frame_ms": {
+          "median": 33.35985000000008,
+          "p95": 36.10179999999907,
+          "p99": 42.22890000000001,
+          "max": 84.26819999999991
+        },
+        "one_percent_low_fps": 19.47203815321212,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 645,
+        "frames_over_50ms": 4,
+        "longest_consecutive_over_50ms_seconds": 0.0842681999999999,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 41.041000000000004,
+        "emulation_speed_percent": 100.00368425648976,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1230
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.006816666666589755,
+          "p99": 8.862233333333345,
+          "min": -12.067266666666645,
+          "max": 50.901533333333234
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "runtime_totals": {
+        "throttle": {
+          "calls": 15076,
+          "union_ms": 8440.7177,
+          "max_span_ms": 4.8232,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_analyze": {
+          "calls": 13616,
+          "union_ms": 45.1611,
+          "max_span_ms": 0.3231,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_emit": {
+          "calls": 13616,
+          "union_ms": 379.2068,
+          "max_span_ms": 2.0742,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13616,
+          "union_ms": 94.381,
+          "max_span_ms": 6.8556,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_compile": {
+          "calls": 13616,
+          "union_ms": 544.2111,
+          "max_span_ms": 6.9024,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 88,
+          "union_ms": 69.3686,
+          "max_span_ms": 1.6944,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "jit_instruction": {
+          "calls": 146,
+          "union_ms": 81.5656,
+          "max_span_ms": 1.6969,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1059,
+          "union_ms": 6.8099,
+          "max_span_ms": 0.2163,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "gpu_submit": {
+          "calls": 1230,
+          "union_ms": 107.2908,
+          "max_span_ms": 1.0761,
+          "threads": [
+            8346986764045890116
+          ]
+        },
+        "present": {
+          "calls": 1230,
+          "union_ms": 193.5606,
+          "max_span_ms": 0.8949,
+          "threads": [
+            18141669627190961524
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 8,
+          "union_ms": 2.6293,
+          "max_span_ms": 1.1267,
+          "threads": [
+            16191805738983964233,
+            18141669627190961524
+          ]
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 12655,
+          "host_ms": 84.2682,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 2.3425,
+          "cpu_thread_unclassified_ms": 81.9257,
+          "cpu_thread_coverage_ms": {
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 1.544,
+            "jit_emit": 31.3663,
+            "jit_analyze": 3.6901,
+            "gpu_fence": 0.0078,
+            "throttle": 2.3347,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "shader_compile": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.26,
+            "jit_finalize": 14.0793,
+            "jit_backpatch": 0.8507,
+            "jit_compile": 51.3236
+          }
+        },
+        {
+          "frame": 12630,
+          "host_ms": 76.0867,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.7533,
+          "cpu_thread_unclassified_ms": 68.3334,
+          "cpu_thread_coverage_ms": {
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 1.5405,
+            "jit_emit": 32.9847,
+            "jit_analyze": 3.6225,
+            "gpu_fence": 0.0035,
+            "throttle": 7.7498,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "shader_compile": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.1687,
+            "jit_finalize": 7.111,
+            "jit_backpatch": 0.0,
+            "jit_compile": 45.5726
+          }
+        },
+        {
+          "frame": 12746,
+          "host_ms": 59.1782,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 1.7174,
+          "cpu_thread_unclassified_ms": 57.4608,
+          "cpu_thread_coverage_ms": {
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 1.0347,
+            "jit_emit": 22.3439,
+            "jit_analyze": 2.5874,
+            "gpu_fence": 0.0057,
+            "throttle": 1.7117,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "shader_compile": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.1609,
+            "jit_finalize": 5.9338,
+            "jit_backpatch": 0.3228,
+            "jit_compile": 32.2573
+          }
+        },
+        {
+          "frame": 13422,
+          "host_ms": 50.3729,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.815,
+          "cpu_thread_unclassified_ms": 42.5579,
+          "cpu_thread_coverage_ms": {
+            "pipeline_compile": 0.0,
+            "gpu_submit": 0.0,
+            "jit_instruction": 0.0,
+            "jit_emit": 0.0,
+            "jit_analyze": 0.0,
+            "gpu_fence": 0.0053,
+            "throttle": 7.8097,
+            "gpu_present": 0.0,
+            "gpu_pacing": 0.0,
+            "shader_compile": 0.0,
+            "gpu_worker": 0.0,
+            "present": 0.1728,
+            "jit_finalize": 0.0,
+            "jit_backpatch": 0.0,
+            "jit_compile": 0.0
+          }
+        }
+      ],
+      "longest_emissions": [
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331437607268600,
+          "end_ns": 331437609342800,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": 0,
+          "cycles": 7444901,
+          "address": 2163897896,
+          "instructions": 118
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331437562321500,
+          "end_ns": 331437564167000,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": 15625000,
+          "cycles": 6919571,
+          "address": 2148829172,
+          "instructions": 57
+        },
+        {
+          "kind": "jit_emit",
+          "begin_ns": 331437555052700,
+          "end_ns": 331437556862100,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": 0,
+          "cycles": 4812555,
+          "address": 2147562388,
+          "instructions": 97
+        }
+      ],
+      "slowest_instructions": [
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331437555060900,
+          "end_ns": 331437556757800,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2147562408,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331437917068100,
+          "end_ns": 331437918445300,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2152808824,
+          "instructions": 1
+        },
+        {
+          "kind": "jit_instruction",
+          "begin_ns": 331438348117200,
+          "end_ns": 331438349455000,
+          "target_ns": 0,
+          "thread": 18141669627190961524,
+          "cpu_ns": -1,
+          "cycles": -1,
+          "address": 2152808772,
+          "instructions": 1
+        }
+      ],
+      "selected_frame_ms": {
+        "12630": 76.0867,
+        "12662": 30.5418,
+        "12676": 28.1971,
+        "12753": 24.492
+      },
+      "audio": {
+        "scope": "pre-volume stereo PCM; signal statistics cannot establish absence of audible crackling or device underruns",
+        "rate": 48000,
+        "channels": 2,
+        "frames": 2325696,
+        "seconds": 48.452,
+        "nonzero_samples": 4584913,
+        "total_samples": 4651392,
+        "peak": 31757,
+        "full_scale_samples": 0,
+        "rms": 3721.3576544885573
+      },
+      "slow_insert_log": [],
+      "completed": true,
+      "exit_code": 0,
+      "private_capture_sha256": "17cab9541bc105824e13c97d82be6bf581791fc28858f88d12407868384a2e27"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": ".local\\build\\windows-x64\\runtime\\moderngekko-run.exe",
+      "bytes": 15749632,
+      "sha256": "1ce192e07c98f747955aa19b39a7c7fd05c377cacea970f5bf2c4db0f51a255e"
+    },
+    {
+      "path": ".local\\build\\windows-x64\\runtime\\moderngekko-port.exe",
+      "bytes": 243200,
+      "sha256": "afc5e9bfb26948e069ef47577e0622a7dfd7bddd47edc0d3e782a8afc33f31c6"
+    },
+    {
+      "path": ".local\\build\\windows-x64\\runtime\\moderngekko-module-info.exe",
+      "bytes": 29696,
+      "sha256": "69203f92a5dcbdc5a31cb53a73ad05cc5ec4e771349f742408140fc0d656eaa4"
+    },
+    {
+      "path": ".local\\build\\windows-x64\\runtime\\ModernGekko.exe",
+      "bytes": 11948544,
+      "sha256": "473ed59d55753d48a7d62864b73999e31155b81ea2a257664fa766d535f55763"
+    },
+    {
+      "path": ".local\\build\\windows-x64\\runtime\\moderngekko_sharded_pointer_map_test.exe",
+      "bytes": 20480,
+      "sha256": "b602854f9362f9680d4ef73ad5a1d05f26f622262cc39a1a52000563d52cd526"
+    }
+  ],
+  "limits": [
+    "CPU ns quantized; cycles not wall time. Nested spans overlap. Instruction/backpatch traces retain >=100us spans.",
+    "Total compilation time and overall P99 did not improve. Worst84-97ms frames remain.",
+    "All seven endpoint images inspected sequentially: scenery/HUD/heroes/enemies present; attacks and downed heroes vary. No every-frame or sustained varied combat verification.",
+    "Private pre-volume WAVs; no audible review or device-output verification. Crackling unresolved."
+  ]
+}

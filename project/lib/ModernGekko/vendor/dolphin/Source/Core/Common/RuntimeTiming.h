@@ -18,10 +18,10 @@
 namespace Common::RuntimeTiming
 {
 enum class Kind { Throttle, GpuPacing, GpuWorker, GpuFence, GpuSubmit, GpuPresent, Present,
-                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize };
+                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize, JitInstruction, JitBackpatch };
 inline constexpr const char* Names[] = {
     "throttle", "gpu_pacing", "gpu_worker", "gpu_fence", "gpu_submit", "gpu_present", "present",
-    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize"};
+    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize", "jit_instruction", "jit_backpatch"};
 inline std::int64_t Now()
 {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -35,25 +35,28 @@ class Trace
 public:
   explicit Trace(std::size_t capacity = 262144) : m_rows(capacity) {}
   void Record(Kind kind, std::int64_t begin, std::int64_t end,
-              std::int64_t target, std::uint64_t thread)
+              std::int64_t target, std::uint64_t thread, std::int64_t cpu_ns = -1,
+              std::int64_t cycles = -1, std::uint32_t address = 0, std::uint32_t instructions = 0)
   {
     const auto index = m_count.fetch_add(1, std::memory_order_relaxed);
-    if (index < m_rows.size()) m_rows[index] = {kind, begin, end, target, thread};
+    if (index < m_rows.size()) m_rows[index] = {kind, begin, end, target, thread, cpu_ns, cycles, address, instructions};
   }
   void Write(std::ostream& out) const
   {
     const auto count = m_count.load();
     out << "# steady_clock spans; elapsed time includes preemption; nested spans overlap\n"
         << "# dropped_samples=" << (count > m_rows.size() ? count - m_rows.size() : 0) << '\n'
-        << "kind,begin_ns,end_ns,target_ns,thread\n";
+        << "kind,begin_ns,end_ns,target_ns,thread,cpu_ns,cycles,address,instructions\n";
     for (std::size_t i = 0; i < std::min(count, m_rows.size()); ++i) {
       const auto& r = m_rows[i];
       out << Names[static_cast<int>(r.kind)] << ',' << r.begin << ',' << r.end << ','
-          << r.target << ',' << r.thread << '\n';
+          << r.target << ',' << r.thread << ',' << r.cpu_ns << ',' << r.cycles << ','
+          << r.address << ',' << r.instructions << '\n';
     }
   }
 private:
-  struct Row { Kind kind{}; std::int64_t begin{}, end{}, target{}; std::uint64_t thread{}; };
+  struct Row { Kind kind{}; std::int64_t begin{}, end{}, target{}; std::uint64_t thread{};
+               std::int64_t cpu_ns{-1}, cycles{-1}; std::uint32_t address{}, instructions{}; };
   std::vector<Row> m_rows;
   std::atomic<std::size_t> m_count{};
 };
@@ -93,11 +96,14 @@ inline void End(Kind kind, std::int64_t begin, std::int64_t target = 0)
 class Scope
 {
 public:
-  explicit Scope(Kind kind, std::int64_t target = 0)
-      : m_kind(kind), m_target(target), m_begin(Begin()) {}
-  ~Scope() { End(m_kind, m_begin, m_target); }
+  explicit Scope(Kind kind, std::int64_t target = 0, std::int64_t minimum_ns = 0)
+      : m_kind(kind), m_target(target), m_begin(Begin()), m_minimum_ns(minimum_ns) {}
+  ~Scope() {
+    if (!m_minimum_ns || (m_begin && Now() - m_begin >= m_minimum_ns))
+      End(m_kind, m_begin, m_target);
+  }
 private:
   Kind m_kind;
-  std::int64_t m_target, m_begin;
+  std::int64_t m_target, m_begin, m_minimum_ns;
 };
 }  // namespace Common::RuntimeTiming

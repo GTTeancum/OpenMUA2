@@ -172,7 +172,10 @@ def main():
     p.add_argument("--jit-profile-callers",help="With --jit-block-profile: up to 32 comma-separated aligned hexadecimal block addresses; private bounded caller/argument samples.")
     p.add_argument("--simple-format", choices=("shadow", "on"), help="Default-off simple formatter experiment; shadow compares original output/state, on replaces supported calls.")
     p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
+    p.add_argument('--jit-emission-address', type=lambda value: int(value, 0), help='Slow instruction timing (>100us) for one JIT block, or 0xffffffff for all; requires --profile-runtime.')
     args=p.parse_args()
+    if args.jit_emission_address is not None and (not args.profile_runtime or not 0 < args.jit_emission_address <= 0xffffffff):
+        p.error('--jit-emission-address requires --profile-runtime and a nonzero 32-bit address')
     if args.capture_audio and (not args.profile_audio or args.audio != 'Cubeb'):
         p.error('--capture-audio requires --profile-audio --audio Cubeb')
     if args.jit_ranges and args.jit_diagnostic:
@@ -217,6 +220,8 @@ def main():
     env=os.environ.copy()
     configure_audio_profile(env, args.profile_audio, root)
     configure_audio_capture(env, args.capture_audio, root)
+    env.pop('OPENMUA2_JIT_EMISSION_ADDRESS', None)
+    if args.jit_emission_address is not None: env['OPENMUA2_JIT_EMISSION_ADDRESS'] = format(args.jit_emission_address, 'x')
     env.pop("OPENMUA2_RUNTIME_SPANS", None)
     if args.profile_runtime: env["OPENMUA2_RUNTIME_SPANS"] = str(root / "runtime-spans.csv")
     env.pop("MODERNGEKKO_SIMPLE_FORMAT",None)
@@ -244,6 +249,7 @@ def main():
     metadata["audio_profile"] = args.profile_audio
     metadata["audio_capture"] = args.capture_audio
     metadata["runtime_profile"] = args.profile_runtime
+    metadata["jit_emission_address"] = args.jit_emission_address
     metadata["presentation_queue"] = args.present_queue
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers

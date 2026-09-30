@@ -53,5 +53,13 @@ int main() {
     ++count;
     ++at;
   }
-  return count == 5 ? 0 : 4;
+  if (count != 5) return 4;
+  Common::RuntimeTiming::Trace measured(2);
+  measured.Record(Common::RuntimeTiming::Kind::JitEmit, 10, 30, 0, 1, 15, 42, 4096, 7);
+  measured.Record(Common::RuntimeTiming::Kind::Throttle, 30, 40, 0, 1);
+  std::ostringstream measured_out;
+  measured.Write(measured_out);
+  if (measured_out.str().find("jit_emit,10,30,0,1,15,42,4096,7\n") == std::string::npos ||
+      measured_out.str().find("throttle,30,40,0,1,-1,-1,0,0\n") == std::string::npos) return 5;
+  return 0;
 }

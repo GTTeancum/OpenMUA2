@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 KINDS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence', 'gpu_submit', 'gpu_present', 'present',
-         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize'}
+         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize', 'jit_instruction', 'jit_backpatch'}
 WAITS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence'}
 
 
@@ -92,6 +92,12 @@ def analyze(frame_text, span_text, start_frame=0, end_frame=None, ticks_per_seco
             'first_frame': frames[0]['frame'], 'last_frame': frames[-1]['frame'],
             'seconds': (end - begin) / 1e9, 'cpu_thread': cpu_thread,
             'totals': totals,
+            'jit_instruction_spans': [r for r in events if r['kind'] == 'jit_instruction'],
+            'jit_emission_counters_scope': 'Whole spans fully inside window; CPU ns are quantized, -1 unavailable; cycles are not wall time',
+            'longest_jit_emissions': sorted(
+                [r for r in events if r['kind'] == 'jit_emit' and
+                 r['begin_ns'] >= begin and r['end_ns'] <= end],
+                key=lambda r: r['end_ns'] - r['begin_ns'], reverse=True)[:20],
             'cpu_thread_wait_seconds': sum(r['cpu_thread_wait_union_ms'] for r in intervals) / 1000,
             'cpu_thread_unclassified_seconds': sum(r['cpu_thread_unclassified_ms'] for r in intervals) / 1000,
             'worst_frames': sorted(intervals, key=lambda r: r['host_ms'], reverse=True)[:20]}

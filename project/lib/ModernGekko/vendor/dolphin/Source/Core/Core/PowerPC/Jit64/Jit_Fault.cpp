@@ -86,14 +86,14 @@ bool Jit64::BackPatch(SContext* ctx)
   if (!IsInSpace(codePtr))
     return false;  // this will become a regular crash real soon after this
 
-  auto it = m_back_patch_info.find(codePtr);
-  if (it == m_back_patch_info.end())
+  auto* entry = m_back_patch_info.Find(codePtr);
+  if (!entry)
   {
     PanicAlertFmt("BackPatch: no register use entry for address {}", fmt::ptr(codePtr));
     return false;
   }
 
-  TrampolineInfo& info = it->second;
+  TrampolineInfo& info = *entry;
 
   u8* exceptionHandler = nullptr;
   if (jo.memcheck)
