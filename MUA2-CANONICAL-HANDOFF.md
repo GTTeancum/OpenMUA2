@@ -9,6 +9,50 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Continuous Xbox combat and queued replay - 2026-09-30
+
+Added `tools/routes/xbox-continuous-combat.json`: attacks, powers, movement,
+blocking, jumping, fusion-selection attempts and hero changes without a long
+neutral tail. `--queue-route` publishes the complete command sequence before
+waiting for receipts, removing per-action host round trips through the native
+50 ms command poll. Default serial mode remains available. This is not a
+deterministic input movie; advisory status can remain stale while the queue
+drains. Timing runs use `--no-screenshots` and end at the route's `read_timing`
+guest tick, excluding capture/shutdown overhead. This changes the test route,
+not the engine's performance.
+
+The serial continuous route reproduced a 17-FPS rolling second and 156.135 ms
+worst frame despite 29.8483 FPS average. Two overlapping one-second audio buckets
+contained 11 DMA and 11 streaming empty dequeues. Those counts are not audible
+clicks; temporal correlation does not prove the stall's cause. Later replays did
+not reproduce that full burst. External CPU sampling cannot explain a burst
+that did not recur in the sampled run.
+
+Queued timing/profile runs averaged 29.9702/29.9705 FPS at normal guest speed,
+with worst frames 92.225/90.7416 ms, rolling-second minima 28/28, and six frames
+above 50 ms each. The profile's worst frame included 55.2543 ms JIT compilation:
+32.8388 ms emission, 15.6272 ms finalization, 4.4357 ms analysis (nested spans).
+A later 59.4009 ms frame had no JIT/shader/pipeline compilation and 8.4644 ms of
+measured waits; remaining elapsed time is not proof of CPU execution. Prior
+trace analysis found 1572/1844/1221 first-seen blocks in three cold bursts, with
+no repeat addresses in those bursts. Both cold compilation and later stalls
+need work; no audio fix or sustained-solid-30 claim is made.
+
+All 14 native captures across two visual routes were inspected sequentially:
+street, HUD, heroes, enemies, combat effects and hero changes present. Fusion
+tutorial persists; completed fusion and varied encounters remain unverified.
+Audio ran through muted Cubeb with private pre-volume PCM capture; no listening
+or device-output verification. Crackling remains unresolved. These are short
+one-encounter diagnostics, not qualifying repeats or ten-minute acceptance.
+
+All seven runs exited 0 and completed their routes. Tooling: 138 tests ran,
+137 passed, 1 skipped in 23.598s. Native source/binaries unchanged from bd9736ff
+(prior Windows build exit0, 39/39 runtime tests). No new native rebuild needed
+for this Python/route checkpoint. One logical CPU, 3x EFB, normal clocks and
+formatter opt-in ON remain unchanged. Goal active/unmet. Next profile bulk JIT
+finalization and correlate later stalls with CPU service in the same run.
+Evidence: `evidence/windows-20260930/CONTINUOUS-COMBAT-QUEUE.json`.
+
 ## JIT backpatch rehash spike reduction — 2026-09-30
 
 Thread CPU/cycle diagnostics isolated a 54.6 ms emission of only 29 guest

@@ -35,6 +35,20 @@ def publish_command(root, name, item, timeout=5.0):
 
 
 
+def publish_route(root, commands, start_index):
+    """Queue complete files before waiting, avoiding a host round trip per action.
+
+    The runtime still applies frame-bounded commands; this is not a deterministic
+    input movie. Advisory status can lag while the native queue is draining.
+    """
+    pending = []
+    for offset, item in enumerate(commands, start_index + 1):
+        name = f"{offset:06d}.txt"
+        publish_command(root, name, item)
+        pending.append((name, item))
+    return pending
+
+
 def validate_command_receipts(root, count):
     expected = {f"{i:06d}.txt" for i in range(1, count + 1)}
     processed = {p.name for p in (root / "processed").iterdir() if p.is_file()}
@@ -163,6 +177,7 @@ def main():
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
+    p.add_argument("--queue-route", action="store_true", help="Publish the whole route before waiting; removes per-action host round trips. Advisory status may lag.")
     p.add_argument("--trace-presentation",action="store_true",help="Diagnostic copy/before/after events; copy counts are not FPS.")
     p.add_argument("--present-queue",action="store_true",help="Experimental half-refresh FIFO presentation; adds latency, logs shortages/overflow.")
     p.add_argument("--no-screenshots",action="store_true")
@@ -245,6 +260,8 @@ def main():
     if cpu == "staticrecomp":cmd += ["--module",str(args.module.resolve())]
     if not args.windowed:cmd.append("--headless")
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
+    metadata["queued_route"] = args.queue_route
+    metadata["timeline_status_scope"] = "advisory, possibly stale while native queue drains" if args.queue_route else "advisory"
     metadata["presentation_trace"] = args.trace_presentation
     metadata["audio_profile"] = args.profile_audio
     metadata["audio_capture"] = args.capture_audio
@@ -270,15 +287,17 @@ def main():
             # this advisory file. Command acknowledgments are authoritative.
             try:return (root/"status.txt").read_text()
             except OSError:return ""
-        def submit(item):
-            nonlocal index
-            index+=1; name=f"{index:06d}.txt"
-            publish_command(root,name,item)
+        def wait_receipt(name, item):
             while not (root/"processed"/name).exists():
                 check()
                 if (root/"failed"/name).exists():raise RuntimeError(command_failure_detail(root, name))
                 time.sleep(.05)
             timeline.append({"command":item,"elapsed":time.monotonic()-started,"status":read_status()})
+        def submit(item):
+            nonlocal index
+            index+=1; name=f"{index:06d}.txt"
+            publish_command(root,name,item)
+            wait_receipt(name,item)
         completed=False
         failure=None
         try:
@@ -294,7 +313,12 @@ def main():
             if args.jit_block_profile:
                 submit({"command":"jit_profile_reset"})
                 submit({"command":"read_timing","path":"jit-profile-start.txt"})
-            for item in route["commands"]:submit(item)
+            if args.queue_route:
+                pending = publish_route(root, route["commands"], index)
+                index += len(pending)
+                for name, item in pending: wait_receipt(name, item)
+            else:
+                for item in route["commands"]: submit(item)
             if args.jit_block_profile:
                 submit({"command":"read_timing","path":"jit-profile-end.txt"})
                 submit({"command":"jit_profile_dump","path":"jit-blocks.tsv"})

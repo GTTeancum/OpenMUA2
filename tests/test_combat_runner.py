@@ -56,6 +56,25 @@ class CommandPublicationTest(unittest.TestCase):
         (self.root/'failed/000002.txt.tmp').write_text('')
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
+class QueuedRouteTest(unittest.TestCase):
+    def test_whole_route_published_in_order_without_waiting_for_receipts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'commands').mkdir()
+            commands = [{'command': 'xbox_frames', 'port': 0, 'frames': 10, 'a': 1},
+                        {'command': 'read_timing', 'path': 'end.txt'}]
+            pending = mod.publish_route(root, commands, 8)
+            self.assertEqual([name for name, item in pending], ['000009.txt', '000010.txt'])
+            self.assertEqual([item for name, item in pending], commands)
+            self.assertEqual((root / 'commands/000009.txt').read_text(),
+                             'command=xbox_frames\nport=0\nframes=10\na=1\n')
+            self.assertEqual((root / 'commands/000010.txt').read_text(),
+                             'command=read_timing\npath=end.txt\n')
+            self.assertFalse(list((root / 'staging').iterdir()))
+            self.assertFalse((root / 'processed').exists())
+            self.assertEqual(mod.publish_route(root, [], 10), [])
+
+
 class DiagnosticArgumentsTest(unittest.TestCase):
     def test_audio_capture_is_opt_in_bounded_stereo_and_complete(self):
         import wave
