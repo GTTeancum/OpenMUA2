@@ -1,0 +1,464 @@
+{
+  "date": "2026-09-30",
+  "repository": "GTTeancum/OpenMUA2",
+  "base_commit": "d22ac839942dff2d6702cc4321ad8b750bdb283c",
+  "goal_status": "active and unmet; diagnostic progress only",
+  "source_changes": [
+    "Offline synthetic audio mixer benchmark using real mixer and one logical CPU",
+    "Opt-in OPENMUA2_AUDIO_PROFILE: bounded one-second numeric callback/mixer counters, queue-empty events and subnormal fades; no audio samples or callback file I/O",
+    "Absolute steady-clock bucket anchors correlate final audio counters with frame timestamps",
+    "Explicit --profile-audio --audio Cubeb permits headless diagnostics; ordinary headless remains silent and benchmark clears inherited profiling",
+    "Benchmark validates requested backend, completed callback trace and profile opt-in isolation"
+  ],
+  "diagnostic_limits": [
+    "All gameplay probes used an isolated profile, headless Vulkan, Cubeb muted at DSP Volume=0, one logical processor, 3x EFB, formatter off",
+    "Not visible-window FPS or audible-quality acceptance; no production performance improvement claimed",
+    "Times inside mixer are elapsed wall time including preemption, not CPU execution time alone",
+    "Producer counters currently cover only DMA and streaming channels; raw zero fields on auxiliary channels are uninstrumented, not proof of no produced data",
+    "First 1200 seconds have separate buckets; second1200 is an overflow bucket",
+    "Profiling itself adds overhead; synthetic benchmark is not a gameplay measurement"
+  ],
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "log": ".local/logs/audio-profile-checkpoint-build.log",
+    "runtime_tests": {
+      "passed": 37,
+      "failed": 0,
+      "seconds": 5.2
+    },
+    "tooling_tests": {
+      "ran": 129,
+      "passed": 128,
+      "skipped": 1,
+      "failed": 0,
+      "seconds": 22.321,
+      "log": ".local/logs/audio-profile-tooling-tests.log"
+    },
+    "compiler_warnings": [],
+    "compiler_errors": [],
+    "configure_warnings": [
+      "Vendored CMake deprecations",
+      "Missing Wayland",
+      "Long object paths"
+    ],
+    "artifacts": [
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+        "bytes": 15733760,
+        "sha256": "212632cad2307dc1d42afafa2a7063633a604a38bac543d6bb3b3806f120712f"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+        "bytes": 243200,
+        "sha256": "b125200328a9d47d046b8ae33eacf65af44f8b7583c430a7c222e5fb7b75a412"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+        "bytes": 29696,
+        "sha256": "4f7d54660523d90da72e1d02fe81d3e6c22a7c24702bf23948b42a1ec530c459"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+        "bytes": 11944960,
+        "sha256": "4d84011549bb45063d2890b5ec616ca6f0d5e28f21e98011238e9ec9aafea70e"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko_audio_mixer_benchmark.exe",
+        "bytes": 11439104,
+        "sha256": "817b82226c2f501b304ac6f0ca3bce039f6d01cb118c632eae6c49b671864ae9"
+      }
+    ],
+    "worktree_note": "Preserved uncommitted user StaticRecomp edits present in build; excluded from this source checkpoint.",
+    "validation_binary_note": "Gameplay probe hashes are recorded individually. Final rebuild followed a comment-only diagnostics-header change and a benchmark-only unsupported-CPU-timer guard; game/audio algorithms were unchanged."
+  },
+  "offline_mixer": {
+    "summary": {
+      "0": {
+        "channels": 11,
+        "dma_tone": false,
+        "repeats": 3,
+        "represented_audio_seconds_per_repeat": 43.6907,
+        "mean_cpu_seconds": 0.265625,
+        "mean_wall_seconds": 0.2698
+      },
+      "1": {
+        "channels": 7,
+        "dma_tone": false,
+        "repeats": 3,
+        "represented_audio_seconds_per_repeat": 43.6907,
+        "mean_cpu_seconds": 0.16666666666666666,
+        "mean_wall_seconds": 0.183716
+      },
+      "2": {
+        "channels": 1,
+        "dma_tone": false,
+        "repeats": 3,
+        "represented_audio_seconds_per_repeat": 43.6907,
+        "mean_cpu_seconds": 0.026041666666666668,
+        "mean_wall_seconds": 0.023882533333333334
+      },
+      "3": {
+        "channels": 11,
+        "dma_tone": true,
+        "repeats": 3,
+        "represented_audio_seconds_per_repeat": 43.6907,
+        "mean_cpu_seconds": 0.421875,
+        "mean_wall_seconds": 0.43682533333333334
+      },
+      "4": {
+        "channels": 7,
+        "dma_tone": true,
+        "repeats": 3,
+        "represented_audio_seconds_per_repeat": 43.6907,
+        "mean_cpu_seconds": 0.2864583333333333,
+        "mean_wall_seconds": 0.29551333333333335
+      }
+    },
+    "counter_validation": {
+      "fifo_calls": 468864,
+      "produced_dma_frames": 12976128,
+      "passed": true
+    },
+    "logs": [
+      ".local/logs/audio-mixer-baseline.jsonl",
+      ".local/logs/audio-mixer-final-check.jsonl",
+      ".local/logs/audio-mixer-final-check.csv"
+    ],
+    "conclusion": "Full synthetic DMA mix costs about 1% of one CPU. Simply removing auxiliary mixers cannot plausibly supply tens of FPS.",
+    "final_profile_disabled_check": {
+      "exit_code": 0,
+      "cases": 15,
+      "log": ".local/logs/audio-mixer-checkpoint-off.jsonl",
+      "full_dma_cpu_seconds_mean": 0.3802083333333333,
+      "represented_audio_seconds_per_case": 43.6907,
+      "scope": "diagnostic default off; sanity assertions passed; not a gameplay FPS measurement"
+    }
+  },
+  "gameplay_diagnostics": [
+    {
+      "directory": ".local/automation/audio-starvation-baseline-20260930",
+      "runner_sha256": "13276aba650a93d882c6100d6f305b452ecc82035a831033a44f6c7680f0237e",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds": 78.172,
+      "frame_analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13970,
+        "emulated_ticks": 36474287850,
+        "intervals": 1350,
+        "seconds": 50.7857919,
+        "average_fps": 26.58223785617489,
+        "frame_ms": {
+          "median": 33.43689999999988,
+          "p95": 74.91969999999526,
+          "p99": 92.56530000000396,
+          "max": 533.6502999999997
+        },
+        "one_percent_low_fps": 6.454735567464847,
+        "rolling_1s_fps_min": 13,
+        "rolling_1s_fps_median": 27.0,
+        "frames_over_33_334ms": 726,
+        "frames_over_50ms": 214,
+        "longest_consecutive_over_50ms_seconds": 0.555383299999999,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 50.03331666666667,
+        "emulation_speed_percent": 98.51833513827057,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1035,
+          "50.050": 299,
+          "16.683": 11,
+          "83.417": 1,
+          "66.733": 4
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.19931666666640757,
+          "p99": 48.56653333333326,
+          "min": -44.60806666666547,
+          "max": 500.28363333333306
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    {
+      "directory": ".local/automation/audio-starvation-no-captures-20260930",
+      "runner_sha256": "13276aba650a93d882c6100d6f305b452ecc82035a831033a44f6c7680f0237e",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds": 75.485,
+      "frame_analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13969,
+        "emulated_ticks": 36291855600,
+        "intervals": 1349,
+        "seconds": 49.7466295,
+        "average_fps": 27.117415060250465,
+        "frame_ms": {
+          "median": 33.40509999999952,
+          "p95": 75.66050000000146,
+          "p99": 92.40989999999982,
+          "max": 100.83320000000384
+        },
+        "one_percent_low_fps": 10.37322723398935,
+        "rolling_1s_fps_min": 20,
+        "rolling_1s_fps_median": 27.0,
+        "frames_over_33_334ms": 709,
+        "frames_over_50ms": 208,
+        "longest_consecutive_over_50ms_seconds": 0.1553886999999996,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.78306666666667,
+        "emulation_speed_percent": 100.0732454983039,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1059,
+          "50.050": 278,
+          "66.733": 4,
+          "83.417": 2,
+          "16.683": 6
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.19650000000066836,
+          "p99": 48.31813333333833,
+          "min": -27.678900000002685,
+          "max": 52.56833333333254
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    },
+    {
+      "directory": ".local/automation/audio-profile-final-20260930",
+      "runner_sha256": "bef9ab56fc815ce4e2e7c7a65afff3fe529f08cbdd4fdb2f39ae18f8792a2fb4",
+      "route_completed": true,
+      "exit_code": 0,
+      "elapsed_seconds": 75.39,
+      "frame_analysis": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13850,
+        "emulated_ticks": 33020237250,
+        "intervals": 1230,
+        "seconds": 45.2534071,
+        "average_fps": 27.180273902514624,
+        "frame_ms": {
+          "median": 33.3698499999997,
+          "p95": 76.77759999999978,
+          "p99": 93.9101,
+          "max": 112.5885999999987
+        },
+        "one_percent_low_fps": 10.228235200628768,
+        "rolling_1s_fps_min": 20,
+        "rolling_1s_fps_median": 28,
+        "frames_over_33_334ms": 629,
+        "frames_over_50ms": 186,
+        "longest_consecutive_over_50ms_seconds": 0.15850240000000015,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 45.29525,
+        "emulation_speed_percent": 100.09246353519315,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 100.1
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 980,
+          "50.050": 237,
+          "16.683": 5,
+          "66.733": 3,
+          "100.100": 2,
+          "83.417": 3
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.2172666666674511,
+          "p99": 48.26873333333336,
+          "min": -29.918400000000858,
+          "max": 55.4904333333318
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      }
+    }
+  ],
+  "final_aligned_audio": {
+    "selected_full_seconds": 44,
+    "scope": "full audio buckets within frames12620-13850; final screenshot excluded; wall duration includes preemption, not CPU time alone",
+    "channels": {
+      "0": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 89079100,
+        "subnormal_fade_calls": 0,
+        "empty_dequeues": 2,
+        "produced_frames": 1408064,
+        "max_wall_ms": 1.0357,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "1": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 74213600,
+        "subnormal_fade_calls": 0,
+        "empty_dequeues": 7,
+        "produced_frames": 2112096,
+        "max_wall_ms": 1.2833,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "2": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 111468900,
+        "subnormal_fade_calls": 4086,
+        "empty_dequeues": 1031,
+        "produced_frames": null,
+        "max_wall_ms": 0.5633,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "3": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 114686400,
+        "subnormal_fade_calls": 4086,
+        "empty_dequeues": 1031,
+        "produced_frames": null,
+        "max_wall_ms": 0.7386,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "4": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 113164500,
+        "subnormal_fade_calls": 4086,
+        "empty_dequeues": 1031,
+        "produced_frames": null,
+        "max_wall_ms": 1.5091,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "5": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 107388600,
+        "subnormal_fade_calls": 4086,
+        "empty_dequeues": 1031,
+        "produced_frames": null,
+        "max_wall_ms": 1.3253,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "6": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 113613600,
+        "subnormal_fade_calls": 4100,
+        "empty_dequeues": 2750,
+        "produced_frames": null,
+        "max_wall_ms": 1.0378,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "7": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 121835500,
+        "subnormal_fade_calls": 4100,
+        "empty_dequeues": 1186,
+        "produced_frames": null,
+        "max_wall_ms": 1.0665,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "8": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 119944700,
+        "subnormal_fade_calls": 4100,
+        "empty_dequeues": 1186,
+        "produced_frames": null,
+        "max_wall_ms": 0.7261,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "9": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 116670100,
+        "subnormal_fade_calls": 4100,
+        "empty_dequeues": 1186,
+        "produced_frames": null,
+        "max_wall_ms": 0.9337,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "10": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 119278400,
+        "subnormal_fade_calls": 4100,
+        "empty_dequeues": 1186,
+        "produced_frames": null,
+        "max_wall_ms": 1.4491,
+        "max_callback_gap_ms": 0.0,
+        "mxcsr": "0x0"
+      },
+      "11": {
+        "calls": 4400,
+        "samples": 2112000,
+        "wall_ns": 1215230000,
+        "subnormal_fade_calls": 0,
+        "empty_dequeues": 0,
+        "produced_frames": null,
+        "max_wall_ms": 5.7376,
+        "max_callback_gap_ms": 15.9745,
+        "mxcsr": "0x1fb2"
+      }
+    }
+  },
+  "host_cpu_sample": {
+    "pid": 12512,
+    "wall_seconds": 5.0424808,
+    "cpu_seconds": 3.359375,
+    "scope": "whole process, one logical CPU, five-second diagnostic sample",
+    "one_logical_cpu_utilization_percent": 66.62147330337876
+  },
+  "native_visual_review": {
+    "baseline": "All four captures reviewed sequentially: initial crowded fight, attack/damage in crowd, lighter separated combat, then heroes/enemies still fighting near the street corner. HUD/scenery/effects present.",
+    "no_captures": "No visual evidence in this repeat; timing diagnostic only.",
+    "final": "Single endpoint capture reviewed: Wolverine active, Spider-Man down, Doombots fighting, intact scenery/HUD and fusion tutorial. Final screenshot outside measured frames12620-13850.",
+    "limits": "Sampled captures, not every-frame validation; neutral-input tail and incapacitated hero do not satisfy ten-minute varied combat."
+  },
+  "findings": [
+    "Removing mid-route captures reduced the worst interval from533.65ms to100.83ms; scene progression varied, so not a controlled FPS gain claim",
+    "No-capture repeat averaged27.117FPS at100.073% guest speed; final interval27.180FPS at100.092%, rolling1s minimum20; neither passes",
+    "Final guest intervals included237 at50.05ms among1230 intervals; frame production is irregular even at near-normal guest speed",
+    "In44 complete aligned seconds, Cubeb made4400 callbacks, used1.21523 seconds of elapsed mixing time (2.762%); max callback gap15.9745ms",
+    "DMA queue emptied twice and streaming queue seven times inside the final44-second selection; these events are not an audible glitch count",
+    "Subnormal fades occurred in auxiliary mixer channels, but total mixing cost is too small to explain the reported17-18FPS alone",
+    "One five-second whole-process sample used66.62% of its allowed CPU; limited headless evidence, not a finding about the visible manual test"
+  ],
+  "next": [
+    "Separate throttle sleep, CPU execution, GPU submission/waits and guest frame production at slow frames",
+    "Investigate recurring50ms guest-frame intervals and long host residuals without overclocking, dropping effects or counting duplicates",
+    "Retain formatter default-off until correctness/timing acceptance; continue sustained combat route and full control validation",
+    "Revisit audible quality with native audio evidence; user manual testing remains deferred and future manual launches start normally"
+  ],
+  "preservation": "Private assets, generated data, raw logs, captures and states remain ignored; user StaticRecomp edits, Build-With-Log.cmd and stash preserved."
+}

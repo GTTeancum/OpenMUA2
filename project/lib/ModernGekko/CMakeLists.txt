@@ -828,6 +828,26 @@ if(BUILD_TESTING)
         endif()
         add_test(NAME moderngekko.nunchuk_input COMMAND moderngekko_nunchuk_input_test)
 
+        # Offline diagnostic, deliberately not a timing-based CTest gate.
+        add_executable(moderngekko_audio_mixer_benchmark tools/audio_mixer_benchmark.cpp)
+        target_include_directories(moderngekko_audio_mixer_benchmark PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+        target_compile_features(moderngekko_audio_mixer_benchmark PRIVATE cxx_std_23)
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            target_link_libraries(moderngekko_audio_mixer_benchmark PRIVATE
+                "$<LINK_LIBRARY:WHOLE_ARCHIVE,moderngekko>" core uicommon)
+        else()
+            target_link_libraries(moderngekko_audio_mixer_benchmark PRIVATE
+                ModernGekko::Runtime core uicommon)
+        endif()
+        if(WIN32)
+            target_compile_definitions(moderngekko_audio_mixer_benchmark PRIVATE
+                WIN32_LEAN_AND_MEAN NOMINMAX)
+            if(MSVC)
+                target_compile_options(moderngekko_audio_mixer_benchmark PRIVATE /Zc:preprocessor)
+            endif()
+        endif()
+
         add_executable(moderngekko_xbox_action_profile_test
             tests/xbox_action_profile_test.cpp tools/frontend_config.cpp)
         target_include_directories(moderngekko_xbox_action_profile_test PRIVATE

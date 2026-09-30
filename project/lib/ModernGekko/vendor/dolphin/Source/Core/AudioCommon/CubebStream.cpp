@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AudioCommon/CubebStream.h"
+#include "AudioCommon/PerformanceDiagnostics.h"
+
+#if defined(_M_X86_64) || defined(__x86_64__) || defined(_M_IX86)
+#include <xmmintrin.h>
+#endif
 
 #include <cubeb/cubeb.h>
 
@@ -23,10 +28,22 @@ long CubebStream::DataCallback(cubeb_stream* stream, void* user_data, const void
 {
   const auto* const self = static_cast<CubebStream*>(user_data);
 
+  AudioCommon::Performance::ChannelScope channel(11);
+  AudioCommon::Performance::MixScope profile(num_frames);
+  if (AudioCommon::Performance::Get().Enabled()) {
+#if defined(_M_X86_64) || defined(__x86_64__) || defined(_M_IX86)
+    AudioCommon::Performance::CallbackState(_mm_getcsr());
+#else
+    AudioCommon::Performance::CallbackState(0);
+#endif
+  }
+
   if (self->m_stereo)
     self->m_mixer->Mix(static_cast<short*>(output_buffer), num_frames);
   else
     self->m_mixer->MixSurround(static_cast<float*>(output_buffer), num_frames);
+
+  profile.Finish(1.0f);
 
   return num_frames;
 }
@@ -214,6 +231,7 @@ CubebStream::~CubebStream()
   });
 #endif
   m_ctx.reset();
+  AudioCommon::Performance::Get().Flush();
 }
 
 void CubebStream::SetVolume(int volume)

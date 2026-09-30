@@ -2,6 +2,53 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Audio and frame-cadence diagnosis — 2026-09-30
+
+Added an offline synthetic mixer benchmark and opt-in numeric audio profiling.
+Use --profile-audio --audio Cubeb with tools/run_combat_benchmark.py; explicit
+profiling permits a headless Cubeb diagnostic, while ordinary headless runs
+remain silent. Inherited profiling is cleared for ordinary benchmarks. Counters
+are bounded, written after callbacks stop, and contain no audio samples.
+Channel IDs: 0 DMA, 1 streaming, 2–5 remote speakers, 6 portal, 7–10 GBA,
+11 Cubeb callback. Producer counts cover only 0/1; other producer fields are
+unavailable. Final traces include steady-clock anchors for frame correlation.
+
+The synthetic full mixer used about 1% of one CPU, so removing auxiliary mixers
+is not a credible tens-of-FPS solution. Live traces found subnormal fades in
+auxiliary channels, but all mixing occupied only 1.21523 s across 44 aligned
+seconds (2.762% elapsed time, including preemption). DMA/streaming queues emptied
+2/7 times in that interval; those counts are not audible-glitch counts.
+
+All new gameplay probes were headless Vulkan/Cubeb with isolated volume=0,
+one logical CPU, 3x EFB and formatter off. They are diagnostics, not visible
+playtest or audible-quality acceptance. With mid-route screenshots the worst
+interval was 533.65 ms; without captures it fell to 100.83 ms. Scene progression
+varied, so do not label this a controlled gameplay optimization.
+
+The no-capture run averaged 27.117 FPS at 100.073% guest speed. The last instrumented run
+measured 27.180 FPS over frames 12620–13850, P99 93.91 ms, maximum 112.59 ms and
+minimum rolling 1 s FPS 20. It still fails. Its guest cadence included 237
+50.05-ms intervals among 1,230 intervals. A five-second process sample used
+66.62% of the single allowed CPU; that is limited headless evidence, not proof
+about the visible 17–18 FPS manual test. Investigate frame production and waits
+before investing in small mixer optimizations.
+
+All four initial native captures were inspected sequentially; the last instrumented run's
+one endpoint capture was inspected too. Street scenery, heroes, Doombots,
+damage/effects and HUD were present. The final scene has Wolverine active and
+Spider-Man down. The neutral-input tail and incapacitation do not establish
+ten-minute varied combat. The final screenshot is outside the measured interval.
+Audio was muted; the user's poor-audio report remains unresolved.
+
+Windows build/tests passed; exact timings, binaries, hashes and diagnostic
+limits are in evidence/windows-20260930/AUDIO-FRAME-DIAGNOSIS.json. No FPS gain,
+audio fix or acceptance is claimed. Next separate throttle sleep, CPU execution,
+GPU submission/waits and irregular guest-frame production. Keep all normal-speed
+and visual requirements, the default-off formatter, and the whole-process
+one-core constraint. Goal remains active/unmet. User testing stays deferred;
+future manual launches start normally. User edits and proprietary assets remain
+preserved outside this checkpoint.
+
 ## Xbox controls and failed user playtest — 2026-09-30
 
 The physical Xbox One controller was detected, but the first manual launch used

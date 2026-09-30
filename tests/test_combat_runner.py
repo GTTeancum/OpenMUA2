@@ -57,6 +57,30 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_audio_profile_does_not_leak_into_ordinary_runs(self):
+        env = {'OPENMUA2_AUDIO_PROFILE': 'inherited.csv', 'UNRELATED': 'keep'}
+        mod.configure_audio_profile(env, False, Path('run'))
+        self.assertEqual(env, {'UNRELATED': 'keep'})
+        mod.configure_audio_profile(env, True, Path('run'))
+        self.assertEqual(env['OPENMUA2_AUDIO_PROFILE'], str(Path('run/audio-profile.csv')))
+
+    def test_audio_profile_requires_backend_and_completed_callback_evidence(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with self.assertRaises(RuntimeError):
+                mod.validate_audio_profile(root, 'audio backend: No Audio Output\n')
+            with self.assertRaises(RuntimeError):
+                mod.validate_audio_profile(root, 'audio backend: Cubeb\n')
+            p = root / 'audio-profile.csv'
+            p.write_text('channel,calls\n0,100\n')
+            with self.assertRaises(RuntimeError):
+                mod.validate_audio_profile(root, 'audio backend: Cubeb\n')
+            p.write_text('channel,calls\n11,0\n')
+            with self.assertRaises(RuntimeError):
+                mod.validate_audio_profile(root, 'audio backend: Cubeb\n')
+            p.write_text('channel,calls\n11,100\n')
+            mod.validate_audio_profile(root, 'audio backend: Cubeb\n')
+
     def test_runtime_must_confirm_backend_and_single_core(self):
         video = "Effective video: dual_core=0 sync_gpu=0\nHost CPU affinity: logical_processors=1 mask=0x1\n"
         mod.validate_runtime_settings("CPU backend: JIT\n" + video, "jit")
@@ -111,6 +135,8 @@ class DiagnosticArgumentsTest(unittest.TestCase):
         cases.append(["--cpu", "staticrecomp", "--jit-block-profile"])
         cases.append(["--cpu", "staticrecomp", "--simple-format", "on"])
         cases.append(["--jit-profile-callers", "803c63bc"])
+        cases.append(["--profile-audio"])
+        cases.append(["--audio", "Cubeb"])
         for targets in ("803c63bd", "803c63bc,", "100000000", "junk", ",".join(["803c63bc"]*33)):
             cases.append(["--jit-block-profile", "--jit-profile-callers", targets])
         for extra in cases:

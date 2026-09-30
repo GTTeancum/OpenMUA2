@@ -70,6 +70,26 @@ def configure_benchmark_profile(user, enabled):
         config.write(output)
 
 
+def configure_audio_profile(env, enabled, root):
+    # Never inherit intrusive profiling into an ordinary performance run.
+    env.pop("OPENMUA2_AUDIO_PROFILE", None)
+    if enabled:
+        env["OPENMUA2_AUDIO_PROFILE"] = str(root / "audio-profile.csv")
+
+
+def validate_audio_profile(root, log):
+    import csv
+    if "audio backend: Cubeb" not in log.splitlines():
+        raise RuntimeError("audio profile did not confirm Cubeb")
+    path = root / "audio-profile.csv"
+    if not path.is_file():
+        raise RuntimeError("audio profile was not flushed after callbacks stopped")
+    with path.open() as stream:
+        rows = list(csv.DictReader(stream))
+    if not any(row.get("channel") == "11" and int(row.get("calls", 0)) > 0 for row in rows):
+        raise RuntimeError("audio profile contains no Cubeb callbacks")
+
+
 def validate_runtime_settings(log, cpu):
     import re
     expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
@@ -94,7 +114,8 @@ def main():
     p.add_argument("--module",type=Path,help="Required only for static recompilation.")
     p.add_argument("--cpu",choices=("jit","staticrecomp"),help="Defaults to jit; selective native diagnostics imply staticrecomp.")
     p.add_argument("--windowed",action="store_true",help="Create the game window; inputs remain process-local.")
-    p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed for sound.")
+    p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed or --profile-audio for sound.")
+    p.add_argument("--profile-audio",action="store_true",help="Opt-in numeric audio diagnostics; permits Cubeb without a game window. Not presentation/FPS acceptance.")
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
@@ -133,7 +154,9 @@ def main():
         for item in args.jit_ranges.split(","):
             if not re.fullmatch(r"[0-9a-fA-F]{1,8}-[0-9a-fA-F]{1,8}", item) or int(item.split("-")[0],16) >= int(item.split("-")[1],16):
                 p.error("--jit-ranges requires valid hexadecimal start-end ranges")
-    if not args.windowed and args.audio not in ("Null", "No Audio Output"):
+    if args.profile_audio and args.audio != "Cubeb":
+        p.error("--profile-audio currently requires --audio Cubeb")
+    if not args.windowed and not args.profile_audio and args.audio not in ("Null", "No Audio Output"):
         p.error("audio output requires --windowed: the runtime forces silent audio when headless")
     root=args.output.resolve(); root.mkdir(parents=True,exist_ok=False)
     for name in ("commands","processed","failed","shots"):(root/name).mkdir()
@@ -146,6 +169,7 @@ def main():
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
+    configure_audio_profile(env, args.profile_audio, root)
     env.pop("MODERNGEKKO_SIMPLE_FORMAT",None)
     if args.simple_format:env["MODERNGEKKO_SIMPLE_FORMAT"]=args.simple_format
     env.pop("MODERNGEKKO_JIT_PROFILE_CALLERS",None)
@@ -168,6 +192,7 @@ def main():
     if not args.windowed:cmd.append("--headless")
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["presentation_trace"] = args.trace_presentation
+    metadata["audio_profile"] = args.profile_audio
     metadata["presentation_queue"] = args.present_queue
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers
@@ -222,6 +247,8 @@ def main():
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
             validate_runtime_settings((root/"runtime.log").read_text(), cpu)
+            if args.profile_audio:
+                validate_audio_profile(root, (root/"runtime.log").read_text())
             completed=True
         except Exception as exc:
             failure = f"{type(exc).__name__}: {exc}"

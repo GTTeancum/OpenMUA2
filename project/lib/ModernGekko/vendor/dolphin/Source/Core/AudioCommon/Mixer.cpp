@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AudioCommon/Mixer.h"
+#include "AudioCommon/PerformanceDiagnostics.h"
 
 #include <algorithm>
 #include <cmath>
@@ -63,6 +64,7 @@ void Mixer::DoState(PointerWrap& p)
 // Executed from sound stream thread
 void Mixer::MixerFifo::Mix(s16* samples, std::size_t num_samples)
 {
+  AudioCommon::Performance::MixScope profile(num_samples);
   constexpr u32 INDEX_HALF = 0x80000000;
   constexpr DT_s FADE_IN_RC = DT_s(0.008);
   constexpr DT_s FADE_OUT_RC = DT_s(0.064);
@@ -159,6 +161,7 @@ void Mixer::MixerFifo::Mix(s16* samples, std::size_t num_samples)
 
     samples += 2;
   }
+  profile.Finish(m_fade_volume);
 }
 
 std::size_t Mixer::Mix(s16* samples, std::size_t num_samples)
@@ -168,16 +171,20 @@ std::size_t Mixer::Mix(s16* samples, std::size_t num_samples)
 
   memset(samples, 0, num_samples * 2 * sizeof(s16));
 
-  m_dma_mixer.Mix(samples, num_samples);
-  m_streaming_mixer.Mix(samples, num_samples);
+  const auto mix = [&](MixerFifo& fifo, std::size_t channel) {
+    AudioCommon::Performance::ChannelScope scope(channel);
+    fifo.Mix(samples, num_samples);
+  };
+  mix(m_dma_mixer, 0);
+  mix(m_streaming_mixer, 1);
   for (std::size_t i = 0; i < m_wiimote_speaker_mixers.size(); ++i)
   {
     if (!m_config_wiimote_routing_enabled || !m_config_wiimote_output_enabled[i])
-      m_wiimote_speaker_mixers[i].Mix(samples, num_samples);
+      mix(m_wiimote_speaker_mixers[i], i + 2);
   }
-  m_skylander_portal_mixer.Mix(samples, num_samples);
-  for (auto& mixer : m_gba_mixers)
-    mixer.Mix(samples, num_samples);
+  mix(m_skylander_portal_mixer, 6);
+  for (std::size_t i = 0; i < m_gba_mixers.size(); ++i)
+    mix(m_gba_mixers[i], i + 7);
 
   return num_samples;
 }
@@ -215,6 +222,7 @@ std::size_t Mixer::MixSurround(float* samples, std::size_t num_samples)
 
 void Mixer::PushSamples(const s16* samples, std::size_t num_samples)
 {
+  AudioCommon::Performance::Produced(0, num_samples);
   if (IsOutputSampleRateValid())
   {
     // Big-endian RL-orderered stereo samples.
@@ -238,6 +246,7 @@ void Mixer::PushSamples(const s16* samples, std::size_t num_samples)
 
 void Mixer::PushStreamingSamples(const s16* samples, std::size_t num_samples)
 {
+  AudioCommon::Performance::Produced(1, num_samples);
   if (IsOutputSampleRateValid())
   {
     // Big-endian RL-orderered stereo samples.
@@ -282,6 +291,7 @@ std::size_t Mixer::MixWiimoteSpeaker(std::size_t wiimote_index, s16* samples,
     return 0;
 
   memset(samples, 0, num_samples * 2 * sizeof(s16));
+  AudioCommon::Performance::ChannelScope scope(wiimote_index + 2);
   m_wiimote_speaker_mixers[wiimote_index].Mix(samples, num_samples);
   return num_samples;
 }
@@ -568,6 +578,7 @@ bool Mixer::MixerFifo::Dequeue(Granule* granule)
   std::size_t next_tail = (tail + 1) & GRANULE_QUEUE_MASK;
   if (next_tail == head)
   {
+    AudioCommon::Performance::EmptyDequeue();
     // Only fill gaps when running to prevent stutter on pause.
     const bool is_running = Core::GetState(Core::System::GetInstance()) == Core::State::Running;
     if (m_mixer->m_config_fill_audio_gaps && is_running)

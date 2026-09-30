@@ -839,7 +839,10 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   Config::SetBase(Config::GFX_WAIT_FOR_SHADERS_BEFORE_STARTING, true);
   const std::vector<std::string> audio_backends =
       AudioCommon::GetSoundBackends();
-  if (impl->config.headless) {
+  // Explicit numeric audio profiling may exercise Cubeb without opening a
+  // game window. Ordinary headless execution remains silent.
+  const char* audio_profile = std::getenv("OPENMUA2_AUDIO_PROFILE");
+  if (impl->config.headless && !(audio_profile && *audio_profile)) {
     impl->config.audio.backend = BACKEND_NULLSOUND;
   } else if (impl->config.audio.backend.empty() ||
              !std::ranges::contains(audio_backends,
