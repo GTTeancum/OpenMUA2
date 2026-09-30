@@ -1,5 +1,6 @@
 """Replay process-local combat commands in an isolated OpenMUA2 profile."""
 import argparse
+import configparser
 import hashlib
 import json
 import os
@@ -50,6 +51,22 @@ def command_failure_detail(root, name):
     return detail or f"automation command {name} failed; inspect runtime.log"
 
 
+def configure_jit_block_profile(user, enabled):
+    # Only the copied benchmark profile is changed. Explicitly disable inherited
+    # profiling for ordinary runs so a diagnostic cannot contaminate acceptance.
+    path = user / "Config/Dolphin.ini"
+    config = configparser.ConfigParser(interpolation=None, strict=False)
+    config.optionxform = str
+    config.read(path, encoding="utf-8")
+    for section, key in (("Interface", "DebugModeEnabled"), ("Debug", "JitEnableProfiling")):
+        if not config.has_section(section):
+            config.add_section(section)
+        config.set(section, key, "True" if enabled else "False")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as output:
+        config.write(output)
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ("runner","game","user","state","route","output"):
@@ -66,6 +83,7 @@ def main():
     p.add_argument("--no-screenshots",action="store_true")
     p.add_argument("--jit-diagnostic",action="store_true")
     p.add_argument("--profile-dispatch",action="store_true")
+    p.add_argument("--jit-block-profile",action="store_true",help="Intrusive full-JIT resident-block counters; diagnostic only, never release-FPS evidence.")
     p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
     args=p.parse_args()
     if args.jit_ranges and args.jit_diagnostic:
@@ -73,6 +91,8 @@ def main():
     cpu = args.cpu or ("staticrecomp" if args.jit_ranges or args.profile_dispatch else "jit")
     if args.jit_diagnostic and cpu != "jit":
         p.error("--jit-diagnostic requires the jit CPU backend")
+    if args.jit_block_profile and cpu != "jit":
+        p.error("--jit-block-profile requires the jit CPU backend")
     if (args.jit_ranges or args.profile_dispatch) and cpu != "staticrecomp":
         p.error("native profiling and selective JIT require --cpu staticrecomp")
     if cpu == "staticrecomp" and args.module is None:
@@ -87,6 +107,7 @@ def main():
     root=args.output.resolve(); root.mkdir(parents=True,exist_ok=False)
     for name in ("commands","processed","failed","shots"):(root/name).mkdir()
     shutil.copytree(args.user,root/"user")
+    configure_jit_block_profile(root/"user", args.jit_block_profile)
     cfg=root/"user/config.ini"
     text=cfg.read_text(); text="\n".join("resolution="+args.resolution if line.startswith("resolution=") else line for line in text.splitlines())+"\n"
     cfg.write_text(text)
@@ -113,6 +134,8 @@ def main():
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["presentation_trace"] = args.trace_presentation
     metadata["presentation_queue"] = args.present_queue
+    metadata["jit_block_profile"] = args.jit_block_profile
+    metadata["jit_block_profile_scope"] = "resident blocks after restored frame threshold; intrusive, invalidated blocks excluded" if args.jit_block_profile else None
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:
@@ -147,7 +170,13 @@ def main():
                 time.sleep(.1)
             if args.profile_dispatch:
                 (root/"profile.enabled").write_text("restored combat state\n")
+            if args.jit_block_profile:
+                submit({"command":"jit_profile_reset"})
+                submit({"command":"read_timing","path":"jit-profile-start.txt"})
             for item in route["commands"]:submit(item)
+            if args.jit_block_profile:
+                submit({"command":"read_timing","path":"jit-profile-end.txt"})
+                submit({"command":"jit_profile_dump","path":"jit-blocks.tsv"})
             submit({"command":"pad_frames","port":0,"frames":2})
             submit({"command":"stop"})
             child.wait(timeout=30)

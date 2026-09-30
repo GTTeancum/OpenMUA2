@@ -180,6 +180,10 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
     return CommandType::Screenshot;
   if (text == "read_timing")
     return CommandType::ReadTiming;
+  if (text == "jit_profile_reset")
+    return CommandType::JitProfileReset;
+  if (text == "jit_profile_dump")
+    return CommandType::JitProfileDump;
   if (text == "read_memory")
     return CommandType::ReadMemory;
   if (text == "write_memory")
@@ -502,6 +506,7 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
   case CommandType::SaveState:
   case CommandType::LoadState:
   case CommandType::ReadTiming:
+  case CommandType::JitProfileDump:
   case CommandType::Screenshot:
   {
     const auto path_it = values.find("path");
@@ -524,6 +529,7 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
     break;
   case CommandType::Pause:
   case CommandType::Resume:
+  case CommandType::JitProfileReset:
   case CommandType::Stop:
     break;
   }

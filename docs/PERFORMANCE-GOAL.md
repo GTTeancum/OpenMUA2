@@ -245,6 +245,23 @@ The 30 FPS goal remains unmet. Next investigate generated-code entry/return
 frequency and helper overhead, not only the external dispatcher. Preserve
 native eligibility/hash checks, exceptions and interrupt/timing boundaries.
 
+## Guest producer investigation — 2026-09-30
+
+Opt-in `--jit-block-profile` now resets counters after restored-state readiness
+and dumps resident-block statistics. It is intrusive, excludes invalidated
+blocks and must never be used for release-FPS acceptance. Ordinary benchmark
+runs explicitly disable inherited profiling/debugging in their isolated copy.
+
+Crowded normal-speed controls still measure 26.32–27.52 FPS, with 22 FPS rolling
+one-second lows. Threading alone did not solve production delays. The guest
+profile points to decimal conversion/division; a region containing decimal
+conversion accounts for 19.05% of recorded cycles. Next trace its active callers
+and determine whether equivalent work can be eliminated or implemented faster.
+Do not disable diagnostics from a filename assumption, remove gameplay work,
+change clock/cycle charges or count duplicate frames as a performance fix.
+Full Xbox mapping, repeated acceptance and ten-minute varied combat remain open.
+Evidence: `evidence/windows-20260930/JIT-BLOCK-PROFILE.json`.
+
 ## Xbox / XInput controls — quick reference
 
 **Planned PS2-style layout; full implementation and gameplay validation are pending.**

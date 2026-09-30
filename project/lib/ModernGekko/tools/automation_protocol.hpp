@@ -22,6 +22,8 @@ enum class CommandType
   LoadState,
   Screenshot,
   ReadTiming,
+  JitProfileReset,
+  JitProfileDump,
   ReadMemory,
   WriteMemory,
   Stop,

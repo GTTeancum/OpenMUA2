@@ -132,6 +132,11 @@ static std::string_view GetDescription(const CPUEmuFeatureFlags flags)
   return descriptions[flags];
 }
 
+bool JitInterface::IsProfilingEnabled() const
+{
+  return m_jit && m_jit->IsProfilingEnabled();
+}
+
 void JitInterface::JitBlockLogDump(const Core::CPUThreadGuard& guard, std::FILE* file) const
 {
   std::fputs(

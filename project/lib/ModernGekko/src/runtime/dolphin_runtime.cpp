@@ -3,6 +3,7 @@
 #include "AudioCommon/AudioCommon.h"
 #include "Common/Config/Config.h"
 #include "Common/HookableEvent.h"
+#include "Common/IOFile.h"
 #include "Common/StringUtil.h"
 #include "Core/Boot/Boot.h"
 #include "Core/Boot/BootManager.h"
@@ -278,6 +279,42 @@ std::optional<RuntimeError> ReadAutomationTiming(const std::filesystem::path& pa
   return {};
 }
 
+std::optional<RuntimeError> RunAutomationJitProfile(const std::filesystem::path& path,
+                                                    bool reset)
+{
+  auto& system = Core::System::GetInstance();
+  const Core::CPUThreadGuard guard(system);
+  auto& jit = system.GetJitInterface();
+  if (!jit.IsProfilingEnabled())
+    return RuntimeError{RuntimeErrorCode::InvalidState,
+                        "JIT block profiling is disabled; use --jit-block-profile in the combat harness"};
+  if (reset)
+  {
+    jit.WipeBlockProfilingData(guard);
+    return {};
+  }
+
+  // Explicit, intrusive diagnostic: pause the CPU while serializing resident
+  // block counters. Invalidated blocks are absent; this is not release FPS or
+  // a complete accounting of all execution since the reset.
+  std::error_code ec;
+  std::filesystem::create_directories(path.parent_path(), ec);
+  if (ec)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not create JIT profile directory: " + ec.message()};
+  File::IOFile output(path.string(), "wb");
+  if (!output.IsOpen())
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not open JIT profile output"};
+  jit.JitBlockLogDump(guard, output.GetHandle());
+  const bool write_failed = std::ferror(output.GetHandle()) != 0;
+  const bool closed = output.Close();
+  if (write_failed || !closed)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not write JIT profile output"};
+  return {};
+}
+
 std::optional<RuntimeError> ReadAutomationMemory(const std::filesystem::path& path, u32 address,
                                                  u32 size)
 {
@@ -387,6 +424,12 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     if (auto error = ReadAutomationTiming(command.path))
       return error;
     break;
+  case automation::CommandType::JitProfileReset:
+  case automation::CommandType::JitProfileDump:
+    if (auto error = RunAutomationJitProfile(
+            command.path, command.type == automation::CommandType::JitProfileReset))
+      return error;
+    break;
   case automation::CommandType::ReadMemory:
     if (auto error = ReadAutomationMemory(command.path, command.address, command.size))
       return error;
@@ -413,6 +456,8 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   case automation::CommandType::LoadState:
   case automation::CommandType::Screenshot:
   case automation::CommandType::ReadTiming:
+  case automation::CommandType::JitProfileReset:
+  case automation::CommandType::JitProfileDump:
   case automation::CommandType::ReadMemory:
   case automation::CommandType::WriteMemory:
   case automation::CommandType::PadFrames:

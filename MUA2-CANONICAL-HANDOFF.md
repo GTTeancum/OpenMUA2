@@ -9,6 +9,54 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## JIT block profile and crowded control comparison — 2026-09-30
+
+Full JIT remains primary; sustained 30 FPS is unmet. Added opt-in
+`--jit-block-profile` to the process-local combat harness, with reset/dump
+commands and an explicit disabled-profile error. It changes only the copied
+benchmark profile. Ordinary runs explicitly disable inherited JIT profiling
+and debugging. This profiler is intrusive and reports resident blocks only;
+invalidated blocks are absent. Its timings are not release-FPS evidence.
+
+The crowded profile completed with exit 0: 35,597 resident blocks,
+24.387 billion recorded guest cycles versus 24.780 billion elapsed guest ticks,
+and zero skipped idle ticks. Read-only inspection identifies decimal conversion
+and 64-bit division among hot loops. Region 803c1000 contributes 19.05% of
+recorded cycles. Trace active callers, including indirect calls, before choosing
+an optimization. Debug configuration files alone do not prove active logging;
+no original game code/configuration or cycle charges were changed.
+
+Sequential uninstrumented same-runner controls at 1920x1080 preset / 3x EFB,
+Vulkan/Cubeb and normal clocks measured 27.524 FPS single-core and 26.318 FPS
+threaded over frames 12620–13690. P99: 50.66 / 52.63 ms; maximum: 83.40 /
+84.41 ms; rolling one-second minimum: 22 FPS both. Input receipt delays can
+change exact guest timing. These one-off results do not establish a gain or
+acceptance; threaded execution and the presentation queue remain unpromoted.
+
+Windows `Build.cmd --cpu jit --jobs 2` exited 0; 34/34 runtime tests (5.18 s)
+and 7/7 tooling tests passed. Runner: 15,589,376 bytes, SHA256
+bbc951840accbe8ee3fddad92e506d91c92aa56aa6306975bbf556f93e3fc740.
+CMake deprecation/Wayland/path-length warnings remain; final compiler errors
+and warnings: none found. Two earlier attempts failed on misplaced parser
+tests; corrected before the successful build. Log:
+.local/logs/jit-block-profile-build-final.log.
+
+An intentional negative run inherited an enabled diagnostic profile, disabled
+it, rendered combat, then correctly rejected the dump command without creating
+a misleading file. Harness exit 1 was expected; runner cleanup exited 0.
+All three native combat captures were inspected sequentially: heroes/Doombots,
+attacks, effects, damage indicator, HUD and scenery. The earlier portrait/camera
+probe also exited 0; all four captures were inspected. The game confirmed the
+previous fusion with 724 damage and six KOs. The active hero did not change;
+camera motion overlaps fusion completion and needs an independent check.
+Full Xbox mapping remains pending. Cubeb activation is confirmed; audible
+quality/synchronization and every-frame visuals remain unverified.
+
+Evidence: `evidence/windows-20260930/JIT-BLOCK-PROFILE.json`.
+Three-repeat and ten-minute varied combat acceptance remain outstanding.
+Private assets, raw profiles, disassembly and captures remain outside Git.
+User static edits, Build-With-Log.cmd and the static experiment stash are preserved.
+
 ## Presentation experiment and native fusion input — 2026-09-30
 
 Full JIT remains primary. Goal active/unmet. A clean heavier fight measured

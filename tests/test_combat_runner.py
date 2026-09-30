@@ -57,6 +57,24 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_block_profile_is_isolated_and_ordinary_runs_disable_inherited_diagnostics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            user = Path(directory)
+            (user / 'Config').mkdir()
+            path = user / 'Config/Dolphin.ini'
+            path.write_text('[Core]\nCPUThread = False\n[Interface]\nDebugModeEnabled = True\n[Debug]\nJitEnableProfiling = True\n')
+            mod.configure_jit_block_profile(user, False)
+            config = mod.configparser.ConfigParser()
+            config.read(path)
+            self.assertFalse(config.getboolean('Interface', 'DebugModeEnabled'))
+            self.assertFalse(config.getboolean('Debug', 'JitEnableProfiling'))
+            self.assertFalse(config.getboolean('Core', 'CPUThread'))
+            mod.configure_jit_block_profile(user, True)
+            config.read(path)
+            self.assertTrue(config.getboolean('Debug', 'JitEnableProfiling'))
+            self.assertTrue(config.getboolean('Interface', 'DebugModeEnabled'))
+            self.assertFalse(config.getboolean('Core', 'CPUThread'))
+
     def test_failure_detail_is_tied_to_failed_receipt_not_stale_status(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -74,6 +92,7 @@ class DiagnosticArgumentsTest(unittest.TestCase):
         cases = [["--jit-ranges", value] for value in
                  ("garbage", "80400000-80300000", "80300000-80300000", "100000000-100000004")]
         cases.append(["--jit-ranges", "80300000-80400000", "--jit-diagnostic"])
+        cases.append(["--cpu", "staticrecomp", "--jit-block-profile"])
         for extra in cases:
             with self.subTest(extra=extra), mock.patch("sys.argv", ["runner"] + required + extra), \
                  mock.patch.object(mod.shutil, "copytree") as copy, mock.patch("sys.stderr"):

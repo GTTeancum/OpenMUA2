@@ -1,0 +1,677 @@
+{
+  "goal": "active; sustained nominal 30 newly rendered FPS remains unmet",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "runtime_tests_passed": 34,
+    "runtime_test_seconds": 5.18,
+    "tooling_tests_passed": 7,
+    "runner_sha256": "bbc951840accbe8ee3fddad92e506d91c92aa56aa6306975bbf556f93e3fc740",
+    "runner_bytes": 15589376,
+    "other_binaries": {
+      "moderngekko-port.exe": 243200,
+      "moderngekko-module-info.exe": 29696
+    },
+    "log": ".local/logs/jit-block-profile-build-final.log",
+    "warnings": [
+      "CMake deprecation policies",
+      "Wayland unavailable on Windows",
+      "object path lengths"
+    ],
+    "compiler_warnings_errors_final_build": 0,
+    "earlier_failures": "Two build attempts exited 1 due to new parser tests being inserted into the setup helper. The first repair script failed to match mixed line endings. Tests were moved into main and the final build passed."
+  },
+  "profile": {
+    "private_root": ".local\\automation\\jit-crowded-block-profile-20260930",
+    "result": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 135.65600000001723
+    },
+    "scope": "Intrusive JIT resident-block counters, reset after restored frame threshold; invalidated blocks excluded. No release-FPS claim. Debugging affects JIT optimization, timings and route scheduling.",
+    "summary": {
+      "resident_blocks": 35597,
+      "executed_blocks": 35597,
+      "guest_ticks": 24780370623,
+      "idle_ticks": 0,
+      "resident_cycles": 24386696828,
+      "resident_runs": 2280911198,
+      "resident_time_ns": 52732159000,
+      "top_cycles": [
+        {
+          "ppcAddress": "803c11a0",
+          "ppcSize": 276,
+          "runCount": 97752546,
+          "cyclesSpent": 1521938550,
+          "cyclesPercent": 6.240856,
+          "timeSpent(ns)": 1949597500,
+          "timePercent": 3.69717
+        },
+        {
+          "ppcAddress": "8036f998",
+          "ppcSize": 32,
+          "runCount": 63990048,
+          "cyclesSpent": 831870624,
+          "cyclesPercent": 3.411166,
+          "timeSpent(ns)": 1296189500,
+          "timePercent": 2.458063
+        },
+        {
+          "ppcAddress": "803c119c",
+          "ppcSize": 280,
+          "runCount": 41178850,
+          "cyclesSpent": 790617622,
+          "cyclesPercent": 3.242004,
+          "timeSpent(ns)": 836522900,
+          "timePercent": 1.586362
+        },
+        {
+          "ppcAddress": "803c10b0",
+          "ppcSize": 516,
+          "runCount": 45212571,
+          "cyclesSpent": 636613821,
+          "cyclesPercent": 2.610496,
+          "timeSpent(ns)": 911549600,
+          "timePercent": 1.728641
+        },
+        {
+          "ppcAddress": "803680ec",
+          "ppcSize": 152,
+          "runCount": 15794110,
+          "cyclesSpent": 631782586,
+          "cyclesPercent": 2.590685,
+          "timeSpent(ns)": 483210300,
+          "timePercent": 0.916348
+        },
+        {
+          "ppcAddress": "803682a8",
+          "ppcSize": 148,
+          "runCount": 16151572,
+          "cyclesSpent": 629930118,
+          "cyclesPercent": 2.583089,
+          "timeSpent(ns)": 538884700,
+          "timePercent": 1.021928
+        },
+        {
+          "ppcAddress": "80514240",
+          "ppcSize": 56,
+          "runCount": 64022851,
+          "cyclesSpent": 584178049,
+          "cyclesPercent": 2.395478,
+          "timeSpent(ns)": 1314399400,
+          "timePercent": 2.492595
+        },
+        {
+          "ppcAddress": "80514464",
+          "ppcSize": 56,
+          "runCount": 64019790,
+          "cyclesSpent": 584147873,
+          "cyclesPercent": 2.395355,
+          "timeSpent(ns)": 1315628800,
+          "timePercent": 2.494927
+        },
+        {
+          "ppcAddress": "803c50a4",
+          "ppcSize": 212,
+          "runCount": 41936375,
+          "cyclesSpent": 533851934,
+          "cyclesPercent": 2.189111,
+          "timeSpent(ns)": 850764200,
+          "timePercent": 1.613369
+        },
+        {
+          "ppcAddress": "803c208c",
+          "ppcSize": 56,
+          "runCount": 64389344,
+          "cyclesSpent": 529199921,
+          "cyclesPercent": 2.170035,
+          "timeSpent(ns)": 1278093500,
+          "timePercent": 2.423746
+        },
+        {
+          "ppcAddress": "803c1214",
+          "ppcSize": 180,
+          "runCount": 46957024,
+          "cyclesSpent": 432791361,
+          "cyclesPercent": 1.774703,
+          "timeSpent(ns)": 932568200,
+          "timePercent": 1.7685
+        },
+        {
+          "ppcAddress": "800120b8",
+          "ppcSize": 432,
+          "runCount": 3643708,
+          "cyclesSpent": 396847975,
+          "cyclesPercent": 1.627313,
+          "timeSpent(ns)": 357709800,
+          "timePercent": 0.678352
+        },
+        {
+          "ppcAddress": "8036f9b8",
+          "ppcSize": 200,
+          "runCount": 63990048,
+          "cyclesSpent": 394574612,
+          "cyclesPercent": 1.617991,
+          "timeSpent(ns)": 1287479400,
+          "timePercent": 2.441545
+        },
+        {
+          "ppcAddress": "803c10cc",
+          "ppcSize": 488,
+          "runCount": 24560233,
+          "cyclesSpent": 383626564,
+          "cyclesPercent": 1.573098,
+          "timeSpent(ns)": 501495700,
+          "timePercent": 0.951024
+        },
+        {
+          "ppcAddress": "803c2050",
+          "ppcSize": 96,
+          "runCount": 41914617,
+          "cyclesSpent": 355342316,
+          "cyclesPercent": 1.457115,
+          "timeSpent(ns)": 835729400,
+          "timePercent": 1.584857
+        },
+        {
+          "ppcAddress": "8000f680",
+          "ppcSize": 352,
+          "runCount": 3603020,
+          "cyclesSpent": 275889773,
+          "cyclesPercent": 1.131313,
+          "timeSpent(ns)": 254320900,
+          "timePercent": 0.482288
+        },
+        {
+          "ppcAddress": "803f678c",
+          "ppcSize": 252,
+          "runCount": 3547638,
+          "cyclesSpent": 258878926,
+          "cyclesPercent": 1.061558,
+          "timeSpent(ns)": 98184900,
+          "timePercent": 0.186195
+        },
+        {
+          "ppcAddress": "803c10f4",
+          "ppcSize": 448,
+          "runCount": 24560233,
+          "cyclesSpent": 238416217,
+          "cyclesPercent": 0.977649,
+          "timeSpent(ns)": 485440200,
+          "timePercent": 0.920577
+        },
+        {
+          "ppcAddress": "803c0fd8",
+          "ppcSize": 160,
+          "runCount": 7741312,
+          "cyclesSpent": 237672530,
+          "cyclesPercent": 0.974599,
+          "timeSpent(ns)": 159593400,
+          "timePercent": 0.302649
+        },
+        {
+          "ppcAddress": "805133f8",
+          "ppcSize": 20,
+          "runCount": 56775656,
+          "cyclesSpent": 229636979,
+          "cyclesPercent": 0.941649,
+          "timeSpent(ns)": 1108820200,
+          "timePercent": 2.10274
+        }
+      ],
+      "top_time": [
+        {
+          "ppcAddress": "803c11a0",
+          "ppcSize": 276,
+          "runCount": 97752546,
+          "cyclesSpent": 1521938550,
+          "cyclesPercent": 6.240856,
+          "timeSpent(ns)": 1949597500,
+          "timePercent": 3.69717
+        },
+        {
+          "ppcAddress": "80514464",
+          "ppcSize": 56,
+          "runCount": 64019790,
+          "cyclesSpent": 584147873,
+          "cyclesPercent": 2.395355,
+          "timeSpent(ns)": 1315628800,
+          "timePercent": 2.494927
+        },
+        {
+          "ppcAddress": "80514240",
+          "ppcSize": 56,
+          "runCount": 64022851,
+          "cyclesSpent": 584178049,
+          "cyclesPercent": 2.395478,
+          "timeSpent(ns)": 1314399400,
+          "timePercent": 2.492595
+        },
+        {
+          "ppcAddress": "8036f998",
+          "ppcSize": 32,
+          "runCount": 63990048,
+          "cyclesSpent": 831870624,
+          "cyclesPercent": 3.411166,
+          "timeSpent(ns)": 1296189500,
+          "timePercent": 2.458063
+        },
+        {
+          "ppcAddress": "8036f9b8",
+          "ppcSize": 200,
+          "runCount": 63990048,
+          "cyclesSpent": 394574612,
+          "cyclesPercent": 1.617991,
+          "timeSpent(ns)": 1287479400,
+          "timePercent": 2.441545
+        },
+        {
+          "ppcAddress": "803c208c",
+          "ppcSize": 56,
+          "runCount": 64389344,
+          "cyclesSpent": 529199921,
+          "cyclesPercent": 2.170035,
+          "timeSpent(ns)": 1278093500,
+          "timePercent": 2.423746
+        },
+        {
+          "ppcAddress": "805133f8",
+          "ppcSize": 20,
+          "runCount": 56775656,
+          "cyclesSpent": 229636979,
+          "cyclesPercent": 0.941649,
+          "timeSpent(ns)": 1108820200,
+          "timePercent": 2.10274
+        },
+        {
+          "ppcAddress": "803c8098",
+          "ppcSize": 36,
+          "runCount": 46430627,
+          "cyclesSpent": 226397657,
+          "cyclesPercent": 0.928365,
+          "timeSpent(ns)": 935471100,
+          "timePercent": 1.774005
+        },
+        {
+          "ppcAddress": "803c1214",
+          "ppcSize": 180,
+          "runCount": 46957024,
+          "cyclesSpent": 432791361,
+          "cyclesPercent": 1.774703,
+          "timeSpent(ns)": 932568200,
+          "timePercent": 1.7685
+        },
+        {
+          "ppcAddress": "803c10b0",
+          "ppcSize": 516,
+          "runCount": 45212571,
+          "cyclesSpent": 636613821,
+          "cyclesPercent": 2.610496,
+          "timeSpent(ns)": 911549600,
+          "timePercent": 1.728641
+        },
+        {
+          "ppcAddress": "803c50a4",
+          "ppcSize": 212,
+          "runCount": 41936375,
+          "cyclesSpent": 533851934,
+          "cyclesPercent": 2.189111,
+          "timeSpent(ns)": 850764200,
+          "timePercent": 1.613369
+        },
+        {
+          "ppcAddress": "803c119c",
+          "ppcSize": 280,
+          "runCount": 41178850,
+          "cyclesSpent": 790617622,
+          "cyclesPercent": 3.242004,
+          "timeSpent(ns)": 836522900,
+          "timePercent": 1.586362
+        },
+        {
+          "ppcAddress": "803c2050",
+          "ppcSize": 96,
+          "runCount": 41914617,
+          "cyclesSpent": 355342316,
+          "cyclesPercent": 1.457115,
+          "timeSpent(ns)": 835729400,
+          "timePercent": 1.584857
+        },
+        {
+          "ppcAddress": "803c7e84",
+          "ppcSize": 36,
+          "runCount": 36081191,
+          "cyclesSpent": 144443063,
+          "cyclesPercent": 0.592303,
+          "timeSpent(ns)": 712489700,
+          "timePercent": 1.351148
+        },
+        {
+          "ppcAddress": "803c7eac",
+          "ppcSize": 12,
+          "runCount": 36055692,
+          "cyclesSpent": 72579120,
+          "cyclesPercent": 0.297618,
+          "timeSpent(ns)": 704972100,
+          "timePercent": 1.336892
+        },
+        {
+          "ppcAddress": "80514268",
+          "ppcSize": 16,
+          "runCount": 34407795,
+          "cyclesSpent": 43953429,
+          "cyclesPercent": 0.180235,
+          "timeSpent(ns)": 669021900,
+          "timePercent": 1.268717
+        },
+        {
+          "ppcAddress": "8051448c",
+          "ppcSize": 16,
+          "runCount": 34405735,
+          "cyclesSpent": 43949584,
+          "cyclesPercent": 0.18022,
+          "timeSpent(ns)": 666475300,
+          "timePercent": 1.263888
+        },
+        {
+          "ppcAddress": "800064f8",
+          "ppcSize": 16,
+          "runCount": 31236627,
+          "cyclesSpent": 98546196,
+          "cyclesPercent": 0.404098,
+          "timeSpent(ns)": 611236500,
+          "timePercent": 1.159134
+        },
+        {
+          "ppcAddress": "803682a8",
+          "ppcSize": 148,
+          "runCount": 16151572,
+          "cyclesSpent": 629930118,
+          "cyclesPercent": 2.583089,
+          "timeSpent(ns)": 538884700,
+          "timePercent": 1.021928
+        },
+        {
+          "ppcAddress": "803c10cc",
+          "ppcSize": 488,
+          "runCount": 24560233,
+          "cyclesSpent": 383626564,
+          "cyclesPercent": 1.573098,
+          "timeSpent(ns)": 501495700,
+          "timePercent": 0.951024
+        }
+      ]
+    },
+    "top_4k_regions_by_recorded_cycles": [
+      {
+        "base": "803c1000",
+        "cycles": 4646061188,
+        "percent": 19.05162154911257
+      },
+      {
+        "base": "8036f000",
+        "cycles": 2227551989,
+        "percent": 9.134291555395885
+      },
+      {
+        "base": "80514000",
+        "cycles": 1636744575,
+        "percent": 6.711628830029756
+      },
+      {
+        "base": "803c5000",
+        "cycles": 1466821023,
+        "percent": 6.014840932929648
+      },
+      {
+        "base": "80368000",
+        "cycles": 1308802057,
+        "percent": 5.3668689377286904
+      },
+      {
+        "base": "803c2000",
+        "cycles": 894814684,
+        "percent": 3.6692738270834755
+      },
+      {
+        "base": "8000f000",
+        "cycles": 736660990,
+        "percent": 3.0207493667374834
+      },
+      {
+        "base": "803f6000",
+        "cycles": 668922658,
+        "percent": 2.7429818097872323
+      },
+      {
+        "base": "803c4000",
+        "cycles": 559936164,
+        "percent": 2.296072190298031
+      },
+      {
+        "base": "80012000",
+        "cycles": 452966275,
+        "percent": 1.8574318539111008
+      }
+    ],
+    "interpretation": "Read-only original-code inspection identifies decimal conversion and 64-bit division among hot loops. Region 803c1000 accounts for 19.05% of recorded cycles. Active callers and possible redundant work remain unproven; no game configuration or original code was changed."
+  },
+  "single_core_control": {
+    "result": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 62.875
+    },
+    "metrics": {
+      "frame_metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13690,
+        "emulated_ticks": 28349971650,
+        "intervals": 1070,
+        "seconds": 38.8752129,
+        "average_fps": 27.523965019880315,
+        "frame_ms": {
+          "median": 33.406749999999704,
+          "p95": 50.13500000000093,
+          "p99": 50.65770000000214,
+          "max": 83.399
+        },
+        "one_percent_low_fps": 15.778499699921518,
+        "rolling_1s_fps_min": 22,
+        "rolling_1s_fps_median": 27,
+        "frames_over_33_334ms": 721,
+        "frames_over_50ms": 107,
+        "longest_consecutive_over_50ms_seconds": 0.16704810000000236,
+        "warmup_seconds": 0.0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 38.888850000000005,
+        "emulation_speed_percent": 100.03507916480119,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 873,
+          "50.050": 186,
+          "66.733": 4,
+          "16.683": 6,
+          "83.417": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0001333333346925647,
+          "p99": 1.1477333333323876,
+          "min": -14.961866666666781,
+          "max": 15.637000000000054
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "copy_event_count": 1070,
+      "copy_interval_ms": {
+        "n": 1069,
+        "min": 19.8505,
+        "median": 36.3037,
+        "p99": 47.9248,
+        "max": 82.1813
+      },
+      "before_to_after_ms": {
+        "n": 1071,
+        "min": 0.181,
+        "median": 0.3495,
+        "p99": 0.6671,
+        "max": 0.837
+      },
+      "before_minus_intended_ms": {
+        "n": 1071,
+        "min": -0.627167,
+        "median": -0.160867,
+        "p99": 1.2857,
+        "max": 16.045067
+      },
+      "after_minus_intended_ms": {
+        "n": 1071,
+        "min": 0.042933,
+        "median": 0.161933,
+        "p99": 1.615967,
+        "max": 16.356867
+      },
+      "actual_minus_intended_ms": {
+        "n": 1071,
+        "min": 0.0,
+        "median": 0.076433,
+        "p99": 1.5217,
+        "max": 16.270067
+      },
+      "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout.",
+      "copy_guest_interval_ms": {
+        "n": 1069,
+        "min": 28.09464609053498,
+        "median": 35.849875171467765,
+        "p99": 46.75319341563786,
+        "max": 73.0654183813443
+      }
+    },
+    "private_root": ".local\\automation\\jit-crowded-profile-off-control-20260930"
+  },
+  "dual_core_comparison": {
+    "result": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 65.34399999998277
+    },
+    "metrics": {
+      "frame_metrics": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 12620,
+        "last_frame": 13690,
+        "emulated_ticks": 29639159550,
+        "intervals": 1070,
+        "seconds": 40.6571499,
+        "average_fps": 26.317634232398568,
+        "frame_ms": {
+          "median": 33.473699999997386,
+          "p95": 50.47489999999755,
+          "p99": 52.633099999999985,
+          "max": 84.4124000000015
+        },
+        "one_percent_low_fps": 14.82216101717747,
+        "rolling_1s_fps_min": 22,
+        "rolling_1s_fps_median": 26,
+        "frames_over_33_334ms": 750,
+        "frames_over_50ms": 174,
+        "longest_consecutive_over_50ms_seconds": 0.1670172000000001,
+        "warmup_seconds": 0.0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 40.65728333333333,
+        "emulation_speed_percent": 100.0003281915571,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 50.05,
+          "max": 83.41666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 767,
+          "50.050": 286,
+          "66.733": 8,
+          "16.683": 8,
+          "83.417": 1
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 8.333333099963536e-05,
+          "p99": 1.0938333333277845,
+          "min": -14.874766666666664,
+          "max": 19.266433333333318
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "copy_event_count": 1070,
+      "copy_interval_ms": {
+        "n": 1069,
+        "min": 18.031,
+        "median": 37.4356,
+        "p99": 57.8542,
+        "max": 80.1596
+      },
+      "before_to_after_ms": {
+        "n": 1071,
+        "min": 0.1184,
+        "median": 0.3677,
+        "p99": 0.7707,
+        "max": 1.4517
+      },
+      "before_minus_intended_ms": {
+        "n": 1071,
+        "min": -0.599606,
+        "median": -0.095173,
+        "p99": 1.148627,
+        "max": 19.220561
+      },
+      "after_minus_intended_ms": {
+        "n": 1071,
+        "min": 0.042794,
+        "median": 0.190061,
+        "p99": 1.457127,
+        "max": 19.343461
+      },
+      "actual_minus_intended_ms": {
+        "n": 1071,
+        "min": 2.7e-05,
+        "median": 0.073227,
+        "p99": 1.378827,
+        "max": 19.297661
+      },
+      "scope": "Copy events indicate submitted XFB copies, not unique frames or GPU completion; actual is queue-submission timing, not scanout."
+    },
+    "private_root": ".local\\automation\\jit-crowded-dual-20260930"
+  },
+  "comparison_scope": "Same runner, state and route at 1920x1080 preset / 3x EFB, Vulkan, Cubeb, normal clocks, queue off. Sequential one-off diagnostics; command acknowledgment delays can change exact guest input timing. No measured optimization gain or acceptance pass is claimed. Threaded execution is not promoted.",
+  "disabled_profile_negative": {
+    "result": {
+      "route_completed": false,
+      "exit_code": 0,
+      "error": "RuntimeError: 000007.txt: JIT block profiling is disabled; use --jit-block-profile in the combat harness",
+      "elapsed": 27.60899999999674
+    },
+    "harness_exit_code": 1,
+    "expected_failure": true,
+    "output_file_absent": true,
+    "source_profile_was_enabled": true,
+    "ordinary_run_cleared_inherited_debugging": true
+  },
+  "visual": {
+    "current_build": "All three native captures in the disabled-profile negative run were inspected sequentially: heroes and Doombots, attacks/hit effects/damage indicator, HUD and street scenery. First capture shows power selector; subsequent captures show Spider-Man portrait. These are sampled images, not every-frame correctness.",
+    "previous_input_probe": "All four native portrait/camera probe captures inspected sequentially. Active hero stayed Spider-Man. Camera view changed during fusion completion, so independent camera control remains unproven. The game displayed Collect and Smash, 724 total damage and 6 total KOs.",
+    "audio": "Cubeb activation confirmed. Audible quality and synchronization unverified."
+  },
+  "next": [
+    "Trace active callers of decimal/formatting paths, including indirect calls; do not assume debug.ini is active or disable logging blindly.",
+    "Continue full Xbox layout implementation; direct hero selection and independent camera behavior remain unresolved.",
+    "After a measured correction, require three repeated varied-combat runs plus ten minutes with native visual/audio evidence."
+  ]
+}

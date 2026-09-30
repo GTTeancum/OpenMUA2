@@ -231,6 +231,32 @@ int main()
     return 14;
   }
 
+  {
+    std::ofstream output(commands / "009_jit_profile.txt");
+    output << "command=jit_profile_dump\npath=private/blocks.tsv\n";
+  }
+  error.clear();
+  if (!automation::ParseCommandFile(commands / "009_jit_profile.txt", &command, &error) ||
+      command.type != automation::CommandType::JitProfileDump ||
+      command.path != std::filesystem::path("private/blocks.tsv"))
+    return 15;
+  {
+    std::ofstream output(commands / "009_jit_profile.txt");
+    output << "command=jit_profile_dump\n";
+  }
+  error.clear();
+  if (automation::ParseCommandFile(commands / "009_jit_profile.txt", &command, &error) ||
+      error.find("path=<file>") == std::string::npos)
+    return 16;
+  {
+    std::ofstream output(commands / "009_jit_profile.txt");
+    output << "command=jit_profile_reset\n";
+  }
+  error.clear();
+  if (!automation::ParseCommandFile(commands / "009_jit_profile.txt", &command, &error) ||
+      command.type != automation::CommandType::JitProfileReset)
+    return 17;
+
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return 0;
