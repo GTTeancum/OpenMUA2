@@ -1,5 +1,39 @@
 # OpenMUA2 sustained combat performance goal
 
+## JIT reverse-link index sharding - 2026-09-30
+
+Finalization phase traces isolated a reverse-link hash-table growth pause:
+32768->65536 buckets cost 6.4294 ms. Split the destination-address index into
+64 standard maps with stable value references. Linking/unlinking feature checks
+and branch patching are unchanged; empty destination entries are still erased.
+No extra threads or large upfront reserve. Opt-in phase spans retain >=100us
+entry-map/range/link work; slow index logging requires runtime profiling.
+
+Worst linking phase fell from 6.515 ms to 1.300/0.3149 ms in short/full candidate
+probes. Whole-finalization maxima fell from 6.5169 to 1.3015/1.0299 ms. Total
+compilation cost remains substantial and routes are not deterministic. The full
+candidate averaged 29.9701 FPS, P99 39.3357 ms, maximum 94.2242 ms, lowest rolling
+second 28, six frames over 50 ms, guest speed 100.0002%. After five seconds of
+warmup, maximum remained 51.2082 ms with two frames over 50 ms. This is a targeted
+stall reduction, not the requested sustained-30 result or major overall gain.
+
+All five native probes exited 0. All seven candidate native captures inspected
+sequentially: combat, scenery/HUD, effects, damage, knockback, broken prop and
+hero changes present. Fusion tutorial persists; completed fusion and varied
+encounters unverified. Cubeb active/muted; 63 complete interior seconds had two
+DMA and one streaming empty dequeues. Not click counts. Crackling unresolved;
+no listening/device-output verification. One baseline frame also had a 50.05 ms
+guest interval, so not every slow host interval is host-only delay.
+
+Final Windows build exit0, 39/39 tests in5.87s; tooling138 ran,137passed,1skip
+in21.645s. Native container test checks stable references and 200000 operations
+against the old container. No compiler warnings/errors; existing CMake warnings
+remain. Final comment/line-ending rebuild changed artifact hashes after probes;
+exact tested and final hashes are recorded separately. Goal active/unmet;
+three qualifying repeats/ten-minute varied combat remain open. Next reduce total
+first-use compilation and validate fusion/varied encounters, not just this fight.
+Evidence: `evidence/windows-20260930/JIT-LINK-INDEX-SHARDING.json`.
+
 ## Continuous Xbox combat and queued replay - 2026-09-30
 
 Added `tools/routes/xbox-continuous-combat.json`: attacks, powers, movement,

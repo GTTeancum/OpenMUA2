@@ -18,6 +18,7 @@
 
 #include "Common/CommonTypes.h"
 #include "Common/JitRegister.h"
+#include "Common/RuntimeTiming.h"
 #include "Common/Swap.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/Core.h"
@@ -215,48 +216,68 @@ void JitBaseBlockCache::FinalizeBlock(JitBlock& block, bool block_link,
                                       const PPCAnalyst::CodeBlock& code_block,
                                       const PPCAnalyst::CodeBuffer& code_buffer)
 {
-  size_t index = FastLookupIndexForAddress(block.effectiveAddress, block.feature_flags);
-  if (m_entry_points_ptr)
   {
-    m_entry_points_arena.EnsureMemoryPageWritable(index * sizeof(u8*));
-    m_entry_points_ptr[index] = block.normalEntry;
-  }
-  else
-  {
-    m_fast_block_map_fallback[index] = &block;
-  }
-  block.fast_block_map_index = index;
-
-  block.physical_addresses = code_block.m_physical_addresses;
-
-  block.originalSize = code_block.m_num_instructions;
-  if (m_jit.IsDebuggingEnabled())
-  {
-    // TODO C++23: Can do this all in one statement with `std::vector::assign_range`.
-    const std::ranges::transform_view original_buffer_transform_view{
-        std::span{code_buffer.data(), block.originalSize},
-        [](const PPCAnalyst::CodeOp& op) { return std::make_pair(op.address, op.inst); }};
-    block.original_buffer.assign(original_buffer_transform_view.begin(),
-                                 original_buffer_transform_view.end());
-  }
-
-  for (auto [range_start, range_end] : block.physical_addresses)
-  {
-    for (u32 i = range_start & ~31; i < range_end; i += 32)
-      valid_block.Set(i / 32);
-
-    for (u32 i = range_start & BLOCK_RANGE_MAP_MASK; i < range_end; i += BLOCK_RANGE_SIZE)
-      block_range_map[i].insert(&block);
-  }
-
-  if (block_link)
-  {
-    for (const auto& e : block.linkData)
+    Common::RuntimeTiming::Scope phase(Common::RuntimeTiming::Kind::JitEntryMap, 0, 100000);
+    size_t index = FastLookupIndexForAddress(block.effectiveAddress, block.feature_flags);
+    if (m_entry_points_ptr)
     {
-      links_to[e.exitAddress].insert(&block);
+      m_entry_points_arena.EnsureMemoryPageWritable(index * sizeof(u8*));
+      m_entry_points_ptr[index] = block.normalEntry;
+    }
+    else
+    {
+      m_fast_block_map_fallback[index] = &block;
+    }
+    block.fast_block_map_index = index;
+  }
+
+  {
+    Common::RuntimeTiming::Scope phase(Common::RuntimeTiming::Kind::JitRanges, 0, 100000);
+    block.physical_addresses = code_block.m_physical_addresses;
+
+    block.originalSize = code_block.m_num_instructions;
+    if (m_jit.IsDebuggingEnabled())
+    {
+      // TODO C++23: Can do this all in one statement with `std::vector::assign_range`.
+      const std::ranges::transform_view original_buffer_transform_view{
+          std::span{code_buffer.data(), block.originalSize},
+          [](const PPCAnalyst::CodeOp& op) { return std::make_pair(op.address, op.inst); }};
+      block.original_buffer.assign(original_buffer_transform_view.begin(),
+                                   original_buffer_transform_view.end());
     }
 
-    LinkBlock(block);
+    for (auto [range_start, range_end] : block.physical_addresses)
+    {
+      for (u32 i = range_start & ~31; i < range_end; i += 32)
+        valid_block.Set(i / 32);
+
+      for (u32 i = range_start & BLOCK_RANGE_MAP_MASK; i < range_end; i += BLOCK_RANGE_SIZE)
+        block_range_map[i].insert(&block);
+    }
+  }
+
+  {
+    Common::RuntimeTiming::Scope phase(Common::RuntimeTiming::Kind::JitLinks, 0, 100000);
+    if (block_link)
+    {
+      const auto index_begin = Common::RuntimeTiming::Begin();
+      const auto old_size = index_begin ? links_to.size() : 0;
+      const auto old_buckets = index_begin ? links_to.bucket_count() : 0;
+      for (const auto& e : block.linkData)
+      {
+        links_to[e.exitAddress].insert(&block);
+      }
+      if (index_begin)
+      {
+        const auto elapsed = Common::RuntimeTiming::Now() - index_begin;
+        if (elapsed >= 1000000)
+          std::fprintf(stderr, "JIT link index elapsed_ns=%lld size=%zu->%zu buckets=%zu->%zu\n",
+                       static_cast<long long>(elapsed), old_size, links_to.size(), old_buckets,
+                       links_to.bucket_count());
+      }
+
+      LinkBlock(block);
+    }
   }
 
   const Common::Symbol* symbol = nullptr;
@@ -533,11 +554,11 @@ void JitBaseBlockCache::LinkBlockExits(JitBlock& block)
 void JitBaseBlockCache::LinkBlock(JitBlock& block)
 {
   LinkBlockExits(block);
-  const auto it = links_to.find(block.effectiveAddress);
-  if (it == links_to.end())
+  const auto* sources = links_to.Find(block.effectiveAddress);
+  if (!sources)
     return;
 
-  for (JitBlock* b2 : it->second)
+  for (JitBlock* b2 : *sources)
   {
     if (block.feature_flags == b2->feature_flags)
       LinkBlockExits(*b2);
@@ -553,10 +574,10 @@ void JitBaseBlockCache::UnlinkBlock(const JitBlock& block)
   }
 
   // Unlink all exits of other blocks which points to this block
-  const auto it = links_to.find(block.effectiveAddress);
-  if (it == links_to.end())
+  const auto* sources = links_to.Find(block.effectiveAddress);
+  if (!sources)
     return;
-  for (JitBlock* sourceBlock : it->second)
+  for (JitBlock* sourceBlock : *sources)
   {
     if (sourceBlock->feature_flags != block.feature_flags)
       continue;
@@ -594,12 +615,12 @@ void JitBaseBlockCache::DestroyBlock(JitBlock& block)
   // Delete linking addresses
   for (const auto& e : block.linkData)
   {
-    auto it = links_to.find(e.exitAddress);
-    if (it == links_to.end())
+    auto* sources = links_to.Find(e.exitAddress);
+    if (!sources)
       continue;
-    it->second.erase(&block);
-    if (it->second.empty())
-      links_to.erase(it);
+    sources->erase(&block);
+    if (sources->empty())
+      links_to.erase(e.exitAddress);
   }
 
   // Raise an signal if we are going to call this block again

@@ -18,10 +18,10 @@
 namespace Common::RuntimeTiming
 {
 enum class Kind { Throttle, GpuPacing, GpuWorker, GpuFence, GpuSubmit, GpuPresent, Present,
-                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize, JitInstruction, JitBackpatch };
+                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize, JitInstruction, JitBackpatch, JitEntryMap, JitRanges, JitLinks };
 inline constexpr const char* Names[] = {
     "throttle", "gpu_pacing", "gpu_worker", "gpu_fence", "gpu_submit", "gpu_present", "present",
-    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize", "jit_instruction", "jit_backpatch"};
+    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize", "jit_instruction", "jit_backpatch", "jit_entry_map", "jit_ranges", "jit_links"};
 inline std::int64_t Now()
 {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(

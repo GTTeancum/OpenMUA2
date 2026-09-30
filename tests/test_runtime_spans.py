@@ -33,6 +33,11 @@ class RuntimeSpansTest(unittest.TestCase):
         result = mod.analyze(FRAMES, SPANS + 'jit_compile,120,240,0,1\nshader_compile,150,250,0,2\n')
         self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)
         self.assertAlmostEqual(result['totals']['jit_compile']['union_ms'], 120e-6)
+        phases = ''.join(f'{kind},120,240,0,1\n' for kind in ('jit_entry_map', 'jit_ranges', 'jit_links'))
+        detailed = mod.analyze(FRAMES, SPANS + phases)
+        self.assertAlmostEqual(detailed['cpu_thread_wait_seconds'], 100e-9)
+        for kind in ('jit_entry_map', 'jit_ranges', 'jit_links'):
+            self.assertAlmostEqual(detailed['totals'][kind]['union_ms'], 120e-6)
 
     def test_missing_or_dropped_data_and_discontinuities_rejected(self):
         for f, s in ((FRAMES.replace('dropped_samples=0', 'dropped_samples=1'), SPANS),
