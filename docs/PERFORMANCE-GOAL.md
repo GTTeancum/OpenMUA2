@@ -1,5 +1,23 @@
 # OpenMUA2 sustained combat performance goal
 
+## Single-core and original Xbox constraint — 2026-09-30
+
+Keep CPU/GPU emulation on one thread. Multicore emulation is excluded from
+the performance plan and acceptance results, including imported profiles.
+The runtime applies a per-run single-core override; the benchmark also writes
+CPUThread=False into its isolated profile. Older threaded comparisons below
+are historical diagnostics and are not candidates for promotion.
+
+The eventual original Xbox port is now a design constraint: prioritize portable
+algorithms, reduced work and memory use, and avoid requiring parallel CPU
+execution for gains. The current Windows x64 JIT/graphics stack is not an Xbox
+port; platform backend and memory work remain future tasks. Windows audio,
+I/O and shader workers can still exist; this setting is not host CPU affinity
+or proof that the whole application fits on one original Xbox CPU.
+
+Keep the present Windows resolution, normal-speed and combat pacing acceptance
+requirements. Do not lower them in anticipation of the future console port.
+
 ## JIT direction authorized 2026-09-30
 
 The user explicitly selected full JIT as the primary performance path. The
@@ -40,6 +58,7 @@ work, not completion. No claim of feasibility or completion precedes measurement
 
 ## Acceptance
 
+- Single-core CPU/GPU emulation; no dependence on a second emulation thread.
 - Actual repeatable enemy combat with movement, attacks, damage and effects.
 - Per-frame timestamps, rolling FPS, frame-time percentiles, counts and longest
   duration of slow-frame episodes; exclude loading from combat statistics but
@@ -261,6 +280,24 @@ Do not disable diagnostics from a filename assumption, remove gameplay work,
 change clock/cycle charges or count duplicate frames as a performance fix.
 Full Xbox mapping, repeated acceptance and ten-minute varied combat remain open.
 Evidence: `evidence/windows-20260930/JIT-BLOCK-PROFILE.json`.
+
+## Active formatter callers resolved — 2026-09-30
+
+The bounded, intrusive caller probe identifies animation diagnostics among the
+hot formatting work. All three selected resident-block counts reconcile with
+their captured callers and zero overflow. Active code samples match the original
+DOL. A live logger snapshot has one stream with mask 7: observed channels 0x20
+and 0x1000 are discarded after formatting, while channel zero remains enabled.
+This is evidence for investigating lazy formatting, not permission to remove all
+logging or claim that every hot conversion is unnecessary.
+
+Next prove the live filter conditions and the temporary ring-buffer lifetime
+effects. Implement a guarded, portable path only where the output is unused;
+retain active diagnostics and original behavior when guards fail. Do not change
+clock/cycle charges, remove game work or weaken code-identity protections.
+Then compare uninstrumented single-core combat and inspect native output before
+repeat/soak acceptance. No formatter optimization or new FPS gain is delivered
+at this checkpoint. Evidence: evidence/windows-20260930/JIT-CALLERS-SINGLE-CORE.json.
 
 ## Xbox / XInput controls — quick reference
 

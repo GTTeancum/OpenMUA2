@@ -56,6 +56,7 @@ public:
   void UpdateMembase();
   bool IsProfilingEnabled() const;
   void JitBlockLogDump(const Core::CPUThreadGuard& guard, std::FILE* file) const;
+  void JitCallerLogDump(const Core::CPUThreadGuard& guard, std::FILE* file) const;
   void WipeBlockProfilingData(const Core::CPUThreadGuard& guard);
   void RunOnBlocks(const Core::CPUThreadGuard& guard,
                    const std::function<void(const JitBlock&)>& f) const;

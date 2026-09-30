@@ -5,6 +5,9 @@
 
 #include <algorithm>
 #include <array>
+#include <charconv>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <functional>
 #include <map>
@@ -15,6 +18,7 @@
 
 #include "Common/CommonTypes.h"
 #include "Common/JitRegister.h"
+#include "Common/Swap.h"
 #include "Core/Config/MainSettings.h"
 #include "Core/Core.h"
 #include "Core/Host.h"
@@ -23,6 +27,7 @@
 #include "Core/PowerPC/PPCSymbolDB.h"
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/PowerPC/StaticRecomp/StaticRecompCore.h"
+#include "Core/System.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -38,6 +43,39 @@ bool JitBlock::OverlapsPhysicalRange(u32 address, u32 length) const
 void JitBlock::ProfileData::BeginProfiling(ProfileData* data)
 {
   data->run_count += 1;
+  if (data->callers)
+  {
+    auto& system = *data->caller_system;
+    const auto& state = system.GetPPCState();
+    data->callers->Record(LR(state), [&](JitCallerProfile::Sample& sample) {
+      std::copy_n(state.gpr + 3, sample.gpr.size(), sample.gpr.begin());
+      // Read only directly mapped RAM. Do not invoke MMIO, translate arbitrary
+      // addresses, or raise a guest exception while taking a diagnostic sample.
+      u32 sp = state.gpr[1];
+      for (u32& saved_lr : sample.stack_lr)
+      {
+        if ((sp & 3) != 0)
+          break;
+        auto& memory = system.GetMemory();
+        const u32 physical = sp & 0x3fffffff;
+        const u8* frame = nullptr;
+        if (memory.GetRAM() && physical < memory.GetRamSizeReal() &&
+            memory.GetRamSizeReal() - physical >= 8)
+          frame = memory.GetRAM() + physical;
+        else if (memory.GetEXRAM() && (physical >> 28) == 1 &&
+                 (physical & 0x0fffffff) < memory.GetExRamSizeReal() &&
+                 memory.GetExRamSizeReal() - (physical & 0x0fffffff) >= 8)
+          frame = memory.GetEXRAM() + (physical & 0x0fffffff);
+        if (!frame)
+          break;
+        saved_lr = Common::swap32(frame + 4);
+        const u32 parent = Common::swap32(frame);
+        if (parent <= sp)
+          break;
+        sp = parent;
+      }
+    });
+  }
   data->time_start = Clock::now();
 }
 
@@ -56,6 +94,32 @@ JitBaseBlockCache::~JitBaseBlockCache() = default;
 void JitBaseBlockCache::Init()
 {
   Common::JitRegister::Init(Config::Get(Config::MAIN_PERF_MAP_DIR));
+
+  m_profile_caller_addresses.clear();
+  if (const char* raw = std::getenv("MODERNGEKKO_JIT_PROFILE_CALLERS"); raw && *raw)
+  {
+    std::string_view remaining(raw);
+    while (!remaining.empty())
+    {
+      const auto separator = remaining.find(',');
+      const auto token = remaining.substr(0, separator);
+      u32 address = 0;
+      const auto parsed = std::from_chars(token.data(), token.data() + token.size(), address, 16);
+      if (token.empty() || token.size() > 8 || parsed.ec != std::errc{} ||
+          parsed.ptr != token.data() + token.size() || (address & 3) != 0 ||
+          m_profile_caller_addresses.size() >= 32 ||
+          (separator != std::string_view::npos && separator + 1 == remaining.size()))
+      {
+        std::fprintf(stderr, "Invalid MODERNGEKKO_JIT_PROFILE_CALLERS; caller tracing disabled\n");
+        m_profile_caller_addresses.clear();
+        break;
+      }
+      m_profile_caller_addresses.insert(address);
+      if (separator == std::string_view::npos)
+        break;
+      remaining.remove_prefix(separator + 1);
+    }
+  }
 
   m_entry_points_ptr = nullptr;
 #ifdef _ARCH_64
@@ -125,7 +189,7 @@ void JitBaseBlockCache::WipeBlockProfilingData(const Core::CPUThreadGuard&)
   for (const auto& kv : block_map)
   {
     if (JitBlock::ProfileData* const profile_data = kv.second.profile_data.get())
-      *profile_data = {};
+      profile_data->Reset();
   }
   Host_JitProfileDataWiped();
 }
@@ -137,6 +201,11 @@ JitBlock* JitBaseBlockCache::AllocateBlock(u32 em_address)
   b.effectiveAddress = em_address;
   b.physicalAddress = physical_address;
   b.feature_flags = m_jit.m_ppc_state.feature_flags;
+  if (b.profile_data && m_profile_caller_addresses.contains(em_address))
+  {
+    b.profile_data->callers = std::make_unique<JitCallerProfile>();
+    b.profile_data->caller_system = &m_jit.m_system;
+  }
   b.linkData.clear();
   b.fast_block_map_index = 0;
   return &b;

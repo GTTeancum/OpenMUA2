@@ -204,6 +204,33 @@ void JitInterface::JitBlockLogDump(const Core::CPUThreadGuard& guard, std::FILE*
   }
 }
 
+void JitInterface::JitCallerLogDump(const Core::CPUThreadGuard& guard, std::FILE* file) const
+{
+  std::fputs("ppcAddress\tcallerLR\trunCount\tr3\tr4\tr5\tr6\tr7\tr8\tr9\tr10"
+             "\tstackLR0\tstackLR1\tstackLR2\tstackLR3\tstackLR4\tstackLR5\tstackLR6\tstackLR7\n",
+             file);
+  if (!IsProfilingEnabled())
+    return;
+  RunOnBlocks(guard, [&](const JitBlock& block) {
+    if (!block.profile_data || !block.profile_data->callers)
+      return;
+    const auto& callers = *block.profile_data->callers;
+    for (std::size_t i = 0; i < callers.size; ++i)
+    {
+      const auto& sample = callers.samples[i];
+      fmt::print(file, "{:08x}\t{:08x}\t{}", block.effectiveAddress, sample.lr, sample.count);
+      for (u32 value : sample.gpr)
+        fmt::print(file, "\t{:08x}", value);
+      for (u32 value : sample.stack_lr)
+        fmt::print(file, "\t{:08x}", value);
+      std::fputc('\n', file);
+    }
+    fmt::println(file, "# block={:08x} captured={} overflow={} entries={}",
+                 block.effectiveAddress, block.profile_data->run_count - callers.overflow,
+                 callers.overflow, callers.size);
+  });
+}
+
 void JitInterface::WipeBlockProfilingData(const Core::CPUThreadGuard& guard)
 {
   if (m_jit)

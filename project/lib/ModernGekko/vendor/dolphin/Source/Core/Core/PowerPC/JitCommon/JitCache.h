@@ -19,6 +19,7 @@
 #include "Common/RangeSet.h"
 #include "Core/HW/Memmap.h"
 #include "Core/PowerPC/Gekko.h"
+#include "Core/PowerPC/JitCommon/JitCallerProfile.h"
 #include "Core/PowerPC/PPCAnalyst.h"
 
 class JitBase;
@@ -74,6 +75,18 @@ struct JitBlock : public JitBlockData
     std::size_t run_count = 0;
     u64 cycles_spent = 0;
     Clock::duration time_spent = {};
+    std::unique_ptr<JitCallerProfile> callers;
+    Core::System* caller_system = nullptr;
+
+    void Reset()
+    {
+      run_count = 0;
+      cycles_spent = 0;
+      time_spent = {};
+      time_start = {};
+      if (callers)
+        *callers = {};
+    }
 
   private:
     Clock::time_point time_start;
@@ -198,6 +211,7 @@ protected:
   virtual void InvalidateICacheInternal(u32 physical_address, u32 address, u32 length, bool forced);
 
   JitBase& m_jit;
+  std::unordered_set<u32> m_profile_caller_addresses;
 
 private:
   virtual void WriteLinkBlock(const JitBlock::LinkData& source, const JitBlock* dest) = 0;

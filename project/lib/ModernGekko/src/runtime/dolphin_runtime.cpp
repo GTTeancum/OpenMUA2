@@ -312,6 +312,16 @@ std::optional<RuntimeError> RunAutomationJitProfile(const std::filesystem::path&
   if (write_failed || !closed)
     return RuntimeError{RuntimeErrorCode::InitializationFailed,
                         "could not write JIT profile output"};
+  File::IOFile callers(path.string() + ".callers.tsv", "wb");
+  if (!callers.IsOpen())
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not open JIT caller output"};
+  jit.JitCallerLogDump(guard, callers.GetHandle());
+  const bool caller_write_failed = std::ferror(callers.GetHandle()) != 0;
+  const bool callers_closed = callers.Close();
+  if (caller_write_failed || !callers_closed)
+    return RuntimeError{RuntimeErrorCode::InitializationFailed,
+                        "could not write JIT caller output"};
   return {};
 }
 
@@ -921,6 +931,9 @@ RuntimeRunResult Runtime::Run() {
         if (state == Core::State::Uninitialized && m_impl->platform)
           m_impl->platform->Stop();
       });
+  // A run override also takes precedence over imported per-game settings.
+  // Keep CPU/GPU emulation serial for the planned original Xbox port.
+  Config::SetCurrent(Config::MAIN_CPU_THREAD, false);
   if (!BootManager::BootCore(Core::System::GetInstance(), std::move(boot),
                              m_impl->platform->GetWindowSystemInfo())) {
     m_impl->running = false;

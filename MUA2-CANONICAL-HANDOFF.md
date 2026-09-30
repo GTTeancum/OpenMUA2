@@ -9,6 +9,53 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Single-core requirement and active JIT callers — 2026-09-30
+
+The user requires single-core execution and intends an eventual original Xbox
+port. CPU/GPU emulation now has a per-run CPUThread=False override, including
+imported per-game settings. The benchmark writes the same setting into its
+isolated profile and rejects missing/dual-core effective runtime confirmation.
+Threaded comparisons below are historical and excluded from promotion. Favor
+portable algorithms, less work and lower memory use. This Windows x64 backend
+is not an Xbox port or proof of whole-process performance on one Xbox CPU;
+Windows audio/I/O/shader workers remain possible.
+
+Added opt-in --jit-profile-callers with --jit-block-profile: up to 32 selected
+blocks, 64 distinct LRs per block, first argument/raw-stack examples and explicit
+overflow counts. Ordinary runs disable inherited profiling. This is intrusive,
+resident-block-only evidence, not release FPS or a complete call-stack trace.
+
+The crowded caller probe completed with exit 0 in 70.266 s. Three selected
+blocks recorded 11,107, 319,639 and 222,615 entries; counts reconcile with the
+block dump, with zero overflow. Sampled formatting serves animation diagnostics.
+Five 32-byte active code samples match the original DOL. The live logger has
+one stream with mask 7: observed channels 0x20 and 0x1000 are discarded after
+formatting; channel zero remains enabled. Next prove filter and temporary-buffer
+side effects before guarded lazy formatting. No logging was disabled, original
+game data changed, clock/cycle charges altered or FPS gain claimed.
+
+Windows Build.cmd --cpu jit --jobs 2 exited 0. Runtime tests: 35/35 in 6.93 s;
+tooling tests: 8/8. Runner: 15,593,984 bytes, SHA256
+af4b30488e8a4293bb0f6a10614a643b434c94a38fe6bf7701c8d672f1708164.
+Build log: .local/logs/jit-caller-single-core-final-build.log. No compiler
+warnings/errors found. CMake deprecation, missing Wayland and object-path
+warnings remain. ModernGekko.exe, moderngekko-port.exe and module-info were also
+linked; exact artifact hashes are in the evidence. No generated game DLL needed.
+
+An actual Cubeb combat replay with conflicting imported per-game CPUThread=True
+completed with exit 0 in 27.219 s and confirmed dual_core=0, 3x EFB and normal
+clocks. All three native captures were inspected sequentially: crowded heroes/
+Doombots, attacks, beam/impact effects, damage, scenery, HUD and fusion tutorial.
+The preset is 1920x1080; actual window captures are 2501x1410. This short captured
+route validates settings and sampled content, not FPS acceptance or every frame.
+Audio quality/synchronization remains unverified. Sustained 30 FPS, three-repeat
+and ten-minute varied combat acceptance, and full Xbox controls remain open.
+
+Evidence: evidence/windows-20260930/JIT-CALLERS-SINGLE-CORE.json.
+Private data/captures remain ignored. User static edits, Build-With-Log.cmd and
+the unfinished static experiment stash are preserved. Goal remains active.
+
+
 ## JIT block profile and crowded control comparison — 2026-09-30
 
 Full JIT remains primary; sustained 30 FPS is unmet. Added opt-in

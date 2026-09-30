@@ -57,19 +57,29 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_runtime_must_confirm_backend_and_single_core(self):
+        video = "Effective video: dual_core=0 sync_gpu=0\n"
+        mod.validate_runtime_settings("CPU backend: JIT\n" + video, "jit")
+        mod.validate_runtime_settings("CPU backend: StaticRecomp\n" + video, "staticrecomp")
+        for log in ("", "CPU backend: JIT\n", "CPU backend: StaticRecomp\n" + video,
+                    "CPU backend: JIT\n" + video.replace("dual_core=0", "dual_core=1"),
+                    "CPU backend: JIT\n" + video + video.replace("dual_core=0", "dual_core=1")):
+            with self.subTest(log=log), self.assertRaises(RuntimeError):
+                mod.validate_runtime_settings(log, "jit")
+
     def test_block_profile_is_isolated_and_ordinary_runs_disable_inherited_diagnostics(self):
         with tempfile.TemporaryDirectory() as directory:
             user = Path(directory)
             (user / 'Config').mkdir()
             path = user / 'Config/Dolphin.ini'
-            path.write_text('[Core]\nCPUThread = False\n[Interface]\nDebugModeEnabled = True\n[Debug]\nJitEnableProfiling = True\n')
-            mod.configure_jit_block_profile(user, False)
+            path.write_text('[Core]\nCPUThread = True\n[Interface]\nDebugModeEnabled = True\n[Debug]\nJitEnableProfiling = True\n')
+            mod.configure_benchmark_profile(user, False)
             config = mod.configparser.ConfigParser()
             config.read(path)
             self.assertFalse(config.getboolean('Interface', 'DebugModeEnabled'))
             self.assertFalse(config.getboolean('Debug', 'JitEnableProfiling'))
             self.assertFalse(config.getboolean('Core', 'CPUThread'))
-            mod.configure_jit_block_profile(user, True)
+            mod.configure_benchmark_profile(user, True)
             config.read(path)
             self.assertTrue(config.getboolean('Debug', 'JitEnableProfiling'))
             self.assertTrue(config.getboolean('Interface', 'DebugModeEnabled'))
@@ -93,6 +103,9 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                  ("garbage", "80400000-80300000", "80300000-80300000", "100000000-100000004")]
         cases.append(["--jit-ranges", "80300000-80400000", "--jit-diagnostic"])
         cases.append(["--cpu", "staticrecomp", "--jit-block-profile"])
+        cases.append(["--jit-profile-callers", "803c63bc"])
+        for targets in ("803c63bd", "803c63bc,", "100000000", "junk", ",".join(["803c63bc"]*33)):
+            cases.append(["--jit-block-profile", "--jit-profile-callers", targets])
         for extra in cases:
             with self.subTest(extra=extra), mock.patch("sys.argv", ["runner"] + required + extra), \
                  mock.patch.object(mod.shutil, "copytree") as copy, mock.patch("sys.stderr"):

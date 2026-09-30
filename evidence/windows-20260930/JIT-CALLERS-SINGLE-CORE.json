@@ -1,0 +1,221 @@
+{
+  "date": "2026-09-30",
+  "repository": "GTTeancum/OpenMUA2",
+  "base_commit": "f2b0dd1c7b29a88eb263c3bddfc4d3ae4a2575c1",
+  "goal_status": "active; sustained nominal 30 FPS in varied combat remains unmet",
+  "user_constraint": {
+    "single_core_emulation_required": true,
+    "future_target": "original Xbox",
+    "scope": "CPU/GPU emulation serial; portable optimizations prioritized. Windows audio/I/O/shader workers remain possible. No host affinity or original Xbox execution demonstrated."
+  },
+  "source_changes": [
+    "Per-run CPUThread=False overrides imported base and game settings; benchmark profile also serializes it and checks effective runtime logging.",
+    "Opt-in bounded caller/first-argument/raw-stack samples for up to 32 selected resident JIT block addresses, 64 distinct caller LRs per block, with overflow reporting.",
+    "Reset preserves selected blocks and clears counts/samples. Ordinary runs clear inherited caller selection and disable intrusive profiling."
+  ],
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "log": ".local/logs/jit-caller-single-core-final-build.log",
+    "runtime_tests": {
+      "passed": 35,
+      "failed": 0,
+      "seconds": 6.93
+    },
+    "tooling_tests": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 0.066
+    },
+    "artifacts": [
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+        "bytes": 15593984,
+        "sha256": "af4b30488e8a4293bb0f6a10614a643b434c94a38fe6bf7701c8d672f1708164"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+        "bytes": 243200,
+        "sha256": "625b95735756c755386a1b66819513e91e17ece93731533f639edeab1b6b22e0"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+        "bytes": 29696,
+        "sha256": "1613d03d2051226845879774e744b15c7d46ed66085aa756661b20b6face2e62"
+      },
+      {
+        "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+        "bytes": 11824128,
+        "sha256": "ba5d6a6c38f9c9f79e6240d87703931eb861616f92bd35319a75253537297243"
+      }
+    ],
+    "compiler_warnings": [],
+    "compiler_errors": [],
+    "configure_warnings": [
+      "Deprecated CMake policy/minimum versions in vendored dependencies",
+      "Wayland unavailable on this Windows configuration",
+      "Long object paths in vendored targets"
+    ],
+    "earlier_successful_builds": [
+      {
+        "log": ".local/logs/jit-caller-profile-build.log",
+        "runtime_tests": "35/35",
+        "seconds": 5.1
+      },
+      {
+        "log": ".local/logs/jit-caller-single-core-build.log",
+        "runtime_tests": "35/35",
+        "seconds": 7.1
+      }
+    ],
+    "generated_proprietary_module": "None generated or required for this JIT build; existing private static artifacts preserved"
+  },
+  "caller_diagnostic": {
+    "root": ".local/automation/jit-crowded-callers-20260930",
+    "route_completed": true,
+    "exit_code": 0,
+    "error": null,
+    "elapsed": 70.26600000000326,
+    "runner_sha256": "7b84f7ce8dc1630b67aac38c36ce9e4014058be84676201d1b58f0d6feaddb9b",
+    "release_fps_evidence": false,
+    "scope": "Intrusive resident blocks only; invalidated/merged blocks limit attribution. First arguments per LR are examples, raw stack links are candidates, not validated call stacks.",
+    "blocks": [
+      {
+        "block": "801e876c",
+        "samples": [
+          {
+            "caller_lr": "801e844c",
+            "entries": 11107
+          }
+        ],
+        "captured": 11107,
+        "overflow": 0,
+        "resident_run_count": 11107,
+        "counts_reconcile": true
+      },
+      {
+        "block": "803c57c8",
+        "samples": [
+          {
+            "caller_lr": "803c6400",
+            "entries": 319639
+          }
+        ],
+        "captured": 319639,
+        "overflow": 0,
+        "resident_run_count": 319639,
+        "counts_reconcile": true
+      },
+      {
+        "block": "803c63bc",
+        "samples": [
+          {
+            "caller_lr": "801e844c",
+            "entries": 222442
+          },
+          {
+            "caller_lr": "801e8534",
+            "entries": 173
+          }
+        ],
+        "captured": 222615,
+        "overflow": 0,
+        "resident_run_count": 222615,
+        "counts_reconcile": true
+      }
+    ],
+    "active_code_comparison": [
+      {
+        "address": "803c11a0",
+        "bytes_compared": 32,
+        "matches_original_dol": true
+      },
+      {
+        "address": "803c63bc",
+        "bytes_compared": 32,
+        "matches_original_dol": true
+      },
+      {
+        "address": "803c57c8",
+        "bytes_compared": 32,
+        "matches_original_dol": true
+      },
+      {
+        "address": "8036f998",
+        "bytes_compared": 32,
+        "matches_original_dol": true
+      },
+      {
+        "address": "80514240",
+        "bytes_compared": 32,
+        "matches_original_dol": true
+      }
+    ],
+    "finding": "Sampled expensive formatting serves animation diagnostic messages. Two observed caller channels are filtered only after formatting.",
+    "logger_snapshot": {
+      "stream_count": 1,
+      "mask": 7,
+      "discarded_observed_channels": [
+        "0x20",
+        "0x1000"
+      ],
+      "channel_zero_still_enabled": true
+    },
+    "optimization_implemented": false,
+    "next": "Prove live filter conditions and temporary-buffer side effects before guarded lazy formatting; retain enabled diagnostics, normal game work and JIT correctness/timing protections."
+  },
+  "single_core_live_validation": {
+    "root": ".local/automation/jit-single-core-enforced-20260930",
+    "route_completed": true,
+    "exit_code": 0,
+    "error": null,
+    "elapsed": 27.219000000040978,
+    "runner_sha256": "af4b30488e8a4293bb0f6a10614a643b434c94a38fe6bf7701c8d672f1708164",
+    "conflicting_imported_profile": "Base and per-game CPUThread=True supplied privately; harness writes base False, per-game True retained; runtime still reports dual_core=0.",
+    "effective_settings": [
+      "CPU backend: JIT",
+      "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000",
+      "audio backend: Cubeb"
+    ],
+    "resolution_preset": "1920x1080",
+    "efb_scale": 3,
+    "captures": [
+      {
+        "path": ".local/automation/jit-single-core-enforced-20260930/shots/00-crowded.png",
+        "bytes": 4818554,
+        "sha256": "d5d7eadd602873878c5473997c70df6862c5be78c2231eabe041fb11e4f090b5",
+        "width": 2501,
+        "height": 1410,
+        "inspected_sequentially": true,
+        "observation": "Crowded heroes/Doombots on the street; scenery, HUD, target bar and fusion tutorial present; power selector visible."
+      },
+      {
+        "path": ".local/automation/jit-single-core-enforced-20260930/shots/01-attack.png",
+        "bytes": 4829005,
+        "sha256": "185e103262c02a8af0640624d5e1c5416e100fcd4d9c9e48d2077161d0d65258",
+        "width": 2501,
+        "height": 1410,
+        "inspected_sequentially": true,
+        "observation": "Changed combat poses, enemy beam/hit glow and damage number; Spider-Man portrait restored; scenery/HUD retained."
+      },
+      {
+        "path": ".local/automation/jit-single-core-enforced-20260930/shots/02-heavy.png",
+        "bytes": 4805454,
+        "sha256": "114b797ef4ec3be9bdf3e62e89a415465c43ba25ded57a3983f5321d8527f195",
+        "width": 2501,
+        "height": 1410,
+        "inspected_sequentially": true,
+        "observation": "Further changed positions/attack pose and bright impact effect in enemy group; scenery/HUD/tutorial retained."
+      }
+    ],
+    "audio": "Cubeb enabled; audible quality and synchronization unverified",
+    "scope": "Sampled combat visuals and settings enforcement only; no new FPS gain, every-frame or sustained acceptance claim."
+  },
+  "remaining": [
+    "Guarded optimization and release measurements",
+    "Complete PS2-derived Xbox controls",
+    "Three-repeat and ten-minute varied-combat acceptance",
+    "Original Xbox backend/memory port work"
+  ],
+  "preservation": "Original game, generated output, saves, RAM, disassembly, images and raw logs remain private/ignored. User static edits, untracked Build-With-Log.cmd and static-experiment stash preserved."
+}
