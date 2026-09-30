@@ -64,5 +64,42 @@ int main()
   if (JitCommon::TryFixedFloatFormat(format, unsupported, output) || output != original ||
       JitCommon::CountFixedFloatFields({reinterpret_cast<const u8*>("%.2f"), 5}))
     return 7;
+  const std::array<u8, 12> mixed{'%', 's', ':', '%', 'd', ':', '%', 'f', ':', '%', '%', 0};
+  for (u32 bits : {0u, 1u, 0xffffffffu, 0x80000000u, 0x7fffffffu})
+  {
+    std::array<u8, 128> actual, expected;
+    actual.fill(0xa5); expected.fill(0xa5);
+    const s32 integer = std::bit_cast<s32>(bits);
+    const std::array<double, 1> values{-0.0};
+    const auto result = JitCommon::TryBasicFormat(mixed, actual,
+        [&](u8 type, std::span<u8> target) -> std::optional<u32> {
+      if (type == 's') { std::memcpy(target.data(), "test", 4); return 4; }
+      if (type == 'f')
+      {
+        const std::array<u8, 3> f{'%', 'f', 0};
+        return JitCommon::TryFixedFloatFormat(f, values, target);
+      }
+      auto* first = reinterpret_cast<char*>(target.data());
+      const auto converted = std::to_chars(first, first + target.size(), integer);
+      if (converted.ec != std::errc{}) return {};
+      return static_cast<u32>(converted.ptr - first);
+    });
+    const int reference = std::snprintf(reinterpret_cast<char*>(expected.data()), expected.size(),
+                                      "%s:%d:%f:%%", "test", integer, values[0]);
+    if (!result || *result != reference || actual != expected) return 8;
+  }
+  for (const auto bad : {"prefix %08x", "prefix %n", "prefix %", "long literal"})
+  {
+    output = original;
+    if (JitCommon::TryBasicFormat({reinterpret_cast<const u8*>(bad), std::strlen(bad) + 1}, output,
+        [](u8, std::span<u8>) -> std::optional<u32> { return {}; }) || output != original) return 9;
+  }
+  std::array<u8, 128> rejected;
+  rejected.fill(0xa5);
+  const auto untouched = rejected;
+  if (JitCommon::TryBasicFormat(mixed, rejected,
+      [](u8, std::span<u8> target) -> std::optional<u32> {
+        target[0] = 'x'; return {}; // Failed reader cannot partially publish output.
+      }) || rejected != untouched) return 10;
   return 0;
 }

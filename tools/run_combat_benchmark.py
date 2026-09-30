@@ -90,6 +90,32 @@ def validate_audio_profile(root, log):
         raise RuntimeError("audio profile contains no Cubeb callbacks")
 
 
+def validate_formatter(log, mode):
+    lines = [line for line in log.splitlines() if line.startswith('Simple formatter: ')]
+    if not mode:
+        if lines: raise RuntimeError('unexpected formatter experiment in ordinary run')
+        return
+    if len(lines) != 1: raise RuntimeError('missing or ambiguous formatter summary')
+    fields = dict(item.split('=', 1) for item in lines[0].split()[2:])
+    if fields.get('mode') != mode: raise RuntimeError('formatter mode mismatch')
+    try:
+        values = {key: int(fields[key]) for key in ('eligible', 'replaced', 'compared',
+                  'mismatches', 'fpscr_mismatches', 'abandoned', 'pending')}
+    except (KeyError, ValueError) as exc:
+        raise RuntimeError('incomplete formatter counters') from exc
+    if values['eligible'] <= 0 or any(values[k] != 0 for k in
+            ('mismatches', 'fpscr_mismatches', 'abandoned')):
+        raise RuntimeError('formatter comparison failed or no eligible calls')
+    active, inactive = ('compared', 'replaced') if mode == 'shadow' else ('replaced', 'compared')
+    # Shutdown may interrupt an original call. Account for it explicitly without
+    # treating that pending call as a completed comparison.
+    pending = values['pending']
+    if not 0 <= pending <= (16 if mode == 'shadow' else 0):
+        raise RuntimeError('invalid formatter pending count')
+    if values[active] <= 0 or values[active] + pending != values['eligible'] or values[inactive] != 0:
+        raise RuntimeError('formatter counters do not reconcile')
+
+
 def validate_runtime_settings(log, cpu):
     import re
     expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
@@ -251,6 +277,7 @@ def main():
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
             validate_runtime_settings((root/"runtime.log").read_text(), cpu)
+            validate_formatter((root/"runtime.log").read_text(), args.simple_format)
             if args.profile_audio:
                 validate_audio_profile(root, (root/"runtime.log").read_text())
             if args.profile_runtime:

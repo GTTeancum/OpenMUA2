@@ -49,6 +49,9 @@ private:
   u64 m_mismatches = 0;
   u64 m_guard_rejects = 0;
   u64 m_unsupported = 0;
+  struct UnsupportedFormat { u32 address = 0; u64 count = 0; };
+  std::array<UnsupportedFormat, 64> m_unsupported_formats{};
+  u64 m_unsupported_overflow = 0;
   u64 m_abandoned = 0;
   u64 m_floating = 0;
   u64 m_fpscr_mismatches = 0;

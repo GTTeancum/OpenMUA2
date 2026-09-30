@@ -57,6 +57,25 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_formatter_summary_must_prove_requested_mode_and_clean_comparisons(self):
+        good = ('Simple formatter: mode=shadow eligible=12 replaced=0 compared=12 '
+                'mismatches=0 fpscr_mismatches=0 abandoned=0 pending=0')
+        mod.validate_formatter(good, 'shadow')
+        mod.validate_formatter(good.replace('compared=12', 'compared=11').replace(
+            'pending=0', 'pending=1'), 'shadow')
+        mod.validate_formatter('', None)
+        mod.validate_formatter(good.replace('mode=shadow', 'mode=on').replace(
+            'replaced=0 compared=12', 'replaced=12 compared=0'), 'on')
+        for bad in ('', good + '\n' + good, good.replace('mode=shadow', 'mode=on'),
+                    good.replace('compared=12', 'compared=11'),
+                    good.replace('eligible=12', 'eligible=0'),
+                    good.replace('pending=0', 'pending=1'),
+                    good.replace('abandoned=0', 'abandoned=1'),
+                    good.replace('mismatches=0', 'mismatches=1')):
+            with self.subTest(bad=bad), self.assertRaises(RuntimeError):
+                mod.validate_formatter(bad, 'shadow')
+        with self.assertRaises(RuntimeError): mod.validate_formatter(good, None)
+
     def test_audio_profile_does_not_leak_into_ordinary_runs(self):
         env = {'OPENMUA2_AUDIO_PROFILE': 'inherited.csv', 'UNRELATED': 'keep'}
         mod.configure_audio_profile(env, False, Path('run'))

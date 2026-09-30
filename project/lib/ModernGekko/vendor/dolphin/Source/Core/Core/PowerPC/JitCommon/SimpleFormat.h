@@ -88,4 +88,37 @@ inline std::optional<u32> TryFixedFloatFormat(std::span<const u8> format,
   std::memcpy(output.data(), temporary.data(), position + 1);
   return static_cast<u32>(position);
 }
+// Transactional output for bare %s, %d, %f and %%. The reader owns argument
+// validation and speculative cursor state; it must not mutate guest memory.
+template <typename Reader>
+std::optional<u32> TryBasicFormat(std::span<const u8> format, std::span<u8> output,
+                                 Reader&& reader)
+{
+  std::array<u8, 1024> temporary{};
+  std::size_t position = 0;
+  for (std::size_t i = 0; i < format.size(); ++i)
+  {
+    if (!format[i])
+    {
+      if (position >= output.size()) return {};
+      std::memcpy(output.data(), temporary.data(), position + 1);
+      return static_cast<u32>(position);
+    }
+    if (position + 1 >= temporary.size() || position + 1 >= output.size()) return {};
+    if (format[i] != '%')
+    {
+      temporary[position++] = format[i];
+      continue;
+    }
+    if (++i == format.size()) return {};
+    const u8 type = format[i];
+    if (type == '%') { temporary[position++] = '%'; continue; }
+    if (type != 's' && type != 'd' && type != 'f') return {};
+    const auto capacity = std::min(temporary.size(), output.size()) - position - 1;
+    const auto length = reader(type, std::span<u8>(temporary.data() + position, capacity));
+    if (!length || *length > capacity) return {};
+    position += *length;
+  }
+  return {};
+}
 }  // namespace JitCommon

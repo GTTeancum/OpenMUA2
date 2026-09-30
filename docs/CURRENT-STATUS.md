@@ -2,6 +2,58 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Mixed formatter rewrite experiment — 2026-09-30
+
+A bounded 64-address unsupported-format census found frequent mixed string,
+signed-integer and float calls. The census run counted 399572 unsupported calls,
+including 11332 overflow events beyond its first 64 addresses; it is not an
+exhaustive ranking. Logs contain addresses/counts, not proprietary format text.
+
+Extended the default-off formatter experiment with transactional bare %s, %d,
+%f and %% support. It reads separately bounded GPR/FPR save-area cursors,
+retains the original code/hash/caller/direct-RAM guards, rejects string/output
+and string/va_list aliasing, null or unterminated strings, spills beyond saved
+register arguments, unsupported formats and unsupported floats. Rejections
+leave guest output and argument cursors untouched. Supported calls still create
+the complete text and advance the caller's va_list; no logs are suppressed.
+
+Shadow compared 769742 completed eligible calls with zero output/va_list/return/
+FPSCR mismatches and zero abandoned calls. One of 769743 eligible calls remained
+pending at shutdown and is explicitly unverified. Unsupported calls were 56158;
+this different live run is not an exact causal reduction measurement. Observed
+register-change masks remain GPR=00001ff9, PS0=00000003, PS1=00000000, CR=23.
+The census-only run observed wider volatile floating clobbers (PS0 mask1f,PS1
+mask03); register preservation is not architectural equivalence. Timing and
+broader alias/caller behavior remain unproven; keep the rewrite disabled by
+default. It is a library replacement, not instruction-timing equivalence.
+
+The benchmark now requires an actual matching formatter summary, nonzero
+completed comparisons/replacements, zero mismatch/abandoned counters and
+reconciled eligible/compared/pending counts. Pending original calls at shutdown
+are bounded and reported, never counted as verified comparisons.
+
+The first expanded candidate measured 29.9796 FPS at 100.0319% guest speed,
+P99 39.0198 ms, maximum 84.8094 ms and minimum rolling one-second FPS 28.
+All 1230 guest intervals were 33.367 ms. Four host intervals exceeded 50 ms;
+they occurred early (frames 12630,12662,12676,12753) with negligible GPU fence
+wait and 68–79 ms unclassified elapsed time. Profile JIT/shader compilation and
+other host work next; unclassified time alone does not identify the cause.
+This single headless diagnostic still fails solid-30 delivery. Three native
+endpoint captures were inspected sequentially: actual combat, effects, scenery
+and HUD are present, with incapacitated heroes in the candidate endpoint. The
+route's neutral tail is not proof of continuous varied combat or ten-minute
+acceptance. Source/frame pacing and audio still need broader validation.
+
+Windows build passed: 37/37 runtime tests in 7.19 s, including mixed-format
+integer extremes, negative zero, literal percent and transactional rejection.
+Python suite: 134 run, 133 passed, one skipped (22.789 s); after pending-count
+handling changed, all 11 combat-runner tests passed (0.065 s). No compiler
+warnings/errors found; existing CMake warnings remain. Exact binaries and
+native diagnostic results: evidence/windows-20260930/MIXED-FORMATTER.json.
+Goal active/unmet; sound crackling remains unresolved. All runs remain headless
+Vulkan/Cubeb volume=0, JIT, one logical CPU, 3x EFB and normal clocks. No audible
+quality claim, qualifying repeat or ten-minute combat acceptance is made.
+
 ## Formatter caller-state audit and remaining hotspots — 2026-09-30
 
 Extended the default-off formatter shadow diagnostic to aggregate changed
