@@ -1,0 +1,34 @@
+{
+  "scope": "Intrusive post-restore dispatch profile, including neutral frames. Not release FPS. Wall-time remainder includes profiling, scheduling, synchronization, fallback and runtime work; not a measurement of dispatcher CPU time alone. XEMU background load remained. First run overlapped runtime tests; repeat started after tests finished.",
+  "runner_sha256": "05c2ca26bf8a91769849b2a764febc24966fa70efaf09d69168b3e3e5f78e018",
+  "module_sha256": "47922fb187294b601b2b8667805c42bfda639ecfe9ffc014d36b7d1a0bcb6d51",
+  "runs": [
+    {
+      "private_run": ".local\\automation\\combat-clang-aggregate-profile-20260930",
+      "route_completed": true,
+      "exit_code": 0,
+      "dispatches": 209171405,
+      "unique_pcs": 17540,
+      "generated_ms": 13480.64,
+      "span_ms": 21894.354,
+      "outside_generated_ms": 8413.714,
+      "generated_percent": 61.571307379062205
+    },
+    {
+      "private_run": ".local\\automation\\combat-clang-aggregate-profile-20260930-repeat",
+      "route_completed": true,
+      "exit_code": 0,
+      "dispatches": 204723250,
+      "unique_pcs": 17481,
+      "generated_ms": 15164.091,
+      "span_ms": 24358.327,
+      "outside_generated_ms": 9194.235,
+      "generated_percent": 62.25423856080099
+    }
+  ],
+  "aggregate_consistency_checks": "Passed: top-24 sums bounded by all-PC aggregates; generated <= wall span; span equals generated + remainder within rounding.",
+  "runtime_build": "exit 0, no warning/error diagnostics reported",
+  "runtime_tests": "32/32 scoped moderngekko tests passed. Earlier unscoped ctest exited 8 because three unbuilt third-party test executables (fullbench, fuzzer, zstreamtest) were not available.",
+  "decision": "Generated execution is about 62% of instrumented wall span in both runs. Do not focus solely on the external runtime dispatcher; investigate generated-code entry/return frequency and helper overhead while preserving eligibility/hash, interrupt and timing semantics.",
+  "goal": "active, unmet"
+}

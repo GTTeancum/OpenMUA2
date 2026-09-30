@@ -176,3 +176,25 @@ nested-comment warning and unused CMake variables. MSVC reported generator
 SMC warnings and CMake deprecation/Wayland/path/unused-variable warnings; no
 compiler error diagnostics. Private assets, generated C, images and raw logs
 remain under .local. Earlier statements below about live builds are historical.
+
+## Aggregate native execution profile — 2026-09-30
+
+The opt-in dispatch profiler now totals every PC before truncating its ranking.
+It records the first/last dispatch timestamp without adding new clock reads.
+This separates measured generated-call time from the enclosing wall span; the
+remainder includes profiling, scheduling, fallback, synchronization and runtime
+work and must not be described as dispatcher CPU time alone.
+
+Runtime rebuilt with exit 0. All 32 scoped moderngekko tests passed. An initial
+unrestricted ctest invocation exited 8 because third-party fullbench/fuzzer/
+zstreamtest executables were unbuilt; that remains a scoped validation limit.
+Two Clang combat profile runs completed with clean receipts and exit 0:
+13.481/21.894 seconds generated/span, then 15.164/24.358 seconds. The first
+run overlapped runtime tests; the repeat began after they ended. XEMU background
+load remained. Both attribute about 62% of instrumented wall time to generated
+calls. Neither run is release-FPS evidence. Aggregate consistency checks passed.
+
+Evidence: `evidence/windows-20260930/AGGREGATE-DISPATCH-PROFILE.json`.
+The 30 FPS goal remains unmet. Next investigate generated-code entry/return
+frequency and helper overhead, not only the external dispatcher. Preserve
+native eligibility/hash checks, exceptions and interrupt/timing boundaries.

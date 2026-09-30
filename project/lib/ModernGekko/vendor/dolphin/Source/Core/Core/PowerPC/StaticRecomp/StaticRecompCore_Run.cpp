@@ -83,10 +83,15 @@ public:
     return m_enabled;
   }
 
-  void Record(u32 pc, std::chrono::steady_clock::duration elapsed)
+  void Record(u32 pc, std::chrono::steady_clock::time_point start,
+              std::chrono::steady_clock::time_point end)
   {
     if (!m_enabled)
       return;
+    if (m_samples.empty())
+      m_first_dispatch = start;
+    m_last_dispatch = end;
+    const auto elapsed = end - start;
     auto& sample = m_samples[pc];
     ++sample.count;
     sample.nanos +=
@@ -98,6 +103,24 @@ public:
     if (!m_enabled)
       return;
 
+    // Sum every PC before truncating the ranking. The enclosing wall span also
+    // includes profiling overhead, scheduling, fallback, synchronization and
+    // runtime bookkeeping; its remainder is not purely dispatcher CPU time.
+    u64 count = 0;
+    u64 nanos = 0;
+    for (const auto& [pc, sample] : m_samples)
+    {
+      count += sample.count;
+      nanos += sample.nanos;
+    }
+    const double span_ms = std::chrono::duration<double, std::milli>(
+                               m_last_dispatch - m_first_dispatch).count();
+    std::fprintf(stderr,
+                 "[staticrecomp] dispatch-total count=%llu unique_pcs=%zu generated_ms=%.3f "
+                 "span_ms=%.3f outside_generated_ms=%.3f\n",
+                 static_cast<unsigned long long>(count), m_samples.size(),
+                 static_cast<double>(nanos) / 1000000.0, span_ms,
+                 span_ms - static_cast<double>(nanos) / 1000000.0);
     std::vector<std::pair<u32, Sample>> sorted(m_samples.begin(), m_samples.end());
     std::sort(sorted.begin(), sorted.end(), [](const auto& lhs, const auto& rhs) {
       return lhs.second.nanos > rhs.second.nanos;
@@ -123,6 +146,8 @@ private:
     u64 nanos = 0;
   };
 
+  std::chrono::steady_clock::time_point m_first_dispatch{};
+  std::chrono::steady_clock::time_point m_last_dispatch{};
   std::string m_gate;
   u32 m_gate_checks = 0;
   bool m_enabled = false;
@@ -306,8 +331,8 @@ void StaticRecompCore::Run()
           m_module->dispatch(&m_guest, linked_dispatch_address);
           if (profile_dispatch)
           {
-            dispatch_profiler.Record(runtime_dispatch_address,
-                                     std::chrono::steady_clock::now() - dispatch_start);
+            dispatch_profiler.Record(runtime_dispatch_address, dispatch_start,
+                                     std::chrono::steady_clock::now());
           }
           linked_result_address = m_guest.pc;
           if (m_has_rel_modules)
