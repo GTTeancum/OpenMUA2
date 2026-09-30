@@ -20,6 +20,11 @@ class RuntimeSpansTest(unittest.TestCase):
     def test_union_clips_and_merges_unsorted_overlap(self):
         self.assertEqual(mod.union_ns([(90, 120), (105, 170), (160, 210), (250, 300)], 100, 200), 100)
 
+    def test_compile_spans_are_not_counted_as_waits(self):
+        result = mod.analyze(FRAMES, SPANS + 'jit_compile,120,240,0,1\nshader_compile,150,250,0,2\n')
+        self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)
+        self.assertAlmostEqual(result['totals']['jit_compile']['union_ms'], 120e-6)
+
     def test_missing_or_dropped_data_and_discontinuities_rejected(self):
         for f, s in ((FRAMES.replace('dropped_samples=0', 'dropped_samples=1'), SPANS),
                      (FRAMES, SPANS.replace('dropped_samples=0', 'dropped_samples=1')),

@@ -4,6 +4,7 @@
 #include "VideoBackends/Vulkan/VKShader.h"
 
 #include "Common/Align.h"
+#include "Common/RuntimeTiming.h"
 
 #include "VideoBackends/Vulkan/ObjectCache.h"
 #include "VideoBackends/Vulkan/ShaderCompiler.h"
@@ -91,8 +92,11 @@ CreateShaderObject(ShaderStage stage, ShaderCompiler::SPIRVCodeVector spv, std::
       -1};
 
   VkPipeline pipeline;
+  const auto pipeline_begin = Common::RuntimeTiming::Begin();
   res = vkCreateComputePipelines(g_vulkan_context->GetDevice(), g_object_cache->GetPipelineCache(),
                                  1, &pipeline_info, nullptr, &pipeline);
+
+  Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::PipelineCompile, pipeline_begin);
 
   // Shader module is no longer needed, now it is compiled to a pipeline.
   vkDestroyShaderModule(g_vulkan_context->GetDevice(), mod, nullptr);
@@ -110,6 +114,7 @@ std::unique_ptr<VKShader> VKShader::CreateFromSource(ShaderStage stage, std::str
                                                      VideoCommon::ShaderIncluder* shader_includer,
                                                      std::string_view name)
 {
+  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::ShaderCompile);
   std::optional<ShaderCompiler::SPIRVCodeVector> spv;
   switch (stage)
   {

@@ -13,6 +13,7 @@
 #include <fmt/ostream.h>
 
 #include "Common/CommonTypes.h"
+#include "Common/RuntimeTiming.h"
 #include "Common/GekkoDisassembler.h"
 #include "Common/HostDisassembler.h"
 #include "Common/IOFile.h"
@@ -54,6 +55,7 @@ void Jit64::Jit(u32 em_address)
 
 void Jit64::Jit(u32 em_address, bool clear_cache_and_retry_on_failure)
 {
+  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::JitCompile);
   CleanUpAfterStackFault();
 
   if (trampolines.IsAlmostFull() || SConfig::GetInstance().bJITNoBlockCache)
@@ -95,7 +97,9 @@ void Jit64::Jit(u32 em_address, bool clear_cache_and_retry_on_failure)
   // Analyze the block, collect all instructions it is made of (including inlining,
   // if that is enabled), reorder instructions for optimal performance, and join joinable
   // instructions.
+  const auto analyze_begin = Common::RuntimeTiming::Begin();
   const u32 nextPC = analyzer.Analyze(em_address, &code_block, &m_code_buffer, block_size);
+  Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitAnalyze, analyze_begin);
 
   if (code_block.m_memory_exception)
   {
@@ -133,7 +137,9 @@ void Jit64::Jit(u32 em_address, bool clear_cache_and_retry_on_failure)
       b->far_begin = far_start;
       b->far_end = far_end;
 
+      const auto finalize_begin = Common::RuntimeTiming::Begin();
       blocks.FinalizeBlock(*b, jo.enableBlocklink, code_block, m_code_buffer);
+      Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitFinalize, finalize_begin);
 
 #ifdef JIT_LOG_GENERATED_CODE
       LogGeneratedCode();
@@ -182,6 +188,7 @@ bool Jit64::SetEmitterStateToFreeCodeRegion()
 
 bool Jit64::DoJit(u32 em_address, JitBlock* b, u32 nextPC)
 {
+  Common::RuntimeTiming::Scope timing(Common::RuntimeTiming::Kind::JitEmit);
   js.firstFPInstructionFound = false;
   js.isLastInstruction = false;
   js.blockStart = em_address;

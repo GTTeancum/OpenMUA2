@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "VideoBackends/Vulkan/VKPipeline.h"
+#include "Common/RuntimeTiming.h"
 
 #include <array>
 
@@ -422,9 +423,11 @@ std::unique_ptr<VKPipeline> VKPipeline::Create(const AbstractPipelineConfig& con
   };
 
   VkPipeline pipeline;
+  const auto pipeline_begin = Common::RuntimeTiming::Begin();
   VkResult res =
       vkCreateGraphicsPipelines(g_vulkan_context->GetDevice(), g_object_cache->GetPipelineCache(),
                                 1, &pipeline_info, nullptr, &pipeline);
+  Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::PipelineCompile, pipeline_begin);
   if (res != VK_SUCCESS)
   {
     LOG_VULKAN_ERROR(res, "vkCreateGraphicsPipelines failed: ");

@@ -9,6 +9,53 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Audio capture and JIT compilation stalls — 2026-09-30
+
+Added explicit --capture-audio with --profile-audio --audio Cubeb: retain at most
+60 seconds of final stereo 16-bit mixer PCM in a preallocated ring, write WAV
+only after Cubeb callbacks stop. Volume/mute is applied downstream by Cubeb, so
+this records a non-silent signal while host playback stays muted. Ordinary
+benchmarks clear inherited capture settings. Non-stereo capture is unsupported
+and validation fails if no valid stereo file is produced. Recordings contain
+proprietary audio and stay under ignored .local, never Git or source backups.
+This captures neither Windows/device playback nor missing hardware callbacks.
+
+Extended opt-in runtime spans to JIT compilation, its analysis/code-generation/
+finalization phases, and Vulkan shader/pipeline compilation. Spans include
+preemption and nested spans overlap; do not add parent and child durations.
+The analyzer's unclassified field means non-wait elapsed time and includes
+recorded compilation; it is not CPU utilization or additional work to sum.
+
+Default-size diagnostic: 29.9701 FPS, P99 38.9769 ms, maximum 92.3095 ms,
+minimum rolling second 29. All 1230 guest intervals were 33.367 ms. The worst
+frame contained 54.4101 ms in JIT compilation; pipeline work was negligible.
+A 1024-instruction block-limit experiment did not fix it (max101.8018 ms,
+P99 42.5999 ms) and was removed from source and tooling. Final detailed trace:
+29.9768 FPS, P99 40.6840 ms, maximum89.6308 ms, minimumrolling28. Its worst
+frame included 56.0475 ms in JIT emission, 0.202 ms analysis and 0.3239 ms
+finalization. Next separate actual compiler CPU consumption from preemption
+inside emission and inspect the expensive code-generation path. No JIT limit,
+clock adjustment, rendering reduction or default formatter promotion remains.
+
+Three private PCM recordings contain 48.532/48.772/48.572 seconds of 48-kHz
+stereo audio. Peaks23415/28551/25122, no full-scale samples. These signal
+statistics DO NOT verify audible quality or absence of crackling. First run's
+40 aligned seconds: 4000 callbacks, maximum gap13.3603 ms; DMA/streaming empty
+queue counts2/2 (not audible-click counts). The user's sound report remains
+unresolved; there has been no listening or device-output verification.
+
+All three native endpoint captures were inspected sequentially. Street scenery,
+HUD and heroes are present; baseline ends largely away from the crowd, while
+later endpoints show enemies/combat and incapacitated heroes. This does not
+establish sustained varied combat. All probes: headless JIT/Vulkan, one logical
+CPU, 3x EFB, normal clocks, formatter opt-in ON, Cubeb volume0. No qualifying
+three-repeat or ten-minute acceptance. Goal active/unmet; manual test deferred.
+
+Final Windows build exit0, 38/38 runtime tests7.20s. Full tooling suite136 tests:
+135passed,1skip22.132s; final targeted runner12/12 and span5/5 passed. No compiler
+warnings/errors found; existing configure warnings remain. Exact artifacts,
+failed experiment and measurements: evidence/windows-20260930/AUDIO-JIT-STALLS.json.
+
 ## Mixed formatter rewrite experiment — 2026-09-30
 
 A bounded 64-address unsupported-format census found frequent mixed string,

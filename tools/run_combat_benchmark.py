@@ -77,6 +77,22 @@ def configure_audio_profile(env, enabled, root):
         env["OPENMUA2_AUDIO_PROFILE"] = str(root / "audio-profile.csv")
 
 
+def configure_audio_capture(env, enabled, root):
+    env.pop('OPENMUA2_AUDIO_CAPTURE', None)
+    if enabled: env['OPENMUA2_AUDIO_CAPTURE'] = str(root / 'mixed-audio.wav')
+
+
+
+def validate_audio_capture(root):
+    import wave
+    with wave.open(str(root / 'mixed-audio.wav'), 'rb') as capture:
+        if capture.getnchannels() != 2 or capture.getsampwidth() != 2 or not 0 < capture.getnframes() <= capture.getframerate() * 60:
+            raise RuntimeError('invalid bounded stereo audio capture')
+        frames = capture.getnframes()
+        if len(capture.readframes(frames)) != frames * 4:
+            raise RuntimeError('truncated audio capture')
+
+
 def validate_audio_profile(root, log):
     import csv
     if "audio backend: Cubeb" not in log.splitlines():
@@ -143,6 +159,7 @@ def main():
     p.add_argument("--audio",default="No Audio Output",help="Runtime backend name, e.g. Cubeb; requires --windowed or --profile-audio for sound.")
     p.add_argument("--profile-audio",action="store_true",help="Opt-in numeric audio diagnostics; permits Cubeb without a game window. Not presentation/FPS acceptance.")
     p.add_argument("--profile-runtime",action="store_true",help="Bounded throttle/GPU/presentation spans; diagnostic overhead, not acceptance.")
+    p.add_argument("--capture-audio",action="store_true",help="Private pre-volume stereo PCM tail (60s); requires --profile-audio and Cubeb. Not device playback.")
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--no-trace",action="store_true")
@@ -156,6 +173,8 @@ def main():
     p.add_argument("--simple-format", choices=("shadow", "on"), help="Default-off simple formatter experiment; shadow compares original output/state, on replaces supported calls.")
     p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
     args=p.parse_args()
+    if args.capture_audio and (not args.profile_audio or args.audio != 'Cubeb'):
+        p.error('--capture-audio requires --profile-audio --audio Cubeb')
     if args.jit_ranges and args.jit_diagnostic:
         p.error("--jit-ranges and --jit-diagnostic are mutually exclusive")
     cpu = args.cpu or ("staticrecomp" if args.jit_ranges or args.profile_dispatch else "jit")
@@ -197,6 +216,7 @@ def main():
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
     env=os.environ.copy()
     configure_audio_profile(env, args.profile_audio, root)
+    configure_audio_capture(env, args.capture_audio, root)
     env.pop("OPENMUA2_RUNTIME_SPANS", None)
     if args.profile_runtime: env["OPENMUA2_RUNTIME_SPANS"] = str(root / "runtime-spans.csv")
     env.pop("MODERNGEKKO_SIMPLE_FORMAT",None)
@@ -222,6 +242,7 @@ def main():
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["presentation_trace"] = args.trace_presentation
     metadata["audio_profile"] = args.profile_audio
+    metadata["audio_capture"] = args.capture_audio
     metadata["runtime_profile"] = args.profile_runtime
     metadata["presentation_queue"] = args.present_queue
     metadata["jit_block_profile"] = args.jit_block_profile
@@ -280,6 +301,7 @@ def main():
             validate_formatter((root/"runtime.log").read_text(), args.simple_format)
             if args.profile_audio:
                 validate_audio_profile(root, (root/"runtime.log").read_text())
+            if args.capture_audio: validate_audio_capture(root)
             if args.profile_runtime:
                 spans = (root / "runtime-spans.csv").read_text()
                 if "# dropped_samples=0\n" not in spans or "throttle," not in spans:

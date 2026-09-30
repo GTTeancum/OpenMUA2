@@ -3,6 +3,7 @@
 
 #include "AudioCommon/CubebStream.h"
 #include "AudioCommon/PerformanceDiagnostics.h"
+#include "AudioCommon/DiagnosticCapture.h"
 
 #if defined(_M_X86_64) || defined(__x86_64__) || defined(_M_IX86)
 #include <xmmintrin.h>
@@ -39,7 +40,11 @@ long CubebStream::DataCallback(cubeb_stream* stream, void* user_data, const void
   }
 
   if (self->m_stereo)
+  {
     self->m_mixer->Mix(static_cast<short*>(output_buffer), num_frames);
+    if (num_frames > 0)
+      AudioCommon::DiagnosticCapture::Get().Append(static_cast<const short*>(output_buffer), num_frames);
+  }
   else
     self->m_mixer->MixSurround(static_cast<float*>(output_buffer), num_frames);
 
@@ -96,6 +101,7 @@ bool CubebStream::Init()
 
       cubeb_stream_params params{};
       params.rate = m_mixer->GetSampleRate();
+      AudioCommon::DiagnosticCapture::Get().Init(params.rate, m_stereo);
       if (m_stereo)
       {
         params.channels = 2;
@@ -232,6 +238,7 @@ CubebStream::~CubebStream()
 #endif
   m_ctx.reset();
   AudioCommon::Performance::Get().Flush();
+  AudioCommon::DiagnosticCapture::Get().Flush();
 }
 
 void CubebStream::SetVolume(int volume)

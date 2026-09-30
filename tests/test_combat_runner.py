@@ -57,6 +57,28 @@ class CommandPublicationTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):mod.validate_command_receipts(self.root, 1)
 
 class DiagnosticArgumentsTest(unittest.TestCase):
+    def test_audio_capture_is_opt_in_bounded_stereo_and_complete(self):
+        import wave
+        env = {'OPENMUA2_AUDIO_CAPTURE': 'inherited.wav', 'OTHER': 'keep'}
+        mod.configure_audio_capture(env, False, Path('run'))
+        self.assertEqual(env, {'OTHER': 'keep'})
+        mod.configure_audio_capture(env, True, Path('run'))
+        self.assertEqual(env['OPENMUA2_AUDIO_CAPTURE'], str(Path('run/mixed-audio.wav')))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            p = root / 'mixed-audio.wav'
+            def write(channels, data):
+                with wave.open(str(p), 'wb') as output:
+                    output.setparams((channels, 2, 48000, 0, 'NONE', 'not compressed'))
+                    output.writeframes(data)
+            write(2, b'\0' * 16)
+            mod.validate_audio_capture(root)
+            p.write_bytes(p.read_bytes()[:-2])
+            with self.assertRaises(RuntimeError): mod.validate_audio_capture(root)
+            for channels, data in ((1, b'\0' * 16), (2, b'')):
+                write(channels, data)
+                with self.assertRaises(RuntimeError): mod.validate_audio_capture(root)
+
     def test_formatter_summary_must_prove_requested_mode_and_clean_comparisons(self):
         good = ('Simple formatter: mode=shadow eligible=12 replaced=0 compared=12 '
                 'mismatches=0 fpscr_mismatches=0 abandoned=0 pending=0')

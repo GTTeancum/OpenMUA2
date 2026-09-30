@@ -11,7 +11,8 @@ import json
 from pathlib import Path
 
 
-KINDS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence', 'gpu_submit', 'gpu_present', 'present'}
+KINDS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence', 'gpu_submit', 'gpu_present', 'present',
+         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize'}
 WAITS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence'}
 
 
