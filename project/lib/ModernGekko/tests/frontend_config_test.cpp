@@ -99,14 +99,14 @@ int main() {
     return 5;
   }
 #else
-  if (!generated.contains("# OpenMUA2 Xbox action layout v1\n") ||
+  if (!generated.contains("# OpenMUA2 Xbox action layout v2\n") ||
       !generated.contains("Buttons/2 = Start\n") ||
       !generated.contains("Buttons/Home = \n") ||
       !generated.contains("Extension = Nunchuk\n") ||
       !generated.contains("Nunchuk/Buttons/C = `Button Y` & !`Shoulder R`\n") ||
       !generated.contains("Nunchuk/Buttons/Z = `Shoulder L`\n") ||
       !generated.contains("Nunchuk/Stick/Up = `Left Y+`\n") ||
-      !generated.contains("Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`)\n") ||
+      !generated.contains("Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`) & !") ||
       !generated.contains("Options/Sideways Wiimote = False\n") ||
       !generated.contains("[Wiimote2]\nDevice = SDL/1/Second Controller\n") ||
       generated.contains("Buttons/Home = Guide\n")) {

@@ -9,6 +9,38 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Xbox fusion aiming and tutorial validation - 2026-09-30
+
+Generated Xbox profile v2 adds right-stick aiming while LB+RB are held. This
+reaches tutorial/profile icons between the existing face-button corner targets.
+Press A while aiming to confirm; stick movement suppresses the fusion-request
+shake and camera input. Neutral stick retains existing corner shortcuts. Existing
+custom profiles are preserved, so this does not silently migrate user settings.
+
+The final Windows build passed 39/39 native tests (7.78s); tooling passed 137
+of 138 tests with one skip (19.824s). No compiler errors/warnings; existing CMake
+deprecation, Wayland and object-path warnings remain. The exact final runner was
+used in the successful native replay. Tests cover fractional aim, preset override,
+dead-zone fallback, all directions, delayed confirmation and action isolation.
+
+All five successful replay captures were inspected sequentially: ready prompt,
+correct icon aim, dismissed dialog, Spider-Man/Captain America fusion with 738
+damage, then Hero Training: Fusion (COMPLETE). Street, heroes, HUD, effects and
+debris were visible. Route tools/routes/xbox-fusion-ready.json starts from the
+private prepared ready-prompt state, not normal boot. An earlier pickup-inclusive
+replay exited 0 but failed visually to advance the tutorial; pickup repeatability
+is still open. The successful follow-up state is private under
+.local/automation/xbox-fusion-ready-stick-20260930/fusion-followup.sav.
+
+This clears a test-flow obstacle, not the performance goal. Cubeb was active but
+muted; no listening/device-output verification or new audio/FPS improvement is
+claimed. Physical controller testing, other fusion partners and revive remain
+open. One logical CPU, Vulkan, 3x EFB and normal speed were retained; formatter
+optimization was opt-in. Next establish varied encounters from the completed
+fusion state and address cold compilation/audio stalls. Three qualifying repeats
+and ten-minute varied combat remain required. Evidence:
+evidence/windows-20260930/XBOX-FUSION-AIM.json. Goal active and unmet.
+
 ## JIT reverse-link index sharding - 2026-09-30
 
 Finalization phase traces isolated a reverse-link hash-table growth pause:

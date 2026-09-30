@@ -402,8 +402,17 @@ bool GenerateControllerConfig(const fs::path &user_directory,
     output << "[Wiimote" << i + 1 << "]\n";
     if (i >= controllers.size())
       continue;
+    // Keep corner shortcuts at rest; the right stick can reach tutorial/profile
+    // targets between those corners without sending camera or shake input.
+    const std::string manual_aim =
+        "((`Right X+` > 0.15) | (`Right X-` > 0.15) | "
+        "(`Right Y+` > 0.15) | (`Right Y-` > 0.15))";
+    const auto fusion_axis = [&](std::string_view axis, std::string_view preset) {
+      return "(`Shoulder L` & `Shoulder R`) & ((" + std::string(axis) + " & " +
+          manual_aim + ") | (" + std::string(preset) + " & !" + manual_aim + "))\n";
+    };
     output << "Device = " << controllers[i] << '\n'
-           << "# OpenMUA2 Xbox action layout v1\n"
+           << "# OpenMUA2 Xbox action layout v2\n"
               "Buttons/A = ((!`Shoulder R`) & (`Button A` | `Button X`)) | hold(`Shoulder L` & `Shoulder R` & (`Button A` | `Button B` | `Button X` | `Button Y`), 0.12)\n"
               "Buttons/B = ((!`Shoulder R`) & (`Button B` | `Button X`))\n"
               "Buttons/1 = (!(`Shoulder L` & `Shoulder R`)) & ((`Right X+` > 0.2) | (`Right X-` > 0.2))\n"
@@ -415,11 +424,11 @@ bool GenerateControllerConfig(const fs::path &user_directory,
               "D-Pad/Down = `Pad S` | (`Shoulder R` & !`Shoulder L` & `Button A`)\n"
               "D-Pad/Left = `Pad W` | (`Shoulder R` & !`Shoulder L` & `Button X`)\n"
               "D-Pad/Right = `Pad E` | (`Shoulder R` & !`Shoulder L` & `Button B`)\n"
-              "IR/Up = 0.50 * (`Shoulder L` & `Shoulder R` & (`Button A` | `Button X` | `Button Y`))\n"
-              "IR/Down = 0.50 * (`Shoulder L` & `Shoulder R` & `Button B`)\n"
-              "IR/Left = 0.62 * (`Shoulder L` & `Shoulder R` & (`Button A` | `Button X`))\n"
-              "IR/Right = 0.62 * (`Shoulder L` & `Shoulder R` & (`Button B` | `Button Y`))\n"
-              "IR/Hide = !(`Shoulder L` & `Shoulder R`)\n"
+           << "IR/Up = " << fusion_axis("`Right Y+`", "0.50 * (`Button A` | `Button X` | `Button Y`)")
+           << "IR/Down = " << fusion_axis("`Right Y-`", "0.50 * `Button B`")
+           << "IR/Left = " << fusion_axis("`Right X-`", "0.62 * (`Button A` | `Button X`)")
+           << "IR/Right = " << fusion_axis("`Right X+`", "0.62 * (`Button B` | `Button Y`)")
+           << "IR/Hide = !(`Shoulder L` & `Shoulder R`)\n"
               "Tilt/Left = `Right X-` & !(`Shoulder L` & `Shoulder R`)\n"
               "Tilt/Right = `Right X+` & !(`Shoulder L` & `Shoulder R`)\n"
               "Tilt/Dead Zone = 20.0\n"
@@ -436,8 +445,8 @@ bool GenerateControllerConfig(const fs::path &user_directory,
               "Nunchuk/Stick/Right = `Left X+`\n"
               "Nunchuk/Stick/Calibration = 100.00\n"
               "Nunchuk/Stick/Dead Zone = 15.0\n"
-              "Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`)\n"
-              "Nunchuk/Shake/Y = \n"
+           << "Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`) & !" << manual_aim << "\n"
+           << "Nunchuk/Shake/Y = \n"
               "Nunchuk/Shake/Z = \n"
               "Options/Sideways Wiimote = False\n";
 #endif

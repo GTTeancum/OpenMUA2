@@ -1,0 +1,87 @@
+{
+  "restored_frame_min": 12500,
+  "commands": [
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 3
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/00-ready-prompt.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 15,
+      "lb": 1,
+      "rb": 1,
+      "right_left": 0.28,
+      "right_down": 0.4,
+      "release": 0
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/01-ready-aim.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 10,
+      "lb": 1,
+      "rb": 1,
+      "right_left": 0.28,
+      "right_down": 0.4,
+      "a": 1
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 20
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/02-ready-confirmed.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 40,
+      "lb": 1,
+      "rb": 1,
+      "release": 0
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 15,
+      "lb": 1,
+      "rb": 1,
+      "right_left": 0.62,
+      "right_up": 0.5,
+      "a": 1
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 180
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/03-fusion-result.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 90
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/04-after.png"
+    },
+    {
+      "command": "save_state",
+      "path": "fusion-followup.sav"
+    }
+  ]
+}

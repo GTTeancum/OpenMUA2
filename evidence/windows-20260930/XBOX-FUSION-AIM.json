@@ -1,0 +1,60 @@
+{
+  "date": "2026-09-30",
+  "scope": "Prepared fusion ready prompt through objective completion; not performance acceptance",
+  "runner_sha256": "00a858e5e10167c07682229e7a5de396792faa63b18fd734f47a847dd6d54b82",
+  "route": "tools/routes/xbox-fusion-ready.json",
+  "route_sha256": "6cd9574bf960690628b6b61501274f6baa582aac5530898c601b78d923896688",
+  "private_run": ".local\\automation\\xbox-fusion-ready-stick-20260930",
+  "exit_code": 0,
+  "native_tests": {
+    "passed": 39,
+    "seconds": 7.78
+  },
+  "tooling_tests": {
+    "run": 138,
+    "passed": 137,
+    "skipped": 1,
+    "seconds": 19.824
+  },
+  "captures_reviewed_in_order": [
+    {
+      "file": ".local\\automation\\xbox-fusion-ready-stick-20260930\\shots\\00-ready-prompt.png",
+      "sha256": "836e2cb8d393865beb202bb023941616e1f5b90d3c5b87699eb829d5f3af344f"
+    },
+    {
+      "file": ".local\\automation\\xbox-fusion-ready-stick-20260930\\shots\\01-ready-aim.png",
+      "sha256": "67e57b8f6bef98ff1b989e50544fdaa1bc13e043b1ba6d676bee6b61ee0ada91"
+    },
+    {
+      "file": ".local\\automation\\xbox-fusion-ready-stick-20260930\\shots\\02-ready-confirmed.png",
+      "sha256": "725d2d624c65f30b677213792830f33e9ba465ac76376424bf983b16ddc4cd63"
+    },
+    {
+      "file": ".local\\automation\\xbox-fusion-ready-stick-20260930\\shots\\03-fusion-result.png",
+      "sha256": "a4fdc9d8242573aceb1528ce0065ce8758c06b55268950b76e35d9d505799ae6"
+    },
+    {
+      "file": ".local\\automation\\xbox-fusion-ready-stick-20260930\\shots\\04-after.png",
+      "sha256": "b965215ceb02abc7c91562ecf3d6ab4bd46c86dde47cf753b771c655c452928c"
+    }
+  ],
+  "observed": [
+    "ready prompt",
+    "pointer on ready icon",
+    "dialog dismissed",
+    "Spider-Man/Captain America fusion: 738 damage",
+    "Hero Training: Fusion (COMPLETE)"
+  ],
+  "failed_probe": {
+    "private_run": ".local/automation/xbox-fusion-aim-generated-20260930",
+    "process_exit": 0,
+    "visual_result": "pickup did not advance tutorial; no completed fusion"
+  },
+  "audio": "Cubeb active, volume muted; crackling unresolved, no listening/device-output verification",
+  "performance_acceptance": false,
+  "physical_controller_verified": false,
+  "single_logical_cpu_required": true,
+  "resolution_preset": "1920x1080",
+  "simple_format": "on",
+  "goal_complete": false
+}

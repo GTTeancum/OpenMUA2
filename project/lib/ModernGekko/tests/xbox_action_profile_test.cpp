@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
       !test({"Back", "Right X+"}, {"Buttons/1", "Tilt/Right"}) ||
       !test({"Back", "Right Y+"}, {}) ||
       !test({"Shoulder L", "Shoulder R", "Right X-"},
-            {"Nunchuk/Buttons/Z", "Nunchuk/Shake/X"}) ||
+            {"Nunchuk/Buttons/Z", "IR/Left"}) ||
       !test({}, {})) return 5;
   // Aim is established before the confirm edge; powers/jump remain suppressed.
   for (auto& [name, value] : pad->values) value = 0;
@@ -130,6 +130,33 @@ int main(int argc, char** argv) {
   std::this_thread::sleep_for(std::chrono::milliseconds(150));
   if (expressions.at("Buttons/A")->GetValue() != 1) return 8;
   if (!test({}, {})) return 9;
+  // Manual aiming takes priority over corner presets and must not shake,
+  // rotate the camera, jump, or select a normal power while confirming.
+  for (auto& [name, value] : pad->values) value = 0;
+  for (const char* name : {"Shoulder L", "Shoulder R", "Button A"}) pad->values.at(name) = 1;
+  pad->values.at("Right X-") = 0.28;
+  pad->values.at("Right Y-") = 0.4;
+  if (std::abs(expressions.at("IR/Left")->GetValue() - 0.28) > 0.00001 ||
+      std::abs(expressions.at("IR/Down")->GetValue() - 0.4) > 0.00001 ||
+      expressions.at("IR/Up")->GetValue() != 0 ||
+      expressions.at("IR/Right")->GetValue() != 0 ||
+      expressions.at("Nunchuk/Shake/X")->GetValue() != 0 ||
+      expressions.at("Buttons/1")->GetValue() != 0 ||
+      expressions.at("D-Pad/Down")->GetValue() != 0 ||
+      expressions.at("Tilt/Left")->GetValue() != 0 ||
+      expressions.at("Buttons/A")->GetValue() != 0) return 10;
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  if (expressions.at("Buttons/A")->GetValue() != 1) return 11;
+  if (!test({}, {})) return 12;
+  for (const char* name : {"Shoulder L", "Shoulder R", "Button X"}) pad->values.at(name) = 1;
+  pad->values.at("Right X-") = 0.1;
+  if (expressions.at("IR/Left")->GetValue() != 0.62 ||
+      expressions.at("IR/Up")->GetValue() != 0.5) return 13;
+  if (!test({}, {}) ||
+      !test({"Shoulder L", "Shoulder R", "Right X+"}, {"Nunchuk/Buttons/Z", "IR/Right"}) ||
+      !test({"Shoulder L", "Shoulder R", "Right Y+"}, {"Nunchuk/Buttons/Z", "IR/Up"}) ||
+      !test({"Shoulder L", "Shoulder R", "Right Y-"}, {"Nunchuk/Buttons/Z", "IR/Down"}) ||
+      !test({}, {})) return 14;
   std::cout << checks << " Xbox profile action/isolation cases passed\n";
   // Optional diagnostic output lets a process-local gameplay harness replay
   // the evaluated mapping without injecting OS keyboard or controller events.
