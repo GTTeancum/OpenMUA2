@@ -9,6 +9,34 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Clear combat compilation-burst diagnosis - 2026-09-30
+
+One additional diagnostic on the new guest-timed route exited 0: existing JIT
+runner, one logical CPU, Vulkan, 3x EFB, experimental formatter ON, Cubeb muted,
+no screenshots, runtime/audio profiling. No runtime changes or rebuild.
+The 10.9009-second post-warmup window contained 7431 JIT compilations totaling
+291.217ms elapsed. Worst frame 75.1227ms included 35.5118ms compilation and
+1502 newly encountered blocks (34749 guest instructions); none of those PCs
+had compiled earlier in this run. A 55.547ms frame compiled 410 new blocks,
+23.6967ms total. Another 55.1219ms frame compiled only two blocks/0.5261ms;
+compilation is not the sole remaining cause. GPU fence spans totaled 2.5173ms.
+
+The jit_backpatch timer measures metadata insertion, not runtime fault handling.
+Its 13.6976ms coverage in the second spike is nested inside emission/compilation,
+not extra time to add to those spans. All spans include preemption; unclassified
+time is not assumed to be CPU work. No new visual/audible quality validation.
+
+Next investigate same-thread JIT prewarming during loading to move bulk cold
+compilation out of combat, while separately diagnosing non-compilation stalls.
+Direct arbitrary Jit calls are not safe: analysis failures can modify guest
+npc/Exceptions and invoke CheckExceptions. Any warming entry point must fail
+closed on invalid code/context, preserve translation and feature flags, retain
+GQR/speculative-register guards, ordinary SMC invalidation and cache lifetime,
+and account for loading cost. No warm-cache implementation or success claim yet.
+Formatter remains default OFF. Solid-30 and audio goals remain unmet; three
+qualifying repeats and ten-minute varied combat are still required.
+Evidence: evidence/windows-20260930/CLEAR-COMBAT-COMPILE-BURSTS.json.
+
 ## Visible guest-timed combat and audio comparison - 2026-09-30
 
 Added tools/routes/xbox-timed-clear-combat.json: 26 guest-clock holds totaling

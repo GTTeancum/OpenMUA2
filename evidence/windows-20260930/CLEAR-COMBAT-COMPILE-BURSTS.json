@@ -1,0 +1,233 @@
+{
+  "schema": 1,
+  "source_checkpoint": "5431cabfa5336423bcb8042339201094ad4a5cec",
+  "private_run": ".local\\automation\\timed-clear-spans-20260930",
+  "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+  "route": "tools/routes/xbox-timed-clear-combat.json",
+  "exit_code": 0,
+  "route_completed": true,
+  "scope": "JIT/Vulkan/one logical CPU/3x EFB, opt-in formatter on, Cubeb muted, runtime/audio profiling, no screenshots; diagnostics only. No new visual or audible validation.",
+  "analysis": {
+    "scope": "elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed",
+    "first_frame": 14616,
+    "last_frame": 14943,
+    "seconds": 10.9009295,
+    "cpu_thread": 3288294143372111162,
+    "totals": {
+      "gpu_fence": {
+        "calls": 313,
+        "union_ms": 2.5173,
+        "max_span_ms": 0.3093,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "throttle": {
+        "calls": 4008,
+        "union_ms": 2191.925,
+        "max_span_ms": 4.5866,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_analyze": {
+        "calls": 7431,
+        "union_ms": 24.0374,
+        "max_span_ms": 0.3714,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_emit": {
+        "calls": 7431,
+        "union_ms": 200.5577,
+        "max_span_ms": 2.1292,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_finalize": {
+        "calls": 7431,
+        "union_ms": 54.9187,
+        "max_span_ms": 0.7385,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_compile": {
+        "calls": 7431,
+        "union_ms": 291.217,
+        "max_span_ms": 2.1394,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_ranges": {
+        "calls": 9,
+        "union_ms": 1.6932,
+        "max_span_ms": 0.387,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "gpu_submit": {
+        "calls": 327,
+        "union_ms": 29.0513,
+        "max_span_ms": 0.998,
+        "threads": [
+          1895992603410163268
+        ]
+      },
+      "present": {
+        "calls": 327,
+        "union_ms": 51.8525,
+        "max_span_ms": 3.5654,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "jit_links": {
+        "calls": 48,
+        "union_ms": 8.5577,
+        "max_span_ms": 0.7335,
+        "threads": [
+          3288294143372111162
+        ]
+      },
+      "pipeline_compile": {
+        "calls": 4,
+        "union_ms": 0.5705,
+        "max_span_ms": 0.2549,
+        "threads": [
+          3288294143372111162,
+          4354293809267330979
+        ]
+      },
+      "jit_backpatch": {
+        "calls": 73,
+        "union_ms": 51.1334,
+        "max_span_ms": 1.5265,
+        "threads": [
+          3288294143372111162
+        ]
+      }
+    },
+    "jit_emission_counters_scope": "Whole spans fully inside window; CPU ns are quantized, -1 unavailable; cycles are not wall time",
+    "cpu_thread_wait_seconds": 2.1944423,
+    "cpu_thread_unclassified_seconds": 8.7064872,
+    "worst_frames": [
+      {
+        "frame": 14820,
+        "host_ms": 75.1227,
+        "guest_ms": 50.05,
+        "cpu_thread_wait_union_ms": 8.4679,
+        "cpu_thread_unclassified_ms": 66.6548,
+        "cpu_thread_coverage_ms": {
+          "gpu_pacing": 0.0,
+          "shader_compile": 0.0,
+          "gpu_worker": 0.0,
+          "pipeline_compile": 0.0,
+          "jit_entry_map": 0.0,
+          "jit_links": 0.7348,
+          "jit_instruction": 0.0,
+          "present": 0.2112,
+          "jit_emit": 23.7484,
+          "gpu_submit": 0.0,
+          "jit_compile": 35.5118,
+          "jit_backpatch": 1.3387,
+          "jit_ranges": 0.387,
+          "jit_finalize": 7.4419,
+          "jit_analyze": 3.2669,
+          "throttle": 8.465,
+          "gpu_fence": 0.0029,
+          "gpu_present": 0.0
+        },
+        "jit_emitted_blocks_overlapping": 1502,
+        "guest_instructions_in_emissions": 34749
+      },
+      {
+        "frame": 14856,
+        "host_ms": 55.547,
+        "guest_ms": 33.36666666666667,
+        "cpu_thread_wait_union_ms": 7.113,
+        "cpu_thread_unclassified_ms": 48.434,
+        "cpu_thread_coverage_ms": {
+          "gpu_pacing": 0.0,
+          "shader_compile": 0.0,
+          "gpu_worker": 0.0,
+          "pipeline_compile": 0.0,
+          "jit_entry_map": 0.0,
+          "jit_links": 0.5151,
+          "jit_instruction": 0.0,
+          "present": 0.1247,
+          "jit_emit": 19.905,
+          "gpu_submit": 0.0,
+          "jit_compile": 23.6967,
+          "jit_backpatch": 13.6976,
+          "jit_ranges": 0.0,
+          "jit_finalize": 2.3614,
+          "jit_analyze": 1.0045,
+          "throttle": 7.113,
+          "gpu_fence": 0.0,
+          "gpu_present": 0.0
+        },
+        "jit_emitted_blocks_overlapping": 410,
+        "guest_instructions_in_emissions": 9062
+      },
+      {
+        "frame": 14893,
+        "host_ms": 55.1219,
+        "guest_ms": 33.36666666666667,
+        "cpu_thread_wait_union_ms": 0.599,
+        "cpu_thread_unclassified_ms": 54.5229,
+        "cpu_thread_coverage_ms": {
+          "gpu_pacing": 0.0,
+          "shader_compile": 0.0,
+          "gpu_worker": 0.0,
+          "pipeline_compile": 0.0,
+          "jit_entry_map": 0.0,
+          "jit_links": 0.0,
+          "jit_instruction": 0.0,
+          "present": 0.0806,
+          "jit_emit": 0.3706,
+          "gpu_submit": 0.0,
+          "jit_compile": 0.5261,
+          "jit_backpatch": 0.0,
+          "jit_ranges": 0.0,
+          "jit_finalize": 0.0311,
+          "jit_analyze": 0.1017,
+          "throttle": 0.599,
+          "gpu_fence": 0.0,
+          "gpu_present": 0.0
+        },
+        "jit_emitted_blocks_overlapping": 2,
+        "guest_instructions_in_emissions": 177
+      }
+    ]
+  },
+  "cold_block_check": {
+    "whole_trace_emissions": 30124,
+    "whole_trace_unique_pcs": 30110,
+    "frame14820_emissions": 1502,
+    "frame14820_previously_compiled": 0,
+    "frame14856_emissions": 410,
+    "frame14856_previously_compiled": 0
+  },
+  "interpretation": [
+    "Compilation bursts contribute materially to two slow frames; a third slow frame has little compilation and needs separate diagnosis.",
+    "jit_backpatch spans measure metadata map insertion in SafeLoadToReg/SafeWriteRegToReg, not runtime fault handling. They nest inside emission and compilation; do not add them to parent spans.",
+    "Elapsed spans include preemption and are not CPU utilization. GPU fence waits were small in this diagnostic.",
+    "No new frame-rate or audio improvement claimed."
+  ],
+  "next_work": {
+    "direction": "Investigate opt-in same-thread JIT prewarming during loading, retaining normal execution timing and all invalidation/protection semantics.",
+    "required_before_implementation": [
+      "Audit compiler side effects: Jit on analysis failure modifies npc/Exceptions and calls CheckExceptions; generic arbitrary-address Jit is not a safe warming API.",
+      "Respect code translation, feature flags, GQR and speculative input guards. Fail closed on unknown executable mapping/context; do not persist proprietary code bytes.",
+      "Keep warm entries subject to ordinary SMC invalidation and cache lifetime; do not retain stale code across save loads.",
+      "Measure cold and warm same-route runs plus behavior/state validation before adoption; do not hide loading cost or use extra cores."
+    ],
+    "parallel_diagnosis": "Profile the non-compilation 55ms interval separately; prewarming alone cannot establish the goal."
+  },
+  "goal": "active/unmet; default formatter OFF; three qualifying repeats and ten-minute varied combat still missing; audio unresolved; no runtime change/build this checkpoint"
+}
