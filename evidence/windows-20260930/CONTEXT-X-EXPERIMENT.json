@@ -1,0 +1,104 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Opt-in X-use descriptor rebind; not a completed MUA1 layout",
+  "enabled_by": "OPENMUA2_CONTEXT_X=1; default off",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 42,
+    "native_tests_failed": 0,
+    "test_seconds": 6.05,
+    "compiler_linker_errors": 0,
+    "compiler_linker_warnings": 0,
+    "existing_cmake_warnings": [
+      "Dependency deprecations",
+      "Object path length",
+      "lz4 IPO policy"
+    ],
+    "logs_private": [
+      ".local/logs/context-x-build.log",
+      ".local/logs/context-x-build2.log"
+    ]
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16118272,
+      "sha256": "cb0e510852b214d9e3548188ee478a1dfbb5f5191e7b74dbee6ebf1ae6ae51c7"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "8e39776bd2e6c0039e44cd9c350d8d1aa2c76c86705ac12c7854395970f37a7f"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "24e3b023003efa336bbd78559f8b3affe5444630daf026d0c8868b76ed3d8a2b"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "694cba6cb490294856222ae97b3bde46ea71cc9733a3cfd95680d8aa11c52422"
+    },
+    "moderngekko_mua2_action_bindings_test.exe": {
+      "bytes": 16896,
+      "sha256": "49a908de618b40cea90b13b2ffe3b1f8a8ed50cf591d37630d931e18495244bf"
+    }
+  },
+  "guards": [
+    "Exact executable digest",
+    "Exact live evaluator-code digest",
+    "Aligned bounded input object and vtable",
+    "Exact stock grab/block/use descriptor IDs, names, counts, selectors, modes and thresholds"
+  ],
+  "behavior": "Rebinds use to the grab chord before original evaluator runs; preserves original action evaluation and queues. No synthetic action-bit overwrite or player ownership change.",
+  "on": {
+    "native_exit_code": 0,
+    "harness_exit_code": 0,
+    "snapshots": 14,
+    "x": [
+      "grab",
+      "use"
+    ],
+    "lb": [
+      "block"
+    ],
+    "release_clear": true,
+    "only_port_zero_responds": true
+  },
+  "off": {
+    "native_exit_code": 0,
+    "harness_exit_code": 0,
+    "snapshots": 14,
+    "x": [
+      "grab"
+    ],
+    "lb": [
+      "block",
+      "use"
+    ],
+    "release_clear": true,
+    "only_port_zero_responds": true
+  },
+  "intermediate_failure": "First live run rejected the valid executable because expected digest text was lowercase while formatter returns uppercase. Observer remained off. Fixed-start guest sequence also rejected; both failures retained. Corrected digest case and routing-only runs start immediately.",
+  "configuration": {
+    "logical_cpu": 2,
+    "affinity_mask": 4,
+    "cpu": "JIT",
+    "video": "Vulkan 3x",
+    "normal_clocks": true,
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false,
+    "frame_trace": false
+  },
+  "limitations": [
+    "Routing proves action separation, not completed contextual interactions or visuals.",
+    "Fusion, direct hero selection, RT powers and menu behavior still require implementation/validation.",
+    "No audio or FPS acceptance; tests overlapped remaining build links.",
+    "Observer has been exercised through boot, state restore and shutdown; settings reload not separately tested."
+  ],
+  "fusion_target": "MUA2 Xbox 360: hold LT then press indicated partner face button A/B/X/Y; not yet implemented",
+  "private_runs": [
+    ".local\\automation\\context-x-routing2-20261001",
+    ".local\\automation\\context-x-default-20261001"
+  ]
+}

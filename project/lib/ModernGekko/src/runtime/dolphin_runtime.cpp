@@ -2,6 +2,9 @@
 
 #include "AudioCommon/AudioCommon.h"
 #include "Common/Config/Config.h"
+#include "Common/Crypto/SHA1.h"
+#include "Core/HLE/HLE.h"
+#include "mua2_action_bindings.hpp"
 #include "Common/HookableEvent.h"
 #include "Common/IOFile.h"
 #include "Common/StringUtil.h"
@@ -63,6 +66,29 @@ namespace {
 static_assert(sizeof(ModernGekkoModuleDesc) == sizeof(StaticRecompModuleDesc));
 static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
               offsetof(StaticRecompModuleDesc, chunk_hashes));
+// Experimental context-use rebind: observes the original evaluator, preserving
+// its instructions, action thresholds, per-player queues and timing.
+void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
+{
+  auto& system = guard.GetSystem();
+  auto& memory = system.GetMemory();
+  constexpr u32 entry = 0x810f833c;
+  const auto* code = memory.GetPointerForRange(entry, 256);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 256)) !=
+                   "7BC404D22B067454B756A99F29C183FD20E16EDC")
+    return;
+  const u32 object = system.GetPPCState().gpr[15];
+  if ((object & 3) || object < 0x80000000 || object > 0x817f4200)
+    return;
+  auto* data = memory.GetPointerForRange(object, 0xbe00);
+  if (!data || moderngekko::controls::ReadBE(std::span<const u8>(data, 4), 0) != 0x811b4398)
+    return;
+  const auto result = moderngekko::controls::RebindContextUse(
+      std::span<u8>(data + 4, moderngekko::controls::DescriptorTableSize));
+  if (result == moderngekko::controls::RebindResult::Applied)
+    std::fprintf(stderr, "[openmua2] experimental X-use descriptor applied to input object %08x\n", object);
+}
+
 std::mutex s_runtime_mutex;
 bool s_runtime_active = false;
 Platform *s_platform = nullptr;
@@ -1269,6 +1295,18 @@ RuntimeRunResult Runtime::Run() {
                          "Dolphin could not boot sys/main.dol"}};
   }
   m_impl->booted = true;
+  if (const char* enabled = std::getenv("OPENMUA2_CONTEXT_X"); enabled && std::string_view(enabled) == "1") {
+    std::ifstream input(m_impl->metadata.main_dol, std::ios::binary);
+    const std::vector<char> bytes{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
+                            "21822B3930C04E47176A977404A719485CD7C492") {
+      const Core::CPUThreadGuard guard(Core::System::GetInstance());
+      const bool installed = HLE::SetExternalStartObserver(guard, 0x810f833c, ObserveMua2InputBindings);
+      std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
+    } else {
+      std::fprintf(stderr, "[openmua2] experimental X-use rejected: executable identity mismatch\n");
+    }
+  }
   if (const char* path = std::getenv("MODERNGEKKO_FRAME_TIMES"); path && *path) {
     m_impl->frame_timing_path = path;
     m_impl->frame_timing = std::make_unique<moderngekko::telemetry::FrameTiming>();

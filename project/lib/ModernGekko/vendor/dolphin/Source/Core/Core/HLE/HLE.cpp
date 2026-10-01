@@ -27,7 +27,14 @@ namespace HLE
 static std::map<u32, u32> s_hooked_addresses;
 
 // clang-format off
-constexpr std::array<Hook, 23> os_patches{{
+static HookFunction s_external_observer = nullptr;
+static u32 s_external_address = 0;
+static void ObserveExternal(const Core::CPUThreadGuard& guard)
+{
+  if (s_external_observer)
+    s_external_observer(guard);
+}
+constexpr std::array<Hook, 24> os_patches{{
     // Placeholder, os_patches[0] is the "non-existent function" index
     {"FAKE_TO_SKIP_0",               HLE_Misc::UnimplementedFunction,       HookType::Replace, HookFlag::Generic},
 
@@ -59,7 +66,8 @@ constexpr std::array<Hook, 23> os_patches{{
 
     {"GeckoCodehandler",             HLE_Misc::GeckoCodeHandlerICacheFlush, HookType::Start,   HookFlag::Fixed},
     {"GeckoHandlerReturnTrampoline", HLE_Misc::GeckoReturnTrampoline,       HookType::Replace, HookFlag::Fixed},
-    {"AppLoaderReport",              HLE_OS::HLE_GeneralDebugPrint,         HookType::Start,   HookFlag::Fixed} // apploader needs OSReport-like function
+    {"AppLoaderReport",              HLE_OS::HLE_GeneralDebugPrint,         HookType::Start,   HookFlag::Fixed}, // apploader needs OSReport-like function
+    {"RuntimeExternalObserver",      ObserveExternal,                     HookType::Start,   HookFlag::Fixed}
 }};
 // clang-format on
 
@@ -149,16 +157,37 @@ void PatchFunctions(Core::System& system)
   Host_JitCacheInvalidation();
 }
 
+bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
+                              HookFunction observer)
+{
+  if (!observer || !address || (address & 3) || s_external_observer ||
+      s_hooked_addresses.contains(address))
+    return false;
+  s_external_observer = observer;
+  s_external_address = address;
+  Patch(guard.GetSystem(), address, "RuntimeExternalObserver");
+  return true;
+}
+
 void Clear()
 {
   s_hooked_addresses.clear();
+  s_external_observer = nullptr;
+  s_external_address = 0;
 }
 
 void Reload(Core::System& system)
 {
+  const auto observer = s_external_observer;
+  const u32 address = s_external_address;
   Clear();
   PatchFixedFunctions(system);
   PatchFunctions(system);
+  if (observer)
+  {
+    const Core::CPUThreadGuard guard(system);
+    SetExternalStartObserver(guard, address, observer);
+  }
 }
 
 void Execute(const Core::CPUThreadGuard& guard, u32 current_pc, u32 hook_index)

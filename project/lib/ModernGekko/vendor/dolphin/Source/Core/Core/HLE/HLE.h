@@ -57,6 +57,10 @@ struct TryReplaceFunctionResult
 void PatchFixedFunctions(Core::System& system);
 void PatchFunctions(Core::System& system);
 void Clear();
+// One runtime-owned observer, called before the original instruction. Caller
+// must hold the CPU thread guard; Clear removes it at title shutdown.
+bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
+                              HookFunction observer);
 void Reload(Core::System& system);
 
 void Patch(Core::System& system, u32 pc, std::string_view func_name);

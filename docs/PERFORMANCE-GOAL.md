@@ -2,6 +2,31 @@
 
 ## Live Xbox action routing probe - 2026-10-01
 
+## Experimental X-use separation - 2026-10-01
+
+Added an opt-in action-descriptor adapter (OPENMUA2_CONTEXT_X=1, default OFF).
+It verifies executable/live-code identity and the current input object's layout
+before rebinding use to X's grab chord. The original game evaluator and action
+queues still run. Unexpected descriptors are left unchanged; repeated application
+is idempotent. A runtime-owned start observer is cleared at title shutdown and
+retained across hook reload; settings-reload behavior is not separately tested.
+
+Supported Windows build passed: 42/42 native tests, 6.05s, exit 0; no compiler or
+linker warnings/errors. Existing CMake warnings remain. Two plaza routing probes
+passed with 14 guarded snapshots each: enabled X -> grab/use, LB -> block only;
+disabled retains v4. Tested actions clear on release, only injected port 0 responds.
+Normal clocks, CPU2/mask4, Vulkan3x, Null audio, no screenshots or host input.
+These are routing results, not completed interaction, visual, audio or FPS proof.
+
+The first live attempt rejected the executable due to digest text case, and its
+fixed guest start was rejected too. Both failures remain in private logs. Corrected
+the digest comparison; successful routing runs start immediately. Full evidence
+and binary hashes: evidence/windows-20260930/CONTEXT-X-EXPERIMENT.json.
+
+Fusion target is corrected to MUA2 Xbox 360: hold LT plus the indicated partner's
+A/B/X/Y button, as requested. This and RT powers/direct D-pad selection remain
+unfinished. Default controls remain v4; performance goal remains unmet.
+
 ## Corrected control target - 2026-10-01
 
 The user rejected v4's routing as the desired layout and specified MUA1 Xbox 360
@@ -2025,7 +2050,7 @@ no physical controller or menu visuals were assessed in the latest checks.
 
 MUA1 Xbox 360 is now the required template: A light, B heavy/charge, X use/grab,
 Y jump, LB block/dodge, RT + face buttons powers, D-pad direct hero selection.
-LT fusion/partner selection is the proposed MUA2 addition. The v4 table above
+LT + A/B/X/Y selects a fusion partner, following MUA2 Xbox 360. The v4 table above
 records current behavior only and is not the desired finished layout.
 See [implementation plan](MUA1-XBOX-CONTROL-PLAN.md) for context, menu, revival
 and validation requirements.

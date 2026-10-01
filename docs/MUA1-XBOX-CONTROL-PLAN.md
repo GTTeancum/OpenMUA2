@@ -29,8 +29,9 @@ Xbox reference and a matching action in this version before being assigned.
 ## MUA2 additions
 
 Fusion and partner selection need an additional binding. Proposed extension:
-LT opens selection, then a hero direction chooses the partner. This replaces
-MUA1's team-command use of LT. The exact selection/confirmation interaction is
+Hold LT, then press A/B/X/Y for the teammate indicated by the button prompt. This replaces
+MUA1's team-command use of LT. The user requested this MUA2 Xbox 360
+pattern, confirmed by the [Xbox 360 gameplay reference](https://drkwaitingroom.com/2024/04/28/game-corner-marvel-alliance2/). The exact selection/confirmation interaction is
 not yet implemented or validated. Do not silently substitute trigger cycling.
 
 In this Wii-derived version, revival uses fusion selection with a fallen hero.
@@ -79,3 +80,13 @@ Exact hacking and gesture replacements remain unverified.
 
 No new FPS sweep is authorized by this plan. The performance goal remains open;
 the latest concrete user priorities are audio and corrected Xbox controls.
+
+## Experimental implementation checkpoint
+
+OPENMUA2_CONTEXT_X=1 now guards and rebinds the native use descriptor to the
+grab chord. Two plaza routing probes confirm X grab/use and LB block separation
+when enabled, unchanged v4 when disabled, release and port isolation. This may
+allow normal game context handling without replacing the input queue. Actual
+interaction completion/priority remains to be tested; do not enable by default
+or call step 2 complete from action bits alone. See CONTEXT-X-EXPERIMENT.json
+in evidence/windows-20260930.

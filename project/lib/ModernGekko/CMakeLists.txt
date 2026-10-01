@@ -673,6 +673,11 @@ if(BUILD_TESTING)
     target_compile_features(moderngekko_dol_patch_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.dol_patch COMMAND moderngekko_dol_patch_test)
 
+    add_executable(moderngekko_mua2_action_bindings_test tests/mua2_action_bindings_test.cpp)
+    target_include_directories(moderngekko_mua2_action_bindings_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+    target_compile_features(moderngekko_mua2_action_bindings_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.mua2_action_bindings COMMAND moderngekko_mua2_action_bindings_test)
+
     add_executable(moderngekko_frontend_config_test
         tests/frontend_config_test.cpp
         tools/frontend_config.cpp)
