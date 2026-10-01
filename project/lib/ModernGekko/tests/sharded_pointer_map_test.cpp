@@ -3,6 +3,7 @@
 #include "../vendor/dolphin/Source/Core/Common/ShardedPointerMap.h"
 #include <cstdint>
 #include <vector>
+#include "../vendor/dolphin/Source/Core/Core/PowerPC/JitCommon/BackpatchReserve.h"
 
 int main()
 {
@@ -24,6 +25,34 @@ int main()
   for (std::size_t i = 0; i < 1000; ++i)
     if (*map.Find(storage.data() + i * 4096) != i) return 6;
   if (map.size() != 1000) return 7;
+  Common::ShardedPointerMap<unsigned, 4> reserved;
+  auto* retained = &reserved[storage.data()];
+  *retained = 91;
+  reserved.Reserve(257); // Round up a non-multiple across four shards.
+  for (std::size_t i = 0; i < 1024; ++i)
+    if (reserved.bucket_count(storage.data() + i) < 65) return 16;
+  if (reserved.Find(storage.data()) != retained || *retained != 91 || reserved.size() != 1)
+    return 17;
+  const auto capacity = reserved.bucket_count(storage.data());
+  reserved.Reserve(1);
+  if (reserved.bucket_count(storage.data()) != capacity) return 18;
+  reserved.clear();
+  reserved.Reserve(0);
+  if (reserved.size() || reserved.Find(storage.data()) ||
+      reserved.bucket_count(storage.data()) != capacity) return 19;
+  reserved[storage.data()] = 42;
+  if (!reserved.Find(storage.data()) || *reserved.Find(storage.data()) != 42) return 20;
+  if (reserved.bucket_range().first < 65 ||
+      reserved.bucket_range().second < reserved.bucket_range().first) return 21;
+  for (const auto text : {"", "-1", "+64", " 64", "64 ", "64x", "1048577",
+                           "999999999999999999999999999999"})
+    if (JitCommon::ParseBackpatchReserve(text)) return 22;
+  for (const auto& [text, expected] : std::array<std::pair<std::string_view, std::size_t>, 5>{
+           {{"0", 0}, {"1", 131072}, {"257", 257}, {"524288", 524288}, {"1048576", 1048576}}})
+  {
+    const auto parsed = JitCommon::ParseBackpatchReserve(text);
+    if (!parsed || *parsed != expected) return 23;
+  }
   Common::ShardedAddressMap<std::unordered_set<unsigned>> links;
   std::unordered_map<std::uint32_t, std::unordered_set<unsigned>> reference;
   auto* stable = &links[0x80000000];

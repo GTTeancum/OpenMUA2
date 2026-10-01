@@ -5,6 +5,8 @@
 
 #include <functional>
 #include <cstdio>
+#include <cstdlib>
+#include <string_view>
 
 #include "Common/Assert.h"
 #include "Common/RuntimeTiming.h"
@@ -16,6 +18,7 @@
 #include "Core/HW/Memmap.h"
 #include "Core/PowerPC/Gekko.h"
 #include "Core/PowerPC/Jit64/Jit.h"
+#include "Core/PowerPC/JitCommon/BackpatchReserve.h"
 #include "Core/PowerPC/Jit64Common/Jit64Constants.h"
 #include "Core/PowerPC/Jit64Common/Jit64PowerPCState.h"
 #include "Core/PowerPC/MMU.h"
@@ -342,6 +345,8 @@ void EmuCodeBlock::SafeLoadToReg(X64Reg reg_value, const Gen::OpArg& opAddress, 
       const auto begin = Common::RuntimeTiming::Begin();
       const auto buckets = begin ? m_back_patch_info.bucket_count(mov.address) : 0;
       auto& result = m_back_patch_info[mov.address];
+      if (begin && buckets != m_back_patch_info.bucket_count(mov.address))
+        Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatchRehash, begin);
       if (begin && Common::RuntimeTiming::Now() - begin >= 100000)
       {
         Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatch, begin);
@@ -527,6 +532,8 @@ void EmuCodeBlock::SafeWriteRegToReg(OpArg reg_value, X64Reg reg_addr, int acces
       const auto begin = Common::RuntimeTiming::Begin();
       const auto buckets = begin ? m_back_patch_info.bucket_count(mov.address) : 0;
       auto& result = m_back_patch_info[mov.address];
+      if (begin && buckets != m_back_patch_info.bucket_count(mov.address))
+        Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatchRehash, begin);
       if (begin && Common::RuntimeTiming::Now() - begin >= 100000)
       {
         Common::RuntimeTiming::End(Common::RuntimeTiming::Kind::JitBackpatch, begin);
@@ -1087,5 +1094,18 @@ void EmuCodeBlock::SetFPRF(Gen::X64Reg xmm, bool single)
 void EmuCodeBlock::Clear()
 {
   m_back_patch_info.clear();
+  if (const char* setting = std::getenv("OPENMUA2_BACKPATCH_RESERVE"))
+  {
+    if (const auto entries = JitCommon::ParseBackpatchReserve(setting))
+    {
+      const auto before = m_back_patch_info.bucket_range();
+      m_back_patch_info.Reserve(*entries);
+      const auto after = m_back_patch_info.bucket_range();
+      std::fprintf(stderr, "JIT backpatch reserve: entries=%zu shards=64 buckets=%zu..%zu->%zu..%zu\n",
+                   *entries, before.first, before.second, after.first, after.second);
+    }
+    else
+      std::fprintf(stderr, "Invalid OPENMUA2_BACKPATCH_RESERVE; ordinary growth retained\n");
+  }
   m_exception_handler_at_loc.clear();
 }

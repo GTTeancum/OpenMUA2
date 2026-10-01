@@ -1,0 +1,1023 @@
+{
+  "schema": 1,
+  "scope": "Tutorial plaza only. No screenshots, desktop input, visual or audible validation. Short diagnostic routes do not establish continuous combat or meet the solid-30 goal.",
+  "change": "Opt-in bounded OPENMUA2_BACKPATCH_RESERVE capacity hint; default unchanged. Added nested jit_backpatch_rehash profiling. 1 aliases 131072 entries; explicit decimal values 0..1048576 accepted; 0 retains normal growth. Capacity is divided across 64 shards and never shrunk by the hint. This preallocates host buckets, not guest code, element nodes or game data.",
+  "conditions": "Full JIT, whole process pinned to logical CPU2/mask4, Vulkan3x/1920x1080 preset, normal clocks, Cubeb Volume0, formatter ON with identity cache ON, indirect experiments OFF. Existing queued plaza route, two-second warmup and endpoint before save. Resident census is intrusive and excluded from performance acceptance.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_passed": 39,
+    "native_failed": 0,
+    "native_seconds": 7.21,
+    "local_lto": true,
+    "warnings": "Existing CMake deprecations, unavailable Wayland, long object paths and lz4 IPO policy; no compiler/linker diagnostics.",
+    "private_log": ".local/logs/backpatch-reserve-bounded-build.log",
+    "python_tests": {
+      "run": 150,
+      "passed": 149,
+      "skipped": 1,
+      "seconds": 34.877
+    },
+    "earlier_128k_build": {
+      "exit_code": 0,
+      "native_passed": 39,
+      "seconds": 5.57
+    }
+  },
+  "new_tests": "Pointer stability across reservation, round-up across shards, retained capacity on clear and smaller hints, reuse, bucket bounds, parser rejection/bounds, nested span clipping without double-counted waits.",
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16070656,
+      "sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "fbf125e7fd9f0d1be44bf5c8bdf58719d14afcee7c2fc4a7a727f4852b73037a"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "9dc40230e6b01258456c11d30b1646f008edc3551a9b3e5128bf3ec254890edb"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "70bf793b4a30ca735cad55598f66ef0a2e7488e533b61d72b79bf4fe9a17eb97"
+    },
+    "dolrecomp.exe": {
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    }
+  },
+  "runs": {
+    "plaza-identity-spans-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 69.21799999999348,
+      "runner_sha256": "fa202fa923e7d1fcc48a5c9208f385b7638889fcbbcdaeb0df4aaa67001231a3",
+      "runtime_profile": true,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16021,
+        "emulated_ticks": 34126992900,
+        "intervals": 1403,
+        "seconds": 46.8133635,
+        "average_fps": 29.970074677501007,
+        "frame_ms": {
+          "median": 33.36449999999758,
+          "p95": 34.10480000000149,
+          "p99": 34.97290000000053,
+          "max": 70.07589999999908
+        },
+        "one_percent_low_fps": 24.386223149549235,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 771,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.07007589999999908,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.813433333333336,
+        "emulation_speed_percent": 100.00014917392836,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1403
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0021666666690928205,
+          "p99": 1.6062333333338592,
+          "min": -13.385266666665965,
+          "max": 36.70923333333241
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "nested_elapsed_totals": {
+        "gpu_fence": {
+          "calls": 1319,
+          "union_ms": 4.7758,
+          "max_span_ms": 0.0263,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "jit_analyze": {
+          "calls": 13638,
+          "union_ms": 41.4984,
+          "max_span_ms": 0.2401,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "jit_emit": {
+          "calls": 13638,
+          "union_ms": 290.8178,
+          "max_span_ms": 1.3985,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13638,
+          "union_ms": 82.943,
+          "max_span_ms": 0.4404,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "jit_compile": {
+          "calls": 13638,
+          "union_ms": 435.4453,
+          "max_span_ms": 1.4236,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 77,
+          "union_ms": 42.0791,
+          "max_span_ms": 1.1379,
+          "threads": [
+            13082977006517182570
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 13,
+          "union_ms": 1.2935,
+          "max_span_ms": 0.166,
+          "threads": [
+            11691519286577422154,
+            13082977006517182570
+          ]
+        },
+        "shader_compile": {
+          "calls": 1,
+          "union_ms": 2.7278,
+          "max_span_ms": 2.7278,
+          "threads": [
+            11691519286577422154
+          ]
+        }
+      },
+      "reserve_receipts": []
+    },
+    "plaza-resident-reuse-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 216.70300000003772,
+      "runner_sha256": "fa202fa923e7d1fcc48a5c9208f385b7638889fcbbcdaeb0df4aaa67001231a3",
+      "runtime_profile": false,
+      "jit_block_profile": true,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "reserve_receipts": []
+    },
+    "plaza-backpatch-reserve-off-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.0,
+      "runner_sha256": "e57ba3a7e757e215acb0e7e1a862b1a404fec1c45d65073368646188df94df7d",
+      "runtime_profile": true,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16027,
+        "emulated_ticks": 34272938700,
+        "intervals": 1409,
+        "seconds": 47.0132774,
+        "average_fps": 29.97025687045592,
+        "frame_ms": {
+          "median": 33.36619999999968,
+          "p95": 34.09949999999995,
+          "p99": 35.44580000000064,
+          "max": 66.80629999999965
+        },
+        "one_percent_low_fps": 24.65016486030261,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 780,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.06680629999999965,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 47.01363333333334,
+        "emulation_speed_percent": 100.00075709108792,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1409
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.00046666666699002324,
+          "p99": 2.0791333333339685,
+          "min": -12.41716666666627,
+          "max": 33.439633333332985
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "nested_elapsed_totals": {
+        "gpu_fence": {
+          "calls": 1335,
+          "union_ms": 5.1296,
+          "max_span_ms": 0.2408,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "jit_analyze": {
+          "calls": 14272,
+          "union_ms": 43.207,
+          "max_span_ms": 0.2361,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "jit_emit": {
+          "calls": 14272,
+          "union_ms": 306.4531,
+          "max_span_ms": 1.2518,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "jit_finalize": {
+          "calls": 14272,
+          "union_ms": 89.4172,
+          "max_span_ms": 0.9145,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "jit_compile": {
+          "calls": 14272,
+          "union_ms": 460.8416,
+          "max_span_ms": 1.2942,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 82,
+          "union_ms": 43.3997,
+          "max_span_ms": 1.1926,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 16,
+          "union_ms": 4.1964,
+          "max_span_ms": 2.3096,
+          "threads": [
+            4559485146138259807,
+            16208051222022434810
+          ]
+        },
+        "jit_backpatch_rehash": {
+          "calls": 64,
+          "union_ms": 40.4523,
+          "max_span_ms": 1.1924,
+          "threads": [
+            16208051222022434810
+          ]
+        },
+        "shader_compile": {
+          "calls": 2,
+          "union_ms": 9.0315,
+          "max_span_ms": 5.4528,
+          "threads": [
+            4559485146138259807
+          ]
+        }
+      },
+      "reserve_receipts": []
+    },
+    "plaza-backpatch-reserve-on-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 93.15600000001723,
+      "runner_sha256": "e57ba3a7e757e215acb0e7e1a862b1a404fec1c45d65073368646188df94df7d",
+      "runtime_profile": true,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14611,
+        "last_frame": 16009,
+        "emulated_ticks": 34005371400,
+        "intervals": 1398,
+        "seconds": 47.167534,
+        "average_fps": 29.639030948702977,
+        "frame_ms": {
+          "median": 33.35279999999763,
+          "p95": 40.768899999999775,
+          "p99": 54.22349999999998,
+          "max": 88.9577000000017
+        },
+        "one_percent_low_fps": 15.271030800032944,
+        "rolling_1s_fps_min": 22,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 721,
+        "frames_over_50ms": 20,
+        "longest_consecutive_over_50ms_seconds": 0.2706476999999978,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.64660000000001,
+        "emulation_speed_percent": 98.89556659883895,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1398
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.013866666669040684,
+          "p99": 20.85683333333331,
+          "min": -14.274366666666163,
+          "max": 55.59103333333503
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "nested_elapsed_totals": {
+        "jit_analyze": {
+          "calls": 14397,
+          "union_ms": 52.7522,
+          "max_span_ms": 0.425,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 75,
+          "union_ms": 40.7731,
+          "max_span_ms": 1.6642,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "jit_emit": {
+          "calls": 14397,
+          "union_ms": 347.7474,
+          "max_span_ms": 1.8458,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "jit_finalize": {
+          "calls": 14397,
+          "union_ms": 89.4878,
+          "max_span_ms": 0.5381,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "jit_compile": {
+          "calls": 14397,
+          "union_ms": 512.5478,
+          "max_span_ms": 1.985,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1350,
+          "union_ms": 9.1456,
+          "max_span_ms": 0.359,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 16,
+          "union_ms": 3.2949,
+          "max_span_ms": 1.1854,
+          "threads": [
+            2394410849509966583,
+            13276073050313902091
+          ]
+        },
+        "jit_backpatch_rehash": {
+          "calls": 64,
+          "union_ms": 37.2802,
+          "max_span_ms": 1.6634,
+          "threads": [
+            2394410849509966583
+          ]
+        },
+        "shader_compile": {
+          "calls": 1,
+          "union_ms": 3.4328,
+          "max_span_ms": 3.4328,
+          "threads": [
+            13276073050313902091
+          ]
+        }
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=131072 shards=64",
+        "JIT backpatch reserve: entries=131072 shards=64",
+        "JIT backpatch reserve: entries=131072 shards=64"
+      ]
+    },
+    "plaza-backpatch-bounded-off-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.40600000001723,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": true,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16018,
+        "emulated_ticks": 34078344300,
+        "intervals": 1401,
+        "seconds": 46.7464012,
+        "average_fps": 29.970221536540443,
+        "frame_ms": {
+          "median": 33.365700000004495,
+          "p95": 34.16379999999819,
+          "p99": 35.38649999999777,
+          "max": 60.97920000000023
+        },
+        "one_percent_low_fps": 24.76854210214579,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 778,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.06097920000000023,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.746700000000004,
+        "emulation_speed_percent": 100.00063919358995,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1401
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0009666666621749309,
+          "p99": 2.0198333333310976,
+          "min": -14.346866666666083,
+          "max": 27.612533333333563
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "nested_elapsed_totals": {
+        "jit_analyze": {
+          "calls": 13798,
+          "union_ms": 41.7518,
+          "max_span_ms": 0.2983,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "jit_emit": {
+          "calls": 13798,
+          "union_ms": 294.7481,
+          "max_span_ms": 1.8048,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "jit_finalize": {
+          "calls": 13798,
+          "union_ms": 79.7361,
+          "max_span_ms": 0.4684,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "jit_compile": {
+          "calls": 13798,
+          "union_ms": 435.2381,
+          "max_span_ms": 1.8335,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "gpu_fence": {
+          "calls": 1350,
+          "union_ms": 5.5757,
+          "max_span_ms": 0.1654,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 17,
+          "union_ms": 3.5063,
+          "max_span_ms": 0.8493,
+          "threads": [
+            1457173697998326267,
+            12199956604227592574
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 75,
+          "union_ms": 46.9445,
+          "max_span_ms": 1.3037,
+          "threads": [
+            1457173697998326267
+          ]
+        },
+        "shader_compile": {
+          "calls": 3,
+          "union_ms": 21.7376,
+          "max_span_ms": 13.1545,
+          "threads": [
+            12199956604227592574
+          ]
+        },
+        "jit_backpatch_rehash": {
+          "calls": 64,
+          "union_ms": 44.968,
+          "max_span_ms": 1.3034,
+          "threads": [
+            1457173697998326267
+          ]
+        }
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8"
+      ]
+    },
+    "plaza-backpatch-bounded-524k-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 69.09399999998277,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": true,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16016,
+        "emulated_ticks": 34005371400,
+        "intervals": 1398,
+        "seconds": 46.6463211,
+        "average_fps": 29.970209161896797,
+        "frame_ms": {
+          "median": 33.36509999999748,
+          "p95": 33.982899999999816,
+          "p99": 34.78400000000015,
+          "max": 56.23539999999938
+        },
+        "one_percent_low_fps": 25.892428794896073,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 786,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.05623539999999938,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.64660000000001,
+        "emulation_speed_percent": 100.000597903529,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1398
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0015666666691865894,
+          "p99": 1.4173333333334788,
+          "min": -14.6586666666665,
+          "max": 22.86873333333271
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "nested_elapsed_totals": {
+        "gpu_fence": {
+          "calls": 1286,
+          "union_ms": 5.1203,
+          "max_span_ms": 0.165,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "jit_analyze": {
+          "calls": 14746,
+          "union_ms": 45.9999,
+          "max_span_ms": 0.2619,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "jit_emit": {
+          "calls": 14746,
+          "union_ms": 265.3314,
+          "max_span_ms": 0.8886,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "jit_finalize": {
+          "calls": 14746,
+          "union_ms": 90.5337,
+          "max_span_ms": 1.3772,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "jit_compile": {
+          "calls": 14746,
+          "union_ms": 423.2767,
+          "max_span_ms": 1.4333,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "jit_backpatch": {
+          "calls": 15,
+          "union_ms": 2.6538,
+          "max_span_ms": 0.2921,
+          "threads": [
+            1216087316467659898
+          ]
+        },
+        "pipeline_compile": {
+          "calls": 18,
+          "union_ms": 4.0516,
+          "max_span_ms": 0.7682,
+          "threads": [
+            1216087316467659898,
+            14616136353936919272
+          ]
+        },
+        "shader_compile": {
+          "calls": 1,
+          "union_ms": 4.3988,
+          "max_span_ms": 4.3988,
+          "threads": [
+            14616136353936919272
+          ]
+        }
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8..8->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192"
+      ]
+    },
+    "plaza-backpatch-timing-off-1-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 69.07799999997951,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": false,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16018,
+        "emulated_ticks": 34029695700,
+        "intervals": 1399,
+        "seconds": 46.6791112,
+        "average_fps": 29.970579217026735,
+        "frame_ms": {
+          "median": 33.367699999999445,
+          "p95": 34.13080000000068,
+          "p99": 35.233400000002746,
+          "max": 62.93330000000008
+        },
+        "one_percent_low_fps": 24.867067760627695,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 771,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.06293330000000008,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.67996666666667,
+        "emulation_speed_percent": 100.00183265414589,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1399
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0010333333327755545,
+          "p99": 1.8667333333360765,
+          "min": -15.593166666666116,
+          "max": 29.56663333333341
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8"
+      ]
+    },
+    "plaza-backpatch-timing-524k-1-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 68.60899999999674,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": false,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16013,
+        "emulated_ticks": 33908074200,
+        "intervals": 1394,
+        "seconds": 46.513064,
+        "average_fps": 29.97007464397529,
+        "frame_ms": {
+          "median": 33.36180000000155,
+          "p95": 34.123799999999704,
+          "p99": 35.28280000000095,
+          "max": 51.44970000000004
+        },
+        "one_percent_low_fps": 26.0950703057112,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 752,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.05144970000000004,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.513133333333336,
+        "emulation_speed_percent": 100.00014906206422,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1394
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.004866666665118147,
+          "p99": 1.9161333333342774,
+          "min": -14.769766666667197,
+          "max": 18.083033333333372
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8..8->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192"
+      ]
+    },
+    "plaza-backpatch-timing-off-2-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 68.59399999998277,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": false,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16019,
+        "emulated_ticks": 34054020000,
+        "intervals": 1400,
+        "seconds": 46.7133749,
+        "average_fps": 29.97000330198793,
+        "frame_ms": {
+          "median": 33.37225000000288,
+          "p95": 34.11380000000008,
+          "p99": 35.45180000000059,
+          "max": 58.44529999999981
+        },
+        "one_percent_low_fps": 24.34474383069402,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 771,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.11013649999999942,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.71333333333334,
+        "emulation_speed_percent": 99.99991101763307,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1400
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.005583333336209306,
+          "p99": 2.085133333333919,
+          "min": -15.728466666667176,
+          "max": 25.07863333333314
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8",
+        "JIT backpatch reserve: entries=0 shards=64 buckets=8..8->8..8"
+      ]
+    },
+    "plaza-backpatch-timing-524k-2-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 68.56200000003446,
+      "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+      "runtime_profile": false,
+      "jit_block_profile": false,
+      "screenshots": false,
+      "requested_logical_processor": 2,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16019,
+        "emulated_ticks": 34054020000,
+        "intervals": 1400,
+        "seconds": 46.7131888,
+        "average_fps": 29.970122699052393,
+        "frame_ms": {
+          "median": 33.368450000001104,
+          "p95": 34.09530000000416,
+          "p99": 35.02340000000004,
+          "max": 57.80399999999997
+        },
+        "one_percent_low_fps": 25.27513336694921,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 766,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.057803999999999967,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.71333333333334,
+        "emulation_speed_percent": 100.00030940583817,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1400
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0017833333344347002,
+          "p99": 1.6567333333333685,
+          "min": -13.721966666666043,
+          "max": 24.437333333333296
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "reserve_receipts": [
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8..8->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192",
+        "JIT backpatch reserve: entries=524288 shards=64 buckets=8192..8192->8192..8192"
+      ]
+    }
+  },
+  "reference_jit_bursts": [
+    {
+      "frame": 14869,
+      "host_ms": 70.0759,
+      "compilations_fully_inside": 1158,
+      "unique_addresses": 1158,
+      "addresses_previously_compiled_in_trace": 0,
+      "guest_instructions_compiled": 23260,
+      "jit_compile_elapsed_coverage_ms": 41.3628,
+      "backpatch_metadata_insert_elapsed_coverage_ms": 20.0755
+    },
+    {
+      "frame": 14884,
+      "host_ms": 58.6758,
+      "compilations_fully_inside": 1275,
+      "unique_addresses": 1275,
+      "addresses_previously_compiled_in_trace": 0,
+      "guest_instructions_compiled": 30060,
+      "jit_compile_elapsed_coverage_ms": 28.9672,
+      "backpatch_metadata_insert_elapsed_coverage_ms": 1.2331
+    },
+    {
+      "frame": 14696,
+      "host_ms": 45.5596,
+      "compilations_fully_inside": 522,
+      "unique_addresses": 522,
+      "addresses_previously_compiled_in_trace": 0,
+      "guest_instructions_compiled": 12952,
+      "jit_compile_elapsed_coverage_ms": 15.0932,
+      "backpatch_metadata_insert_elapsed_coverage_ms": 0.1977
+    },
+    {
+      "frame": 14812,
+      "host_ms": 41.6752,
+      "compilations_fully_inside": 525,
+      "unique_addresses": 525,
+      "addresses_previously_compiled_in_trace": 0,
+      "guest_instructions_compiled": 13706,
+      "jit_compile_elapsed_coverage_ms": 13.4736,
+      "backpatch_metadata_insert_elapsed_coverage_ms": 0.0
+    }
+  ],
+  "resident_reuse": {
+    "resident_rows": 36405,
+    "resident_addresses": 36405,
+    "executed_addresses": 36404,
+    "executed_once": 1068,
+    "executed_2_to_4": 2596,
+    "executed_5_to_16": 4780,
+    "executed_over16": 27960,
+    "bursts": [
+      {
+        "reference_frame": 14869,
+        "addresses_in_reference_burst": 1158,
+        "resident_matches_in_separate_run": 1117,
+        "never_executed_after_reset": 0,
+        "executed_once": 0,
+        "executed_2_to_4": 251,
+        "executed_5_to_16": 581,
+        "executed_over16": 285,
+        "total_recorded_runs_of_matched_addresses": 124574
+      },
+      {
+        "reference_frame": 14884,
+        "addresses_in_reference_burst": 1275,
+        "resident_matches_in_separate_run": 1274,
+        "never_executed_after_reset": 0,
+        "executed_once": 6,
+        "executed_2_to_4": 60,
+        "executed_5_to_16": 848,
+        "executed_over16": 360,
+        "total_recorded_runs_of_matched_addresses": 120369
+      },
+      {
+        "reference_frame": 14696,
+        "addresses_in_reference_burst": 522,
+        "resident_matches_in_separate_run": 522,
+        "never_executed_after_reset": 0,
+        "executed_once": 0,
+        "executed_2_to_4": 0,
+        "executed_5_to_16": 11,
+        "executed_over16": 511,
+        "total_recorded_runs_of_matched_addresses": 373600
+      },
+      {
+        "reference_frame": 14812,
+        "addresses_in_reference_burst": 525,
+        "resident_matches_in_separate_run": 498,
+        "never_executed_after_reset": 0,
+        "executed_once": 1,
+        "executed_2_to_4": 56,
+        "executed_5_to_16": 104,
+        "executed_over16": 337,
+        "total_recorded_runs_of_matched_addresses": 109727
+      }
+    ]
+  },
+  "interpretation_limits": [
+    "Backpatch timings measure metadata insertion during compilation, not runtime faults. Rehash overlaps backpatch and compile spans; do not sum them. Elapsed spans include scheduler effects.",
+    "Separate-run resident reuse counts are address membership comparisons, not deterministic paired execution; invalidated blocks are absent. Most matched burst blocks were reused, weakening the case for a first-visit-only interpreter tier. No tier implemented.",
+    "131072-entry reservation did not remove growth and showed worse frame tails in its one comparison. Preserve this failed experiment.",
+    "524288 requests produced 8192 buckets per shard and zero in-window growth events in the instrumented trial. This is scoped evidence, not a blanket claim that all future growth is removed.",
+    "Muted Cubeb callbacks do not verify crackle-free audible output. No current visual or continuous-combat proof. Goal remains unmet."
+  ],
+  "decision": "Keep default-off. Eliminated measured in-window growth in one profiled test, but repeated frame-tail benefit was mixed/modest and >50ms frames remain. No major FPS gain or goal acceptance."
+}

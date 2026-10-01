@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 KINDS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence', 'gpu_submit', 'gpu_present', 'present',
-         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize', 'jit_instruction', 'jit_backpatch', 'jit_entry_map', 'jit_ranges', 'jit_links', 'gpu_decode_slow'}
+         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize', 'jit_instruction', 'jit_backpatch', 'jit_entry_map', 'jit_ranges', 'jit_links', 'gpu_decode_slow', 'jit_backpatch_rehash'}
 WAITS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence'}
 
 

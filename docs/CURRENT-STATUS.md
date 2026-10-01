@@ -1,5 +1,68 @@
 # Current status — GitHub main
 
+## Plaza JIT metadata reservation experiment - 2026-10-01
+
+Testing remains tutorial-plaza ONLY, with NO screenshots, host input or desktop
+capture. These instructions supersede older visual-capture/varied-scene plans.
+A completed input route and rendered frames do not prove continuous combat or
+correct visuals. No new visual or audible correctness claim is made.
+
+An instrumented reference found first-use JIT bursts in the slowest frames:
+1,158 new blocks occupied 41.363ms of a 70.076ms frame; metadata insertion
+accounted for 20.076ms inside that compile time. A separate intrusive resident
+census found 36,404 executed blocks, only 1,068 executed once. Most matched
+burst addresses were reused. This weakens the case for a first-visit-only
+interpreter tier; no tier or speculative JIT prewarming was implemented.
+Cross-run address matches are not deterministic paired execution, and invalidated
+blocks are absent. Save-state WRITE does not clear this JIT; state READ does.
+
+Added nested jit_backpatch_rehash timing and a default-off host bucket-capacity
+hint: OPENMUA2_BACKPATCH_RESERVE=524288. Strict decimal values 0..1048576 are
+accepted; 0 retains normal growth, and 1 aliases the initial 131072 experiment.
+Invalid values retain ordinary growth. Reservations never shrink existing
+capacity and preserve value references. No guest code/data is precompiled or
+changed. Native tests cover pointer stability, capacity retention/rounding,
+reuse, parser bounds/rejection; Python verifies nested span accounting.
+
+Initial 131072 reservation FAILED to remove growth: 64 rehashes in both runs,
+40.452ms OFF versus 37.280ms ON; worst frame 66.806 versus 88.958ms. This is a
+failed trial, not evidence of a gain. The bounded revision logs actual buckets:
+524288 produced 8192 buckets per shard, retained over subsequent clears.
+Same-binary profiled comparison: OFF had 64 rehashes/44.968ms, ON had zero in the
+measurement window. Slow metadata insertion fell from 46.945 to 2.654ms;
+compile elapsed coverage 435.238 to 423.277ms (different block counts).
+Worst frame 60.979 to 56.235ms. These nested spans overlap; do not add them.
+Backpatch spans measure metadata insertion during compilation, not runtime faults.
+
+Repeated comparisons WITHOUT detailed runtime profiling, all exit0:
+
+| Order | Capacity hint | New FPS | P99 ms | Worst ms | Frames >50ms |
+| --- | --- | --- | --- | --- | --- |
+| 1 | OFF | 29.9706 | 35.233 | 62.933 | 1 |
+| 2 | 524288 | 29.9701 | 35.283 | 51.450 | 1 |
+| 3 | OFF | 29.9700 | 35.452 | 58.445 | 2 |
+| 4 | 524288 | 29.9701 | 35.023 | 57.804 | 2 |
+
+Full JIT, whole process CPU2/mask4, Vulkan3x/1920x1080 preset, normal clocks,
+muted Cubeb with audio profiling, formatter ON and identity cache ON; indirect
+experiments OFF. Existing short queued plaza route, two-second warmup, endpoint
+before save. No screenshots. Mixed/modest frame-tail benefit; keep opt-in.
+No tens-of-FPS gain or solid-30 claim. Callback counters cannot prove clean audio.
+
+Supported Build.cmd --cpu jit --jobs 2 completed successfully with local LTO ON.
+39/39 native tests passed (7.21s); Python 149 passed/1 skipped (34.877s).
+Existing CMake deprecation, Wayland, object-path-length and lz4 IPO warnings;
+no compiler/linker diagnostics. Five runtime executables and hashes are recorded
+in evidence/windows-20260930/PLAZA-BACKPATCH-RESERVE.json. Runner SHA256:
+2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0.
+Private source data, saves, profiles and game assets remain outside Git.
+
+Goal UNMET: >50ms frames persist; continuous combat, audio quality, three
+qualifying repeats and ten-minute combat remain unverified. Investigate remaining
+first-use compile bursts and establish read-only combat-state telemetry before
+another long run; do not treat idle/menu/failure time as combat validation.
+
+
 ## Live byte-identity cache for formatter guards - 2026-10-01
 
 Added default-off OPENMUA2_FORMAT_IDENTITY_CACHE=1 inside the existing formatter

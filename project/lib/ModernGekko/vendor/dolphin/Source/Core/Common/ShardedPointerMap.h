@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
+#include <algorithm>
+#include <utility>
 #include <array>
 #include <bit>
 #include <cstddef>
@@ -30,6 +32,14 @@ public:
     const auto found = map.find(key);
     return found == map.end() ? nullptr : &found->second;
   }
+  // A capacity hint spread across shards. Never shrink buckets already grown;
+  // unordered_map rehash preserves references/pointers to existing values.
+  void Reserve(std::size_t entries)
+  {
+    const auto per_shard = entries / Shards + (entries % Shards != 0);
+    for (auto& map : m_maps)
+      if (per_shard > map.bucket_count()) map.reserve(per_shard);
+  }
   void clear() { for (auto& map : m_maps) map.clear(); }
   std::size_t size() const
   {
@@ -38,6 +48,16 @@ public:
     return count;
   }
   std::size_t bucket_count(const void* key) const { return m_maps[Index(key)].bucket_count(); }
+  std::pair<std::size_t, std::size_t> bucket_range() const
+  {
+    auto low = m_maps[0].bucket_count(), high = low;
+    for (const auto& map : m_maps)
+    {
+      low = std::min(low, map.bucket_count());
+      high = std::max(high, map.bucket_count());
+    }
+    return {low, high};
+  }
 private:
   std::array<Map, Shards> m_maps;
 };

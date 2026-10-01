@@ -63,6 +63,19 @@ class RuntimeSpansTest(unittest.TestCase):
         for kind in ('jit_entry_map', 'jit_ranges', 'jit_links'):
             self.assertAlmostEqual(detailed['totals'][kind]['union_ms'], 120e-6)
 
+    def test_backpatch_rehash_is_nested_work_not_an_additional_wait(self):
+        result = mod.analyze(FRAMES, SPANS +
+                             'jit_compile,110,270,0,1\n'
+                             'jit_backpatch,120,240,0,1\n'
+                             'jit_backpatch_rehash,130,220,0,1\n')
+        self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)
+        self.assertAlmostEqual(result['cpu_thread_unclassified_seconds'], 100e-9)
+        self.assertEqual(result['totals']['jit_backpatch_rehash']['calls'], 1)
+        self.assertAlmostEqual(result['totals']['jit_backpatch_rehash']['union_ms'], 90e-6)
+        by_frame = {row['frame']: row for row in result['worst_frames']}
+        self.assertAlmostEqual(by_frame[2]['cpu_thread_coverage_ms']['jit_backpatch_rehash'], 70e-6)
+        self.assertAlmostEqual(by_frame[3]['cpu_thread_coverage_ms']['jit_backpatch_rehash'], 20e-6)
+
     def test_decode_work_is_not_wait_time_and_nested_coverage_is_clipped(self):
         result = mod.analyze(FRAMES, SPANS + 'gpu_decode_slow,120,240,0,1\n')
         self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)
