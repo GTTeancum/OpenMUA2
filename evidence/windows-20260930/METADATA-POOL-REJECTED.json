@@ -1,0 +1,459 @@
+{
+  "schema": 1,
+  "source_checkpoint_before_trial": "6f3006e217c7e4114cf72bd1be719dfde16f678a",
+  "decision": "REJECTED; source header and test restored exactly to HEAD before final build. No runtime change retained.",
+  "experiment": "64 PMR unordered maps sharing an unsynchronized pool_resource (max_blocks_per_chunk256, largest_required_pool_block512), pooling small metadata nodes; normal bucket allocation and lookup semantics.",
+  "candidate_runner_sha256": "d1d1689776db7beb64ae20111bcf1014c3640ad38f3c6ae9772f40357b9f9c4e",
+  "private_rejected_patch_sha256": "a93b33bd994fbb4fd1fd5659046305454e9729c86c4357057b585671cd024fc1",
+  "runs": [
+    {
+      "run": "timed-clear-spans-20260930",
+      "runner_sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7",
+      "exit_code": 0,
+      "timing": {
+        "average_fps": 29.997441961256605,
+        "frame_ms": {
+          "median": 33.34849999999978,
+          "p95": 37.81049999999997,
+          "p99": 47.81769999999996,
+          "max": 75.12269999999965
+        },
+        "frames_over_50ms": 3,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 100.09146467739289
+      },
+      "seconds": 10.9009295,
+      "totals": {
+        "gpu_fence": {
+          "calls": 313,
+          "union_ms": 2.5173,
+          "max_span_ms": 0.3093
+        },
+        "throttle": {
+          "calls": 4008,
+          "union_ms": 2191.925,
+          "max_span_ms": 4.5866
+        },
+        "jit_analyze": {
+          "calls": 7431,
+          "union_ms": 24.0374,
+          "max_span_ms": 0.3714
+        },
+        "jit_emit": {
+          "calls": 7431,
+          "union_ms": 200.5577,
+          "max_span_ms": 2.1292
+        },
+        "jit_finalize": {
+          "calls": 7431,
+          "union_ms": 54.9187,
+          "max_span_ms": 0.7385
+        },
+        "jit_compile": {
+          "calls": 7431,
+          "union_ms": 291.217,
+          "max_span_ms": 2.1394
+        },
+        "jit_backpatch": {
+          "calls": 73,
+          "union_ms": 51.1334,
+          "max_span_ms": 1.5265
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 14820,
+          "host_ms": 75.1227,
+          "guest_ms": 50.05,
+          "cpu_thread_wait_union_ms": 8.4679,
+          "cpu_thread_unclassified_ms": 66.6548,
+          "cpu_thread_coverage_ms": {
+            "jit_ranges": 0.387,
+            "present": 0.2112,
+            "jit_backpatch": 1.3387,
+            "throttle": 8.465,
+            "jit_compile": 35.5118,
+            "jit_analyze": 3.2669,
+            "jit_links": 0.7348,
+            "jit_finalize": 7.4419,
+            "gpu_fence": 0.0029,
+            "jit_emit": 23.7484
+          }
+        },
+        {
+          "frame": 14856,
+          "host_ms": 55.547,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.113,
+          "cpu_thread_unclassified_ms": 48.434,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1247,
+            "jit_backpatch": 13.6976,
+            "throttle": 7.113,
+            "jit_compile": 23.6967,
+            "jit_analyze": 1.0045,
+            "jit_links": 0.5151,
+            "jit_finalize": 2.3614,
+            "jit_emit": 19.905
+          }
+        },
+        {
+          "frame": 14893,
+          "host_ms": 55.1219,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.599,
+          "cpu_thread_unclassified_ms": 54.5229,
+          "cpu_thread_coverage_ms": {
+            "present": 0.0806,
+            "throttle": 0.599,
+            "jit_compile": 0.5261,
+            "jit_analyze": 0.1017,
+            "jit_finalize": 0.0311,
+            "jit_emit": 0.3706
+          }
+        }
+      ]
+    },
+    {
+      "run": "metadata-pool-spans-20260930",
+      "runner_sha256": "d1d1689776db7beb64ae20111bcf1014c3640ad38f3c6ae9772f40357b9f9c4e",
+      "exit_code": 0,
+      "timing": {
+        "average_fps": 29.971147346452984,
+        "frame_ms": {
+          "median": 33.372149999999046,
+          "p95": 36.59069999999964,
+          "p99": 47.45850000000007,
+          "max": 89.8683
+        },
+        "frames_over_50ms": 2,
+        "rolling_1s_fps_min": 28,
+        "emulation_speed_percent": 100.00372831266479
+      },
+      "seconds": 10.8771278,
+      "totals": {
+        "gpu_fence": {
+          "calls": 310,
+          "union_ms": 1.7842,
+          "max_span_ms": 0.1079
+        },
+        "throttle": {
+          "calls": 3995,
+          "union_ms": 2546.2301,
+          "max_span_ms": 5.091
+        },
+        "jit_analyze": {
+          "calls": 7428,
+          "union_ms": 23.5276,
+          "max_span_ms": 0.4397
+        },
+        "jit_emit": {
+          "calls": 7428,
+          "union_ms": 238.2829,
+          "max_span_ms": 2.5887
+        },
+        "jit_finalize": {
+          "calls": 7428,
+          "union_ms": 54.5449,
+          "max_span_ms": 0.504
+        },
+        "jit_compile": {
+          "calls": 7428,
+          "union_ms": 328.2433,
+          "max_span_ms": 2.6415
+        },
+        "jit_backpatch": {
+          "calls": 167,
+          "union_ms": 87.371,
+          "max_span_ms": 1.5615
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 14820,
+          "host_ms": 89.8683,
+          "guest_ms": 50.05,
+          "cpu_thread_wait_union_ms": 8.3773,
+          "cpu_thread_unclassified_ms": 81.491,
+          "cpu_thread_coverage_ms": {
+            "jit_ranges": 0.5761,
+            "present": 0.1282,
+            "jit_backpatch": 2.6983,
+            "throttle": 8.3735,
+            "jit_compile": 47.7545,
+            "jit_analyze": 3.6205,
+            "jit_links": 3.5615,
+            "jit_finalize": 11.19,
+            "gpu_fence": 0.0038,
+            "jit_emit": 31.3565
+          }
+        },
+        {
+          "frame": 14856,
+          "host_ms": 56.5876,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.0672,
+          "cpu_thread_unclassified_ms": 49.5204,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1239,
+            "jit_backpatch": 16.3276,
+            "throttle": 7.0672,
+            "jit_compile": 26.5054,
+            "jit_analyze": 1.0963,
+            "jit_links": 0.1774,
+            "jit_finalize": 1.8795,
+            "jit_emit": 23.0625
+          }
+        },
+        {
+          "frame": 14739,
+          "host_ms": 48.355,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.985,
+          "cpu_thread_unclassified_ms": 40.37,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1788,
+            "throttle": 7.9803,
+            "gpu_fence": 0.0047
+          }
+        }
+      ]
+    },
+    {
+      "run": "metadata-pool-spans-repeat-20260930",
+      "runner_sha256": "d1d1689776db7beb64ae20111bcf1014c3640ad38f3c6ae9772f40357b9f9c4e",
+      "exit_code": 0,
+      "timing": {
+        "average_fps": 29.944071868474754,
+        "frame_ms": {
+          "median": 33.33475000000008,
+          "p95": 36.285000000000124,
+          "p99": 48.22229999999994,
+          "max": 94.95750000000046
+        },
+        "frames_over_50ms": 3,
+        "rolling_1s_fps_min": 27,
+        "emulation_speed_percent": 99.91338646781078
+      },
+      "seconds": 10.9537541,
+      "totals": {
+        "throttle": {
+          "calls": 4021,
+          "union_ms": 2257.9191,
+          "max_span_ms": 4.4768
+        },
+        "jit_analyze": {
+          "calls": 7975,
+          "union_ms": 25.3322,
+          "max_span_ms": 0.445
+        },
+        "jit_emit": {
+          "calls": 7975,
+          "union_ms": 261.8633,
+          "max_span_ms": 1.9006
+        },
+        "jit_finalize": {
+          "calls": 7975,
+          "union_ms": 57.833,
+          "max_span_ms": 0.385
+        },
+        "jit_compile": {
+          "calls": 7975,
+          "union_ms": 358.6358,
+          "max_span_ms": 1.9283
+        },
+        "gpu_fence": {
+          "calls": 310,
+          "union_ms": 1.6004,
+          "max_span_ms": 0.0637
+        },
+        "jit_backpatch": {
+          "calls": 176,
+          "union_ms": 97.2001,
+          "max_span_ms": 1.6283
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 14820,
+          "host_ms": 94.9575,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 9.4818,
+          "cpu_thread_unclassified_ms": 85.4757,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 46.3485,
+            "gpu_fence": 0.0049,
+            "jit_analyze": 3.8436,
+            "present": 0.2233,
+            "jit_finalize": 9.8982,
+            "jit_links": 2.5361,
+            "jit_compile": 61.7474,
+            "throttle": 9.4769,
+            "jit_backpatch": 19.4134
+          }
+        },
+        {
+          "frame": 14821,
+          "host_ms": 77.6337,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.0091,
+          "cpu_thread_unclassified_ms": 77.6246,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 43.013,
+            "gpu_fence": 0.0056,
+            "jit_analyze": 1.657,
+            "present": 0.122,
+            "jit_finalize": 3.8775,
+            "jit_links": 0.4541,
+            "jit_compile": 49.3516,
+            "throttle": 0.0035,
+            "jit_backpatch": 31.5409
+          }
+        },
+        {
+          "frame": 14750,
+          "host_ms": 50.1909,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.3604,
+          "cpu_thread_unclassified_ms": 43.8305,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 11.8734,
+            "gpu_fence": 0.0036,
+            "jit_analyze": 1.4241,
+            "present": 0.1209,
+            "jit_finalize": 3.9409,
+            "jit_links": 1.0381,
+            "jit_compile": 18.1096,
+            "throttle": 6.3568,
+            "jit_backpatch": 0.3621
+          }
+        }
+      ]
+    },
+    {
+      "run": "metadata-pool-restored-spans-20260930",
+      "runner_sha256": "2f279799c0c125be4b4b081d77d1917b9e88040f99f559260c918e00ad208e73",
+      "exit_code": 0,
+      "timing": {
+        "average_fps": 29.969302987845968,
+        "frame_ms": {
+          "median": 33.322549999999396,
+          "p95": 38.566199999999995,
+          "p99": 45.172599999999896,
+          "max": 78.33000000000024
+        },
+        "frames_over_50ms": 2,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 99.9975743027794
+      },
+      "seconds": 11.0112671,
+      "totals": {
+        "throttle": {
+          "calls": 4045,
+          "union_ms": 2569.5352,
+          "max_span_ms": 8.9537
+        },
+        "jit_analyze": {
+          "calls": 9685,
+          "union_ms": 30.7714,
+          "max_span_ms": 0.426
+        },
+        "jit_emit": {
+          "calls": 9685,
+          "union_ms": 223.377,
+          "max_span_ms": 1.5542
+        },
+        "jit_finalize": {
+          "calls": 9685,
+          "union_ms": 61.7208,
+          "max_span_ms": 0.3484
+        },
+        "jit_compile": {
+          "calls": 9685,
+          "union_ms": 330.6934,
+          "max_span_ms": 1.572
+        },
+        "gpu_fence": {
+          "calls": 316,
+          "union_ms": 1.8012,
+          "max_span_ms": 0.2992
+        },
+        "jit_backpatch": {
+          "calls": 79,
+          "union_ms": 41.4905,
+          "max_span_ms": 1.533
+        }
+      },
+      "worst_frames": [
+        {
+          "frame": 14758,
+          "host_ms": 78.33,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.4863,
+          "cpu_thread_unclassified_ms": 70.8437,
+          "cpu_thread_coverage_ms": {
+            "jit_backpatch": 22.2112,
+            "jit_ranges": 0.1997,
+            "jit_emit": 37.9936,
+            "throttle": 7.4833,
+            "jit_links": 1.0446,
+            "jit_analyze": 2.653,
+            "jit_finalize": 5.1797,
+            "jit_compile": 46.7863,
+            "gpu_fence": 0.003,
+            "present": 0.1003
+          }
+        },
+        {
+          "frame": 14828,
+          "host_ms": 59.5638,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 11.475,
+          "cpu_thread_unclassified_ms": 48.0888,
+          "cpu_thread_coverage_ms": {
+            "jit_backpatch": 3.3905,
+            "jit_ranges": 0.1313,
+            "jit_emit": 21.1533,
+            "throttle": 11.475,
+            "jit_links": 0.3707,
+            "jit_analyze": 2.8883,
+            "jit_finalize": 4.6447,
+            "jit_compile": 29.5421,
+            "present": 0.1943
+          }
+        },
+        {
+          "frame": 14736,
+          "host_ms": 45.4868,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 9.03,
+          "cpu_thread_unclassified_ms": 36.4568,
+          "cpu_thread_coverage_ms": {
+            "throttle": 9.03,
+            "present": 0.135
+          }
+        }
+      ]
+    }
+  ],
+  "scope": "Same short guest-timed clear-combat route; JIT, one logical CPU, Vulkan, 3x EFB, experimental formatter on, Cubeb muted, runtime/audio profiling, no screenshots. Not deterministic replay, uninstrumented FPS acceptance or a statistical allocator benchmark. Nested spans overlap and include preemption.",
+  "validation": {
+    "candidate_build": "exit0;39/39 native tests5.60s, including temporary pool lifetime/release checks",
+    "tooling": "139run,138pass,1skip53.784s",
+    "restored_build": "exit0;39/39 native tests5.70s",
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "warnings": "No compiler errors/warnings found; existing CMake deprecation, missing Wayland, long object path and lz4 CMP0069 IPO warning remain. Local LTO ON, source default OFF.",
+    "produced_binary_sha256": {
+      "moderngekko-run.exe": "2f279799c0c125be4b4b081d77d1917b9e88040f99f559260c918e00ad208e73",
+      "moderngekko-port.exe": "d41700015d66c1d914e6f0a6ccd91126449e08d3750af17dd4a8cc607a2c5e45",
+      "moderngekko-module-info.exe": "ac22e8f9aabc9a1ee3a18c62b4e94cd1720751b17c607e3fd391c5ae597bb74e",
+      "ModernGekko.exe": "e942b0598a1f2989e4ebb6871fd2236243440c3aae20fce5e866939b4eae0bb1"
+    }
+  },
+  "limits": [
+    "Candidate did not demonstrate improved compilation/frame tails; keep original implementation.",
+    "No new visual or audible verification. Mixer empty counters do not establish audible quality.",
+    "Default formatter remains OFF; sustained combat pacing, three qualifying repeats and ten-minute varied combat remain unproven."
+  ],
+  "next": "Pursue guarded precompilation feasibility and separate non-compilation stalls. Preserve I-cache/TLB, feature flags, instruction bytes, speculative guards, invalidation and cache lifetime; no generic arbitrary-PC warm calls."
+}

@@ -1,5 +1,39 @@
 # OpenMUA2 sustained combat performance goal
 
+## JIT metadata allocation pool rejected - 2026-09-30
+
+Tested a small-node pool shared by the 64 backpatch metadata hash tables.
+The supported Windows candidate build passed 39/39 native tests in 5.60s,
+including temporary value-lifetime, clear/reuse and allocation-release checks.
+Tooling: 139 run, 138 passed, one skipped in 53.784s.
+Two candidate diagnostics did not demonstrate better compilation or frame tails:
+
+| Run | Compilations | Compile elapsed ms | Worst frame ms | Lowest rolling second |
+| --- | --- | --- | --- | --- |
+| Original prior | 7431 | 291.2170 | 75.1227 | 29 |
+| Pooled first | 7428 | 328.2433 | 89.8683 | 28 |
+| Pooled repeat | 7975 | 358.6358 | 94.9575 | 27 |
+| Original restored | 9685 | 330.6934 | 78.3300 | 29 |
+
+Same short guest-timed clear-combat route, full JIT, one logical CPU, Vulkan,
+3x EFB, experimental formatter ON, Cubeb muted, runtime/audio profiling and
+no captures. Runs are not deterministic; spans include preemption and nest.
+These are diagnostic results, not a controlled proof of allocator causality.
+No new visual or audible validation. No frame-rate gain is claimed.
+
+Rejected the pool change; both edited source/test files restored exactly to HEAD.
+Rebuilt the original implementation using Build.cmd --cpu jit --jobs 2: exit0,
+39/39 native tests in 5.70s. No compiler warnings/errors found; existing CMake
+deprecation, Wayland, long-path and lz4 IPO warnings remain. Local LTO ON,
+source default OFF. Runtime/port/module-info/launcher binaries and hashes recorded
+in evidence/windows-20260930/METADATA-POOL-REJECTED.json. Trial patch/binary and
+proprietary test outputs retained privately in .local; user static work untouched.
+
+Next investigate guarded precompilation and non-compilation stalls, not further
+allocator tuning without new evidence. Formatter remains default OFF; solid-30
+and audio unresolved, three qualifying repeats and ten-minute varied combat
+still required. Goal active/unmet.
+
 ## Clear combat compilation-burst diagnosis - 2026-09-30
 
 One additional diagnostic on the new guest-timed route exited 0: existing JIT
