@@ -1,0 +1,639 @@
+{
+  "schema": 1,
+  "scope": "Tutorial plaza only; process pinned to logical CPU 2 / mask 4, full JIT, Vulkan 3x EFB / 1920x1080 preset, normal clocks, muted Cubeb processing. Formatter and identity cache enabled; backpatch reserve 524288. No screenshots or host input. Guarded memory/timing probes perturb timing; sampled positive-health entities do not prove visual correctness or continuous combat. Runtime profiling off except restored-profile.",
+  "experiment": "Default-off shared forward register-use scan, preserving original exclusive 64-instruction bound and scoring formula; instruction-keyed cache reset each block. Shadow compares each requested count against the old algorithm and aborts on mismatch.",
+  "decision": "Rejected: no consistent worst-frame improvement in two alternating OFF/ON pairs. No accepted source optimization or large gain. Candidate patch/binary retained privately; six allocator source files restored byte-for-byte before supported rebuild.",
+  "shadow_limit": "Completed without reported mismatch; total comparison count was not recorded. This is not exhaustive correctness proof.",
+  "runs": [
+    {
+      "variant": "shadow",
+      "private_run": ".local/automation/plaza-reg-lookahead-shadow-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 72.67199999996228,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16111,
+        "emulated_ticks": 36291855600,
+        "intervals": 1492,
+        "seconds": 49.7829412,
+        "average_fps": 29.9701055027259,
+        "frame_ms": {
+          "median": 33.37044999999961,
+          "p95": 34.070500000005666,
+          "p99": 35.192700000003185,
+          "max": 54.22850000000068
+        },
+        "one_percent_low_fps": 25.23732337659229,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 846,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.05422850000000068,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.78306666666667,
+        "emulation_speed_percent": 100.00025202742876,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1492
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0037833333329378993,
+          "p99": 1.826033333336516,
+          "min": -12.333866666668039,
+          "max": 20.86183333333401
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        4
+      ],
+      "identified_living_opponents": [
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "variant": "off1",
+      "private_run": ".local/automation/plaza-reg-lookahead-off1-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.70299999997951,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16078,
+        "emulated_ticks": 35513478000,
+        "intervals": 1460,
+        "seconds": 48.7152019,
+        "average_fps": 29.970110828997715,
+        "frame_ms": {
+          "median": 33.366399999998464,
+          "p95": 34.0315000000011,
+          "p99": 35.12459999999962,
+          "max": 52.553100000000796
+        },
+        "one_percent_low_fps": 25.84441455681487,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 819,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.052553100000000796,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 48.71533333333334,
+        "emulation_speed_percent": 100.00026979942238,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1460
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.00026666666820551743,
+          "p99": 1.7579333333329479,
+          "min": -10.042866666666663,
+          "max": 19.186433333334126
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        4
+      ],
+      "identified_living_opponents": [
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "variant": "on1",
+      "private_run": ".local/automation/plaza-reg-lookahead-on1-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.46899999998277,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16100,
+        "emulated_ticks": 36024288300,
+        "intervals": 1481,
+        "seconds": 49.41542,
+        "average_fps": 29.97040195145564,
+        "frame_ms": {
+          "median": 33.36610000000029,
+          "p95": 34.01690000000013,
+          "p99": 35.07320000000025,
+          "max": 48.82260000000116
+        },
+        "one_percent_low_fps": 25.143599286122626,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 821,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.41603333333334,
+        "emulation_speed_percent": 100.00124117802366,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1481
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0005666666663822761,
+          "p99": 1.7065333333335793,
+          "min": -10.515566666669764,
+          "max": 15.45593333333449
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        3,
+        4
+      ],
+      "identified_living_opponents": [
+        6,
+        7
+      ],
+      "runner_sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "variant": "off2",
+      "private_run": ".local/automation/plaza-reg-lookahead-off2-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.56199999997625,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16079,
+        "emulated_ticks": 35513478000,
+        "intervals": 1460,
+        "seconds": 48.7154723,
+        "average_fps": 29.969944476962404,
+        "frame_ms": {
+          "median": 33.36104999999989,
+          "p95": 34.07929999999837,
+          "p99": 35.23330000000158,
+          "max": 48.92360000000018
+        },
+        "one_percent_low_fps": 25.560233456948207,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 811,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 48.71533333333334,
+        "emulation_speed_percent": 99.99971473813123,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1460
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.005616666666777292,
+          "p99": 1.8666333333349079,
+          "min": -9.126166666667226,
+          "max": 15.55693333333351
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        4
+      ],
+      "identified_living_opponents": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "variant": "on2",
+      "private_run": ".local/automation/plaza-reg-lookahead-on2-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.76600000000326,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16083,
+        "emulated_ticks": 35610775200,
+        "intervals": 1464,
+        "seconds": 48.8488901,
+        "average_fps": 29.96997469140041,
+        "frame_ms": {
+          "median": 33.35760000000043,
+          "p95": 34.087899999999394,
+          "p99": 35.136099999999004,
+          "max": 49.93460000000027
+        },
+        "one_percent_low_fps": 24.933622541191806,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 788,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 48.848800000000004,
+        "emulation_speed_percent": 99.99981555363937,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1464
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.009066666666238121,
+          "p99": 1.7694333333323349,
+          "min": -13.436766666665614,
+          "max": 16.567933333333603
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        4
+      ],
+      "identified_living_opponents": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "variant": "restored",
+      "private_run": ".local/automation/plaza-reg-lookahead-restored-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 72.68699999997625,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16112,
+        "emulated_ticks": 36316179900,
+        "intervals": 1493,
+        "seconds": 50.130137,
+        "average_fps": 29.782483937755845,
+        "frame_ms": {
+          "median": 33.349999999999994,
+          "p95": 38.06059999999434,
+          "p99": 51.773600000004194,
+          "max": 132.49310000000136
+        },
+        "one_percent_low_fps": 13.406771456375754,
+        "rolling_1s_fps_min": 18,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 768,
+        "frames_over_50ms": 17,
+        "longest_consecutive_over_50ms_seconds": 0.3847346999999992,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.816433333333336,
+        "emulation_speed_percent": 99.37422140564534,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1493
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.01666666666667871,
+          "p99": 18.406933333337523,
+          "min": -15.340666666666793,
+          "max": 99.12643333333469
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        4
+      ],
+      "identified_living_opponents": [
+        3,
+        4,
+        6,
+        7
+      ],
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb"
+    },
+    {
+      "variant": "restored-repeat",
+      "private_run": ".local/automation/plaza-reg-lookahead-restored-repeat-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 79.81200000003446,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16108,
+        "emulated_ticks": 36267531300,
+        "intervals": 1491,
+        "seconds": 50.2789321,
+        "average_fps": 29.65456778267572,
+        "frame_ms": {
+          "median": 33.370299999997854,
+          "p95": 40.91850000000363,
+          "p99": 49.64189999999924,
+          "max": 69.37479999999852
+        },
+        "one_percent_low_fps": 18.51513779150727,
+        "rolling_1s_fps_min": 24,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 796,
+        "frames_over_50ms": 14,
+        "longest_consecutive_over_50ms_seconds": 0.174255500000001,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.749700000000004,
+        "emulation_speed_percent": 98.94740783486132,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1491
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0036333333311849847,
+          "p99": 16.27523333333257,
+          "min": -15.283166666663641,
+          "max": 36.00813333333185
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        3,
+        4
+      ],
+      "identified_living_opponents": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb"
+    },
+    {
+      "variant": "restored-profile",
+      "private_run": ".local/automation/plaza-reg-lookahead-restored-profile-20261001",
+      "runtime_exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 76.84299999999348,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16095,
+        "emulated_ticks": 35926991100,
+        "intervals": 1477,
+        "seconds": 49.2824918,
+        "average_fps": 29.970075498495795,
+        "frame_ms": {
+          "median": 33.35430000000272,
+          "p95": 34.04509999999994,
+          "p99": 35.560600000000164,
+          "max": 60.65599999999982
+        },
+        "one_percent_low_fps": 24.604014784716593,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 793,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.06065599999999982,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.28256666666667,
+        "emulation_speed_percent": 100.00015191331431,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1477
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.012366666663946035,
+          "p99": 2.193933333333495,
+          "min": -15.513666666666994,
+          "max": 27.28933333333315
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "living_heroes": [
+        3,
+        4
+      ],
+      "identified_living_opponents": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb"
+    }
+  ],
+  "builds": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "candidate": {
+      "exit_code": 0,
+      "native_passed": 39,
+      "native_seconds": 7.21
+    },
+    "restored": {
+      "exit_code": 0,
+      "native_passed": 39,
+      "native_seconds": 7.18
+    },
+    "warnings": "Existing CMake deprecation, Wayland availability, object-path-length and lz4 IPO warnings. No compiler/linker warnings or errors found.",
+    "python": "Not rerun: no Python or retained source changes in this experiment; prior checkpoint reports 156 passed and one skipped."
+  },
+  "restored_profile": {
+    "jit_compile": {
+      "calls": 14983,
+      "union_ms": 423.9366,
+      "max_span_ms": 0.9095,
+      "threads": [
+        7770811838399783289
+      ]
+    },
+    "worst_frames": [
+      {
+        "frame": 14836,
+        "host_ms": 60.656,
+        "guest_ms": 33.36666666666667,
+        "cpu_thread_wait_union_ms": 9.7993,
+        "cpu_thread_unclassified_ms": 50.8567,
+        "cpu_thread_coverage_ms": {
+          "jit_instruction": 0.0,
+          "jit_emit": 20.1979,
+          "jit_compile": 30.8754,
+          "gpu_worker": 0.0,
+          "jit_ranges": 0.0,
+          "jit_finalize": 6.7008,
+          "jit_entry_map": 0.0,
+          "shader_compile": 0.0,
+          "jit_analyze": 2.9847,
+          "jit_links": 0.4749,
+          "gpu_present": 0.0,
+          "gpu_fence": 0.0037,
+          "throttle": 9.7956,
+          "gpu_submit": 0.0,
+          "gpu_pacing": 0.0,
+          "gpu_decode_slow": 0.7167,
+          "present": 0.1875,
+          "pipeline_compile": 0.0,
+          "jit_backpatch": 0.1781,
+          "jit_backpatch_rehash": 0.0
+        },
+        "frame_cpu_counters": {
+          "thread_cpu_ns": 46875000,
+          "process_cpu_ns": 46875000,
+          "thread_cycles": 193296196
+        }
+      },
+      {
+        "frame": 14910,
+        "host_ms": 54.3509,
+        "guest_ms": 33.36666666666667,
+        "cpu_thread_wait_union_ms": 4.207,
+        "cpu_thread_unclassified_ms": 50.1439,
+        "cpu_thread_coverage_ms": {
+          "jit_instruction": 0.0,
+          "jit_emit": 18.3608,
+          "jit_compile": 28.1516,
+          "gpu_worker": 0.0,
+          "jit_ranges": 0.1095,
+          "jit_finalize": 5.7724,
+          "jit_entry_map": 0.0,
+          "shader_compile": 0.0,
+          "jit_analyze": 2.7824,
+          "jit_links": 0.5073,
+          "gpu_present": 0.0,
+          "gpu_fence": 0.0027,
+          "throttle": 4.2043,
+          "gpu_submit": 0.0,
+          "gpu_pacing": 0.0,
+          "gpu_decode_slow": 1.8592,
+          "present": 0.0938,
+          "pipeline_compile": 0.0,
+          "jit_backpatch": 0.0,
+          "jit_backpatch_rehash": 0.0
+        },
+        "frame_cpu_counters": {
+          "thread_cpu_ns": 31250000,
+          "process_cpu_ns": 31250000,
+          "thread_cycles": 177791938
+        }
+      },
+      {
+        "frame": 15850,
+        "host_ms": 45.2415,
+        "guest_ms": 33.36666666666667,
+        "cpu_thread_wait_union_ms": 17.7488,
+        "cpu_thread_unclassified_ms": 27.4927,
+        "cpu_thread_coverage_ms": {
+          "jit_instruction": 0.0,
+          "jit_emit": 0.0453,
+          "jit_compile": 0.0725,
+          "gpu_worker": 0.0,
+          "jit_ranges": 0.0,
+          "jit_finalize": 0.0112,
+          "jit_entry_map": 0.0,
+          "shader_compile": 0.0,
+          "jit_analyze": 0.01,
+          "jit_links": 0.0,
+          "gpu_present": 0.0,
+          "gpu_fence": 0.0034,
+          "throttle": 17.7454,
+          "gpu_submit": 0.0,
+          "gpu_pacing": 0.0,
+          "gpu_decode_slow": 0.0,
+          "present": 0.0333,
+          "pipeline_compile": 0.0,
+          "jit_backpatch": 0.0,
+          "jit_backpatch_rehash": 0.0
+        },
+        "frame_cpu_counters": {
+          "thread_cpu_ns": 15625000,
+          "process_cpu_ns": 15625000,
+          "thread_cycles": 68726883
+        }
+      }
+    ],
+    "interpretation": "Worst 60.656 ms frame contains 30.8754 ms of JIT compilation. This run did not reproduce the larger slowdown in two unprofiled restoration checks. Cause of those slowdowns is unresolved; do not dismiss them as host noise or attribute them solely to compilation."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "bytes": 16070656,
+      "sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb"
+    },
+    "moderngekko-port.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "47e93a78e6391eb6c585039c561ee6cff40ebcee8af8d8b6a8b11185f4ff7c25"
+    },
+    "moderngekko-module-info.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "a736a244738bcb1007a1e8094def40b75b200dc83b49bb5f2cb3303a16ddd858"
+    },
+    "ModernGekko.exe": {
+      "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "bytes": 12204032,
+      "sha256": "3dc4199ed0d176aa981a521bc825fd90210d8b17a27b568e00dc2595e8b8cffb"
+    },
+    "dolrecomp.exe": {
+      "path": ".local/build/windows-x64/runtime/dolrecomp.exe",
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    }
+  },
+  "goal": "UNMET. Pacing failures retained; no qualifying repeats or ten-minute acceptance. Audible crackling and visual correctness remain unverified."
+}

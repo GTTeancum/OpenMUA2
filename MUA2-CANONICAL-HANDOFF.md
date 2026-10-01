@@ -1,5 +1,44 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Register lookahead experiment rejected; pacing failures retained - 2026-10-01
+
+Tested sharing the JIT register allocator's forward-use scan while preserving its
+lookahead boundary and scoring formula. A plaza shadow run completed without a
+reported count mismatch (comparison count not recorded). Two unprofiled OFF/ON
+pairs did not show a consistent worst-frame improvement:
+
+| Run | New FPS | P99 ms | Worst ms | Frames >50 ms |
+| --- | --- | --- | --- | --- |
+| OFF 1 | 29.9701 | 35.125 | 52.553 | 1 |
+| ON 1 | 29.9704 | 35.073 | 48.823 | 0 |
+| OFF 2 | 29.9699 | 35.233 | 48.924 | 0 |
+| ON 2 | 29.9700 | 35.136 | 49.935 | 0 |
+| Restored original | 29.7825 | 51.774 | 132.493 | 17 |
+| Restored repeat | 29.6546 | 49.642 | 69.375 | 14 |
+| Restored, profiled | 29.9701 | 35.561 | 60.656 | 2 |
+
+Rejected the candidate; patch/binary remain private. Six allocator source files
+were restored byte-for-byte. Both supported Windows builds passed 39 native
+tests (candidate 7.21s; restored 7.18s). Existing CMake warnings only; no compiler
+or linker errors/warnings. Python was not rerun because no Python or retained
+source changes resulted. The previous Python result remains 156 passed/1 skipped.
+
+All eight routes (including shadow) completed with 15 guarded entity probes each.
+The two unprofiled restoration runs FAILED pacing: rolling one-second minima
+were 18 and 24 FPS. Most larger stalls in the first clustered at seconds 31-33.
+The profiled follow-up's worst frame included 30.8754 ms of JIT compilation, but
+it did not reproduce those larger slowdowns; their cause remains unresolved.
+Do not discard the failures or attribute them solely to first-use compilation.
+
+Plaza only, one logical CPU (2/mask 4), normal clocks, full JIT, Vulkan 3x EFB /
+1920x1080 preset, muted Cubeb, formatter/identity cache enabled, reserve 524288.
+No screenshots or host input. Memory probes and profiling limit timing inference;
+entity counts varied, and these are not equivalent maximum-load acceptance runs.
+No audible or visual correctness claim. No performance optimization shipped.
+Goal UNMET. Detailed timing, entity counts, hashes and restoration results:
+evidence/windows-20260930/PLAZA-REGISTER-LOOKAHEAD-REJECTED.json.
+
+
 ## Continued plaza combat and rejected host PGO - 2026-10-01
 
 Three successive plaza passes in one process completed with 45 entity probes,
