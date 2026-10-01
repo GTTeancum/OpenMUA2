@@ -677,6 +677,10 @@ if(BUILD_TESTING)
     target_include_directories(moderngekko_mua2_action_bindings_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools")
     target_compile_features(moderngekko_mua2_action_bindings_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.mua2_action_bindings COMMAND moderngekko_mua2_action_bindings_test)
+    add_executable(moderngekko_mua2_interaction_context_test tests/mua2_interaction_context_test.cpp)
+    target_include_directories(moderngekko_mua2_interaction_context_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+    target_compile_features(moderngekko_mua2_interaction_context_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.mua2_interaction_context COMMAND moderngekko_mua2_interaction_context_test)
 
     add_executable(moderngekko_frontend_config_test
         tests/frontend_config_test.cpp

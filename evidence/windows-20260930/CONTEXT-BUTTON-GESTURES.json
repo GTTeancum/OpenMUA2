@@ -1,0 +1,304 @@
+{
+  "date": "2026-10-01",
+  "scope": "Opt-in contextual A/B gesture bridge; OPENMUA2_CONTEXT_X=1, default OFF",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 43,
+    "tests_failed": 0,
+    "test_seconds": 8.08,
+    "compiler_linker_warnings_errors": 0,
+    "existing_cmake_warnings": [
+      "CMP0080 OLD behavior",
+      "Wayland unavailable on Windows",
+      "zlib-ng/lz4 minimum CMake version deprecations",
+      "object directory length warnings",
+      "lz4 CMP0069 IPO policy"
+    ],
+    "private_log": ".local/logs/context-gesture-build.log"
+  },
+  "behavior": [
+    "X uses existing normalized grab/use chord.",
+    "Within verified human-owned generic_sequence targeting a live CCoopEntity, A maps light to shake, B maps heavy to lift; those attack outputs are consumed.",
+    "Repeated actual button presses remain necessary; no automatic gesture progress.",
+    "Context requires exact executable/evaluator identity, object type, live full handles, current string generation, positive health and unambiguous input-port ownership.",
+    "Outside that context the new gesture bridge does not modify output."
+  ],
+  "runs": [
+    {
+      "private_run": ".local/automation/context-statue-live-buttons-20261001",
+      "mission_flag_values": [
+        1,
+        1,
+        1,
+        3,
+        3
+      ],
+      "context_sequence": [
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "selected_action_snapshots": [
+        {
+          "snapshot": "013",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "014",
+          "selected_actions": [
+            11,
+            21
+          ]
+        },
+        {
+          "snapshot": "015",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "029",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "030",
+          "selected_actions": [
+            56
+          ]
+        },
+        {
+          "snapshot": "044",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "045",
+          "selected_actions": [
+            58
+          ]
+        },
+        {
+          "snapshot": "046",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "060",
+          "selected_actions": []
+        }
+      ],
+      "exit_code": 0,
+      "original_state_sha256": "d5facae30bbf6018082123787390d716cd53f9a2bad0f51ed0a7f10c5b57fe87",
+      "result_sha256": "2a57628ae9f171721c4c7949678038c5a97d05cfa8c18738dd00c6356cc3f1af"
+    },
+    {
+      "private_run": ".local/automation/context-statue-live-buttons-repeat-20261001",
+      "mission_flag_values": [
+        1,
+        1,
+        1,
+        3,
+        3
+      ],
+      "context_sequence": [
+        false,
+        true,
+        true,
+        false,
+        false
+      ],
+      "selected_action_snapshots": [
+        {
+          "snapshot": "013",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "014",
+          "selected_actions": [
+            11,
+            21
+          ]
+        },
+        {
+          "snapshot": "015",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "029",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "030",
+          "selected_actions": [
+            56
+          ]
+        },
+        {
+          "snapshot": "044",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "045",
+          "selected_actions": [
+            58
+          ]
+        },
+        {
+          "snapshot": "046",
+          "selected_actions": []
+        },
+        {
+          "snapshot": "060",
+          "selected_actions": []
+        }
+      ],
+      "exit_code": 0,
+      "original_state_sha256": "d5facae30bbf6018082123787390d716cd53f9a2bad0f51ed0a7f10c5b57fe87",
+      "result_sha256": "c3aa289b679c0909dc5781ce3a104dd1c71c05a19fe2fbd855b7d9c2b53aafa4"
+    }
+  ],
+  "route": "Original ready state, X300ms, neutral600ms, eight A100ms presses separated by seven neutral100ms intervals, B800ms with neutral settling; fixed guest start390000000000.",
+  "routing_probe": {
+    "private_run": ".local/automation/context-gesture-routing-20261001",
+    "scope": "Active action routing only, not contextual interaction completion",
+    "snapshots": 14,
+    "mapping": {
+      "a-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "a": [
+        [
+          9
+        ],
+        [],
+        [],
+        []
+      ],
+      "dpad_up-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "dpad_up": [
+        [
+          32
+        ],
+        [],
+        [],
+        []
+      ],
+      "lb-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "lb": [
+        [
+          12
+        ],
+        [],
+        [],
+        []
+      ],
+      "lt-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "lt": [
+        [
+          14
+        ],
+        [],
+        [],
+        []
+      ],
+      "neutral-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "neutral": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "rt-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "rt": [
+        [
+          13
+        ],
+        [],
+        [],
+        []
+      ],
+      "x-release": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "x": [
+        [
+          11,
+          21
+        ],
+        [],
+        [],
+        []
+      ]
+    },
+    "release_and_port_isolation_pass": true
+  },
+  "execution": {
+    "cpu": "JIT",
+    "logical_processor": 2,
+    "affinity_mask": 4,
+    "normal_clocks": true,
+    "graphics": "Vulkan 3x EFB",
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false
+  },
+  "limitations": [
+    "No visual, audible or physical-controller acceptance. No new FPS result.",
+    "Only plaza statue completion validated; other interactions, menus, multiplayer and holding a button across context exit remain unverified.",
+    "Experimental default OFF. v4 default controls and complete MUA1-style remap remain unfinished.",
+    "Earlier default-off LB comparison failures remain recorded; this checkpoint is not a claim that all old routes pass.",
+    "LT + indicated face button remains the fusion target, not implemented by this gesture patch."
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "sha256": "0db578e4491cfcc04e4ec3190bb0973dafeb6b9fbb9f3c5c07c776d413d63fa8",
+      "bytes": 16122880
+    },
+    "moderngekko-port.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "sha256": "5741f76bee418eca5768b53d20788b88bfcdc34ecf2d0ab83f8b25a4dee82fdd",
+      "bytes": 243712
+    },
+    "ModernGekko.exe": {
+      "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "sha256": "f0719f542ba37551c2d91db174a5e5b9d99fcda6e265d74c9b74cefa851d3536",
+      "bytes": 12204032
+    },
+    "moderngekko_mua2_interaction_context_test.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko_mua2_interaction_context_test.exe",
+      "sha256": "99befe7f07de59440a9c26224550cd0aee07648b04abdba82c852fbe730f7fdc",
+      "bytes": 30720
+    }
+  }
+}

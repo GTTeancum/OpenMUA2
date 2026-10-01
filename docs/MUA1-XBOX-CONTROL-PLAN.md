@@ -95,3 +95,27 @@ Post-evaluator normalization now passes two X statue interactions and the
 14-snapshot value/routing probe. Two default-off LB comparisons failed; their
 cause remains unresolved. Keep the experiment off and the full remap open.
 See evidence/windows-20260930/CONTEXT-X-NORMALIZED.json.
+
+## Experimental context-aware button gestures - 2026-10-01
+
+The opt-in OPENMUA2_CONTEXT_X=1 adapter now replaces shake/lift with A/B only
+inside a verified human-owned co-op interaction. X enters using the existing
+normalized grab/use chord. Repeated A presses supply shake edges; B supplies
+lift. The corresponding light/heavy attacks are consumed inside this context.
+The adapter checks live handles, owner, actor/node/target types and current
+string generation. It remains OFF by default; v4 default controls are unchanged.
+
+Supported Windows JIT build passed: 43/43 tests, 8.08s, exit 0. No compiler/linker
+warnings or errors; existing CMake warnings remain. Two original-save plaza runs
+completed the statue interaction (mission flag 1 -> 3), with context entered and
+exited. Nine input snapshots per run confirm gesture routing and release. A
+separate 14-snapshot probe preserves ordinary A attack outside the interaction,
+release and port isolation; it does not establish the complete Xbox layout.
+
+Only process-local input was used, on one logical CPU with normal clocks,
+Vulkan 3x and Null audio. No screenshots, visual/audio acceptance or FPS sweep.
+Other interactions, menus, multiplayer and holding inputs across context exit
+remain unverified. Historical default-off LB failures remain unresolved.
+LT + indicated face button remains the fusion target; this patch does not
+implement fusion selection. Full control migration, audio and performance remain
+open. Evidence and binary hashes: evidence/windows-20260930/CONTEXT-BUTTON-GESTURES.json.

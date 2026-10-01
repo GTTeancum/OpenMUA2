@@ -5,6 +5,7 @@
 #include "Common/Crypto/SHA1.h"
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
+#include "mua2_interaction_context.hpp"
 #include "Common/HookableEvent.h"
 #include "Common/IOFile.h"
 #include "Common/StringUtil.h"
@@ -111,11 +112,25 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
       overlaps(active_address, 20, values_address, value_bytes) ||
       overlaps(values_address, value_bytes, object, 4 + moderngekko::controls::DescriptorTableSize))
     return;
-  const auto* active = memory.GetPointerForRange(active_address, 20);
+  auto* active = memory.GetPointerForRange(active_address, 20);
   auto* values = memory.GetPointerForRange(values_address, value_bytes);
-  if (active && values)
-    moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
-                                            std::span<u8>(values, value_bytes));
+  if (!active || !values ||
+      !moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
+                                               std::span<u8>(values, value_bytes)))
+    return;
+  constexpr u32 first_input = 0x81313274, input_stride = 0xbe00;
+  if (object < first_input || object >= first_input + 4 * input_stride ||
+      (object - first_input) % input_stride)
+    return;
+  const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto* bytes = memory.GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  const bool context = moderngekko::controls::HasCoopInteraction(
+      read, (object - first_input) / input_stride);
+  moderngekko::controls::ApplyInteractionButtons(
+      context, std::span<const u8>(data + 4, moderngekko::controls::DescriptorTableSize),
+      std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
 
 }
 
