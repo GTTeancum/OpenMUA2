@@ -206,32 +206,54 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
   {
     const u32 save_area = Common::swap32(arguments + 8);
     u32 general = arguments[0], floating_index = arguments[1];
+    u32 overflow = Common::swap32(arguments + 4);
     bool used_float = false;
     if (!(save_area & 7) && save_area == state.gpr[1] + 8 && general <= 8 && floating_index <= 8)
     {
       length = JitCommon::TryBasicFormat({format, 512}, candidate.expected,
           [&](u8 type, std::span<u8> target) -> std::optional<u32> {
-        if (type == 'f')
+        const bool is_float = type == 'f';
+        u32& index = is_float ? floating_index : general;
+        const u32 size = is_float ? 8 : 4;
+        u32 source_address = save_area + (is_float ? 32 : 0) + index * size;
+        if (index == 8)
         {
-          if (floating_index == 8 || state.fpscr.RN != 0) return {};
-          const auto* source = DirectRAM(system, save_area + 32 + floating_index * 8, 8);
-          if (!source) return {};
+          // EABI overflow arguments are naturally aligned in the caller's
+          // parameter area. Keep this experiment within a bounded stack range.
+          const u64 aligned = (u64{overflow} + size - 1) & ~u64{size - 1};
+          if (aligned < u64{state.gpr[1]} + 0x98 ||
+              aligned + size > u64{state.gpr[1]} + 0x198 ||
+              aligned + size > 0xffffffffu) return {};
+          source_address = static_cast<u32>(aligned);
+          if (!JitCommon::SimpleFormatRangesDisjoint(source_address, size, destination, 1024) ||
+              !JitCommon::SimpleFormatRangesDisjoint(source_address, size, format_address, 512))
+            return {};
+          overflow = source_address + size;
+        }
+        else
+          ++index;
+        const auto* source = DirectRAM(system, source_address, size);
+        if (!source) return {};
+        if (is_float)
+        {
+          if (state.fpscr.RN != 0) return {};
           const std::array<double, 1> value{std::bit_cast<double>(Common::swap64(source))};
           const std::array<u8, 3> pattern{'%', 'f', 0};
           const auto result = JitCommon::TryFixedFloatFormat(pattern, value, target);
-          if (result) { ++floating_index; used_float = true; }
+          if (result) used_float = true;
           return result;
         }
-        if (general == 8) return {};
-        const auto* source = DirectRAM(system, save_area + general * 4, 4);
-        if (!source) return {};
         const u32 value = Common::swap32(source);
-        ++general;
-        if (type == 'd')
+        if (type == 'd' || type == 'x' || type == 'X')
         {
           auto* begin = reinterpret_cast<char*>(target.data());
-          const auto result = std::to_chars(begin, begin + target.size(), std::bit_cast<s32>(value));
+          const auto result = type == 'd' ?
+              std::to_chars(begin, begin + target.size(), std::bit_cast<s32>(value)) :
+              std::to_chars(begin, begin + target.size(), value, 16);
           if (result.ec != std::errc{}) return {};
+          if (type == 'X')
+            for (auto* digit = begin; digit != result.ptr; ++digit)
+              if (*digit >= 'a' && *digit <= 'f') *digit -= 'a' - 'A';
           return static_cast<u32>(result.ptr - begin);
         }
         const auto* text = DirectRAM(system, value, 512);
@@ -247,6 +269,8 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
       {
         candidate.argument_state[0] = static_cast<u8>(general);
         candidate.argument_state[1] = static_cast<u8>(floating_index);
+        const u32 overflow_be = Common::swap32(overflow);
+        std::memcpy(candidate.argument_state.data() + 4, &overflow_be, 4);
         floating = used_float;
       }
     }
@@ -306,6 +330,7 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
   std::memcpy(output, candidate.expected.data(), *length + 1);
   arguments[0] = candidate.argument_state[0];
   arguments[1] = candidate.argument_state[1];
+  std::memcpy(arguments + 4, candidate.argument_state.data() + 4, 4);
   state.gpr[3] = *length;
   ++m_replaced;
   return true;

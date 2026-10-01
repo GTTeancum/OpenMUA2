@@ -88,7 +88,7 @@ inline std::optional<u32> TryFixedFloatFormat(std::span<const u8> format,
   std::memcpy(output.data(), temporary.data(), position + 1);
   return static_cast<u32>(position);
 }
-// Transactional output for bare %s, %d, %f and %%. The reader owns argument
+// Transactional output for bare %s, %d, %f, %x/%X, %08x/%08X and %%. The reader owns argument
 // validation and speculative cursor state; it must not mutate guest memory.
 template <typename Reader>
 std::optional<u32> TryBasicFormat(std::span<const u8> format, std::span<u8> output,
@@ -111,13 +111,30 @@ std::optional<u32> TryBasicFormat(std::span<const u8> format, std::span<u8> outp
       continue;
     }
     if (++i == format.size()) return {};
+    bool zero_pad_hex = false;
+    if (format[i] == '0')
+    {
+      if (i + 2 >= format.size() || format[i + 1] != '8' ||
+          (format[i + 2] != 'x' && format[i + 2] != 'X')) return {};
+      zero_pad_hex = true;
+      i += 2;
+    }
     const u8 type = format[i];
     if (type == '%') { temporary[position++] = '%'; continue; }
-    if (type != 's' && type != 'd' && type != 'f') return {};
+    if (type != 's' && type != 'd' && type != 'f' && type != 'x' && type != 'X') return {};
     const auto capacity = std::min(temporary.size(), output.size()) - position - 1;
     const auto length = reader(type, std::span<u8>(temporary.data() + position, capacity));
     if (!length || *length > capacity) return {};
-    position += *length;
+    if (zero_pad_hex)
+    {
+      if (*length > 8 || capacity < 8) return {};
+      std::memmove(temporary.data() + position + 8 - *length,
+                   temporary.data() + position, *length);
+      std::memset(temporary.data() + position, '0', 8 - *length);
+      position += 8;
+    }
+    else
+      position += *length;
   }
   return {};
 }

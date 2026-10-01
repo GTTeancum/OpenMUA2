@@ -1,5 +1,53 @@
 # Current status — GitHub main
 
+## Bounded formatter spill experiment - 2026-10-01
+
+Plaza-only, no screenshots. Added guarded EABI stack-overflow argument reads and
+bare/8-digit hexadecimal formatting to the existing DEFAULT-OFF formatter
+experiment. Unsupported formats still fall back; original code/caller hashes,
+float restrictions and transactional output protections remain. This avoids
+some formatting work without changing clocks, effects or the one-CPU constraint.
+
+Supported Windows JIT build succeeded with local LTO enabled: all 39 native tests
+passed (8.20s); Python tooling 141 passed, 1 skipped (50.301s). Existing CMake
+warnings cover deprecations, unavailable Wayland, long object paths and lz4 IPO
+policy; no compiler/linker errors. Current moderngekko-run.exe is 16,064,512 bytes,
+SHA256 7a4e0b314737c8ab9bf32673787ce91c8a7887323fb9efa0f0ca7175653582db.
+Other runtime executable hashes/sizes are recorded in the evidence JSON.
+
+Shadow run: 1,803,814 completed comparisons, zero output/FPSCR/preserved-ABI
+mismatches, one pending at shutdown (unverified). This is scoped evidence, not
+universal correctness. Three replacement-mode repeats and one trace exited 0:
+
+| Run | Seconds | New FPS | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Spill 1 | 46.682 | 29.969 | 43.093 | 73.992 | 7 | 29 |
+| Spill 2 | 46.947 | 29.970 | 43.580 | 115.656 | 4 | 28 |
+| Spill 3 | 46.781 | 29.970 | 49.490 | 69.252 | 12 | 29 |
+| Spill spans | 46.614 | 29.969 | 48.771 | 67.529 | 10 | 29 |
+
+Same intact-statue plaza state/route, Vulkan3x, whole-process affinity mask1,
+normal clocks/speed, Cubeb Volume0, formatter explicitly ON; two-second warmup.
+These are short diagnostic runs, not qualifying acceptance runs. Earlier repeats
+had 11 frames >50ms each; improvement is inconsistent and the worst new stall
+is larger. The old binary control failed twice before combat with 0x80000003
+(KERNELBASE breakpoint); cause unresolved. Preserve those failures. Historical
+runs therefore are not a contemporaneous controlled A/B result.
+
+Trace: 13,295 JIT compilations / 501.490ms versus prior 14,295 / 591.331ms;
+measured throttle time 12.985s versus 9.088s. These observations suggest reduced
+work but do not establish a causal FPS gain. The worst new trace frame includes
+39.052ms JIT compilation; another 63.800ms frame includes none. Nested spans
+must not be summed. First-use compilation and non-compilation stalls remain.
+
+No fresh visual or audible validation; muted audio telemetry cannot establish
+whether crackling is fixed. No further screenshots. Goal remains UNMET: robust
+frame pacing and ten-minute plaza combat acceptance are outstanding. Next isolate
+remaining JIT bursts and non-JIT stalls, retaining plaza-only/no-capture scope.
+Evidence: evidence/windows-20260930/PLAZA-FORMATTER-SPILL.json.
+
+
+
 ## Plaza timing repeats and hitch attribution - 2026-10-01
 
 Current runner 2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d,

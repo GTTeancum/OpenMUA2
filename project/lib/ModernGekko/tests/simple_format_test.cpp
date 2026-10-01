@@ -127,5 +127,38 @@ int main()
   for (u32 i = 0; i < 8; ++i)
     if (JitCommon::SimpleFormatPreservedStateChanged(0, 0, 0, u32{1} << i) !=
         (i >= 2 && i <= 4)) return 17;
+  // Compare hexadecimal case/padding and unsigned boundaries with libc.
+  for (const auto pattern : {"%x", "%X", "%08x", "%08X", "[%08X]"})
+  {
+    for (u32 value : {0u, 1u, 0xabcdefu, 0x80000000u, 0xffffffffu})
+    {
+      std::array<u8, 32> actual, expected;
+      actual.fill(0xa5); expected.fill(0xa5);
+      const auto result = JitCommon::TryBasicFormat(
+          {reinterpret_cast<const u8*>(pattern), std::strlen(pattern) + 1}, actual,
+          [&](u8 type, std::span<u8> target) -> std::optional<u32> {
+            auto* first = reinterpret_cast<char*>(target.data());
+            const auto converted = std::to_chars(first, first + target.size(), value, 16);
+            if (converted.ec != std::errc{}) return {};
+            if (type == 'X')
+              for (auto* digit = first; digit != converted.ptr; ++digit)
+                if (*digit >= 'a' && *digit <= 'f') *digit -= 'a' - 'A';
+            return static_cast<u32>(converted.ptr - first);
+          });
+      const int reference = std::snprintf(reinterpret_cast<char*>(expected.data()),
+                                         expected.size(), pattern, value);
+      if (!result || *result != reference || actual != expected) return 18;
+    }
+  }
+  // Padding must fit transactionally even when the unpadded value would fit.
+  for (const auto pattern : {"%08x", "%08X", "%0", "%08", "%04x", "%08d"})
+  {
+    output = original;
+    if (JitCommon::TryBasicFormat(
+        {reinterpret_cast<const u8*>(pattern), std::strlen(pattern) + 1}, output,
+        [](u8, std::span<u8> target) -> std::optional<u32> {
+          target[0] = '1'; return 1;
+        }) || output != original) return 19;
+  }
   return 0;
 }
