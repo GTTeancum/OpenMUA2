@@ -1,0 +1,764 @@
+{
+  "restored_frame_min": 12500,
+  "commands": [
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/00-start.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2500,
+      "path": "holds/001.txt",
+      "left_left": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/002.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/01-approach.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1500,
+      "path": "holds/003.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/004.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/02-charged-heavy.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/005.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/006.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/007.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/008.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/009.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/03-power-heavy.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/010.txt",
+      "x": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/011.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/012.txt",
+      "right_right": 1
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/04-interact-camera.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/013.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/014.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/015.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/016.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/017.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/018.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/019.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/020.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/021.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/022.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/023.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 180,
+      "path": "holds/024.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/025.txt",
+      "rb": 1,
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 500,
+      "path": "holds/026.txt",
+      "lb": 1
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/05-combat.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/027.txt",
+      "rt": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/028.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/029.txt",
+      "left_up": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/030.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/031.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/032.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/033.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2000,
+      "path": "holds/034.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/035.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/036.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/037.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/038.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/039.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/040.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/041.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/042.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/043.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/044.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/045.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/046.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/06-hero-cycle.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/047.txt",
+      "rt": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/048.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/049.txt",
+      "left_left": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/050.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/051.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/052.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/053.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2000,
+      "path": "holds/054.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/055.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/056.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/057.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/058.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/059.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/060.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/061.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/062.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/063.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/064.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/065.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/066.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/07-hero-cycle.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/067.txt",
+      "rt": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/068.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/069.txt",
+      "left_down": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/070.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/071.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/072.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/073.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2000,
+      "path": "holds/074.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/075.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/076.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/077.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/078.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/079.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/080.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/081.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/082.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/083.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/084.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/085.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/086.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/08-hero-cycle.png"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/087.txt",
+      "rt": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/088.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/089.txt",
+      "left_right": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1000,
+      "path": "holds/090.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1200,
+      "path": "holds/091.txt",
+      "b": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 250,
+      "path": "holds/092.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 750,
+      "path": "holds/093.txt",
+      "rb": 1,
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 2000,
+      "path": "holds/094.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/095.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/096.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/097.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/098.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/099.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/100.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/101.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/102.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/103.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/104.txt"
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/105.txt",
+      "a": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 200,
+      "path": "holds/106.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/09-hero-cycle.png"
+    },
+    {
+      "command": "read_timing",
+      "path": "measurement-end.txt"
+    },
+    {
+      "command": "save_state",
+      "path": "extended-combat.sav"
+    }
+  ]
+}

@@ -1,0 +1,312 @@
+{
+  "schema": 1,
+  "source_checkpoint": "7594ae2adbc18645c5911e72cf828175521acbb4",
+  "route": "tools/routes/xbox-timed-hero-combat.json",
+  "runs": {
+    "timed-extended-visual-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "2f279799c0c125be4b4b081d77d1917b9e88040f99f559260c918e00ad208e73",
+      "simple_format": "on",
+      "screenshots": true,
+      "holds": 106,
+      "hold_guest_seconds": 47.46,
+      "maximum_release_lateness_cycles": 72,
+      "all_completed": true
+    },
+    "timed-extended-spans-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "2f279799c0c125be4b4b081d77d1917b9e88040f99f559260c918e00ad208e73",
+      "simple_format": "on",
+      "screenshots": false,
+      "holds": 106,
+      "hold_guest_seconds": 47.46,
+      "maximum_release_lateness_cycles": 69,
+      "all_completed": true,
+      "audio": {
+        "interior_seconds": 46,
+        "dma_empty_dequeues": 1,
+        "stream_empty_dequeues": 1,
+        "max_callback_gap_ms": 11.9301
+      }
+    },
+    "timed-extended-shadow-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "2f279799c0c125be4b4b081d77d1917b9e88040f99f559260c918e00ad208e73",
+      "simple_format": "shadow",
+      "screenshots": false,
+      "holds": 106,
+      "hold_guest_seconds": 47.46,
+      "maximum_release_lateness_cycles": 107,
+      "all_completed": true,
+      "audio": {
+        "interior_seconds": 46,
+        "dma_empty_dequeues": 6,
+        "stream_empty_dequeues": 3,
+        "max_callback_gap_ms": 15.9014
+      },
+      "formatter_summary": "Simple formatter: mode=shadow entries=1988118 eligible=1845050 replaced=0 compared=1845049 mismatches=0 guard_rejects=8158 unsupported=134910 abandoned=0 pending=1 floating=710670 fpscr_mismatches=0 abi_mismatches=0 changed_gpr=00001ff9 changed_ps0=0000001f changed_ps1=00000003 changed_cr=23"
+    }
+  },
+  "timing_analysis": {
+    "whole_after_2s": {
+      "timing": {
+        "average_fps": 29.970178131435777,
+        "frame_ms": {
+          "median": 33.34940000000175,
+          "p95": 35.76289999999993,
+          "p99": 40.92890000000082,
+          "max": 67.81370000000031
+        },
+        "frames_over_50ms": 5,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 100.00049436522406
+      },
+      "seconds": 46.7131024,
+      "totals": {
+        "throttle": {
+          "calls": 17159,
+          "union_ms": 14938.1109,
+          "max_span_ms": 4.9906
+        },
+        "gpu_fence": {
+          "calls": 1317,
+          "union_ms": 6.9833,
+          "max_span_ms": 0.1065
+        },
+        "jit_emit": {
+          "calls": 13007,
+          "union_ms": 319.1213,
+          "max_span_ms": 3.3982
+        },
+        "jit_compile": {
+          "calls": 13007,
+          "union_ms": 477.1565,
+          "max_span_ms": 3.4218
+        },
+        "present": {
+          "calls": 1400,
+          "union_ms": 171.2509,
+          "max_span_ms": 1.0666
+        }
+      },
+      "worst": [
+        {
+          "frame": 14820,
+          "host_ms": 67.8137,
+          "guest_ms": 50.05,
+          "cpu_thread_wait_union_ms": 13.8631,
+          "cpu_thread_unclassified_ms": 53.9506,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 21.7489,
+            "jit_finalize": 6.4165,
+            "present": 0.1339,
+            "jit_compile": 31.6121,
+            "jit_analyze": 2.619,
+            "gpu_fence": 0.0036,
+            "throttle": 13.8595,
+            "jit_backpatch": 1.8387,
+            "jit_links": 0.3386
+          }
+        },
+        {
+          "frame": 15412,
+          "host_ms": 53.2186,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.0611,
+          "cpu_thread_unclassified_ms": 47.1575,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1167,
+            "gpu_fence": 0.0052,
+            "throttle": 6.0559
+          }
+        }
+      ]
+    },
+    "opening_after_2s": {
+      "timing": {
+        "average_fps": 29.96170306143535,
+        "frame_ms": {
+          "median": 33.33414999999995,
+          "p95": 36.43280000000004,
+          "p99": 44.763200000000225,
+          "max": 67.81370000000031
+        },
+        "frames_over_50ms": 3,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 99.97221588165596
+      },
+      "seconds": 10.8805564,
+      "totals": {
+        "throttle": {
+          "calls": 3996,
+          "union_ms": 2519.2913,
+          "max_span_ms": 4.9906
+        },
+        "gpu_fence": {
+          "calls": 314,
+          "union_ms": 1.8644,
+          "max_span_ms": 0.0419
+        },
+        "jit_emit": {
+          "calls": 7555,
+          "union_ms": 198.9884,
+          "max_span_ms": 3.3982
+        },
+        "jit_compile": {
+          "calls": 7555,
+          "union_ms": 286.0336,
+          "max_span_ms": 3.4218
+        },
+        "present": {
+          "calls": 326,
+          "union_ms": 43.9165,
+          "max_span_ms": 0.5641
+        }
+      },
+      "worst": [
+        {
+          "frame": 14820,
+          "host_ms": 67.8137,
+          "guest_ms": 50.05,
+          "cpu_thread_wait_union_ms": 13.8631,
+          "cpu_thread_unclassified_ms": 53.9506,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 21.7489,
+            "jit_finalize": 6.4165,
+            "present": 0.1339,
+            "jit_compile": 31.6121,
+            "jit_analyze": 2.619,
+            "gpu_fence": 0.0036,
+            "throttle": 13.8595,
+            "jit_backpatch": 1.8387,
+            "jit_links": 0.3386
+          }
+        },
+        {
+          "frame": 14907,
+          "host_ms": 53.1428,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 8.4188,
+          "cpu_thread_unclassified_ms": 44.724,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 17.3298,
+            "jit_finalize": 1.978,
+            "present": 0.1071,
+            "jit_compile": 21.0757,
+            "jit_analyze": 1.3404,
+            "gpu_fence": 0.0154,
+            "throttle": 8.4034,
+            "jit_backpatch": 11.2409,
+            "jit_links": 0.107
+          }
+        }
+      ]
+    },
+    "hero_cycles": {
+      "timing": {
+        "average_fps": 29.972751587341854,
+        "frame_ms": {
+          "median": 33.35359999999987,
+          "p95": 35.597600000000895,
+          "p99": 39.29880000000008,
+          "max": 53.21859999999923
+        },
+        "frames_over_50ms": 2,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 100.00908112976401
+      },
+      "seconds": 35.832546,
+      "totals": {
+        "throttle": {
+          "calls": 13163,
+          "union_ms": 12418.8196,
+          "max_span_ms": 4.975
+        },
+        "jit_emit": {
+          "calls": 5452,
+          "union_ms": 120.1329,
+          "max_span_ms": 1.4638
+        },
+        "jit_compile": {
+          "calls": 5452,
+          "union_ms": 191.1229,
+          "max_span_ms": 1.4954
+        },
+        "gpu_fence": {
+          "calls": 1003,
+          "union_ms": 5.1189,
+          "max_span_ms": 0.1065
+        },
+        "present": {
+          "calls": 1074,
+          "union_ms": 127.3344,
+          "max_span_ms": 1.0666
+        }
+      },
+      "worst": [
+        {
+          "frame": 15412,
+          "host_ms": 53.2186,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.0611,
+          "cpu_thread_unclassified_ms": 47.1575,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1167,
+            "gpu_fence": 0.0052,
+            "throttle": 6.0559
+          }
+        },
+        {
+          "frame": 15232,
+          "host_ms": 51.8684,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 4.2137,
+          "cpu_thread_unclassified_ms": 47.6547,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 11.2133,
+            "jit_finalize": 3.544,
+            "present": 0.1036,
+            "jit_compile": 17.0198,
+            "jit_analyze": 1.4644,
+            "throttle": 4.2137,
+            "jit_backpatch": 0.1898,
+            "jit_ranges": 0.1803
+          }
+        }
+      ]
+    },
+    "holds": {
+      "count": 106,
+      "seconds": 47.46,
+      "max_lateness_cycles": 69
+    }
+  },
+  "visual_review": {
+    "all_ten_captures_inspected_sequentially": true,
+    "observations": [
+      "00: Spider-Man on street, enemies and HUD, valid restore image.",
+      "01: visible curbside approach and enemies.",
+      "02: kick pose and damage/effects.",
+      "03: spinning kick and bright hit effect among team/enemies.",
+      "04: rotated camera, enemies and effects.",
+      "05: web/hit effects in crowd, reduced health.",
+      "06: Captain America selected with green ring/HUD, attacking amid enemies.",
+      "07: Iron Man selected and engaged; Spider-Man HUD red, so do not claim uninterrupted health for every hero.",
+      "08: Wolverine selected, hit effects and enemies visible.",
+      "09: Spider-Man selected again, visible kick with enemies/debris; street/building/HUD intact."
+    ],
+    "limits": "Discrete captures establish observed combat flow and hero cycling, not every intermediate animation, deterministic world equivalence or ten-minute sustained combat."
+  },
+  "audio": "Cubeb enabled, Volume0; empty dequeues are mixer diagnostics, not audible-glitch counts. No audible/device-output verification.",
+  "interpretation": [
+    "Later hero cycles still include a53.2186ms frame with zero measured JIT compilation and only6.0611ms traced waits.",
+    "A second late51.8684ms frame includes17.0198ms compilation. Compilation prewarming alone cannot explain/fix every stall.",
+    "Current wait timers omit CPU-side graphics FIFO decoding in FifoManager::RunGpuOnCpu; add bounded profiling there before attributing all unclassified time to guest execution.",
+    "Shadow1845049 completed comparisons have zero output/FPSCR/ABI mismatches;1pending at shutdown remains unverified. No promotion of default-off formatter."
+  ],
+  "build": "No runtime/source change; reused previous supported Windows build39/39 native pass. No new build claim.",
+  "goal": "active/unmet; no new FPS improvement claim; three qualifying repeats and ten-minute varied combat missing."
+}

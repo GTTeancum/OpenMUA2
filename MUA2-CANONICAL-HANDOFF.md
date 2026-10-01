@@ -9,6 +9,37 @@
 Linux container's 52-object checkpoint remains historical and is not a blocker
 for the Windows workspace.
 
+## Extended hero combat and recurring stalls - 2026-10-01
+
+Added tools/routes/xbox-timed-hero-combat.json: 106 timed holds totaling 47.46
+guest seconds, extending the visible route with RT hero cycling, movement,
+light/heavy attacks, powers and block inputs. Visual, separate timing/profile,
+and formatter-shadow runs all exited 0. All ten visual captures inspected in
+order: active control cycles Spider-Man -> Captain America -> Iron Man ->
+Wolverine -> Spider-Man amid enemies, hits/projectiles, team, street and HUD.
+Spider-Man's HUD is red in the Iron Man capture; do not claim every hero stayed
+healthy. These snapshots do not validate every intermediate frame/animation.
+
+Same JIT runner, one logical CPU, Vulkan, 3x EFB, Cubeb muted. Formatter ON
+for visual/timing runs, shadow for comparison; default remains OFF. No runtime
+changes or rebuild; prior supported Windows build passed 39/39 native tests.
+No-capture runtime/audio-profile diagnostic after two seconds: 46.7131s,
+29.9702 newly rendered FPS, guest speed 100.0005%, P99 40.9289ms, worst 67.8137ms,
+five frames >50ms, lowest rolling second 29. Later hero cycles alone: 35.8325s,
+29.9728 FPS, P99 39.2988ms, worst 53.2186ms, two frames >50ms. This is not acceptance.
+One late 53.2186ms frame has no JIT compilation, 6.0611ms traced waits; another
+51.8684ms frame has 17.0198ms compilation. A separate stall remains unexplained.
+Next instrument CPU-side graphics FIFO decoding (RunGpuOnCpu), absent from the
+current wait timers, before calling unclassified time guest CPU execution.
+
+Shadow completed 1,845,049 comparisons, 710,670 floating calls, zero output/FPSCR/
+preserved-register mismatches and abandoned calls; one pending at shutdown is
+unverified. This broadens comparison coverage but does not prove full timing or
+world-state equivalence. No audio listening/device verification; crackling is
+unresolved. Three qualifying repeats and ten-minute varied combat still needed.
+Evidence: evidence/windows-20260930/EXTENDED-HERO-COMBAT.json. Game captures,
+states and logs remain private. Goal active/unmet; no new FPS gain claimed.
+
 ## JIT metadata allocation pool rejected - 2026-09-30
 
 Tested a small-node pool shared by the 64 backpatch metadata hash tables.
