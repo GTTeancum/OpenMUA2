@@ -1,5 +1,30 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Gameplay-clock comparison - 2026-10-01
+
+Read-only samples now check the native clock object identity before reading its
+latched gameplay nanoseconds. Static accessor/vtable/return-path analysis supports
+the field interpretation. Sixteen samples per mode span 51.16 scheduled seconds,
+including a 3.7-second neutral tail after the action measurement marker. Earlier
+FPS windows stop at measurement-end.txt, before that tail.
+
+Original formatter: latched gameplay clock advanced 51.159066s (99.9982% of
+scheduled elapsed time). Replacement: 51.151058s (99.9825%). Cumulative differences
+from scheduled time were -0.934ms and -8.942ms. Largest adjacent-sample differences
+were 28.592ms and 29.167ms. The clock is frame-latched and probes are asynchronous;
+these sub-frame differences are not proof of zero drift or identical scheduling.
+No sampled clock offset changes, pause activation or frame-step activation.
+
+This supports normal overall gameplay-clock progression with the rewrite. It
+does not establish individual animation/charge/AI behavior or interrupt equivalence.
+The rewrite stays default-off and all performance/correctness gates remain.
+Both routes exited 0: full JIT, single CPU2/mask4, normal clocks, Vulkan3x/1080p
+preset and Cubeb volume70. No screenshots, host input or audible/visual acceptance.
+An initial off-mode command was rejected before launch for an unsupported flag;
+omitting that flag corrected it. No source change/rebuild; existing 45/45-test
+Windows runner reused. Evidence: evidence/windows-20260930/XBOX-V5-GAME-CLOCK.json.
+
+
 ## V5 formatter comparison remains experimental - 2026-10-01
 
 A contemporaneous opt-in formatter run on the same v5 plaza route measured

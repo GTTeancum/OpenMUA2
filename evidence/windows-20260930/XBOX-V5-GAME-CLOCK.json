@@ -1,0 +1,452 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "26a1861c1e9a6f2d05021f1eb4c61e4f904ccc49",
+  "scope": "Read-only, vtable-guarded gameplay clock comparison on corrected plaza route; no source/runtime modification.",
+  "clock_contract": {
+    "object": "806a1aa0",
+    "vtable": "8054d8a8",
+    "latched_time_offset": "18",
+    "representation": "Big-endian signed64 nanoseconds",
+    "basis": [
+      "DOL accessor801d8eb8 returns806a1aa0; vtable guard checked at every sample.",
+      "CGame latch800f4c40 reads clock virtual+4c for frame delta, applies existing bounds and speed, then virtual+54 at800f4e78.",
+      "Virtual+54 targets801dc768; its return path stores64-bit adjusted time at object+18.",
+      "Seconds conversion uses float constant at8081bef8 approximately1e-9, then existing millisecond rounding."
+    ],
+    "dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741"
+  },
+  "runs": [
+    {
+      "formatter": "off",
+      "private_directory": ".local/automation/v5-clock-off-20261001",
+      "exit_code": 0,
+      "runner_sha256": "231daf7c63a007c4212070dcb879cc508b21d0460edbe44aaa9dbcefbdf0191f",
+      "clock": {
+        "scope": "Read-only clock-object samples. Latched time is asynchronous to probe times; boundary differences include frame phase. Does not prove animation speed or interrupt equivalence.",
+        "samples": [
+          {
+            "ticks": 375000000004,
+            "latched_game_ns": 243420028274,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 378098250032,
+            "latched_game_ns": 247662023780,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 380576850008,
+            "latched_game_ns": 251060430052,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 382814880005,
+            "latched_game_ns": 254159022084,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 385541340010,
+            "latched_game_ns": 257881684356,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 388603140018,
+            "latched_game_ns": 262071721426,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 391227540000,
+            "latched_game_ns": 265674560685,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 393560340007,
+            "latched_game_ns": 268895197410,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 395747340011,
+            "latched_game_ns": 271880193097,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 398371740004,
+            "latched_game_ns": 275474141196,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 401433540008,
+            "latched_game_ns": 279691828768,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 404057940002,
+            "latched_game_ns": 283277562019,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 406390740008,
+            "latched_game_ns": 286472214447,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 408577740008,
+            "latched_game_ns": 289480520702,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 409598340002,
+            "latched_game_ns": 290878806562,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 412295640013,
+            "latched_game_ns": 294579094414,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          }
+        ],
+        "intervals": [
+          {
+            "guest_seconds": 4.250000038408779,
+            "game_seconds": 4.241995506,
+            "difference_ms": -8.004532408778964
+          },
+          {
+            "guest_seconds": 3.3999999670781893,
+            "game_seconds": 3.398406272,
+            "difference_ms": -1.5936950781894055
+          },
+          {
+            "guest_seconds": 3.0699999958847735,
+            "game_seconds": 3.098592032,
+            "difference_ms": 28.592036115226538
+          },
+          {
+            "guest_seconds": 3.7400000068587107,
+            "game_seconds": 3.722662272,
+            "difference_ms": -17.337734858710707
+          },
+          {
+            "guest_seconds": 4.200000010973937,
+            "game_seconds": 4.19003707,
+            "difference_ms": -9.962940973936796
+          },
+          {
+            "guest_seconds": 3.599999975308642,
+            "game_seconds": 3.602839259,
+            "difference_ms": 2.8392836913582187
+          },
+          {
+            "guest_seconds": 3.2000000096021948,
+            "game_seconds": 3.220636725,
+            "difference_ms": 20.636715397805094
+          },
+          {
+            "guest_seconds": 3.0000000054869687,
+            "game_seconds": 2.984995687,
+            "difference_ms": -15.004318486968593
+          },
+          {
+            "guest_seconds": 3.599999990397805,
+            "game_seconds": 3.593948099,
+            "difference_ms": -6.051891397805154
+          },
+          {
+            "guest_seconds": 4.200000005486968,
+            "game_seconds": 4.217687572,
+            "difference_ms": 17.687566513031605
+          },
+          {
+            "guest_seconds": 3.5999999917695473,
+            "game_seconds": 3.585733251,
+            "difference_ms": -14.266740769547148
+          },
+          {
+            "guest_seconds": 3.2000000082304525,
+            "game_seconds": 3.194652428,
+            "difference_ms": -5.347580230452564
+          },
+          {
+            "guest_seconds": 3.0,
+            "game_seconds": 3.008306255,
+            "difference_ms": 8.306254999999929
+          },
+          {
+            "guest_seconds": 1.3999999917695474,
+            "game_seconds": 1.39828586,
+            "difference_ms": -1.7141317695472669
+          },
+          {
+            "guest_seconds": 3.7000000150891634,
+            "game_seconds": 3.700287852,
+            "difference_ms": 0.28783691083678065
+          }
+        ],
+        "guest_seconds": 51.16000001234568,
+        "game_seconds": 51.15906614,
+        "observed_clock_rate_percent": 99.99817460448506,
+        "cumulative_difference_ms": -0.9338723456764342,
+        "max_abs_interval_difference_ms": 28.592036115226538
+      },
+      "sha256": {
+        "run.json": "bb9b4d12d8e32e0ddbfa8567287ac50e851dd71c962422f15a58e1397e054608",
+        "result.json": "78ad11c1d60ba1bbb14f7f65e65db44746f570f91370b733f71c1c3de7546c32",
+        "runtime.log": "bf8eb17172f689cceb9b1d1a11ea5d28609079d7d2870b6510bce00c03dcd9de",
+        "clock-analysis.json": "b6b77a59d8df483be888f11531a5317d99e4c34bf8b7b02edb93549cb2ce00b5"
+      }
+    },
+    {
+      "formatter": "on",
+      "private_directory": ".local/automation/v5-clock-on-20261001",
+      "exit_code": 0,
+      "runner_sha256": "231daf7c63a007c4212070dcb879cc508b21d0460edbe44aaa9dbcefbdf0191f",
+      "clock": {
+        "scope": "Read-only clock-object samples. Latched time is asynchronous to probe times; boundary differences include frame phase. Does not prove animation speed or interrupt equivalence.",
+        "samples": [
+          {
+            "ticks": 375000000004,
+            "latched_game_ns": 243436449426,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 378098250010,
+            "latched_game_ns": 247673976718,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 380576850003,
+            "latched_game_ns": 251077409525,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 382814880007,
+            "latched_game_ns": 254147117541,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 385541340026,
+            "latched_game_ns": 257884201953,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 388603140000,
+            "latched_game_ns": 262088384949,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 391227540026,
+            "latched_game_ns": 265692359385,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 393560340006,
+            "latched_game_ns": 268895188801,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 395747340033,
+            "latched_game_ns": 271898175533,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 398371740006,
+            "latched_game_ns": 275501786512,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 401433540000,
+            "latched_game_ns": 279672619105,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 404057940006,
+            "latched_game_ns": 283276248685,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 406390740005,
+            "latched_game_ns": 286479430298,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 408577740015,
+            "latched_game_ns": 289482839122,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 409598340024,
+            "latched_game_ns": 290883822068,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          },
+          {
+            "ticks": 412295640003,
+            "latched_game_ns": 294587507039,
+            "offset_ns": 269071387562,
+            "pause_marker": -1,
+            "frame_step": 0
+          }
+        ],
+        "intervals": [
+          {
+            "guest_seconds": 4.250000008230453,
+            "game_seconds": 4.237527292,
+            "difference_ms": -12.47271623045254
+          },
+          {
+            "guest_seconds": 3.3999999903978053,
+            "game_seconds": 3.403432807,
+            "difference_ms": 3.4328166021948547
+          },
+          {
+            "guest_seconds": 3.0700000054869685,
+            "game_seconds": 3.069708016,
+            "difference_ms": -0.2919894869686246
+          },
+          {
+            "guest_seconds": 3.7400000260631003,
+            "game_seconds": 3.737084412,
+            "difference_ms": -2.915614063100147
+          },
+          {
+            "guest_seconds": 4.1999999643347055,
+            "game_seconds": 4.204182996,
+            "difference_ms": 4.183031665294656
+          },
+          {
+            "guest_seconds": 3.600000035665295,
+            "game_seconds": 3.603974436,
+            "difference_ms": 3.974400334705308
+          },
+          {
+            "guest_seconds": 3.199999972565158,
+            "game_seconds": 3.202829416,
+            "difference_ms": 2.8294434348423714
+          },
+          {
+            "guest_seconds": 3.000000037037037,
+            "game_seconds": 3.002986732,
+            "difference_ms": 2.98669496296311
+          },
+          {
+            "guest_seconds": 3.599999962962963,
+            "game_seconds": 3.603610979,
+            "difference_ms": 3.6110160370368405
+          },
+          {
+            "guest_seconds": 4.199999991769547,
+            "game_seconds": 4.170832593,
+            "difference_ms": -29.167398769547326
+          },
+          {
+            "guest_seconds": 3.600000008230453,
+            "game_seconds": 3.60362958,
+            "difference_ms": 3.6295717695473684
+          },
+          {
+            "guest_seconds": 3.199999998628258,
+            "game_seconds": 3.203181613,
+            "difference_ms": 3.1816143717420253
+          },
+          {
+            "guest_seconds": 3.000000013717421,
+            "game_seconds": 3.003408824,
+            "difference_ms": 3.408810282579111
+          },
+          {
+            "guest_seconds": 1.400000012345679,
+            "game_seconds": 1.400982946,
+            "difference_ms": 0.9829336543210054
+          },
+          {
+            "guest_seconds": 3.6999999711934155,
+            "game_seconds": 3.703684971,
+            "difference_ms": 3.6849998065844325
+          }
+        ],
+        "guest_seconds": 51.15999999862826,
+        "game_seconds": 51.151057613,
+        "observed_clock_rate_percent": 99.98252074740326,
+        "cumulative_difference_ms": -8.94238562825933,
+        "max_abs_interval_difference_ms": 29.167398769547326
+      },
+      "sha256": {
+        "run.json": "9ab9402be6a2742bd5e9347c91147b158d1e94401633fdc346e369744013cb5e",
+        "result.json": "bf32821da11c69d2093916d447acd4ccee8de51da69abafa678046139981d75d",
+        "runtime.log": "027cedf542db59022c57e346241c9d9cb771f4e29539d79d0e51f697eab21e4e",
+        "clock-analysis.json": "98f81f69921c018085d64e33a7c34ad6142c32857e70a100b44e13b4e9696921"
+      }
+    }
+  ],
+  "limits": [
+    "One pair of sampled clock observations; includes3.7-second neutral tail after the action measurement marker. Earlier FPS windows end at measurement-end.txt before that tail.",
+    "Latched clock values update at game frame boundaries; samples are not synchronized to those updates. Sub-frame differences do not establish zero drift or identical scheduling.",
+    "No observed offset changes, pause marker changes or frame-step activation; no edits to clock or game state.",
+    "Supports overall game-clock progression only, not individual animation rates, charge timers, AI decisions, interruption equivalence or whole-game correctness.",
+    "Full JIT, single logical CPU2, normal clocks, Vulkan3x/1920x1080 preset, Cubeb volume70, no screenshots or host input. Audio and visual quality unverified.",
+    "Formatter remains default-off. Three passing repeats and ten-minute varied combat remain outstanding.",
+    "Initial off command used unsupported --simple-format off and was rejected by argument parsing before launch; corrected by omitting the flag.",
+    "Existing supported Windows45/45-test runner reused; no source change or rebuild. Proprietary data and disassembly remain private."
+  ]
+}
