@@ -39,6 +39,15 @@ class RuntimeSpansTest(unittest.TestCase):
         for kind in ('jit_entry_map', 'jit_ranges', 'jit_links'):
             self.assertAlmostEqual(detailed['totals'][kind]['union_ms'], 120e-6)
 
+    def test_decode_work_is_not_wait_time_and_nested_coverage_is_clipped(self):
+        result = mod.analyze(FRAMES, SPANS + 'gpu_decode_slow,120,240,0,1\n')
+        self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)
+        self.assertAlmostEqual(result['totals']['gpu_decode_slow']['union_ms'], 120e-6)
+        by_frame = {row['frame']: row for row in result['worst_frames']}
+        self.assertAlmostEqual(by_frame[2]['cpu_thread_coverage_ms']['gpu_decode_slow'], 80e-6)
+        self.assertAlmostEqual(by_frame[3]['cpu_thread_coverage_ms']['gpu_decode_slow'], 40e-6)
+        self.assertIn('lower bound', result['gpu_decode_scope'])
+
     def test_missing_or_dropped_data_and_discontinuities_rejected(self):
         for f, s in ((FRAMES.replace('dropped_samples=0', 'dropped_samples=1'), SPANS),
                      (FRAMES, SPANS.replace('dropped_samples=0', 'dropped_samples=1')),

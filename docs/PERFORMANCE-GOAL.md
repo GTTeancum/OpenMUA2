@@ -1,5 +1,38 @@
 # OpenMUA2 sustained combat performance goal
 
+## CPU graphics dispatch tracing and affinity diagnostic - 2026-10-01
+
+Added opt-in RunGpuOnCpu timing for dispatches >=100us and analyzer coverage
+regression. Short calls are omitted: recorded coverage is a lower bound, includes
+nested rendering/waits/preemption, and cannot rule out total decoding cost.
+Supported Windows build passed 39/39 native tests (12.69s); tooling passed
+139 tests with one skipped (140 run, 50.009s). Existing CMake warnings remain;
+no compiler/linker warning or error found. Local LTO ON; source default OFF.
+
+Extended guest-timed route, JIT, one logical CPU, Vulkan, 3x EFB, experimental
+formatter ON (default OFF), Cubeb muted, runtime/audio profiles, no captures:
+CPU0 after two-second warmup: 46.9778s, 29.9716 new FPS, 100.0053% guest speed,
+P99 40.5253ms, worst 67.0546ms, five >50ms, minimum rolling second 29.
+A 52.3424ms frame has no compilation and only 1.489ms recorded slow dispatch;
+a 50.0322ms frame has no compilation and 3.6289ms recorded slow dispatch.
+This leaves time unexplained; it does not establish CPU execution or a GPU cause.
+
+A diagnostic parent constrained the child to logical CPU4 (verified mask 0x10):
+47.1471s, 29.9700 new FPS, 100.0000% guest speed, P99 38.3621ms, worst 67.5393ms,
+four >50ms, minimum rolling second 29. Later hero cycles still reach 61.8698ms.
+This single non-deterministic comparison is not a demonstrated fix; production
+affinity stays unchanged. Investigate compilation bursts and non-compilation
+stalls separately, with total CPU execution/scheduling coverage next.
+
+Separate CPU0 visual run completed; all ten native captures inspected in order.
+Street, team, enemies, HUD and effects visible; RT cycles through all four heroes.
+Final Spider-Man position is near a building without an adjacent enemy, so this
+is not proof of uninterrupted varied combat or continuous animation correctness.
+No audible playback verification; audio crackling remains unresolved. See
+numeric evidence and binary hashes in evidence/windows-20260930/GPU-DECODE-AND-AFFINITY.json.
+No proprietary output committed. Three qualifying repeats and ten-minute varied
+combat remain outstanding. Goal active/unmet; no new FPS improvement claimed.
+
 ## Extended hero combat and recurring stalls - 2026-10-01
 
 Added tools/routes/xbox-timed-hero-combat.json: 106 timed holds totaling 47.46

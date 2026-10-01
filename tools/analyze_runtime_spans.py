@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 KINDS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence', 'gpu_submit', 'gpu_present', 'present',
-         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize', 'jit_instruction', 'jit_backpatch', 'jit_entry_map', 'jit_ranges', 'jit_links'}
+         'jit_compile', 'shader_compile', 'pipeline_compile', 'jit_analyze', 'jit_emit', 'jit_finalize', 'jit_instruction', 'jit_backpatch', 'jit_entry_map', 'jit_ranges', 'jit_links', 'gpu_decode_slow'}
 WAITS = {'throttle', 'gpu_pacing', 'gpu_worker', 'gpu_fence'}
 
 
@@ -89,6 +89,7 @@ def analyze(frame_text, span_text, start_frame=0, end_frame=None, ticks_per_seco
                           'cpu_thread_unclassified_ms': (high - low - waits) / 1e6,
                           'cpu_thread_coverage_ms': covered})
     return {'scope': 'elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed',
+            'gpu_decode_scope': 'Only CPU-side FIFO dispatches >=100us are traced; includes nested rendering, waits and preemption. Coverage is a lower bound, not total decoding time.',
             'first_frame': frames[0]['frame'], 'last_frame': frames[-1]['frame'],
             'seconds': (end - begin) / 1e9, 'cpu_thread': cpu_thread,
             'totals': totals,

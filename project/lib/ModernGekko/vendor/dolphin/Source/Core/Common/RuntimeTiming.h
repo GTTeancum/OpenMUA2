@@ -18,10 +18,11 @@
 namespace Common::RuntimeTiming
 {
 enum class Kind { Throttle, GpuPacing, GpuWorker, GpuFence, GpuSubmit, GpuPresent, Present,
-                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize, JitInstruction, JitBackpatch, JitEntryMap, JitRanges, JitLinks };
+                  JitCompile, ShaderCompile, PipelineCompile, JitAnalyze, JitEmit, JitFinalize, JitInstruction, JitBackpatch, JitEntryMap, JitRanges, JitLinks, GpuDecodeSlow };
 inline constexpr const char* Names[] = {
     "throttle", "gpu_pacing", "gpu_worker", "gpu_fence", "gpu_submit", "gpu_present", "present",
-    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize", "jit_instruction", "jit_backpatch", "jit_entry_map", "jit_ranges", "jit_links"};
+    "jit_compile", "shader_compile", "pipeline_compile", "jit_analyze", "jit_emit", "jit_finalize", "jit_instruction", "jit_backpatch", "jit_entry_map", "jit_ranges", "jit_links", "gpu_decode_slow"};
+inline constexpr std::int64_t GpuDecodeMinimumNs = 100000;
 inline std::int64_t Now()
 {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -45,6 +46,7 @@ public:
   {
     const auto count = m_count.load();
     out << "# steady_clock spans; elapsed time includes preemption; nested spans overlap\n"
+        << "# gpu_decode_slow_min_ns=" << GpuDecodeMinimumNs << '\n'
         << "# dropped_samples=" << (count > m_rows.size() ? count - m_rows.size() : 0) << '\n'
         << "kind,begin_ns,end_ns,target_ns,thread,cpu_ns,cycles,address,instructions\n";
     for (std::size_t i = 0; i < std::min(count, m_rows.size()); ++i) {

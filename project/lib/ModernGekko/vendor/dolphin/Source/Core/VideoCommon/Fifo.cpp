@@ -13,6 +13,7 @@
 #include "Common/FPURoundMode.h"
 #include "Common/MemoryUtil.h"
 #include "Common/MsgHandler.h"
+#include "Common/RuntimeTiming.h"
 
 #include "Core/Config/MainSettings.h"
 #include "Core/Config/ConfigManager.h"
@@ -434,6 +435,10 @@ void FifoManager::RunGpu()
 
 int FifoManager::RunGpuOnCpu(int ticks)
 {
+  // Keep the opt-in trace bounded: this path runs frequently on the CPU thread.
+  // Only long dispatches are recorded; their union is not total decoding cost.
+  Common::RuntimeTiming::Scope decode_timing(Common::RuntimeTiming::Kind::GpuDecodeSlow, 0,
+                                             Common::RuntimeTiming::GpuDecodeMinimumNs);
   auto& command_processor = m_system.GetCommandProcessor();
   auto& fifo = command_processor.GetFifo();
   bool reset_simd_state = false;
