@@ -8,6 +8,7 @@
 
 #include "Core/PowerPC/JitCommon/SimpleFormat.h"
 #include "Core/PowerPC/JitCommon/SimpleFormatContract.h"
+#include "Core/PowerPC/JitCommon/VerifiedCodeIdentity.h"
 
 int main()
 {
@@ -160,5 +161,39 @@ int main()
           target[0] = '1'; return 1;
         }) || output != original) return 19;
   }
+  // Verify every byte on cache hits, including mutations followed by restoration.
+  // Failed initial validation must not poison the next valid attempt.
+  JitCommon::VerifiedCodeIdentity<32> identity;
+  std::array<u8, 32> canonical{};
+  for (std::size_t i = 0; i < canonical.size(); ++i) canonical[i] = static_cast<u8>(i);
+  auto code = canonical;
+  unsigned validations = 0;
+  const auto validate = [&](std::span<const u8> captured) {
+    ++validations;
+    return std::equal(captured.begin(), captured.end(), canonical.begin());
+  };
+  code[0] ^= 1;
+  if (identity.Matches(code, validate) || validations != 1) return 20;
+  code = canonical;
+  if (!identity.Matches(code, validate) || validations != 2) return 21;
+  for (std::size_t i = 0; i < code.size(); ++i)
+  {
+    code[i] ^= 0x80;
+    if (identity.Matches(code, validate)) return 22;
+    code[i] ^= 0x80;
+    if (!identity.Matches(code, validate)) return 23;
+  }
+  if (validations != 2 || identity.Matches(std::span(code).first(31), validate)) return 24;
+  std::array<u8, 33> oversized{};
+  if (identity.Matches(oversized, validate) || validations != 2) return 25;
+  // Authenticate the saved copy. A change to the live source during validation
+  // must still be caught by the subsequent live-byte comparison.
+  JitCommon::VerifiedCodeIdentity<32> changed_during_validation;
+  if (changed_during_validation.Matches(code, [&](std::span<const u8> captured) {
+        code[31] ^= 1;
+        return std::equal(captured.begin(), captured.end(), canonical.begin());
+      })) return 26;
+  code = canonical;
+  if (!changed_during_validation.Matches(code, validate) || validations != 2) return 27;
   return 0;
 }

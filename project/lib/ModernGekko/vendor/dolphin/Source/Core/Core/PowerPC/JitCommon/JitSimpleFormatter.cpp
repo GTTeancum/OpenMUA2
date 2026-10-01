@@ -65,6 +65,8 @@ u8* DirectRAM(Core::System& system, u32 address, u32 length, bool instruction = 
 void JitSimpleFormatter::Init()
 {
   *this = {};
+  const char* identity = std::getenv("OPENMUA2_FORMAT_IDENTITY_CACHE");
+  m_identity_cache = identity && std::string_view(identity) == "1";
   const char* setting = std::getenv("MODERNGEKKO_SIMPLE_FORMAT");
   if (setting && std::string_view(setting) == "shadow")
   {
@@ -94,6 +96,8 @@ void JitSimpleFormatter::Finish()
       if (item.count)
         fmt::print(stderr, "Unsupported formatter: address={:08x} count={}\n", item.address, item.count);
     fmt::print(stderr, "Unsupported formatter overflow: {}\n", m_unsupported_overflow);
+    fmt::print(stderr, "Formatter identity cache: enabled={} hash_checks={} byte_checks={}\n",
+               m_identity_cache ? 1 : 0, m_identity_hash_checks, m_identity_byte_checks);
   }
   if (m_mode != Mode::Disabled)
     fmt::print(stderr, "Simple formatter: mode={} entries={} eligible={} replaced={} "
@@ -294,8 +298,21 @@ bool JitSimpleFormatter::Run(Core::System& system, u32 pc)
   }
   const auto* code = DirectRAM(system, CODE_BEGIN, CODE_SIZE, true);
   const auto* caller = DirectRAM(system, RETURN, RETURN_SIZE, true);
-  if (!code || Common::SHA1::CalculateDigest(code, CODE_SIZE) != CODE_HASH ||
-      !caller || Common::SHA1::CalculateDigest(caller, RETURN_SIZE) != RETURN_HASH)
+  // The CPU thread owns this operation; no guest execution can write these
+  // ranges while they are captured/checked. A cached success still compares all
+  // bytes on every invocation, including after savestate loads or JIT clears.
+  const auto matches = [&](auto& identity, const u8* bytes, u32 size, const auto& hash) {
+    if (!bytes) return false;
+    const auto validate = [&](std::span<const u8> captured) {
+      ++m_identity_hash_checks;
+      return Common::SHA1::CalculateDigest(captured.data(), captured.size()) == hash;
+    };
+    if (!m_identity_cache) return validate({bytes, size});
+    ++m_identity_byte_checks;
+    return identity.Matches({bytes, size}, validate);
+  };
+  if (!matches(m_body_identity, code, CODE_SIZE, CODE_HASH) ||
+      !matches(m_return_identity, caller, RETURN_SIZE, RETURN_HASH))
   {
     ++m_guard_rejects;
     return false;

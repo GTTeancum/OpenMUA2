@@ -1,5 +1,46 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Live byte-identity cache for formatter guards - 2026-10-01
+
+Added default-off OPENMUA2_FORMAT_IDENTITY_CACHE=1 inside the existing formatter
+experiment. Captured formatter-body/caller-epilogue bytes must pass the existing
+SHA-1 identities, then every eligible invocation compares all live bytes against
+those verified copies. Mapping, layout, ABI and fallback guards remain active;
+mutations reject, including after state loads/JIT clears. No unchecked identity
+result or guest pointer is cached. Captured game bytes stay in process memory.
+Native coverage checks initial failure/retry, every-byte mutation/restoration,
+wrong lengths and a live-source change during captured-copy validation.
+
+Supported Windows JIT build passed with local LTO ON: 39/39 native tests (5.64s).
+Existing CMake deprecation/Wayland/path-length/lz4 IPO warnings; no compiler or
+linker diagnostics. Python tooling unchanged, not rerun. The initial edit script
+hit a newline assertion; its accidentally started preliminary build was cancelled
+and is not validation evidence. The completed build uses the full reviewed patch.
+Runner SHA256 fa202fa923e7d1fcc48a5c9208f385b7638889fcbbcdaeb0df4aaa67001231a3.
+
+Shadow: 406,667 completed comparisons, zero output/FPSCR/ABI errors, one pending
+at shutdown; two hashes and813,336 live byte checks. This is scoped verification,
+not full-game correctness. Same-binary alternating plaza diagnostics, all exit0:
+
+| Order | Cache | New FPS | P99 ms | Worst ms | Frames >50ms |
+| --- | --- | --- | --- | --- | --- |
+| 1 | OFF | 29.7073 | 44.118 | 119.495 | 9 |
+| 2 | ON | 29.9703 | 35.121 | 57.491 | 2 |
+| 3 | OFF | 29.9700 | 36.288 | 62.311 | 2 |
+| 4 | ON | 29.9701 | 35.340 | 56.423 | 1 |
+
+All: whole process CPU2/mask4, JIT, Vulkan3x/1920x1080 preset, normal clocks,
+muted Cubeb, formatter ON, indirect experiments OFF, no screenshots/memory probes
+or detailed runtime profiling. Two-second warmup, endpoint before state save.
+ON runs used two hashes each plus4,045,618/4,096,354 byte checks; OFF runs used
+4,260,396/3,830,478 hashes. CPU-time counters unavailable: no measured CPU-time
+saving is claimed. Both pairs favor ON, but the second gain is modest and >50ms
+frames persist. Keep opt-in; no tens-of-FPS or solid-30 acceptance claim.
+Combat continuity, audio quality, three qualifying repeats and ten-minute combat
+remain unverified. The prior long-run transition/stall remains unresolved. Goal
+UNMET. Evidence: evidence/windows-20260930/PLAZA-FORMATTER-IDENTITY-CACHE.json.
+
+
 ## Read-only plaza transition probes - 2026-10-01
 
 Ran two private diagnostics with the existing runner, one logical CPU2, full JIT,

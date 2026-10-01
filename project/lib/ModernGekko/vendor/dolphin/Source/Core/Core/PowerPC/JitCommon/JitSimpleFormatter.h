@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Common/CommonTypes.h"
+#include "Core/PowerPC/JitCommon/VerifiedCodeIdentity.h"
 
 namespace Core
 {
@@ -41,6 +42,11 @@ private:
   };
   bool Run(Core::System& system, u32 pc);
   Mode m_mode = Mode::Disabled;
+  bool m_identity_cache = false;
+  JitCommon::VerifiedCodeIdentity<3196> m_body_identity;
+  JitCommon::VerifiedCodeIdentity<40> m_return_identity;
+  u64 m_identity_hash_checks = 0;
+  u64 m_identity_byte_checks = 0;
   std::vector<Pending> m_pending;
   u64 m_entries = 0;
   u64 m_eligible = 0;
