@@ -1,5 +1,31 @@
 # OpenMUA2 sustained combat performance goal
 
+## Three candidate repeats and acceptance audit - 2026-10-01
+
+Three short repeats completed on the same Windows runner as the ten-minute
+plaza diagnostic, with the formatter explicitly ON. All exited0 and measured
+1422 new-frame intervals without dropped samples or warmup trimming. Averages:
+29.97019 / 29.97028 / 29.97037 FPS. P99:36.184 / 35.774 / 36.102ms. Maximum:
+51.702 / 53.618 / 55.441ms; each had one frame over50ms and minimum rolling
+second29. Guest timestamp sequences matched exactly, all33.367ms intervals,
+at normal game-clock speed. Averages alone do not establish solid30 acceptance.
+
+Each repeat retained4 living heroes and5-7 positive-health opponents in16
+guarded samples, with health and position changes between every adjacent pair.
+Together with the completed600-second route, the numerical repetition/endurance
+work is now recorded. These samples do not establish expected effects, animation
+or visual behavior. No further identical repeats are needed without a new
+question or change.
+
+Full JIT, single logical CPU2/mask4, Vulkan3x/1080p preset, Cubeb70%, identity
+cache OFF; no screenshots or host input. Same verified45/45-test runner, no new
+source change/build. The formatter stays OFF by default: these are opt-in
+candidate results, not normal-launch FPS. Current visual/audible acceptance and
+broader animation/interrupt correctness remain unverified, so the goal is not
+complete. The latest acceptance ledger and complete metrics/hashes are in
+evidence/windows-20260930/V5-CANDIDATE-REPEATS.json.
+
+
 ## Ten-minute v5 diagnostic and sequence-loader fix - 2026-10-01
 
 Sequence loading now normalizes each input path once and uses lexical-path hash
