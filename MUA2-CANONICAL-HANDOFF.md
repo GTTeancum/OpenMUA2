@@ -1,5 +1,28 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Offline plaza state audit - 2026-10-01
+
+Investigated existing baseline, short CPU2 endpoint and long endurance endpoint
+without launching the game or taking screenshots. Bounded private LZ4 decoding,
+three executable anchors, the native memory serialization layout and the dialog
+manager accessor/vtable identify the same dialog slot in all three states.
+The long endpoint contains a newly populated failure/retry option/callback group;
+the baseline and short endpoint retain their prior options. This supports a
+failure/retry-path inference during the long run. Its late near-30 cadence must
+not count as verified continuous combat. The slot is not the selected dialog at
+the endpoints: populated historical content does not prove a currently visible
+menu or timestamp/attribute the 1,220ms gap. Short-run combat continuity also
+remains unverified. No fresh visual, audible, build or performance claim.
+
+Next establish read-only health/activity or transition telemetry and stop plaza
+diagnostics on failure/transition before another endurance acceptance attempt.
+Keep plaza only, no screenshots, one logical CPU and existing rendering settings.
+No native/tooling source changed; prior build/tests remain scoped as recorded.
+Private game states, decompressed memory, strings and instructions stay outside
+Git. Numeric evidence: evidence/windows-20260930/PLAZA-STATE-AUDIT.json.
+Goal remains UNMET.
+
+
 ## Processor placement and long-run diagnostic - 2026-10-01
 
 Added --logical-processor N to tools/run_combat_benchmark.py (Windows, current

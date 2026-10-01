@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Offline analysis of existing plaza states only; no new game run, screenshots, desktop input or visual/audio verification.",
+  "method": [
+    "Decompress native LZ4 state blocks with bounded private parser; verify exact declared output length and end of file.",
+    "Identify MEM1 by intersection of three 128-byte unchanged executable anchors.",
+    "Decode memory sizes before RAM; locate MEM2 using vendored MemoryManager::DoState layout.",
+    "Follow startup small-data base and dialog-manager accessor; cross-check manager vtable and option-construction method.",
+    "Compare the same dialog slot and its paired option/callback fields at start, short endpoint and long endpoint."
+  ],
+  "memory_layout": {
+    "serialized_mem1_bytes": 33554432,
+    "l1_bytes": 262144,
+    "fake_vmem_bytes": 0,
+    "mem2_bytes": 67108864,
+    "markers_between_mem1_and_mem2_bytes": 8
+  },
+  "states": [
+    {
+      "state": "start",
+      "private_source": ".local/automation/statue-target-20260930/statue-target.sav",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "mem1_offset": 49158932,
+      "code_anchor_count": 3,
+      "dialog_slot": 1,
+      "selected_dialog_index": 0,
+      "populated_option_count": 2,
+      "retry_load_exit_group_present": false,
+      "dialog_slot_sha256": "69ca7ff09b77de1da7f0b48db9f9f4695a3441c1f09132a0d3964ef369647af9"
+    },
+    {
+      "state": "short",
+      "private_source": ".local/automation/plaza-cpu2-option-20261001/extended-combat.sav",
+      "state_sha256": "fa22ea7077874ddcf2ef142cfe157fb96234dda21443c8e93a6aa79a2eca284a",
+      "mem1_offset": 49158966,
+      "code_anchor_count": 3,
+      "dialog_slot": 1,
+      "selected_dialog_index": 0,
+      "populated_option_count": 2,
+      "retry_load_exit_group_present": false,
+      "dialog_slot_sha256": "69ca7ff09b77de1da7f0b48db9f9f4695a3441c1f09132a0d3964ef369647af9"
+    },
+    {
+      "state": "end",
+      "private_source": ".local/automation/plaza-cpu2-endurance-20261001/plaza-endurance-end.sav",
+      "state_sha256": "590b63245e3ea93435f7ab08c423e30f2cfe748a11c9e7bfb30b1f04daba68d1",
+      "mem1_offset": 49158932,
+      "code_anchor_count": 3,
+      "dialog_slot": 1,
+      "selected_dialog_index": 0,
+      "populated_option_count": 3,
+      "retry_load_exit_group_present": true,
+      "dialog_slot_sha256": "3bf536b7709a8320b655fc9e1a2c32c0e88ebded12b658f557c0e4a8915cb029"
+    }
+  ],
+  "conclusion": "The long endpoint contains a newly populated failure/retry dialog option group absent at baseline and at the short endpoint. This supports a failure/retry-path inference during the long run and disqualifies treating its late stable cadence as demonstrated continuous combat.",
+  "limitations": [
+    "The populated slot is not the selected dialog index at either endpoint; this is historical/state evidence, not proof that the failure menu is currently displayed.",
+    "Does not timestamp the transition or attribute the 1220ms presentation gap.",
+    "Does not establish hero health, current enemy count or sustained combat, including for the short run.",
+    "Unmodified private game state, text, instructions and decompressed memory remain outside Git."
+  ],
+  "next_action": "Establish read-only health/activity or transition telemetry and stop plaza diagnostics on failure/transition before repeating endurance acceptance."
+}
