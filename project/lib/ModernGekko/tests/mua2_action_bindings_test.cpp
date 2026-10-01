@@ -91,5 +91,26 @@ int main() {
   }
   if (ConsumeCameraMenuAliases(std::span(active).first(19),values) ||
       ConsumeCameraMenuAliases(active,std::span(values).first(495))) return 21;
+  active.fill(0);values.fill(0);
+  for (unsigned id:{7u,39u,99u,103u,104u,122u,123u}) {
+    put(active,id/32*4,ReadBE(active,id/32*4)|(1u<<(id%32)));
+    put(values,id*4,0x3f800000);
+  }
+  auto back_active=active;auto back_values=values;
+  for (unsigned missing:{7u,39u}) {
+    active=back_active;values=back_values;
+    put(active,missing/32*4,ReadBE(active,missing/32*4)&~(1u<<(missing%32)));
+    auto unchanged=active;
+    if(MapHeroManagement(active,values) || active!=unchanged || values!=back_values) return 22;
+  }
+  active=back_active;values=back_values;
+  if(!MapHeroManagement(active,values) || ReadBE(active,0)!=0 ||
+      ReadBE(active,4)!=(1u<<8) || ReadBE(active,12)!=0 ||
+      ReadBE(values,40*4)!=0x3f800000) return 23;
+  for(unsigned id:{7u,39u,99u,103u,104u,122u,123u})
+    if(ReadBE(values,id*4)) return 24;
+  if(MapPauseBack(active,values) || ConsumeCameraMenuAliases(active,values)) return 25;
+  if(MapHeroManagement(std::span(active).first(19),values) ||
+     MapHeroManagement(active,std::span(values).first(495))) return 26;
   std::cout << "Transactional action binding checks passed\n";
 }

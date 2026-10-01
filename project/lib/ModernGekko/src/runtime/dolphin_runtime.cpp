@@ -188,6 +188,9 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
   if (s_hero_buttons_enabled)
+    moderngekko::controls::MapHeroManagement(
+        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+  if (s_hero_buttons_enabled)
     moderngekko::controls::ConsumeCameraMenuAliases(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
   if (s_hero_buttons_enabled)

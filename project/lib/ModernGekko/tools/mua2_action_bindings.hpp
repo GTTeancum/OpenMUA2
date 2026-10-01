@@ -98,4 +98,25 @@ inline bool ConsumeCameraMenuAliases(std::span<std::uint8_t> active,
   return true;
 }
 
+// Experimental Back is the otherwise-disjoint camera+pause source chord.
+// The matching profile excludes Start from camera-enable, so Start+right-stick
+// cannot accidentally request Hero Management. Consume both marker sources.
+inline bool MapHeroManagement(std::span<std::uint8_t> active,
+                              std::span<std::uint8_t> values) {
+  if (active.size()!=20 || values.size()!=496 ||
+      !(ReadBE(active,0)&(1u<<7)) || !(ReadBE(active,4)&(1u<<7)) ||
+      ReadBE(values,7*4)!=0x3f800000 || ReadBE(values,39*4)!=0x3f800000)
+    return false;
+  const auto put=[](std::span<std::uint8_t> b,unsigned p,std::uint32_t v) {
+    for(unsigned i=0;i<4;++i) b[p+i]=std::uint8_t(v>>(24-8*i));
+  };
+  for (unsigned id : {7u,39u,99u,103u,104u,122u,123u}) {
+    put(active,id/32*4,ReadBE(active,id/32*4)&~(1u<<(id%32)));
+    put(values,id*4,0);
+  }
+  put(active,4,ReadBE(active,4)|(1u<<8));
+  put(values,40*4,0x3f800000);
+  return true;
+}
+
 }

@@ -1,0 +1,816 @@
+{
+  "change": "Experimental Back requests native HeroManagement40 through a reserved source combination; Start+camera remains distinct",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "passed": 45,
+    "failed": 0,
+    "seconds": 9.07,
+    "log": ".local/logs/back-hero-build.log",
+    "warnings": "Existing CMake warnings; no compiler/linker warnings/errors"
+  },
+  "runs": [
+    {
+      "run": "back-hero-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [],
+        "b1 to b2": []
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            40
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "a051168e6104750c48637e90ae62467e44527bb6d288436f67c2bbafc0de048b"
+    },
+    {
+      "run": "back-hero-exit-fixed-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [],
+        "b1 to b2": [],
+        "exit-confirm1 to exit-confirm2": [],
+        "exit-back11 to exit-back12": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "exit-back21 to exit-back22": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          77,
+          78
+        ],
+        "exit-start1 to exit-start2": []
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            40
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "a2ef344a34cb6edd85410a5f9097e55ac31e913ec747ad9e5d60be1bb7691a22"
+    },
+    {
+      "run": "back-hero-confirm-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [],
+        "b1 to b2": []
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            40
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            9,
+            89
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "b5e3812785da70176798e8a8110e4f7ae32341294f7ba996bb21a5870615016d"
+    },
+    {
+      "run": "back-hero-wait-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [],
+        "b1 to b2": []
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            40
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "3a309c7fd5b63070d27d0ba29cf0b13fc755bfcdab3b0b46784880d38a4f5994"
+    },
+    {
+      "run": "back-hero-wait-confirm-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [],
+        "b1 to b2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          77,
+          78
+        ]
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            40
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            9,
+            89
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "ac881561bde511f7b5e19082a22a64ef7df625760cb2d5f03176938c292d2208"
+    },
+    {
+      "run": "start-camera-chord-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "b1 to b2": [
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          77,
+          78
+        ]
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            39,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            39,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "manifest_sha256": "d4dd34e9fdccb75f099a163c91a416d390211adc8695faf2853620791aa5d036"
+    }
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16135168,
+      "sha256": "b89ea7b3b6310278393c7a8ab0b4e4b9e6d0b2727ffd5aa60d23d9167753971a"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "ead5f71524166282411c9fd68d2e434d5998958669f97591bd53dd08f7cac9bc"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204544,
+      "sha256": "d08d3a557056a1f7e521ce7a23af708a24b6d968465c606b222086f7094a5619"
+    },
+    "moderngekko_mua2_action_bindings_test.exe": {
+      "bytes": 26624,
+      "sha256": "6ba1d838de0a964e9bb16f06acfb37213109a5573be7f8692354c98fa02d2d16"
+    }
+  },
+  "limitations": [
+    "Default profile remains v4; requires matching experimental profile and HERO_BUTTONS flag",
+    "B alone and early A then B failed to restore gameplay; after eight-second neutral wait A then B succeeded. No fixed delay is added to runtime",
+    "Menu contents/readiness not visually verified; no claim of a particular confirmation dialog",
+    "First Back and Start-camera probes overlapped build tail; no performance evidence",
+    "One logical CPU, normal clocks, Vulkan3x, Null audio, no screenshots or host input",
+    "Physical controller/audio/FPS acceptance and full default migration remain open"
+  ],
+  "failed_route": {
+    "name": "back-hero-exit-20261001",
+    "exit_code": 1,
+    "reason": "Duplicate sequence output filename; preserved and corrected in separate run"
+  },
+  "profile_sha256": "c8e82900da008d0d2d975e2667f36182ea873e85c9301919eb660dbcd7565fc3"
+}

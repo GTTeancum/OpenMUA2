@@ -1,5 +1,31 @@
 # OpenMUA2 Xbox controls: MUA1 Xbox 360 target
 
+## Experimental Back / Hero Management - 2026-10-01
+
+With OPENMUA2_HERO_BUTTONS=1 and the matching experimental profile, Back now
+requests native HeroManagement40. The adapter consumes its camera/pause markers
+and shared menu aliases. The profile excludes Start from the camera-enable source,
+so Start + right stick remains pause/resume and cannot synthesize Hero Management.
+Defaults remain v4; this is not an installed physical-controller migration.
+
+Windows JIT build passed 45/45 tests in 9.07s, exit 0; no compiler/linker warnings
+or errors, existing CMake warnings remain. Live Back probes show only action40
+besides the standing cursor baseline; release and port isolation pass. Gameplay
+entity updates stop after Back. B alone did NOT resume, and early A then B also
+failed. After an eight-second neutral wait, A then B restored entity updates;
+a separate longer sequence also returned. This is evidence of a timing-sensitive
+return path, not proof of menu contents or a particular confirmation dialog.
+No fixed delay or forced menu exit is added. Start+right-stick regression passed.
+
+Six routes completed with exit 0; one earlier exit route was rejected for a
+duplicate output filename, then corrected in a separate run. Preserve those
+functional failures; command success alone is not menu acceptance. First two
+probes overlapped build tail. All use one logical CPU, normal clocks, Vulkan3x,
+Null audio, no screenshots/host input. Visual menu readiness, broader button
+combinations, physical controls/audio, default migration and FPS remain open.
+Evidence/profile/binary hashes: evidence/windows-20260930/BACK-HERO-MANAGEMENT.json.
+
+
 ## Experimental camera/menu separation - 2026-10-01
 
 The experimental hero profile restores horizontal right-stick camera input;
