@@ -12,6 +12,12 @@ def analyze(text):
     reader = csv.DictReader(io.StringIO(text))
     if not reader.fieldnames or not set(required) <= set(reader.fieldnames):
         raise ValueError('missing audio profile columns')
+    state_columns = ('empty_running', 'empty_not_running')
+    has_state = all(k in reader.fieldnames for k in state_columns)
+    if any(k in reader.fieldnames for k in state_columns) and not has_state:
+        raise ValueError('incomplete core-state counters')
+    if has_state:
+        required += state_columns
     rows = {}
     origin = None
     for source in reader:
@@ -21,6 +27,8 @@ def analyze(text):
             raise ValueError('invalid audio profile counter') from None
         if any(v < 0 for v in r.values()) or r['channel'] >= 12 or r['second'] > 1200:
             raise ValueError('audio profile counter outside bounds')
+        if has_state and r['empty_running'] + r['empty_not_running'] != r['empty_dequeues']:
+            raise ValueError('core-state counters do not sum to empty reads')
         start = r['bucket_start_host_ns'] - r['second'] * 1_000_000_000
         if origin is not None and start != origin:
             raise ValueError('inconsistent audio profile clock origin')
@@ -47,6 +55,9 @@ def analyze(text):
             'nonzero_buckets': [{'second': r['second'], 'empty_dequeues': r['empty_dequeues']}
                                 for r in selected if r['empty_dequeues']],
         }
+        if has_state:
+            channels[name]['empty_while_core_running'] = sum(r['empty_running'] for r in selected)
+            channels[name]['empty_while_core_not_running'] = sum(r['empty_not_running'] for r in selected)
     prefix = 0
     # The final bucket may be partial; the overflow bucket spans arbitrary time.
     while prefix < min(last, 1200) and all(
@@ -59,6 +70,7 @@ def analyze(text):
         'initial_complete_buckets_without_main_empty_reads': prefix,
         'final_bucket_second': last,
         'overflow_bucket_present': last == 1200,
+        'core_state_counters_available': has_state,
         'channels': channels,
         'max_callback_gap_ms': max(rows[s, 11]['max_callback_gap_ns'] for s in range(last + 1)) / 1e6,
         'limitations': [
@@ -66,6 +78,7 @@ def analyze(text):
             'One empty dequeue is a granule read, not one audible dropout.',
             'Zero empty reads do not establish clean audio, speed, visuals or combat coverage.',
             'Bucket 1200, if present, combines all later observations.',
+            'Core Running includes in-game menus; not-running can include host pause or shutdown.',
         ],
     }
 

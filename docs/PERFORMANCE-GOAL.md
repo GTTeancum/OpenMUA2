@@ -1,5 +1,40 @@
 # OpenMUA2 sustained combat performance goal
 
+## Audio running-state attribution and B resume - 2026-10-01
+
+Added opt-in diagnostic counters for empty mixer reads while Core is Running
+versus not Running, reusing the existing state read. Playback and defaults are
+unchanged. The analyzer accepts old profiles without inventing state evidence,
+and requires new state counts to sum to the retained totals.
+
+One plaza route completed: 50 DMA and 76 music empty reads in final bucket 57
+were ALL observed while the core was not Running. During Running: ZERO DMA and
+ONE music empty read (second 53). The prior uninstrumented run cannot be labeled
+retroactively. In-game menus still count as Running; the remaining music event
+cannot yet be precisely assigned to combat or a menu. No audible-clean claim.
+Maximum Cubeb callback gap: 11.5406ms. Private pre-volume PCM: 57.132s, peak30846,
+zero clipped samples. These numbers do not establish device playback quality.
+
+Start paused entity activity; B resumed it (eight position and one health
+changes between the resumed probes). All 15 guarded combat probes decoded,
+living heroes minimum three, identified positive-health opponents 4-7. Profile
+migration again retained an exact backup. Native game and harness exited 0.
+No game left running. No host input, screenshots, visual/listening assessment,
+physical controller operation or FPS measurements. Same CPU2/mask4, Vulkan3x,
+normal clocks and default formatter; JIT budget/reserve OFF.
+
+Supported Windows build passed 41/41 native tests (6.45s). Python: 167 passed,
+one skipped (168 run, 37.962s). An initial incomplete call-site patch failed
+compilation; corrected and rebuilt. Final compile/link had no warnings/errors;
+existing CMake warnings remain. Binary hashes and all scoped results:
+evidence/windows-20260930/AUDIO-CORE-STATE.json.
+
+Audio is not broadly starved in this bounded run; avoid treating shutdown reads
+as combat dropouts. Listening/device playback and remaining Xbox contextual-use,
+hero selection and fusion/revive gaps remain open. The performance goal remains
+unmet. Continue the user's audio/controls priority without FPS sweeps.
+
+
 ## Audio counter interpretation correction - 2026-10-01
 
 Read-only analysis of the last plaza profile shows NO main-channel empty reads

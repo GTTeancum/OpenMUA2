@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "change": "Diagnostic-only split of mixer empty reads by existing Core::State::Running observation. No playback behavior or runtime defaults changed.",
+  "analysis": {
+    "schema": 1,
+    "scope": "Mixer empty-read counters; not audible dropouts, combat boundaries or device playback.",
+    "covered_buckets": 58,
+    "initial_complete_buckets_without_main_empty_reads": 53,
+    "final_bucket_second": 57,
+    "overflow_bucket_present": false,
+    "core_state_counters_available": true,
+    "channels": {
+      "dma": {
+        "total_empty_dequeues": 50,
+        "before_final_bucket_empty_dequeues": 0,
+        "final_bucket_empty_dequeues": 50,
+        "nonzero_buckets": [
+          {
+            "second": 57,
+            "empty_dequeues": 50
+          }
+        ],
+        "empty_while_core_running": 0,
+        "empty_while_core_not_running": 50
+      },
+      "music": {
+        "total_empty_dequeues": 77,
+        "before_final_bucket_empty_dequeues": 1,
+        "final_bucket_empty_dequeues": 76,
+        "nonzero_buckets": [
+          {
+            "second": 53,
+            "empty_dequeues": 1
+          },
+          {
+            "second": 57,
+            "empty_dequeues": 76
+          }
+        ],
+        "empty_while_core_running": 1,
+        "empty_while_core_not_running": 76
+      }
+    },
+    "max_callback_gap_ms": 11.5406,
+    "limitations": [
+      "Final bucket is retained, not discarded or classified as shutdown.",
+      "One empty dequeue is a granule read, not one audible dropout.",
+      "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+      "Bucket 1200, if present, combines all later observations.",
+      "Core Running includes in-game menus; not-running can include host pause or shutdown."
+    ]
+  },
+  "functional": {
+    "route_exit_code": 0,
+    "entity_probe_count": 15,
+    "heroes_alive_min": 3,
+    "opponents_positive_range": [
+      4,
+      7
+    ],
+    "paused_changes": {
+      "position": 0,
+      "health": 0
+    },
+    "resumed_changes": {
+      "position": 8,
+      "health": 1
+    },
+    "profile_backup_exact": true,
+    "audio": {
+      "0": {
+        "empty_dequeues": 50,
+        "max_callback_gap_ms": 0.0
+      },
+      "1": {
+        "empty_dequeues": 77,
+        "max_callback_gap_ms": 0.0
+      },
+      "11": {
+        "empty_dequeues": 0,
+        "max_callback_gap_ms": 11.5406
+      }
+    },
+    "pcm_duration_seconds": 57.132,
+    "pcm_peak": 30846,
+    "pcm_clipped_samples": 0,
+    "frames_csv_exists": false,
+    "resume_verified": true
+  },
+  "audio_profile_sha256": "57d3971a47352c3d87d639f76959604417c006fef5ea33f54121248dc0652510",
+  "configuration": {
+    "whole_process_logical_cpu": 2,
+    "affinity_mask": 4,
+    "cpu": "full JIT",
+    "video": "Vulkan 3x EFB / 1920x1080 preset",
+    "normal_clocks": true,
+    "formatter": "default/off",
+    "jit_budget_us": 0,
+    "backpatch_reserve": 0,
+    "audio": "muted Cubeb processing with private pre-volume PCM",
+    "host_input": false,
+    "screenshots": false,
+    "frame_trace": false
+  },
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 41,
+    "native_tests_seconds": 6.45,
+    "python_tests_run": 168,
+    "python_tests_passed": 167,
+    "python_tests_skipped": 1,
+    "python_tests_seconds": 37.962,
+    "warnings": "Existing CMake policy/minimum-version, missing Wayland, object path and lz4 IPO warnings. No final compiler/linker warnings or errors.",
+    "intermediate_failure": "Incomplete call-site patch initially left EmptyDequeue() without its new argument. Build failed, corrected after process exited, full supported rebuild passed."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16111104,
+      "sha256": "034b8aef1592a44abaaa0b63aa4963573465822d99b3d61a82abf045cb0b62e3",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-run.exe"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "35891548985721036b2f1c32f20773dc4bebb0c338796a0adcb06dec545d38f5",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-port.exe"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "85118c7ec8eebd7205febd52a07a29546bd4987a24831d2b34fd716af4c22989",
+      "private_path": ".local/build/windows-x64/runtime/ModernGekko.exe"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "dcb49f556f817e6d77232ded67cd6e8b67267a21b02835f214edc26f3d12156b",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe"
+    },
+    "dolrecomp.exe": {
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb",
+      "private_path": ".local/build/windows-x64/runtime/dolrecomp.exe"
+    },
+    "moderngekko_audio_continuity_test.exe": {
+      "bytes": 11695104,
+      "sha256": "9ce4119d1a4694c05990e085bd5ff9cce29de57f77d26fe5c4e84e3e2abd8187",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_audio_continuity_test.exe"
+    }
+  },
+  "conclusion": "In this run every final-bucket main-channel empty read was observed while the core was not Running. During Running: zero DMA, one streaming/music empty read. In-game pause still counts as Running. This does not establish audible/device playback correctness or classify the old uninstrumented run retroactively.",
+  "limits": [
+    "No listening, screenshots, visual QA or physical controller validation.",
+    "One plaza route; living heroes dropped to three. No sustained combat/FPS acceptance.",
+    "One remaining Running music empty read in second 53; precise menu/combat attribution unknown.",
+    "Old aggregate failures remain preserved.",
+    "Runtime Core state is observed at each empty read, not an atomic sample-production timeline."
+  ]
+}

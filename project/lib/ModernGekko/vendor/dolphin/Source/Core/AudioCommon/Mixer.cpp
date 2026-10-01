@@ -593,9 +593,9 @@ bool Mixer::MixerFifo::Dequeue(Granule* granule)
   std::size_t next_tail = (tail + 1) & GRANULE_QUEUE_MASK;
   if (next_tail == head)
   {
-    AudioCommon::Performance::EmptyDequeue();
     // Only fill gaps when running to prevent stutter on pause.
     const bool is_running = Core::GetState(Core::System::GetInstance()) == Core::State::Running;
+    AudioCommon::Performance::EmptyDequeue(is_running);
     if (m_mixer->m_config_fill_audio_gaps && is_running)
     {
       // Jump the playhead to half the queue size behind the head.

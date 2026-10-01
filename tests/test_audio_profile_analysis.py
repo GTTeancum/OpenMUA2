@@ -21,6 +21,30 @@ def profile(events=None, omit=None):
 
 
 class AudioProfileAnalysisTests(unittest.TestCase):
+    def test_legacy_profile_does_not_invent_core_state(self):
+        result = module.analyze(profile())
+        self.assertFalse(result['core_state_counters_available'])
+        self.assertNotIn('empty_while_core_running', result['channels']['dma'])
+
+    def test_state_split_preserves_all_empty_reads(self):
+        text = profile({(2, 0): 1, (3, 0): 61}).splitlines()
+        text[0] += ',empty_running,empty_not_running'
+        for i in range(1, len(text)):
+            second, _, channel, *_ = text[i].split(',')
+            text[i] += ',1,0' if (second, channel) == ('2', '0') else (
+                ',0,61' if (second, channel) == ('3', '0') else ',0,0')
+        result = module.analyze('\n'.join(text))
+        self.assertTrue(result['core_state_counters_available'])
+        self.assertEqual(result['channels']['dma']['empty_while_core_running'], 1)
+        self.assertEqual(result['channels']['dma']['empty_while_core_not_running'], 61)
+        with self.assertRaises(ValueError):
+            module.analyze('\n'.join(text).replace(',0,61', ',0,60'))
+
+    def test_partial_state_schema_rejected(self):
+        text = profile().replace('max_callback_gap_ns', 'max_callback_gap_ns,empty_running')
+        with self.assertRaises(ValueError):
+            module.analyze(text)
+
     def test_retains_final_burst_separately(self):
         result = module.analyze(profile({(2, 0): 1, (3, 0): 61, (3, 1): 92}))
         self.assertEqual(result['initial_complete_buckets_without_main_empty_reads'], 2)

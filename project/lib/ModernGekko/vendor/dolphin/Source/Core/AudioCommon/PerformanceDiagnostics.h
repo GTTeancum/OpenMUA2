@@ -24,6 +24,7 @@ struct Counters
   std::atomic<std::uint64_t> calls{}, samples{}, wall_ns{}, max_wall_ns{};
   std::atomic<std::uint64_t> subnormal_fades{}, empty_dequeues{}, produced_frames{};
   std::atomic<std::uint64_t> max_callback_gap_ns{}, mxcsr{};
+  std::atomic<std::uint64_t> empty_running{}, empty_not_running{};
 };
 
 // Bounded numeric diagnostics only: no samples, disk I/O or allocations on the
@@ -53,7 +54,7 @@ public:
   {
     if (!Enabled() || m_flushed.exchange(true)) return;
     std::ofstream out(m_path);
-    out << "second,bucket_start_host_ns,channel,calls,samples,wall_ns,max_wall_ns,subnormal_fade_calls,empty_dequeues,produced_frames,max_callback_gap_ns,mxcsr\n";
+    out << "second,bucket_start_host_ns,channel,calls,samples,wall_ns,max_wall_ns,subnormal_fade_calls,empty_dequeues,produced_frames,max_callback_gap_ns,mxcsr,empty_running,empty_not_running\n";
     const auto start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(m_start.time_since_epoch()).count();
     for (std::size_t second = 0; second < m_rows->size(); ++second)
       for (std::size_t channel = 0; channel < 12; ++channel)
@@ -64,7 +65,8 @@ public:
             << channel << ',' << r.calls << ',' << r.samples << ','
             << r.wall_ns << ',' << r.max_wall_ns << ',' << r.subnormal_fades << ','
             << r.empty_dequeues << ',' << r.produced_frames << ','
-            << r.max_callback_gap_ns << ',' << r.mxcsr << '\n';
+            << r.max_callback_gap_ns << ',' << r.mxcsr << ','
+            << r.empty_running << ',' << r.empty_not_running << '\n';
       }
   }
 private:
@@ -123,9 +125,13 @@ inline void Produced(std::size_t channel, std::size_t frames)
 {
   if (Get().Enabled()) Get().At(channel).produced_frames.fetch_add(frames, std::memory_order_relaxed);
 }
-inline void EmptyDequeue()
+inline void EmptyDequeue(bool core_running)
 {
-  if (Get().Enabled()) Get().At(current_channel).empty_dequeues.fetch_add(1, std::memory_order_relaxed);
+  if (!Get().Enabled()) return;
+  auto& row = Get().At(current_channel);
+  row.empty_dequeues.fetch_add(1, std::memory_order_relaxed);
+  (core_running ? row.empty_running : row.empty_not_running)
+      .fetch_add(1, std::memory_order_relaxed);
 }
 inline void CallbackState(std::uint32_t mxcsr)
 {
