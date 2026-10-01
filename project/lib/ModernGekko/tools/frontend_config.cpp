@@ -1,3 +1,4 @@
+#include "managed_xbox_profile.hpp"
 #include "frontend_config.hpp"
 #include "legacy_xbox_profiles.hpp"
 
@@ -406,55 +407,8 @@ bool GenerateControllerConfig(const fs::path &user_directory,
     output << "[Wiimote" << i + 1 << "]\n";
     if (i >= controllers.size())
       continue;
-    // Keep corner shortcuts at rest; the right stick can reach tutorial/profile
-    // targets between those corners without sending camera or shake input.
-    const std::string manual_aim =
-        "((`Right X+` > 0.15) | (`Right X-` > 0.15) | "
-        "(`Right Y+` > 0.15) | (`Right Y-` > 0.15))";
-    const auto fusion_axis = [&](std::string_view axis, std::string_view preset) {
-      return "(`Shoulder L` & `Shoulder R`) & ((" + std::string(axis) + " & " +
-          manual_aim + ") | (" + std::string(preset) + " & !" + manual_aim + "))\n";
-    };
     output << "Device = " << controllers[i] << '\n'
-           << "# OpenMUA2 Xbox action layout v4\n"
-              "Buttons/A = ((!`Shoulder R`) & (`Button A` | `Button X`)) | hold(`Shoulder L` & `Shoulder R` & (`Button A` | `Button B` | `Button X` | `Button Y`), 0.12)\n"
-              "Buttons/B = ((!`Shoulder R`) & (`Button B` | `Button X`))\n"
-              "Buttons/1 = !`Back` & (!(`Shoulder L` & `Shoulder R`)) & ((`Right X+` > 0.2) | (`Right X-` > 0.2))\n"
-              "Buttons/2 = Start\n"
-              "Buttons/- = `Trigger L` > 0.5\n"
-              "Buttons/+ = `Trigger R` > 0.5\n"
-              "Buttons/Home = \n"
-              "D-Pad/Up = `Pad N` | (`Shoulder R` & !`Shoulder L` & `Button Y`)\n"
-              "D-Pad/Down = `Pad S` | (`Shoulder R` & !`Shoulder L` & `Button A`)\n"
-              "D-Pad/Left = `Pad W` | (`Shoulder R` & !`Shoulder L` & `Button X`)\n"
-              "D-Pad/Right = `Pad E` | (`Shoulder R` & !`Shoulder L` & `Button B`)\n"
-           << "IR/Up = " << fusion_axis("`Right Y+`", "0.50 * (`Button A` | `Button X` | `Button Y`)")
-           << "IR/Down = " << fusion_axis("`Right Y-`", "0.50 * `Button B`")
-           << "IR/Left = " << fusion_axis("`Right X-`", "0.62 * (`Button A` | `Button X`)")
-           << "IR/Right = " << fusion_axis("`Right X+`", "0.62 * (`Button B` | `Button Y`)")
-           << "IR/Hide = !(`Shoulder L` & `Shoulder R`)\n"
-              "Tilt/Left = !`Back` & `Right X-` & !(`Shoulder L` & `Shoulder R`)\n"
-              "Tilt/Right = !`Back` & `Right X+` & !(`Shoulder L` & `Shoulder R`)\n"
-              "Tilt/Dead Zone = 20.0\n"
-              "Shake/X = `Back` & !(`Shoulder L` & `Shoulder R`) & (`Right X+` | `Right X-`)\n"
-              "Swing/Up = `Back` & !(`Shoulder L` & `Shoulder R`) & `Right Y+`\n"
-              "Swing/Down = `Back` & !(`Shoulder L` & `Shoulder R`) & `Right Y-`\n"
-              "Shake/Y = \n"
-              "Shake/Z = \n"
-              "Rumble/Motor = `Motor L` | `Motor R`\n"
-              "Extension = Nunchuk\n"
-              "Nunchuk/Buttons/C = `Button Y` & !`Shoulder R`\n"
-              "Nunchuk/Buttons/Z = `Shoulder L`\n"
-              "Nunchuk/Stick/Up = `Left Y+`\n"
-              "Nunchuk/Stick/Down = `Left Y-`\n"
-              "Nunchuk/Stick/Left = `Left X-`\n"
-              "Nunchuk/Stick/Right = `Left X+`\n"
-              "Nunchuk/Stick/Calibration = 100.00\n"
-              "Nunchuk/Stick/Dead Zone = 15.0\n"
-           << "Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`) & !" << manual_aim << "\n"
-           << "Nunchuk/Shake/Y = \n"
-              "Nunchuk/Shake/Z = \n"
-              "Options/Sideways Wiimote = False\n";
+           << moderngekko::controls::XboxBodyV5;
 #endif
   }
 #ifndef MODERNGEKKO_GAMECUBE_CONTROLLERS
@@ -505,14 +459,14 @@ bool EnsureControllerConfig(const fs::path &user_directory,
       return result;
     };
     bool managed_legacy = false;
-    for (int version : {1, 2, 3})
+    for (int version : {1, 2, 3, 4})
       for (bool persisted : {false, true})
         managed_legacy |= !existing.empty() && normalized(original) ==
             normalized(legacy::Profile(existing, version, persisted));
     if (managed_legacy) {
       const auto suffix = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
       const auto staging = user_directory / (".controller-upgrade-" + suffix);
-      const fs::path backup = destination.string() + ".pre-v4-" + suffix + ".bak";
+      const fs::path backup = destination.string() + ".pre-v5-" + suffix + ".bak";
       const auto staged = ControllerConfigPath(staging);
       const auto cleanup = [&] {
         std::error_code ignored;
@@ -538,7 +492,7 @@ bool EnsureControllerConfig(const fs::path &user_directory,
         return false;
       }
       cleanup();
-      if (message) *message = "updated generated Xbox controls to v4; original: " + backup.string();
+      if (message) *message = "updated generated Xbox controls to v5; original: " + backup.string();
       return true;
     }
 #endif

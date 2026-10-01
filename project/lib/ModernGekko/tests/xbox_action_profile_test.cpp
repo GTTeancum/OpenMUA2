@@ -118,77 +118,47 @@ int main(int argc, char** argv) {
     return true;
   };
   if (!test({}, {}) ||
-      !test({"Button A"}, {"Buttons/A"}) ||
-      !test({"Button B"}, {"Buttons/B"}) ||
-      !test({"Button X"}, {"Buttons/A", "Buttons/B"}) ||
-      !test({"Button Y"}, {"Nunchuk/Buttons/C"}) ||
-      !test({"Start"}, {"Buttons/2"}) ||
-      !test({"Shoulder L"}, {"Nunchuk/Buttons/Z"}) ||
-      !test({"Shoulder R", "Button A"}, {"D-Pad/Down"}) ||
-      !test({"Shoulder R", "Button B"}, {"D-Pad/Right"}) ||
-      !test({"Shoulder R", "Button X"}, {"D-Pad/Left"}) ||
-      !test({"Shoulder R", "Button Y"}, {"D-Pad/Up"}) ||
-      !test({"Shoulder L", "Shoulder R"}, {"Nunchuk/Buttons/Z", "Nunchuk/Shake/X"}) ||
-      !test({"Trigger L"}, {"Buttons/-"}) ||
-      !test({"Trigger R"}, {"Buttons/+"}) ||
-      !test({"Pad N"}, {"D-Pad/Up"}) ||
-      !test({"Pad S"}, {"D-Pad/Down"}) ||
-      !test({"Pad W"}, {"D-Pad/Left"}) ||
-      !test({"Pad E"}, {"D-Pad/Right"}) ||
-      !test({"Left Y+"}, {"Nunchuk/Stick/Up"}) ||
-      !test({"Left Y-"}, {"Nunchuk/Stick/Down"}) ||
-      !test({"Left X+"}, {"Nunchuk/Stick/Right"}) ||
-      !test({"Left X-"}, {"Nunchuk/Stick/Left"}) ||
-      !test({"Right X+"}, {"Buttons/1", "Tilt/Right"}) ||
-      !test({"Right X-"}, {"Buttons/1", "Tilt/Left"}) ||
-      !test({"Back"}, {}) ||
-      !test({"Back", "Right X+"}, {"Shake/X"}) ||
-      !test({"Back", "Right X-"}, {"Shake/X"}) ||
-      !test({"Back", "Right Y+"}, {"Swing/Up"}) ||
-      !test({"Back", "Right Y-"}, {"Swing/Down"}) ||
-      !test({"Back", "Shoulder L", "Shoulder R", "Right Y+"},
-            {"Nunchuk/Buttons/Z", "IR/Up"}) ||
-      !test({"Shoulder L", "Shoulder R", "Right X-"},
-            {"Nunchuk/Buttons/Z", "IR/Left"}) ||
-      !test({}, {})) return 5;
-  // Aim is established before the confirm edge; powers/jump remain suppressed.
-  for (auto& [name, value] : pad->values) value = 0;
-  for (const char* name : {"Shoulder L", "Shoulder R", "Button X"}) pad->values.at(name) = 1;
-  if (expressions.at("Buttons/A")->GetValue() != 0 ||
-      expressions.at("IR/Left")->GetValue() != 0.62 ||
-      expressions.at("IR/Up")->GetValue() != 0.50 ||
-      expressions.at("Nunchuk/Shake/X")->GetValue() != 0 ||
-      expressions.at("D-Pad/Left")->GetValue() != 0) return 7;
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
-  if (expressions.at("Buttons/A")->GetValue() != 1) return 8;
-  if (!test({}, {})) return 9;
-  // Manual aiming takes priority over corner presets and must not shake,
-  // rotate the camera, jump, or select a normal power while confirming.
-  for (auto& [name, value] : pad->values) value = 0;
-  for (const char* name : {"Shoulder L", "Shoulder R", "Button A"}) pad->values.at(name) = 1;
-  pad->values.at("Right X-") = 0.28;
-  pad->values.at("Right Y-") = 0.4;
-  if (std::abs(expressions.at("IR/Left")->GetValue() - 0.28) > 0.00001 ||
-      std::abs(expressions.at("IR/Down")->GetValue() - 0.4) > 0.00001 ||
-      expressions.at("IR/Up")->GetValue() != 0 ||
-      expressions.at("IR/Right")->GetValue() != 0 ||
-      expressions.at("Nunchuk/Shake/X")->GetValue() != 0 ||
-      expressions.at("Buttons/1")->GetValue() != 0 ||
-      expressions.at("D-Pad/Down")->GetValue() != 0 ||
-      expressions.at("Tilt/Left")->GetValue() != 0 ||
-      expressions.at("Buttons/A")->GetValue() != 0) return 10;
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
-  if (expressions.at("Buttons/A")->GetValue() != 1) return 11;
-  if (!test({}, {})) return 12;
-  for (const char* name : {"Shoulder L", "Shoulder R", "Button X"}) pad->values.at(name) = 1;
-  pad->values.at("Right X-") = 0.1;
-  if (expressions.at("IR/Left")->GetValue() != 0.62 ||
-      expressions.at("IR/Up")->GetValue() != 0.5) return 13;
-  if (!test({}, {}) ||
-      !test({"Shoulder L", "Shoulder R", "Right X+"}, {"Nunchuk/Buttons/Z", "IR/Right"}) ||
-      !test({"Shoulder L", "Shoulder R", "Right Y+"}, {"Nunchuk/Buttons/Z", "IR/Up"}) ||
-      !test({"Shoulder L", "Shoulder R", "Right Y-"}, {"Nunchuk/Buttons/Z", "IR/Down"}) ||
-      !test({}, {})) return 14;
+      !test({"Button A"},{"Buttons/A"}) ||
+      !test({"Button B"},{"Buttons/B"}) ||
+      !test({"Button X"},{"Buttons/A","Buttons/B"}) ||
+      !test({"Button Y"},{"Nunchuk/Buttons/C"}) ||
+      !test({"Shoulder L"},{"Nunchuk/Buttons/Z"}) ||
+      !test({"Shoulder R"},{}) ||
+      !test({"Start"},{"Buttons/2"}) ||
+      !test({"Back"},{"Buttons/1","Buttons/2"}) ||
+      !test({"Start","Right X+"},{"Buttons/2"}) ||
+      !test({"Back","Right X-"},{"Buttons/1","Buttons/2"}) ||
+      !test({"Right X+"},{"Buttons/1","Tilt/Right"}) ||
+      !test({"Right X-"},{"Buttons/1","Tilt/Left"}) ||
+      !test({"Left X+"},{"Nunchuk/Stick/Right"}) ||
+      !test({"Left X-"},{"Nunchuk/Stick/Left"}) ||
+      !test({"Left Y+"},{"Nunchuk/Stick/Up"}) ||
+      !test({"Left Y-"},{"Nunchuk/Stick/Down"}) ||
+      !test({"Trigger R"},{}) ||
+      !test({"Trigger R","Button A"},{"D-Pad/Down"}) ||
+      !test({"Trigger R","Button B"},{"D-Pad/Right"}) ||
+      !test({"Trigger R","Button X"},{"D-Pad/Left"}) ||
+      !test({"Trigger R","Button Y"},{"D-Pad/Up"}) ||
+      !test({"Pad N"},{"Buttons/+","D-Pad/Up"}) ||
+      !test({"Pad S"},{"Buttons/+","D-Pad/Down"}) ||
+      !test({"Pad W"},{"Buttons/+","D-Pad/Left"}) ||
+      !test({"Pad E"},{"Buttons/+","D-Pad/Right"}) ||
+      !test({"Trigger R","Pad N"},{}) ||
+      !test({"Trigger L"},{"Buttons/-","Nunchuk/Buttons/Z","Nunchuk/Shake/X"}) ||
+      !test({"Trigger L","Button A"},{"Buttons/-","Nunchuk/Buttons/Z","Buttons/A","D-Pad/Down"}) ||
+      !test({"Trigger L","Button B"},{"Buttons/-","Nunchuk/Buttons/Z","Buttons/A","D-Pad/Right"}) ||
+      !test({"Trigger L","Button X"},{"Buttons/-","Nunchuk/Buttons/Z","Buttons/A","D-Pad/Left"}) ||
+      !test({"Trigger L","Button Y"},{"Buttons/-","Nunchuk/Buttons/Z","Buttons/A","D-Pad/Up"}) ||
+      !test({"Trigger L","Right X+"},{"Nunchuk/Buttons/Z","IR/Right"}) ||
+      !test({"Trigger L","Right X-","Button A"},{"Nunchuk/Buttons/Z","IR/Left","Buttons/A"}) ||
+      !test({"Trigger L","Trigger R","Button A"},{"Buttons/-"}) ||
+      !test({},{})) return 5;
+  // The threshold is strict: exactly 0.5 leaves ordinary attacks active.
+  pad->values["Button A"]=1;pad->values["Trigger R"]=0.5;
+  if(expressions.at("Buttons/A")->GetValue()!=1 || expressions.at("D-Pad/Down")->GetValue()!=0) return 7;
+  pad->values["Trigger R"]=0.5001;
+  if(expressions.at("Buttons/A")->GetValue()!=0 || expressions.at("D-Pad/Down")->GetValue()!=1) return 8;
+  if(!test({},{})) return 9;
   std::cout << checks << " Xbox profile action/isolation cases passed\n";
   // Optional diagnostic output lets a process-local gameplay harness replay
   // the evaluated mapping without injecting OS keyboard or controller events.

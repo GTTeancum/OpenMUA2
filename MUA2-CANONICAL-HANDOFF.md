@@ -1,6 +1,38 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
 
+## Default Xbox layout v5 and profile migration - 2026-10-01
+
+Generated profiles now use the MUA1 Xbox 360 common layout with MUA2 LT+face
+fusion selection. Matching profile sections automatically enable the guarded
+adapters per controller port, without experimental environment flags. Modified
+or extra bindings do not opt a port in. Title/evaluator/candidate hash guards
+remain. Unmodified generated and runtime-persisted v1-v4 files upgrade with an
+exact original backup and rollback on installation failure. Customized files
+remain unchanged; stored device IDs win over unrelated current selections.
+
+Supported Windows JIT build passed 45/45 tests in 5.12s, exit 0; no compiler/linker
+warnings/errors, existing CMake warnings remain. An initial build was deliberately
+stopped to correct a v4-template replacement length; it is not a passing build.
+Tests cover real expression evaluation, trigger threshold, modifier/release cases,
+legacy backup/custom preservation and per-port recognition. An independently
+saved v4 fixture guards against a self-consistent but incorrect migration template.
+
+Five plaza runs completed without override flags: all direct hero slots, expected
+LT+B fusion partner and idle cleanup, statue mission flag 1->3, persisted-v5
+camera/release, and a mixed managed/custom controller profile. Only managed port0
+was rebound in the mixed run; custom port1 kept its native use descriptor and
+profile settings. Original v4 backups were byte-identical; reopening persisted v5
+did not add another backup. One logical CPU, normal clocks, Vulkan3x, Null audio;
+no screenshots/host input. Some functional probes overlapped build tail; no FPS claim.
+
+Back's menu readiness/return timing, visual/physical-controller/audio acceptance,
+fusion cancellation/revival, vertical camera and other pointer interactions remain
+open. Actual untouched user profiles upgrade on the next normal launch; customized
+profiles require deliberate selection of the new layout. Performance acceptance
+is unchanged. Evidence/binary hashes: evidence/windows-20260930/XBOX-V5-MIGRATION.json.
+
+
 ## Experimental Back / Hero Management - 2026-10-01
 
 With OPENMUA2_HERO_BUTTONS=1 and the matching experimental profile, Back now

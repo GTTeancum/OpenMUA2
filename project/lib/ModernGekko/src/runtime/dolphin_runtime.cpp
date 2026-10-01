@@ -5,6 +5,7 @@
 #include "Common/Crypto/SHA1.h"
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
+#include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
 #include "mua2_fusion_buttons.hpp"
 #include "mua2_hero_buttons.hpp"
@@ -71,6 +72,7 @@ static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
               offsetof(StaticRecompModuleDesc, chunk_hashes));
 bool s_fusion_buttons_enabled = false;
 bool s_hero_buttons_enabled = false;
+std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 
 void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
 {
@@ -81,6 +83,7 @@ void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
   if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 256)) !=
                    "C60514A390882682A0BBC0896329C875B6A4AB0C") return;
   auto& state = system.GetPPCState();
+  if (!moderngekko::controls::XboxPortEnabled(s_hero_ports,state.gpr[22])) return;
   if (std::uint64_t(state.gpr[1]) + 0x28 != state.gpr[5]) return;
   const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
     const auto* bytes = memory.GetPointerForRange(address, size);
@@ -111,6 +114,7 @@ void ObserveFusionCandidate(const Core::CPUThreadGuard& guard, u32 entry,
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
   auto& state = system.GetPPCState();
+  if (!moderngekko::controls::XboxPortEnabled(s_fusion_ports,state.gpr[input_register])) return;
   const auto candidate = moderngekko::controls::FusionCandidate(
       read, state.gpr[owner_register], state.gpr[input_register]);
   if (candidate)
@@ -141,6 +145,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
                    "E312A14ED77641256F3D5BE04DC06C21878D6CFF")
     return;
   const u32 object = system.GetPPCState().gpr[15];
+  if (!moderngekko::controls::XboxPortEnabled(s_control_ports,object)) return;
   if ((object & 3) || object < 0x80000000 || object > 0x817f4200)
     return;
   auto* data = memory.GetPointerForRange(object, 0xbe00);
@@ -187,16 +192,16 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     const auto* bytes = memory.GetPointerForRange(address, size);
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
-  if (s_hero_buttons_enabled)
+  if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::MapHeroManagement(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
-  if (s_hero_buttons_enabled)
+  if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::ConsumeCameraMenuAliases(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
-  if (s_hero_buttons_enabled)
+  if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::MapPauseBack(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
-  if (s_fusion_buttons_enabled &&
+  if (moderngekko::controls::XboxPortEnabled(s_fusion_ports,object) &&
       moderngekko::controls::ReadBE(std::span<const u8>(values, value_bytes), 14 * 4) == 0x3f800000)
   {
     bool request_context = false;
@@ -218,7 +223,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes), request_context);
     return;
   }
-  if (s_hero_buttons_enabled)
+  if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::ConsumeHeroMarkers(
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes));
   const bool context = moderngekko::controls::HasCoopInteraction(
@@ -1437,12 +1442,18 @@ RuntimeRunResult Runtime::Run() {
   m_impl->booted = true;
   s_fusion_buttons_enabled = false;
   s_hero_buttons_enabled = false;
-  const char* hero_buttons = std::getenv("OPENMUA2_HERO_BUTTONS");
-  const bool want_hero_buttons = hero_buttons && std::string_view(hero_buttons) == "1";
-  const char* fusion_buttons = std::getenv("OPENMUA2_FUSION_BUTTONS");
-  const bool want_fusion_buttons = fusion_buttons && std::string_view(fusion_buttons) == "1";
-  if (const char* enabled = std::getenv("OPENMUA2_CONTEXT_X");
-      (enabled && std::string_view(enabled) == "1") || want_fusion_buttons || want_hero_buttons) {
+  s_control_ports=s_hero_ports=s_fusion_ports=0;
+  std::ifstream profile(m_impl->config.user_directory / "Config" / "WiimoteNew.ini");
+  const std::string profile_text{std::istreambuf_iterator<char>(profile),std::istreambuf_iterator<char>()};
+  const auto managed_ports=profile.bad()?0:moderngekko::controls::ManagedXboxPorts(profile_text);
+  const auto enabled=[](const char* name) {
+    const char* value=std::getenv(name);return value && std::string_view(value)=="1";
+  };
+  const auto want_hero_ports=std::uint8_t(managed_ports | (enabled("OPENMUA2_HERO_BUTTONS")?15:0));
+  const auto want_fusion_ports=std::uint8_t(managed_ports | (enabled("OPENMUA2_FUSION_BUTTONS")?15:0));
+  const auto want_control_ports=std::uint8_t(want_hero_ports | want_fusion_ports |
+      (enabled("OPENMUA2_CONTEXT_X")?15:0));
+  if (want_control_ports) {
     std::ifstream input(m_impl->metadata.main_dol, std::ios::binary);
     const std::vector<char> bytes{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
@@ -1450,15 +1461,18 @@ RuntimeRunResult Runtime::Run() {
       const Core::CPUThreadGuard guard(Core::System::GetInstance());
       const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
-      if (installed && want_hero_buttons) {
+      if (installed) s_control_ports=want_control_ports;
+      if (installed && want_hero_ports) {
         s_hero_buttons_enabled = HLE::SetExternalStartObserver(guard, 0x80052fac, ObserveHeroCandidate);
+        if (s_hero_buttons_enabled) s_hero_ports=want_hero_ports;
         std::fprintf(stderr, "[openmua2] experimental hero-button observer %s\n",
                      s_hero_buttons_enabled ? "installed" : "rejected");
       }
-      if (installed && want_fusion_buttons) {
+      if (installed && want_fusion_ports) {
         const bool screen = HLE::SetExternalStartObserver(guard, 0x81068a60, ObserveFusionScreenCandidate);
         const bool world = HLE::SetExternalStartObserver(guard, 0x810692c4, ObserveFusionWorldCandidate);
         s_fusion_buttons_enabled = screen && world;
+        if (s_fusion_buttons_enabled) s_fusion_ports=want_fusion_ports;
         std::fprintf(stderr, "[openmua2] experimental fusion-button observers %s\n",
                      s_fusion_buttons_enabled ? "installed" : "rejected");
       }

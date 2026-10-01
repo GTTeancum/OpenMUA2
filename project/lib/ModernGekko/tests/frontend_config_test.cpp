@@ -100,14 +100,14 @@ int main() {
     return 5;
   }
 #else
-  if (!generated.contains("# OpenMUA2 Xbox action layout v4\n") ||
-      !generated.contains("Buttons/2 = Start\n") ||
-      !generated.contains("Buttons/Home = \n") ||
+  if (!generated.contains("# OpenMUA2 Xbox action layout v5\n") ||
+      !generated.contains("Buttons/2 = Start | `Back`\n") ||
+      !generated.contains("Buttons/Home =\n") ||
       !generated.contains("Extension = Nunchuk\n") ||
-      !generated.contains("Nunchuk/Buttons/C = `Button Y` & !`Shoulder R`\n") ||
-      !generated.contains("Nunchuk/Buttons/Z = `Shoulder L`\n") ||
+      !generated.contains("Nunchuk/Buttons/C = !(`Trigger L` > 0.5) & !(`Trigger R` > 0.5) & `Button Y`\n") ||
+      !generated.contains("Nunchuk/Buttons/Z = (`Shoulder L` | (`Trigger L` > 0.5)) & !(`Trigger R` > 0.5)\n") ||
       !generated.contains("Nunchuk/Stick/Up = `Left Y+`\n") ||
-      !generated.contains("Nunchuk/Shake/X = `Shoulder L` & `Shoulder R` & !(`Button A` | `Button B` | `Button X` | `Button Y`) & !") ||
+      !generated.contains("Nunchuk/Shake/X = (`Trigger L` > 0.5) & !(`Trigger R` > 0.5) & !(`Button A` | `Button B` | `Button X` | `Button Y`) & !") ||
       !generated.contains("Options/Sideways Wiimote = False\n") ||
       !generated.contains("[Wiimote2]\nDevice = SDL/1/Second Controller\n") ||
       generated.contains("Buttons/Home = Guide\n")) {
@@ -146,13 +146,20 @@ int main() {
   const auto read = [](const fs::path& path) {
     std::ifstream input(path); return std::string(std::istreambuf_iterator<char>(input), {});
   };
-  for (int version : {1, 2, 3}) {
+  const std::vector<std::string> fixture_devices{"SDL/0/Test Controller"};
+  const auto fixture_path=fs::path(__FILE__).parent_path()/"data"/"xbox_v4_generated.ini";
+  auto expected_v4=moderngekko::frontend::legacy::Profile(fixture_devices,4);
+  // INI trailing whitespace has no meaning; keep the independent fixture clean.
+  for(auto at=expected_v4.find(" \n");at!=std::string::npos;at=expected_v4.find(" \n"))
+    expected_v4.erase(at,1);
+  if(read(fixture_path)!=expected_v4) return 25;
+  for (int version : {1, 2, 3, 4}) {
    for (bool persisted : {false, true}) {
     const auto original = moderngekko::frontend::legacy::Profile(netplay_config.controllers, version, persisted);
     { std::ofstream output(config_path); output << original; }
     // The devices in the old profile win over an unrelated current selection.
     if (!moderngekko::frontend::EnsureControllerConfig(directory, "SDL/9/Other", &error) ||
-        !read(config_path).contains("# OpenMUA2 Xbox action layout v4") ||
+        !read(config_path).contains("# OpenMUA2 Xbox action layout v5") ||
         moderngekko::frontend::ReadConfiguredControllers(directory) != netplay_config.controllers)
       return 20;
     bool backup_found = false;

@@ -1,3 +1,4 @@
+#include "managed_xbox_profile.hpp"
 #include "mua2_action_bindings.hpp"
 #include <array>
 #include <iostream>
@@ -112,5 +113,14 @@ int main() {
   if(MapPauseBack(active,values) || ConsumeCameraMenuAliases(active,values)) return 25;
   if(MapHeroManagement(std::span(active).first(19),values) ||
      MapHeroManagement(active,std::span(values).first(495))) return 26;
+  const std::string managed="[Wiimote1]\nDevice = SDL/0/Test\n"+std::string(XboxBodyV5);
+  if(ManagedXboxPorts(managed)!=1 || ManagedXboxPorts(managed+"Buttons/A = Other\n")!=0) return 27;
+  auto changed=managed;auto at=changed.find("Dead Zone = 15.0");
+  changed.replace(at,16,"Dead Zone = 22.0");
+  if(ManagedXboxPorts(changed)!=0) return 28;
+  const std::string second="[Wiimote2]\nDevice = SDL/1/Test\n"+std::string(XboxBodyV5);
+  if(ManagedXboxPorts(changed+second)!=2 || ManagedXboxPorts(managed+second)!=3) return 29;
+  if(!XboxPortEnabled(2,0x81313274+0xbe00) || XboxPortEnabled(2,0x81313274) ||
+     XboxPortEnabled(15,0x81313275) || XboxPortEnabled(15,0x81313274+4*0xbe00)) return 30;
   std::cout << "Transactional action binding checks passed\n";
 }

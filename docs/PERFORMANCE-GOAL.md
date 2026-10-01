@@ -2118,7 +2118,7 @@ costs under the whole-process one-core limit, then close remaining control gaps.
 Private assets, saves, captures and logs stay in .local. User StaticRecomp edits,
 Build-With-Log.cmd and the unfinished static experiment stash remain preserved.
 
-## Xbox / XInput controls — current quick reference (v4)
+## Historical Xbox / XInput quick reference (v4; superseded)
 
 This table describes the implemented layout, not the unfinished PS2 target.
 The input adapter uses an Xbox gamepad; physical Wiimotes and mouse aiming are
@@ -2160,7 +2160,7 @@ printed pages 4–5, and [PS2 review](https://www.cheatcc.com/articles/marvel-ul
 The current port uses B for back/resume. Audible quality remains unverified;
 no physical controller or menu visuals were assessed in the latest checks.
 
-## Corrected target quick reference (not implemented)
+## Historical corrected target (now integrated as v5 below)
 
 MUA1 Xbox 360 is now the required template: A light, B heavy/charge, X use/grab,
 Y jump, LB block/dodge, RT + face buttons powers, D-pad direct hero selection.
@@ -2186,3 +2186,31 @@ had no Running-state empty reads and no queue trims after bucket0. These muted
 numeric results do not establish audible quality or satisfy any visual/FPS gate.
 Playback and all performance requirements remain unchanged. Evidence:
 evidence/windows-20260930/AUDIO-QUEUE-TRIMS.json.
+
+## Current Xbox / XInput quick reference - v5
+
+This supersedes the historical v4 table above. New profiles use v5; untouched
+v1-v4 profiles upgrade with backups on launch. Customized profiles are preserved.
+
+| Input | Mapping |
+| --- | --- |
+| Left stick | Move |
+| Right stick left/right | Camera; LT reserves the stick for pointer aiming |
+| A | Light attack / menu confirm |
+| B | Heavy attack / menu back |
+| X | Grab / contextual use |
+| Y | Jump / character traversal |
+| LB | Block |
+| RT + A/B/X/Y | Four power slots |
+| D-pad Up/Right/Down/Left | Direct roster slots 1/2/3/4; menu navigation |
+| LT + A/B/X/Y | Fusion partner roster slots 1/2/3/4; self rejected |
+| Start/Menu | Pause / resume |
+| Back/View | Hero Management; menu readiness/return timing remains under validation |
+| A repeatedly, then B, in the tested statue interaction | Shake, then lift |
+
+Game UI prompts have not been replaced. The native hero menu test required waiting
+before A then B returned to gameplay; early inputs failed. Visual/physical controller,
+audio, cancellation/revival, vertical camera and other pointer interactions remain
+unverified. Five single-core plaza probes and 45/45 Windows tests support this
+integration; they do not satisfy the sustained FPS/visual/audio goal. See
+[evidence](../evidence/windows-20260930/XBOX-V5-MIGRATION.json).

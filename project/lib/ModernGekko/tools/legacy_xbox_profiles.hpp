@@ -122,8 +122,15 @@ Nunchuk/Shake/Y =
 Nunchuk/Shake/Z = 
 Options/Sideways Wiimote = False
 )PROFILE";
+inline const std::string BodyV4 = [] {
+  std::string body(BodyV3);
+  body.replace(body.find("layout v3"),9,"layout v4");
+  body.replace(body.find("Rumble/Motor = Motor"),std::string_view("Rumble/Motor = Motor").size(),"Rumble/Motor = `Motor L` | `Motor R`");
+  return body;
+}();
 inline std::string Profile(std::span<const std::string> devices, int version, bool persisted = false) {
-  auto body = version == 1 ? BodyV1 : version == 2 ? BodyV2 : BodyV3;
+  auto body = version == 1 ? BodyV1 : version == 2 ? BodyV2 :
+      version == 3 ? BodyV3 : std::string_view(BodyV4);
   // Runtime INI persistence omits the generated banner and empty sections.
   if (persisted) body.remove_prefix(body.find('\n') + 1);
   std::string result;
