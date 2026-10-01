@@ -56,5 +56,21 @@ int main() {
   if (NormalizeChordUse(active,values) || values!=original) return 10;
   if (NormalizeChordUse(std::span(active).first(19),values) ||
       NormalizeChordUse(active,std::span(values).first(values.size()-1))) return 11;
+  active.fill(0); values.fill(0);
+  auto idle_active=active; auto idle_values=values;
+  if (MapPauseBack(active,values) || active!=idle_active || values!=idle_values) return 12;
+  put(active,4,1u<<7); put(values,39*4,0x3f800000);
+  for (unsigned id : {9u,10u,11u,21u,56u,58u,103u,123u}) {
+    put(active,id/32*4,ReadBE(active,id/32*4)|(1u<<(id%32)));
+    put(values,id*4,0x3f800000);
+  }
+  if (!MapPauseBack(active,values) || ReadBE(values,90*4)!=0x3f800000 ||
+      !(ReadBE(active,8)&(1u<<26)) || ReadBE(values,39*4)!=0x3f800000) return 13;
+  for (unsigned id : {9u,10u,11u,21u,56u,58u,103u,123u})
+    if ((ReadBE(active,id/32*4)&(1u<<(id%32))) || ReadBE(values,id*4)) return 14;
+  auto mapped_active=active; auto mapped_values=values;
+  if (!MapPauseBack(active,values) || active!=mapped_active || values!=mapped_values) return 15;
+  if (MapPauseBack(std::span(active).first(19),values) ||
+      MapPauseBack(active,std::span(values).first(495))) return 16;
   std::cout << "Transactional action binding checks passed\n";
 }

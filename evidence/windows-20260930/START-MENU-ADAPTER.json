@@ -1,0 +1,306 @@
+{
+  "change": "Experimental Start pause/resume via native Pause39 and MenuBack90, without synthetic B input",
+  "enabled_by": "OPENMUA2_HERO_BUTTONS=1; default remains off",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 45,
+    "native_tests_failed": 0,
+    "test_seconds": 8.38,
+    "log": ".local/logs/start-menu-build.log"
+  },
+  "runs": [
+    {
+      "run": "start-menu-adapter-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ]
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            39,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            39,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "limitations": "Guarded numeric pause/resume observations only; no visual, audio, physical-controller or FPS acceptance.",
+      "run_manifest_sha256": "6cc36c800af7a0df6c81720f25d932c393d2c7e97144803911bcd4e9c518870b"
+    },
+    {
+      "run": "start-menu-held-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "position_or_health_changed_slots": {
+        "active1 to active2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          78
+        ],
+        "paused1 to paused2": [],
+        "start1 to start2": [
+          0,
+          1,
+          2,
+          3,
+          65,
+          66,
+          67,
+          70,
+          73,
+          77,
+          78
+        ]
+      },
+      "input_actions": {
+        "active1": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "active2": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "b-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "pause": [
+          [
+            5,
+            39,
+            89,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "paused": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-b": [
+          [
+            5,
+            10,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-settle": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ],
+        "resume-start": [
+          [
+            5,
+            39,
+            89,
+            90
+          ],
+          [],
+          [],
+          []
+        ],
+        "start-wait": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      "limitations": "Guarded numeric pause/resume observations only; no visual, audio, physical-controller or FPS acceptance.",
+      "run_manifest_sha256": "ec4681f504323bf2da12337566a85f18f2bfef82e2d03af35ecb702e229d4c68"
+    }
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16134144,
+      "sha256": "7e22ca612da424e28281883f301344311a7cf5f9dc84d7dbdcf11c050c589972"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "610ad244c85df13c313161ffa27600279c4a53bc8bcce4bea5d36786fde2228e"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204544,
+      "sha256": "661b17c77983fa61479c30ce47c3f4095786f20132316532e76d107781cd5206"
+    },
+    "moderngekko_mua2_action_bindings_test.exe": {
+      "bytes": 22016,
+      "sha256": "5420409ea91c29a8a3ca95d346c69e28ca076cc0d988ef0c9e363978b993d668"
+    }
+  },
+  "limitations": [
+    "Null audio, no screenshots or host input; no visual/audio/physical-controller/FPS acceptance",
+    "First live run overlapped build tail; no performance measurements",
+    "Start+A retains native MenuAccept89; initial analyzer rejected this extra menu action and was corrected after inspecting the input IDs",
+    "Default profile migration and broader menu/fusion/interaction combinations remain unvalidated"
+  ],
+  "prototype": {
+    "run": "start-back-menu-20261001",
+    "exit_code": 0,
+    "result": "Native pause/resume succeeded but synthetic B leaked SmashAttack10; not shipped"
+  }
+}

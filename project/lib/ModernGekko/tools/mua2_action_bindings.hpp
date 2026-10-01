@@ -61,4 +61,23 @@ inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
   return true;
 }
 
+// Experimental Xbox Start carries native pause and menu-back together. Do not
+// emulate the Wiimote B source: it also means smash/grab/context lift.
+inline bool MapPauseBack(std::span<std::uint8_t> active,
+                         std::span<std::uint8_t> values) {
+  if (active.size()!=20 || values.size()!=124*4 ||
+      !(ReadBE(active,4)&(1u<<7)) || ReadBE(values,39*4)!=0x3f800000)
+    return false;
+  const auto put=[](std::span<std::uint8_t> b, unsigned p, std::uint32_t v) {
+    for(unsigned i=0;i<4;++i) b[p+i]=std::uint8_t(v>>(24-8*i));
+  };
+  for (unsigned id : {9u,10u,11u,21u,56u,58u,103u,123u}) {
+    put(active,(id/32)*4,ReadBE(active,(id/32)*4)&~(1u<<(id%32)));
+    put(values,id*4,0);
+  }
+  put(active,8,ReadBE(active,8)|(1u<<26));
+  put(values,90*4,0x3f800000);
+  return true;
+}
+
 }

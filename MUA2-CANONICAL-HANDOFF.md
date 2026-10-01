@@ -1,5 +1,29 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+
+## Experimental Start pause/resume - 2026-10-01
+
+The guarded input observer now maps Start to native Pause39 and MenuBack90 when
+OPENMUA2_HERO_BUTTONS=1. It suppresses attack/grab/use, interaction shake/lift and
+hero-menu actions during Start. The experimental profile still maps only Start to
+the native pause source; no synthetic B source is needed. Defaults remain v4.
+
+Two single-logical-CPU, normal-clock, Vulkan3x plaza probes exited 0. Guarded
+entity position/health changed before pause, froze between paused observations,
+and changed again after the second Start. Both 200ms Start and 1200ms Start+A
+worked; active input returned to CursorY-only baseline on release, other ports
+remained inactive, and Start carried no attack/use or hero-menu action. Start+A
+retains native MenuAccept89; the first analysis assertion was too narrow and was
+corrected after inspecting that input. The discarded synthetic-B prototype leaked
+SmashAttack10. Null audio, no screenshots or host input. Numeric evidence does not
+verify visual menu behavior, audible quality, physical controllers or combat FPS.
+
+Supported Windows JIT build exited 0: 45/45 native tests, 8.38s. No compiler/linker
+warnings or errors; existing CMake configuration warnings remain. The first probe
+overlapped the build tail and is not performance evidence. Full control migration,
+other simultaneous menu/fusion/interaction inputs, audio and FPS acceptance remain
+open. Evidence/binary hashes: evidence/windows-20260930/START-MENU-ADAPTER.json.
+
 ## Audio queue trims and native output log - 2026-10-01
 
 Added opt-in counters for queue-trim events, discarded granules and Running/not-

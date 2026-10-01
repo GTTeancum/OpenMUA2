@@ -187,6 +187,9 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     const auto* bytes = memory.GetPointerForRange(address, size);
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
+  if (s_hero_buttons_enabled)
+    moderngekko::controls::MapPauseBack(
+        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
   if (s_fusion_buttons_enabled &&
       moderngekko::controls::ReadBE(std::span<const u8>(values, value_bytes), 14 * 4) == 0x3f800000)
   {
