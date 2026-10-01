@@ -1,5 +1,30 @@
 # Current status — GitHub main
 
+## Audio-enabled v5 plaza checkpoint - 2026-10-01
+
+The default v5 layout completed the plaza diagnostic route with Cubeb/WASAPI
+output enabled at 70% in a disposable profile. Full JIT, one logical CPU,
+normal clocks and the existing Vulkan 3x EFB / 1920x1080 preset were retained.
+The route exited 0. Neither DMA nor music recorded an empty read while Core
+was Running. Each had two queue trims, all in bucket 0; none occurred later.
+All empty reads occurred in the final bucket with Core explicitly not Running.
+The maximum callback gap was 11.0398ms. Native output logged stereo 48kHz and
+a 1056-frame render buffer, with no logged reinitialization or failure.
+
+Sixteen guarded entity probes retained at least three living heroes and 3-7
+positive-health opponents; every adjacent pair showed position and health
+changes. Private pre-volume PCM spans 57.292s, peak 26209, zero clipped samples.
+These are bounded diagnostic observations, not audible or visual acceptance.
+No FPS trace, screenshots, host input or physical-controller test was performed.
+The v5 route changes prevent an identical behavioral comparison with v4.
+
+No playback, buffer or clock change is justified by this run. Audible crackling,
+visual correctness and sustained combat FPS acceptance remain unverified.
+Reuses the verified Windows runner from the 45/45-test v5 build; no source change
+or rebuild. Raw game audio/data remain private. Evidence and hashes:
+evidence/windows-20260930/XBOX-V5-AUDIO.json.
+
+
 
 ## Default Xbox layout v5 and profile migration - 2026-10-01
 

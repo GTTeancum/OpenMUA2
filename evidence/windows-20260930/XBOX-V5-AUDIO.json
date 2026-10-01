@@ -1,0 +1,189 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "556f4b14d9984b666c124c6226bf3367ed6b4090",
+  "scope": "Audio-enabled v5 plaza diagnostic checkpoint; no source or playback changes.",
+  "private_run": ".local/automation/v5-audio-plaza-20261001",
+  "runner_sha256": "231daf7c63a007c4212070dcb879cc508b21d0460edbe44aaa9dbcefbdf0191f",
+  "route_completed": true,
+  "exit_code": 0,
+  "audio": {
+    "schema": 1,
+    "scope": "Mixer empty reads and queue trims; not audible dropouts, combat boundaries or device playback.",
+    "covered_buckets": 58,
+    "initial_complete_buckets_without_main_empty_reads": 57,
+    "final_bucket_second": 57,
+    "overflow_bucket_present": false,
+    "core_state_counters_available": true,
+    "queue_trim_counters_available": true,
+    "channels": {
+      "dma": {
+        "total_empty_dequeues": 53,
+        "before_final_bucket_empty_dequeues": 0,
+        "final_bucket_empty_dequeues": 53,
+        "nonzero_buckets": [
+          {
+            "second": 57,
+            "empty_dequeues": 53
+          }
+        ],
+        "empty_while_core_running": 0,
+        "empty_while_core_not_running": 53,
+        "queue_trims": {
+          "events": 2,
+          "discarded_granules": 22,
+          "events_running": 2,
+          "events_not_running": 0,
+          "nonzero_buckets": [
+            {
+              "second": 0,
+              "queue_trim_events": 2,
+              "queue_trimmed_granules": 22,
+              "queue_trim_running": 2,
+              "queue_trim_not_running": 0
+            }
+          ]
+        }
+      },
+      "music": {
+        "total_empty_dequeues": 74,
+        "before_final_bucket_empty_dequeues": 0,
+        "final_bucket_empty_dequeues": 74,
+        "nonzero_buckets": [
+          {
+            "second": 57,
+            "empty_dequeues": 74
+          }
+        ],
+        "empty_while_core_running": 0,
+        "empty_while_core_not_running": 74,
+        "queue_trims": {
+          "events": 2,
+          "discarded_granules": 30,
+          "events_running": 2,
+          "events_not_running": 0,
+          "nonzero_buckets": [
+            {
+              "second": 0,
+              "queue_trim_events": 2,
+              "queue_trimmed_granules": 30,
+              "queue_trim_running": 2,
+              "queue_trim_not_running": 0
+            }
+          ]
+        }
+      }
+    },
+    "max_callback_gap_ms": 11.0398,
+    "limitations": [
+      "Final bucket is retained, not discarded or classified as shutdown.",
+      "One empty dequeue is a granule read, not one audible dropout.",
+      "Queue trims count discarded granules; they do not prove an audible defect.",
+      "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+      "Bucket 1200, if present, combines all later observations.",
+      "Core Running includes in-game menus; not-running can include host pause or shutdown."
+    ]
+  },
+  "functional": {
+    "exit_code": 0,
+    "entity_probes": 16,
+    "heroes_alive_min": 3,
+    "opponents_positive_range": [
+      3,
+      7
+    ],
+    "between_probe_changes": [
+      {
+        "position": 11,
+        "health": 4
+      },
+      {
+        "position": 11,
+        "health": 6
+      },
+      {
+        "position": 11,
+        "health": 6
+      },
+      {
+        "position": 10,
+        "health": 5
+      },
+      {
+        "position": 9,
+        "health": 3
+      },
+      {
+        "position": 7,
+        "health": 3
+      },
+      {
+        "position": 6,
+        "health": 5
+      },
+      {
+        "position": 7,
+        "health": 7
+      },
+      {
+        "position": 9,
+        "health": 3
+      },
+      {
+        "position": 10,
+        "health": 3
+      },
+      {
+        "position": 10,
+        "health": 3
+      },
+      {
+        "position": 10,
+        "health": 4
+      },
+      {
+        "position": 10,
+        "health": 3
+      },
+      {
+        "position": 10,
+        "health": 2
+      },
+      {
+        "position": 10,
+        "health": 2
+      }
+    ],
+    "pcm_seconds": 57.292,
+    "pcm_peak": 26209,
+    "pcm_clipped_samples": 0,
+    "scope": "Bounded native entity and pre-volume PCM observations; not audible or visual acceptance."
+  },
+  "max_callback_work_ms": 1.5905,
+  "output": {
+    "backend": "Cubeb/WASAPI",
+    "volume_percent": 70,
+    "sample_rate_hz": 48000,
+    "channels": 2,
+    "render_buffer_frames": 1056,
+    "logged_reinitialization_or_failure": false
+  },
+  "configuration": "Full JIT, one logical CPU (CPU2/mask4), normal clocks, existing Vulkan 3x EFB / 1920x1080 preset; v5 profile without adapter override flags.",
+  "private_artifact_sha256": {
+    "run.json": "b3cc6035ca23b329ec96c42680b31df745c7c397fa88ade349943c4dfa2c1447",
+    "result.json": "82df72b23179858a630e0ce45c5b59fd642d0dd072b8076e4085c6ea1ab27e95",
+    "audio-profile.csv": "1337c1553f59cb1358841a631b8b42582dc1782738bdc443561570ed6076f3b7",
+    "functional-analysis.json": "8f7f6190aa5fcee89e16bb1bca75765d7ede49ed3b49f58e97a6c352018a7026",
+    "user/Logs/dolphin.log": "0aa427ef95e84448f7cdf55393ea3032ec4940d0e41e8cf23da0cc2b389b0790",
+    "user/Config/Dolphin.ini": "319a766f2215536d60bb247fce809596b5f6eed0f52debd70b15379f98cd9b59",
+    "user/Config/WiimoteNew.ini": "048755b04cd5d0af540d19e6acdafbdd28d1f166f2e33d460cc8c87fea6dead7"
+  },
+  "limitations": [
+    "Pre-volume PCM is not an endpoint recording or listening assessment. Audible crackling remains unverified.",
+    "No frame timing capture, FPS claim, screenshots, host input or physical-controller validation.",
+    "Entity observations show sampled movement and damage, not continuous visual/effect correctness.",
+    "Route changes to v5 RT powers, D-pad hero selection and X context-use prevent an identical v4 behavior comparison.",
+    "Startup trims and terminal not-Running empty reads are retained; bucket association does not prove exact cause.",
+    "Three-repeat and ten-minute varied combat acceptance remain incomplete."
+  ],
+  "build": "Reuses supported Windows build from XBOX-V5-MIGRATION.json: 45/45 tests, exit0. No rebuild necessary for this evidence-only checkpoint."
+}
