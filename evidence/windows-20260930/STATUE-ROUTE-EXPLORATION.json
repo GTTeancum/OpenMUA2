@@ -1,0 +1,83 @@
+{
+  "scope": "Route exploration only; no FPS acceptance or audible verification",
+  "source_commit": "ccc6e8fac52af53639d2261ca16758fd81a45550",
+  "settings": "Full JIT, one logical CPU, Vulkan 3x EFB, normal game speed, formatter experiment on (default off), Cubeb muted with audio telemetry",
+  "runs": [
+    {
+      "private_run": ".local\\automation\\statue-marker-probe-20261001",
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "state_sha256": "e533ecc961fc31ca9b67df61c9bb1e83eeb288adcf13246bd0ee7fbb4c5a3004",
+      "exit_code": 0,
+      "screenshots_reviewed_sequentially": [
+        {
+          "name": "00-use.png",
+          "sha256": "490b93f4b5d8449e071aa03f6112d9d43d49eb65063a2958105e868e8f4f2ada"
+        },
+        {
+          "name": "01-use.png",
+          "sha256": "7311bd7a7635555d297a9375e4bee14e326a5416071cabf6e4568ddf52d2dac9"
+        },
+        {
+          "name": "02-use.png",
+          "sha256": "64031f711d1fa2708c6772e1348d5f081a8cf7dab2c6a7958329fa4a915065e5"
+        }
+      ],
+      "failed_commands": []
+    },
+    {
+      "private_run": ".local\\automation\\statue-pedestal-probe-20261001",
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "state_sha256": "e533ecc961fc31ca9b67df61c9bb1e83eeb288adcf13246bd0ee7fbb4c5a3004",
+      "exit_code": 0,
+      "screenshots_reviewed_sequentially": [
+        {
+          "name": "00-pedestal.png",
+          "sha256": "9ddd9bf85f74f65aa961a7c33f227215e6e3074fbd4fa789dc524c3d5fd7bce1"
+        },
+        {
+          "name": "01-pedestal.png",
+          "sha256": "c409030f366b4e60ed012b2072f73e982f3b1fb6a8ac5e713ffa06c75ba1944e"
+        },
+        {
+          "name": "02-pedestal.png",
+          "sha256": "6e880dd8bde9771e5e0ab6e4539fe0d527eb24b6821c205f6fe683715914eb65"
+        },
+        {
+          "name": "03-pedestal.png",
+          "sha256": "c14f22330627f664ccea7c5a024509a2a6cc43051e1ea53278e97eb7146fccaf"
+        }
+      ],
+      "failed_commands": []
+    },
+    {
+      "private_run": ".local\\automation\\statue-flight-probe-20261001",
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "state_sha256": "f67524aef0e93f680160616c0ad447f35e7d0029a90d9076a0600510908e510a",
+      "exit_code": 0,
+      "screenshots_reviewed_sequentially": [
+        {
+          "name": "00-flight.png",
+          "sha256": "120189358ee3a92bdba0d7950b2987ca6eb6f1720817a032c9e723f497b6a39c"
+        },
+        {
+          "name": "01-flight.png",
+          "sha256": "9623266259a30042eb598b5b1b13c3026d1fb7d31e9923294f9ad6b81c5e7b6e"
+        },
+        {
+          "name": "02-flight.png",
+          "sha256": "c9db02828b894dbb13f1cb4fb403dafa820a29f52f74d82a988c877ab5677b87"
+        }
+      ],
+      "failed_commands": []
+    }
+  ],
+  "observations": [
+    "Statue interaction not activated; statue remains intact.",
+    "Marker probe and flight probe include Iron Man knockout; these endpoints are unsuitable for the varied-combat acceptance route.",
+    "Street, statue, enemies, team HUD and combat effects inspected in all ten native screenshots; snapshots do not prove continuous visual correctness.",
+    "Read-only inspection of private mission package confirms scripted statue interaction stops repeating spawns on completion. Trigger string table suggests raised interaction region; jumping/flight did not yet confirm its correct approach."
+  ],
+  "next_action": "Restore earlier healthy state; establish pedestal approach and use activation before diagnosing motion mapping. Do not repeat low-health endpoint probes.",
+  "unchanged": "No source/binary/profile-default change; no build or test suite rerun. Prior Windows validation remains 39/39 native and 141 tooling passed, one skipped.",
+  "goal": "Unmet; three qualifying repeats and ten-minute varied combat, frame pacing and audio correctness remain unproven."
+}

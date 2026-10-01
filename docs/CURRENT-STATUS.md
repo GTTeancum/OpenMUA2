@@ -1,5 +1,25 @@
 # Current status — GitHub main
 
+## Combat-route interaction investigation - 2026-10-01
+
+Three private route probes completed with exit0; all ten native screenshots
+were inspected sequentially. Ground approach, jumps and attempted flight did
+not activate the statue interaction. Two probes include Iron Man knockout;
+these low-health endpoints must not become acceptance starting states.
+Read-only inspection of the private mission package confirms a scripted statue
+interaction whose completion stops repeating enemy spawns. A raised trigger
+region is a navigation lead, not a verified input fix. Next restore an earlier
+healthy state and establish the pedestal approach/use activation before changing
+motion mappings. Extracted mission data and captures remain private under .local.
+
+No source, binary or normal profile setting changed. No new FPS acceptance or
+audible playback claim; Cubeb ran muted, formatter experiment ON (default OFF).
+Prior build/tests remain 39/39 native and 141 tooling passed, one skipped; not
+rerun for this evidence-only checkpoint. Three qualifying repeats and ten-minute
+varied combat remain required. Goal unmet. Evidence:
+evidence/windows-20260930/STATUE-ROUTE-EXPLORATION.json.
+
+
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
 ## Audio buffer diagnostic, normal settings unchanged - 2026-10-01
