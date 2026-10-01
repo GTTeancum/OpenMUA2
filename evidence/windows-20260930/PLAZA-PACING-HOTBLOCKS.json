@@ -1,0 +1,1727 @@
+{
+  "scope": "Plaza-only telemetry; screenshots disabled; no visual or audible verification. Configuration diagnostic, not FPS acceptance.",
+  "conditions": "Same runner 7a4e0b314737c8ab9bf32673787ce91c8a7887323fb9efa0f0ca7175653582db, full JIT, whole-process CPU mask1, Vulkan3x EFB, normal game speed/clocks, Cubeb Volume0, formatter explicitly on (default off). RushFramePresentation and SmoothEarlyPresentation enabled together only in copied private profile. No source/binary/default-profile change.",
+  "runs": {
+    "plaza-spill-spans-20261001": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14616,
+        "last_frame": 16013,
+        "emulated_ticks": 33981047100,
+        "intervals": 1397,
+        "seconds": 46.6141289,
+        "average_fps": 29.96945417551287,
+        "frame_ms": {
+          "median": 33.36000000000183,
+          "p95": 37.081900000000445,
+          "p99": 48.77059999999922,
+          "max": 67.5289000000001
+        },
+        "one_percent_low_fps": 18.452013167356547,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 720,
+        "frames_over_50ms": 10,
+        "longest_consecutive_over_50ms_seconds": 0.06752890000000011,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.61323333333334,
+        "emulation_speed_percent": 99.99807876562795,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1397
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.00666666666483684,
+          "p99": 15.403933333332551,
+          "min": -14.92976666666558,
+          "max": 34.16223333333345
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "exit_code": 0,
+      "route_completed": true,
+      "future_deadline_waits": 9538,
+      "overshoot_p99_ms": 0.33415,
+      "overshoot_max_ms": 2.687136,
+      "overshoot_over_1ms": 13,
+      "runtime_spans": {
+        "frame_cpu_scope": "Cumulative callback-thread/process counters; -1 or missing means unavailable. Windows CPU time is quantized; sequential sampling is not atomic. Cycles are not wall time. Callback thread is the guest CPU thread only with single-thread rendering.",
+        "frame_cpu_window": {
+          "thread_cpu_ns": 32218750000,
+          "process_cpu_ns": 33921875000,
+          "thread_cycles": 120051807203
+        },
+        "scope": "elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed",
+        "gpu_decode_scope": "Only CPU-side FIFO dispatches >=100us are traced; includes nested rendering, waits and preemption. Coverage is a lower bound, not total decoding time.",
+        "first_frame": 14616,
+        "last_frame": 16013,
+        "seconds": 46.6141289,
+        "cpu_thread": 18119652971207107707,
+        "totals": {
+          "gpu_decode_slow": {
+            "calls": 4239,
+            "union_ms": 1168.9446,
+            "max_span_ms": 16.9868,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "gpu_fence": {
+            "calls": 1306,
+            "union_ms": 8.0798,
+            "max_span_ms": 0.7962,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "throttle": {
+            "calls": 17122,
+            "union_ms": 12985.1495,
+            "max_span_ms": 6.0637,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_analyze": {
+            "calls": 13295,
+            "union_ms": 47.8384,
+            "max_span_ms": 1.2598,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_emit": {
+            "calls": 13295,
+            "union_ms": 333.8593,
+            "max_span_ms": 2.1719,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_finalize": {
+            "calls": 13295,
+            "union_ms": 96.688,
+            "max_span_ms": 0.4798,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_compile": {
+            "calls": 13295,
+            "union_ms": 501.4897,
+            "max_span_ms": 2.2323,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "gpu_submit": {
+            "calls": 1397,
+            "union_ms": 98.0471,
+            "max_span_ms": 1.2367,
+            "threads": [
+              6260512966986087882
+            ]
+          },
+          "present": {
+            "calls": 1397,
+            "union_ms": 179.1454,
+            "max_span_ms": 1.7393,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_backpatch": {
+            "calls": 88,
+            "union_ms": 58.7802,
+            "max_span_ms": 1.3596,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_links": {
+            "calls": 76,
+            "union_ms": 11.5638,
+            "max_span_ms": 0.4706,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "jit_ranges": {
+            "calls": 18,
+            "union_ms": 3.5633,
+            "max_span_ms": 0.4775,
+            "threads": [
+              18119652971207107707
+            ]
+          },
+          "pipeline_compile": {
+            "calls": 20,
+            "union_ms": 5.4254,
+            "max_span_ms": 2.0981,
+            "threads": [
+              4455754784841863264,
+              18119652971207107707
+            ]
+          },
+          "shader_compile": {
+            "calls": 2,
+            "union_ms": 13.4665,
+            "max_span_ms": 7.8838,
+            "threads": [
+              4455754784841863264
+            ]
+          }
+        },
+        "jit_instruction_spans": [],
+        "jit_emission_counters_scope": "Whole spans fully inside window; CPU ns are quantized, -1 unavailable; cycles are not wall time",
+        "longest_jit_emissions": [
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158718526400,
+            "end_ns": 358158720698300,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 15625000,
+            "cycles": 8043815,
+            "address": 2147904452,
+            "instructions": 49
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158754084300,
+            "end_ns": 358158755475000,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3932962,
+            "address": 2163493140,
+            "instructions": 18
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158956506700,
+            "end_ns": 358158957800900,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3844206,
+            "address": 2150689356,
+            "instructions": 28
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358159090606800,
+            "end_ns": 358159091891300,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4049028,
+            "address": 2147846004,
+            "instructions": 32
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358159058829800,
+            "end_ns": 358159060051200,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3860516,
+            "address": 2163131048,
+            "instructions": 20
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358157286481000,
+            "end_ns": 358157287678700,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4437052,
+            "address": 2148492660,
+            "instructions": 69
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358157048800000,
+            "end_ns": 358157049991700,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4386984,
+            "address": 2147894036,
+            "instructions": 32
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358156551115900,
+            "end_ns": 358156552284000,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3726623,
+            "address": 2162593316,
+            "instructions": 126
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158850074400,
+            "end_ns": 358158851234200,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4291401,
+            "address": 2163036152,
+            "instructions": 80
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158958409400,
+            "end_ns": 358158959550500,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3559730,
+            "address": 2150665464,
+            "instructions": 55
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158687133200,
+            "end_ns": 358158688272900,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 15625000,
+            "cycles": 4022856,
+            "address": 2147552564,
+            "instructions": 26
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358159557900700,
+            "end_ns": 358159559027600,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3547973,
+            "address": 2147959712,
+            "instructions": 25
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158953383000,
+            "end_ns": 358158954495700,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4075579,
+            "address": 2165318016,
+            "instructions": 44
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358156546526900,
+            "end_ns": 358156547632400,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 15625000,
+            "cycles": 3877204,
+            "address": 2149138684,
+            "instructions": 59
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358157326998900,
+            "end_ns": 358157328103000,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4185196,
+            "address": 2151282324,
+            "instructions": 21
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158857621200,
+            "end_ns": 358158858721200,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3734967,
+            "address": 2165224172,
+            "instructions": 71
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358157013995500,
+            "end_ns": 358157015084600,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4128302,
+            "address": 2165655844,
+            "instructions": 13
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158188670000,
+            "end_ns": 358158189753600,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 3981133,
+            "address": 2151268588,
+            "instructions": 22
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358159061997300,
+            "end_ns": 358159063073400,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4069509,
+            "address": 2163208008,
+            "instructions": 49
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358158785689800,
+            "end_ns": 358158786765300,
+            "target_ns": 0,
+            "thread": 18119652971207107707,
+            "cpu_ns": 0,
+            "cycles": 4009959,
+            "address": 2165252676,
+            "instructions": 48
+          }
+        ],
+        "cpu_thread_wait_seconds": 12.993229300000001,
+        "cpu_thread_unclassified_seconds": 33.620899599999994,
+        "worst_frames": [
+          {
+            "frame": 14820,
+            "host_ms": 67.5289,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 10.9177,
+            "cpu_thread_unclassified_ms": 56.6112,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 2.7658,
+              "jit_entry_map": 0.0,
+              "jit_emit": 26.1312,
+              "jit_compile": 39.0519,
+              "gpu_decode_slow": 0.1562,
+              "jit_analyze": 3.4065,
+              "present": 0.1339,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0033,
+              "jit_links": 1.8927,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.207,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 8.163,
+              "gpu_present": 0.0,
+              "throttle": 10.9144
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 46875000,
+              "process_cpu_ns": 46875000,
+              "thread_cycles": 210058620
+            }
+          },
+          {
+            "frame": 15205,
+            "host_ms": 63.8003,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 6.0705,
+            "cpu_thread_unclassified_ms": 57.7298,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_entry_map": 0.0,
+              "jit_emit": 0.0,
+              "jit_compile": 0.0,
+              "gpu_decode_slow": 1.7275,
+              "jit_analyze": 0.0,
+              "present": 0.0847,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0034,
+              "jit_links": 0.0,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 0.0,
+              "gpu_present": 0.0,
+              "throttle": 6.0671
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 31250000,
+              "process_cpu_ns": 31250000,
+              "thread_cycles": 85414180
+            }
+          },
+          {
+            "frame": 15162,
+            "host_ms": 61.5428,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 4.8218,
+            "cpu_thread_unclassified_ms": 56.721,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 0.3201,
+              "jit_entry_map": 0.0,
+              "jit_emit": 18.9496,
+              "jit_compile": 28.1562,
+              "gpu_decode_slow": 0.6359,
+              "jit_analyze": 2.8876,
+              "present": 0.1218,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0031,
+              "jit_links": 0.6324,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 5.2792,
+              "gpu_present": 0.0,
+              "throttle": 4.8187
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 46875000,
+              "process_cpu_ns": 46875000,
+              "thread_cycles": 182685269
+            }
+          }
+        ]
+      },
+      "audio_interior_buckets": {
+        "dma_empty": 3,
+        "stream_empty": 0,
+        "max_callback_gap_ms": 12.8306
+      }
+    },
+    "plaza-rush-1-20261001": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14615,
+        "last_frame": 16015,
+        "emulated_ticks": 34054020000,
+        "intervals": 1400,
+        "seconds": 46.7084091,
+        "average_fps": 29.973189559992957,
+        "frame_ms": {
+          "median": 33.16149999999851,
+          "p95": 38.332699999998,
+          "p99": 45.73849999999968,
+          "max": 63.82449999999995
+        },
+        "one_percent_low_fps": 19.6163600442771,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 662,
+        "frames_over_50ms": 6,
+        "longest_consecutive_over_50ms_seconds": 0.06382449999999995,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.71333333333334,
+        "emulation_speed_percent": 100.01054249850985,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1400
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.20516666666815786,
+          "p99": 12.371833333333013,
+          "min": -13.162766666667283,
+          "max": 30.45783333333328
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "exit_code": 0,
+      "route_completed": true,
+      "future_deadline_waits": 1359,
+      "overshoot_p99_ms": 0.74868,
+      "overshoot_max_ms": 2.108439,
+      "overshoot_over_1ms": 1,
+      "runtime_spans": {
+        "frame_cpu_scope": "Cumulative callback-thread/process counters; -1 or missing means unavailable. Windows CPU time is quantized; sequential sampling is not atomic. Cycles are not wall time. Callback thread is the guest CPU thread only with single-thread rendering.",
+        "frame_cpu_window": {
+          "thread_cpu_ns": 27609375000,
+          "process_cpu_ns": 29218750000,
+          "thread_cycles": 103736429592
+        },
+        "scope": "elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed",
+        "gpu_decode_scope": "Only CPU-side FIFO dispatches >=100us are traced; includes nested rendering, waits and preemption. Coverage is a lower bound, not total decoding time.",
+        "first_frame": 14615,
+        "last_frame": 16015,
+        "seconds": 46.7084091,
+        "cpu_thread": 7598597757725985456,
+        "totals": {
+          "throttle": {
+            "calls": 1400,
+            "union_ms": 14942.2381,
+            "max_span_ms": 20.2333,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "gpu_fence": {
+            "calls": 1285,
+            "union_ms": 9.6051,
+            "max_span_ms": 3.4512,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_analyze": {
+            "calls": 13790,
+            "union_ms": 51.1137,
+            "max_span_ms": 2.949,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_emit": {
+            "calls": 13790,
+            "union_ms": 344.1839,
+            "max_span_ms": 3.1008,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_finalize": {
+            "calls": 13790,
+            "union_ms": 96.7117,
+            "max_span_ms": 2.1934,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_compile": {
+            "calls": 13790,
+            "union_ms": 516.4018,
+            "max_span_ms": 3.1293,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "gpu_decode_slow": {
+            "calls": 4057,
+            "union_ms": 1149.8934,
+            "max_span_ms": 12.9309,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "gpu_submit": {
+            "calls": 1400,
+            "union_ms": 97.4537,
+            "max_span_ms": 1.0374,
+            "threads": [
+              6114661149541850326
+            ]
+          },
+          "present": {
+            "calls": 1400,
+            "union_ms": 174.4464,
+            "max_span_ms": 1.3651,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_links": {
+            "calls": 60,
+            "union_ms": 13.2685,
+            "max_span_ms": 2.1917,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "pipeline_compile": {
+            "calls": 13,
+            "union_ms": 1.4856,
+            "max_span_ms": 0.2332,
+            "threads": [
+              7598597757725985456,
+              9194858233057207454
+            ]
+          },
+          "jit_ranges": {
+            "calls": 20,
+            "union_ms": 3.8968,
+            "max_span_ms": 0.4602,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "jit_backpatch": {
+            "calls": 95,
+            "union_ms": 53.7554,
+            "max_span_ms": 3.0551,
+            "threads": [
+              7598597757725985456
+            ]
+          },
+          "shader_compile": {
+            "calls": 1,
+            "union_ms": 2.3731,
+            "max_span_ms": 2.3731,
+            "threads": [
+              9194858233057207454
+            ]
+          }
+        },
+        "jit_instruction_spans": [],
+        "jit_emission_counters_scope": "Whole spans fully inside window; CPU ns are quantized, -1 unavailable; cycles are not wall time",
+        "longest_jit_emissions": [
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358742570789800,
+            "end_ns": 358742573890600,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 2432072,
+            "address": 2165335956,
+            "instructions": 43
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358743706277700,
+            "end_ns": 358743708915200,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4712803,
+            "address": 2148714256,
+            "instructions": 6
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744402839900,
+            "end_ns": 358744404961900,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3898825,
+            "address": 2149207892,
+            "instructions": 14
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358743873645800,
+            "end_ns": 358743875627200,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 15625000,
+            "cycles": 4800038,
+            "address": 2151185968,
+            "instructions": 40
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358743673453700,
+            "end_ns": 358743675288900,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4400257,
+            "address": 2151255824,
+            "instructions": 49
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358736431101700,
+            "end_ns": 358736432839600,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 880353,
+            "address": 2147892080,
+            "instructions": 53
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358742067828500,
+            "end_ns": 358742069541600,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4825076,
+            "address": 2162593364,
+            "instructions": 114
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358738133536200,
+            "end_ns": 358738134951900,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 264372,
+            "address": 2163455952,
+            "instructions": 68
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358736099102300,
+            "end_ns": 358736100501400,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 168031,
+            "address": 2151424732,
+            "instructions": 37
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744406605500,
+            "end_ns": 358744407987000,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3864687,
+            "address": 2164830680,
+            "instructions": 40
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744408006500,
+            "end_ns": 358744409272400,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3416737,
+            "address": 2164830764,
+            "instructions": 26
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744138760600,
+            "end_ns": 358744139940100,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3834344,
+            "address": 2149648356,
+            "instructions": 24
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358760100738900,
+            "end_ns": 358760101906700,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 219614,
+            "address": 2150933580,
+            "instructions": 2
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744306214900,
+            "end_ns": 358744307369800,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4174575,
+            "address": 2165252676,
+            "instructions": 48
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358737766402500,
+            "end_ns": 358737767550100,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 441505,
+            "address": 2149724092,
+            "instructions": 50
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744135935200,
+            "end_ns": 358744137077100,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4328950,
+            "address": 2165626688,
+            "instructions": 61
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358743370187100,
+            "end_ns": 358743371323300,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 4184439,
+            "address": 2165371220,
+            "instructions": 45
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358743502039600,
+            "end_ns": 358743503092800,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3959512,
+            "address": 2165371284,
+            "instructions": 11
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744310159800,
+            "end_ns": 358744311165700,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 3715623,
+            "address": 2165253404,
+            "instructions": 62
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358744307722600,
+            "end_ns": 358744308714600,
+            "target_ns": 0,
+            "thread": 7598597757725985456,
+            "cpu_ns": 0,
+            "cycles": 2318283,
+            "address": 2165252924,
+            "instructions": 70
+          }
+        ],
+        "cpu_thread_wait_seconds": 14.951843199999999,
+        "cpu_thread_unclassified_seconds": 31.756565900000002,
+        "worst_frames": [
+          {
+            "frame": 14820,
+            "host_ms": 63.8245,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 7.2835,
+            "cpu_thread_unclassified_ms": 56.541,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 1.0372,
+              "jit_entry_map": 0.0,
+              "jit_emit": 25.0341,
+              "jit_compile": 38.7088,
+              "gpu_decode_slow": 0.1196,
+              "jit_analyze": 3.8936,
+              "present": 0.1049,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0023,
+              "jit_links": 1.7357,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 8.4189,
+              "gpu_present": 0.0,
+              "throttle": 7.2812
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 46875000,
+              "process_cpu_ns": 46875000,
+              "thread_cycles": 194889264
+            }
+          },
+          {
+            "frame": 15346,
+            "host_ms": 59.803,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 9.4045,
+            "cpu_thread_unclassified_ms": 50.3985,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_entry_map": 0.0,
+              "jit_emit": 0.0579,
+              "jit_compile": 0.1027,
+              "gpu_decode_slow": 3.5388,
+              "jit_analyze": 0.0144,
+              "present": 0.2369,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0,
+              "jit_links": 0.0,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 0.0232,
+              "gpu_present": 0.0,
+              "throttle": 9.4045
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 31250000,
+              "process_cpu_ns": 31250000,
+              "thread_cycles": 100382881
+            }
+          },
+          {
+            "frame": 14818,
+            "host_ms": 53.135,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 12.9807,
+            "cpu_thread_unclassified_ms": 40.1543,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_entry_map": 0.0,
+              "jit_emit": 0.6651,
+              "jit_compile": 0.7063,
+              "gpu_decode_slow": 2.0948,
+              "jit_analyze": 0.0169,
+              "present": 0.1051,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0,
+              "jit_links": 0.0,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 0.0175,
+              "gpu_present": 0.0,
+              "throttle": 12.9807
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 0,
+              "process_cpu_ns": 0,
+              "thread_cycles": 66609641
+            }
+          }
+        ]
+      },
+      "audio_interior_buckets": {
+        "dma_empty": 1,
+        "stream_empty": 0,
+        "max_callback_gap_ms": 12.1386
+      }
+    },
+    "plaza-rush-2-20261001": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14612,
+        "last_frame": 16010,
+        "emulated_ticks": 34005371400,
+        "intervals": 1398,
+        "seconds": 46.6245596,
+        "average_fps": 29.984197427143098,
+        "frame_ms": {
+          "median": 33.064800000000226,
+          "p95": 41.392300000001825,
+          "p99": 49.66660000000189,
+          "max": 90.57110000000002
+        },
+        "one_percent_low_fps": 17.33924998083395,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 660,
+        "frames_over_50ms": 13,
+        "longest_consecutive_over_50ms_seconds": 0.16266479999999994,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.64660000000001,
+        "emulation_speed_percent": 100.04727208190083,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1398
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.30186666666644213,
+          "p99": 16.299933333335222,
+          "min": -15.428666666665771,
+          "max": 57.20443333333335
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "exit_code": 0,
+      "route_completed": true,
+      "future_deadline_waits": 1336,
+      "overshoot_p99_ms": 0.434493,
+      "overshoot_max_ms": 8.715132,
+      "overshoot_over_1ms": 6,
+      "runtime_spans": {
+        "frame_cpu_scope": "Cumulative callback-thread/process counters; -1 or missing means unavailable. Windows CPU time is quantized; sequential sampling is not atomic. Cycles are not wall time. Callback thread is the guest CPU thread only with single-thread rendering.",
+        "frame_cpu_window": {
+          "thread_cpu_ns": 27921875000,
+          "process_cpu_ns": 30125000000,
+          "thread_cycles": 105059867287
+        },
+        "scope": "elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed",
+        "gpu_decode_scope": "Only CPU-side FIFO dispatches >=100us are traced; includes nested rendering, waits and preemption. Coverage is a lower bound, not total decoding time.",
+        "first_frame": 14612,
+        "last_frame": 16010,
+        "seconds": 46.6245596,
+        "cpu_thread": 11958870222696926205,
+        "totals": {
+          "jit_analyze": {
+            "calls": 13379,
+            "union_ms": 44.3424,
+            "max_span_ms": 0.4432,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "jit_emit": {
+            "calls": 13379,
+            "union_ms": 307.29,
+            "max_span_ms": 2.1852,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "jit_finalize": {
+            "calls": 13379,
+            "union_ms": 87.4998,
+            "max_span_ms": 0.6077,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "jit_compile": {
+            "calls": 13379,
+            "union_ms": 462.7554,
+            "max_span_ms": 2.213,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "gpu_decode_slow": {
+            "calls": 3465,
+            "union_ms": 924.4831,
+            "max_span_ms": 4.479,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "throttle": {
+            "calls": 1398,
+            "union_ms": 14996.8957,
+            "max_span_ms": 29.2829,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "jit_links": {
+            "calls": 42,
+            "union_ms": 6.7163,
+            "max_span_ms": 0.4338,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "gpu_submit": {
+            "calls": 1398,
+            "union_ms": 102.221,
+            "max_span_ms": 1.2988,
+            "threads": [
+              17979183745228786145
+            ]
+          },
+          "gpu_fence": {
+            "calls": 1323,
+            "union_ms": 7.0278,
+            "max_span_ms": 0.2036,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "present": {
+            "calls": 1398,
+            "union_ms": 187.3555,
+            "max_span_ms": 1.2108,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "pipeline_compile": {
+            "calls": 21,
+            "union_ms": 4.6398,
+            "max_span_ms": 0.7902,
+            "threads": [
+              11958870222696926205,
+              17042790413739333307
+            ]
+          },
+          "jit_backpatch": {
+            "calls": 77,
+            "union_ms": 42.049,
+            "max_span_ms": 1.3122,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "jit_ranges": {
+            "calls": 17,
+            "union_ms": 3.2366,
+            "max_span_ms": 0.6044,
+            "threads": [
+              11958870222696926205
+            ]
+          },
+          "shader_compile": {
+            "calls": 5,
+            "union_ms": 15.9695,
+            "max_span_ms": 5.2522,
+            "threads": [
+              17042790413739333307
+            ]
+          }
+        },
+        "jit_instruction_spans": [],
+        "jit_emission_counters_scope": "Whole spans fully inside window; CPU ns are quantized, -1 unavailable; cycles are not wall time",
+        "longest_jit_emissions": [
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867410535600,
+            "end_ns": 358867412720800,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 7336802,
+            "address": 2162592884,
+            "instructions": 234
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867415508100,
+            "end_ns": 358867417585600,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 6508409,
+            "address": 2149526636,
+            "instructions": 57
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867362199800,
+            "end_ns": 358867363977200,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3968615,
+            "address": 2165530920,
+            "instructions": 79
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867357226700,
+            "end_ns": 358867358814100,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 4092646,
+            "address": 2165523888,
+            "instructions": 180
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867394240700,
+            "end_ns": 358867395605400,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 4287607,
+            "address": 2165336460,
+            "instructions": 26
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358868953598700,
+            "end_ns": 358868954779500,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 4358156,
+            "address": 2151268468,
+            "instructions": 14
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867401270700,
+            "end_ns": 358867402364800,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3993271,
+            "address": 2149197680,
+            "instructions": 18
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867319571500,
+            "end_ns": 358867320643700,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3965583,
+            "address": 2148751504,
+            "instructions": 53
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867402522300,
+            "end_ns": 358867403591000,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3362113,
+            "address": 2149198248,
+            "instructions": 8
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867409266700,
+            "end_ns": 358867410333200,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3970512,
+            "address": 2162592648,
+            "instructions": 293
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867404235300,
+            "end_ns": 358867405220100,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3646211,
+            "address": 2149136156,
+            "instructions": 32
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867405265700,
+            "end_ns": 358867406197600,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3522558,
+            "address": 2149137280,
+            "instructions": 26
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867407242100,
+            "end_ns": 358867408170500,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3399285,
+            "address": 2149522564,
+            "instructions": 18
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867408234800,
+            "end_ns": 358867409121900,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3362874,
+            "address": 2149522640,
+            "instructions": 22
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867359024000,
+            "end_ns": 358867359901800,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 15625000,
+            "cycles": 3320013,
+            "address": 2165526228,
+            "instructions": 58
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867350250300,
+            "end_ns": 358867351098200,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 3213429,
+            "address": 2147727740,
+            "instructions": 19
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867361408200,
+            "end_ns": 358867362179300,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 2172629,
+            "address": 2165530828,
+            "instructions": 102
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867413406300,
+            "end_ns": 358867414176800,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 2903541,
+            "address": 2162593632,
+            "instructions": 47
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867328450000,
+            "end_ns": 358867329176900,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 2516276,
+            "address": 2162758528,
+            "instructions": 194
+          },
+          {
+            "kind": "jit_emit",
+            "begin_ns": 358867372203600,
+            "end_ns": 358867372858300,
+            "target_ns": 0,
+            "thread": 11958870222696926205,
+            "cpu_ns": 0,
+            "cycles": 1822915,
+            "address": 2150780888,
+            "instructions": 37
+          }
+        ],
+        "cpu_thread_wait_seconds": 15.0039235,
+        "cpu_thread_unclassified_seconds": 31.6206361,
+        "worst_frames": [
+          {
+            "frame": 14820,
+            "host_ms": 90.5711,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 13.174,
+            "cpu_thread_unclassified_ms": 77.3971,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 23.4624,
+              "jit_entry_map": 0.0,
+              "jit_emit": 45.0816,
+              "jit_compile": 56.1998,
+              "gpu_decode_slow": 0.1165,
+              "jit_analyze": 3.3172,
+              "present": 0.1572,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0045,
+              "jit_links": 0.564,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 6.4798,
+              "gpu_present": 0.0,
+              "throttle": 13.1695
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 62500000,
+              "process_cpu_ns": 62500000,
+              "thread_cycles": 271216938
+            }
+          },
+          {
+            "frame": 15882,
+            "host_ms": 73.2455,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 6.9035,
+            "cpu_thread_unclassified_ms": 66.342,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_entry_map": 0.0,
+              "jit_emit": 0.0472,
+              "jit_compile": 0.0665,
+              "gpu_decode_slow": 0.8425,
+              "jit_analyze": 0.0065,
+              "present": 0.1177,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0041,
+              "jit_links": 0.0,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.0,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 0.0056,
+              "gpu_present": 0.0,
+              "throttle": 6.8994
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 0,
+              "process_cpu_ns": 0,
+              "thread_cycles": 75712828
+            }
+          },
+          {
+            "frame": 14821,
+            "host_ms": 72.0937,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 0.0045,
+            "cpu_thread_unclassified_ms": 72.0892,
+            "cpu_thread_coverage_ms": {
+              "gpu_worker": 0.0,
+              "jit_backpatch": 15.0996,
+              "jit_entry_map": 0.0,
+              "jit_emit": 24.7314,
+              "jit_compile": 29.8906,
+              "gpu_decode_slow": 3.1293,
+              "jit_analyze": 1.427,
+              "present": 0.0935,
+              "shader_compile": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_fence": 0.0042,
+              "jit_links": 0.1231,
+              "jit_instruction": 0.0,
+              "jit_ranges": 0.105,
+              "gpu_submit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_finalize": 3.1199,
+              "gpu_present": 0.0,
+              "throttle": 0.0003
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 62500000,
+              "process_cpu_ns": 62500000,
+              "thread_cycles": 189246038
+            }
+          }
+        ]
+      },
+      "audio_interior_buckets": {
+        "dma_empty": 2,
+        "stream_empty": 3,
+        "max_callback_gap_ms": 14.7905
+      }
+    }
+  },
+  "decision": "Do not promote rush/smooth pair: fewer throttle calls but no repeatable solid-30 result. Large JIT and non-JIT stalls persist. Wait overshoot alone does not explain the large hitches.",
+  "hot_blocks": {
+    "scope": "Intrusive resident-block profile; elapsed block time includes instrumentation/preemption; invalidated blocks absent; not release FPS or trustworthy wall-time shares. Raw TSV remains private.",
+    "exit_code": 0,
+    "route_completed": true,
+    "elapsed_seconds": 217.125,
+    "resident_blocks": 36141,
+    "profiled_block_ns": 94052661900,
+    "top_pages": [
+      {
+        "page": "803f6000",
+        "profile_time_percent": 11.70479514094433,
+        "guest_cycles": 6753221419,
+        "runs": 475460831
+      },
+      {
+        "page": "8036f000",
+        "profile_time_percent": 11.241760611987527,
+        "guest_cycles": 3536185741,
+        "runs": 405858049
+      },
+      {
+        "page": "8028e000",
+        "profile_time_percent": 10.368448380938382,
+        "guest_cycles": 2294799313,
+        "runs": 435956537
+      },
+      {
+        "page": "803f2000",
+        "profile_time_percent": 5.4122990218100355,
+        "guest_cycles": 459023559,
+        "runs": 228784623
+      },
+      {
+        "page": "803ee000",
+        "profile_time_percent": 4.634615131504321,
+        "guest_cycles": 2652276949,
+        "runs": 184257410
+      },
+      {
+        "page": "803dd000",
+        "profile_time_percent": 3.6453752937321173,
+        "guest_cycles": 1024603907,
+        "runs": 153366352
+      },
+      {
+        "page": "8000a000",
+        "profile_time_percent": 3.465480544788281,
+        "guest_cycles": 728544764,
+        "runs": 145690572
+      },
+      {
+        "page": "801e8000",
+        "profile_time_percent": 2.9854915780964197,
+        "guest_cycles": 155250050,
+        "runs": 10766763
+      },
+      {
+        "page": "803c7000",
+        "profile_time_percent": 2.904704709904654,
+        "guest_cycles": 368706240,
+        "runs": 120969910
+      },
+      {
+        "page": "80007000",
+        "profile_time_percent": 2.5680364076968245,
+        "guest_cycles": 327796966,
+        "runs": 109253210
+      },
+      {
+        "page": "8000f000",
+        "profile_time_percent": 2.3689322077549835,
+        "guest_cycles": 1468844952,
+        "runs": 60101242
+      },
+      {
+        "page": "803c6000",
+        "profile_time_percent": 2.2323237403236114,
+        "guest_cycles": 31361065,
+        "runs": 3667806
+      }
+    ],
+    "top_blocks": [
+      {
+        "ppcAddress": "801e83e0",
+        "ppcSize": "180",
+        "runCount": "1211010",
+        "cyclesPercent": "0.102972",
+        "timePercent": "2.610470"
+      },
+      {
+        "ppcAddress": "8036f998",
+        "ppcSize": "32",
+        "runCount": "101824758",
+        "cyclesPercent": "3.856361",
+        "timePercent": "2.540911"
+      },
+      {
+        "ppcAddress": "8036f9b8",
+        "ppcSize": "200",
+        "runCount": "101824758",
+        "cyclesPercent": "1.839484",
+        "timePercent": "2.515178"
+      },
+      {
+        "ppcAddress": "803c63bc",
+        "ppcSize": "176",
+        "runCount": "841840",
+        "cyclesPercent": "0.003227",
+        "timePercent": "2.153994"
+      },
+      {
+        "ppcAddress": "803f2b7c",
+        "ppcSize": "8",
+        "runCount": "76542187",
+        "cyclesPercent": "0.445976",
+        "timePercent": "1.810367"
+      },
+      {
+        "ppcAddress": "803f2b44",
+        "ppcSize": "8",
+        "runCount": "76542187",
+        "cyclesPercent": "0.445976",
+        "timePercent": "1.791374"
+      },
+      {
+        "ppcAddress": "803f680c",
+        "ppcSize": "40",
+        "runCount": "72824541",
+        "cyclesPercent": "1.379082",
+        "timePercent": "1.723756"
+      },
+      {
+        "ppcAddress": "800074d0",
+        "ppcSize": "12",
+        "runCount": "72830208",
+        "cyclesPercent": "0.636523",
+        "timePercent": "1.692857"
+      },
+      {
+        "ppcAddress": "805133f8",
+        "ppcSize": "20",
+        "runCount": "58110583",
+        "cyclesPercent": "0.679512",
+        "timePercent": "1.394468"
+      },
+      {
+        "ppcAddress": "803c7eac",
+        "ppcSize": "12",
+        "runCount": "57506190",
+        "cyclesPercent": "0.337151",
+        "timePercent": "1.379886"
+      },
+      {
+        "ppcAddress": "803c7e84",
+        "ppcSize": "36",
+        "runCount": "57543770",
+        "cyclesPercent": "0.671059",
+        "timePercent": "1.378463"
+      },
+      {
+        "ppcAddress": "803f678c",
+        "ppcSize": "252",
+        "runCount": "36414463",
+        "cyclesPercent": "7.743659",
+        "timePercent": "1.188368"
+      },
+      {
+        "ppcAddress": "803eeab8",
+        "ppcSize": "108",
+        "runCount": "36414463",
+        "cyclesPercent": "4.986005",
+        "timePercent": "1.038740"
+      },
+      {
+        "ppcAddress": "803682a8",
+        "ppcSize": "148",
+        "runCount": "25682581",
+        "cyclesPercent": "2.918077",
+        "timePercent": "1.028010"
+      },
+      {
+        "ppcAddress": "8036f560",
+        "ppcSize": "36",
+        "runCount": "25682367",
+        "cyclesPercent": "0.673373",
+        "timePercent": "1.010551"
+      }
+    ]
+  },
+  "next_action": "Investigate the hot indirect-call loop at 8036f998 (101824758 executions in this intrusive profile): characterize target cardinality and measure dispatcher overhead before any inline-cache change. Inspect checked-entry/downcount/feature-flag/SMC invalidation contracts. Continue separate first-use compile-burst investigation; do not arbitrarily precompile guest addresses or bypass guest scheduling."
+}

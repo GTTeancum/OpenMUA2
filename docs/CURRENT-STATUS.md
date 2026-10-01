@@ -1,5 +1,44 @@
 # Current status — GitHub main
 
+## Plaza pacing hypothesis rejected; refreshed hot-block profile - 2026-10-01
+
+Tested existing RushFramePresentation=True plus SmoothEarlyPresentation=True in
+an isolated copied profile. Both no-screenshot plaza runs exited 0, with full
+JIT, one logical CPU for the whole process, Vulkan3x, normal clocks/speed, Cubeb
+muted and formatter explicitly ON. No source, binary or normal-profile changes.
+Current Windows build/tests from the previous checkpoint still apply.
+
+| Run | Seconds | New FPS | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Rush/smooth 1 | 46.708 | 29.973 | 45.738 | 63.824 | 6 | 29 |
+| Rush/smooth 2 | 46.625 | 29.984 | 49.667 | 90.571 | 13 | 28 |
+
+Throttle calls fell from 17,122 in the prior trace to about one per rendered
+frame. Positive-deadline wait overshoot maxima were 2.108/8.715ms versus prior
+2.687ms. The first run's worst frame still included 38.709ms compilation.
+Fewer waits do not give a repeatable frame-pacing fix; do not promote the pair.
+Interior audio buckets had DMA/stream empty-dequeue counts 1/0 and 2/3; these
+muted diagnostics do not prove clean audible playback.
+
+An additional intrusive resident-JIT-block profile completed in 217.125s,
+exit0, 36,141 resident blocks. Pages 803f6000, 8036f000 and 8028e000 account for
+11.70%, 11.24% and 10.37% of instrumented block time. These are not reliable
+release CPU-time shares: short blocks incur disproportionate profiler overhead
+and invalidated blocks are omitted. Private code inspection identifies an
+indirect-call loop at 8036f998, executed 101,824,758 times in this profile;
+its JIT path currently uses WriteExitDestInRSCRATCH. This is a lead, not proof
+that dispatch is the next largest bottleneck. No proprietary code/data included.
+
+Next characterize that loop's indirect targets and measure dispatch overhead;
+a proposed call-site cache must preserve feature flags, checked-entry/downcount,
+return prediction, SMC invalidation and fallback. Do not bypass guest scheduling
+or speculatively invoke arbitrary Jit calls. First-use compilation remains a
+separate hitch source. Goal UNMET: no three qualifying repeats or ten-minute
+plaza combat acceptance, no fresh visual/audible verification. Keep plaza only
+and no screenshots. Evidence: evidence/windows-20260930/PLAZA-PACING-HOTBLOCKS.json.
+
+
+
 ## Bounded formatter spill experiment - 2026-10-01
 
 Plaza-only, no screenshots. Added guarded EABI stack-overflow argument reads and
