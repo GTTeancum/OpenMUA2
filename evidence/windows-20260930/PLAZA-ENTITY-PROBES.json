@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "scope": "Tutorial-plaza read-only entity observations. No screenshots, native capture, desktop input or memory writes. Diagnostic sampling is not a performance acceptance run.",
+  "method": "Bounded first 128 slots of the inspected entity pool, stride 0xa38. Name field at +0x44 has an 8-bit generation tag and 24-bit identity. Position at +0x4c; current/recovery/maximum health fields at +0x2a0/+0x2a4/+0x2a8. Recovery and maximum-health normalization code supports these field meanings. Private state-specific contracts identify four heroes and known plaza opponents; no game strings or RAM content is included here.",
+  "guards": "Require exact bounded probe size and four-byte generation, matching expected generation, unique expected heroes, finite bounded fields; ignore zero-flag and stale-generation slots and unclassified identities. Private live wrapper checks living heroes/opponents and a conservative 1800-unit hero radius around the inspected plaza reference before sending the next batch of process-local input. These checks do not model the complete entity lifecycle or visibility.",
+  "conditions": "Unchanged 242dd198 runtime; whole process CPU2/mask4, full JIT, Vulkan3x/1920x1080 preset, normal clocks, Cubeb Volume0, formatter ON, identity cache ON, backpatch reserve524288. Existing short plaza input route with explicit memory/timing reads. No runtime timing profile or screenshots.",
+  "runner_sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0",
+  "native_build": "No native source change or rebuild this checkpoint. Prior supported Windows build exit0 and 39/39 tests in7.21s remain the binary provenance; existing CMake warnings recorded in PLAZA-BACKPATCH-RESERVE.json.",
+  "python_tests": {
+    "run": 157,
+    "passed": 156,
+    "skipped": 1,
+    "seconds": 22.251,
+    "focused_entity_tests": 7
+  },
+  "new_test_scope": "Tagged identifiers; current/recovery/maximum field placement; stale/freed exclusion; missing/duplicate hero rejection; non-finite/out-of-bound fields; exact probe length and contract bounds; generation changes/truncated headers; unclassified objects not treated as enemies; input bytes unchanged.",
+  "live_summary": {
+    "probes": 15,
+    "runtime_exit_code": 0,
+    "route_completed": true,
+    "harness_elapsed_seconds": 71.93800000002375,
+    "guest_seconds_between_first_last_probe": 51.76689400823045,
+    "generations": [
+      13
+    ],
+    "living_hero_counts": [
+      3,
+      4
+    ],
+    "living_opponent_counts": [
+      7,
+      7,
+      7,
+      5,
+      3,
+      3,
+      3,
+      5,
+      5,
+      5,
+      7,
+      7,
+      7,
+      7,
+      7
+    ],
+    "hero_health_decreases": 17,
+    "opponent_health_decreases_same_slot_identity": 29,
+    "hero_position_changes": 46,
+    "same_slot_opponent_positive_to_nonpositive": 7,
+    "max_hero_plaza_radius": 802.8437486685297,
+    "interpretation": "Observed adjacent-sample deltas, not event counts: slot reuse with the same identity is possible. Positive health alone does not establish hostile AI activity or visibility. No claim about unsampled intervals."
+  },
+  "private_run": ".local/automation/plaza-entity-probes-fixed-20261001",
+  "historical_states": {
+    "start": {
+      "generation": 13,
+      "positive_hero_health": 4,
+      "positive_identified_opponent_health": 7
+    },
+    "short": {
+      "generation": 13,
+      "positive_hero_health": 4,
+      "positive_identified_opponent_health": 6
+    },
+    "long_endpoint": {
+      "generation": 14,
+      "original_generation_contract": "rejected",
+      "interpretation": "The old endpoint cannot prove uninterrupted same-generation combat. The cause and time of the generation change are unproven."
+    }
+  },
+  "first_attempt": {
+    "private_run": ".local/automation/plaza-entity-probes-20261001",
+    "harness_exit_code": 1,
+    "runtime_exit_code": 0,
+    "route_completed": false,
+    "elapsed_seconds": 19.56300000002375,
+    "failure": "Wrapper assumed a timing sidecar from read_memory; absent file stopped before the first input batch. Corrected route explicitly requests read_timing. This failed attempt is not validation evidence."
+  },
+  "verification": "All 15 completed live probes rechecked with final guarded analyzer; old generation-changed endpoint rejects. CLI successfully reads the last live probe. No fresh FPS, clean-audio or visual-correctness claim.",
+  "decision": "Retain read-only diagnostics for distinguishing observed combat activity from idle/stale/reloaded state. No changes to game simulation or performance settings in normal launch. Goal remains unmet; sampled movement/health changes do not establish every interval or ten-minute continuous combat."
+}

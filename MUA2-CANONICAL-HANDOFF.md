@@ -1,5 +1,59 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Read-only plaza entity observations - 2026-10-01
+
+Added tools/analyze_entity_probe.py and seven synthetic regression cases. This
+stdlib-only offline tool reads native memory-probe files using a private,
+state-specific numeric contract. No process access, desktop input, screenshots,
+game-memory writes or embedded proprietary strings/assets. Raw RAM, save states,
+contracts and the diagnostic wrapper remain private under .local.
+
+The entity-name word has an eight-bit generation tag and 24-bit identity;
+searching the full word as an untagged name ID had missed the real actors.
+The inspected pool has 0xa38-byte slots. Position is at +0x4c; recovery and
+maximum-health normalization code supports current/recovery/maximum health at
++0x2a0/+0x2a4/+0x2a8 on the entity itself (not its attribute pointer). The tool
+requires the expected generation and unique heroes, bounds all reads, rejects
+non-finite classified fields, and excludes empty, stale and unclassified slots.
+It does not model the whole entity lifecycle, hostile AI activity or visibility.
+
+A live short plaza diagnostic completed: 15 probes over 51.767 guest seconds,
+3-7 identified opponents with positive health, 3-4 heroes with positive health,
+17 adjacent-sample hero health decreases, 29 same-slot/same-identity opponent
+health decreases and 46 hero position changes. Seven same-slot/same-identity comparisons crossed
+from positive to nonpositive health. These are sample deltas, NOT exact damage
+or kill-event counts: same-identity slot reuse is possible. All samples remained
+in generation13; maximum hero distance from the inspected plaza reference was
+802.844 units, within the private wrapper's conservative1800-unit stop boundary.
+One hero reached nonpositive health. Live generation-change abort was not triggered.
+
+Start/short historical states decode to4/4 positive-health heroes and7/6
+identified positive-health opponents. The old long-run endpoint uses generation14
+and fails the original generation13 contract. This strengthens the reason that
+it cannot count as uninterrupted combat; neither cause nor transition time is
+proven. All15 live probes rechecked with the final guarded analyzer. No claim
+about unsampled intervals, visual correctness or a qualifying combat repeat.
+
+First live attempt failed in the private wrapper: read_memory has no timing
+sidecar. The wrapper stopped before its first input batch; runtime shutdown
+returned0, harness1. The corrected route explicitly uses read_timing and exited0.
+Do not conceal or count the failed attempt as validation.
+
+Unchanged native runner SHA256:
+2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0.
+One logical CPU2/mask4, full JIT, Vulkan3x/1920x1080 preset, normal clocks, muted
+Cubeb, formatter and identity cache ON, reserve524288. Process-local input only;
+no screenshots. Memory/timing reads perturb execution, so this is not a new FPS
+comparison. Native code unchanged: prior Windows build/39-test result retained.
+Final Python suite:156 passed,1 skipped (157 tests,22.251s), including7 entity
+cases. Evidence: evidence/windows-20260930/PLAZA-ENTITY-PROBES.json.
+
+Goal UNMET. This improves combat-state evidence, not frame rate. Remaining work
+includes compile bursts/other slow frames, three qualifying repeats, ten-minute
+verified plaza combat and audible quality. Retain the plaza-only/no-screenshot
+constraint and do not count idle, stale, reloaded or failed-route time as combat.
+
+
 ## Plaza JIT metadata reservation experiment - 2026-10-01
 
 Testing remains tutorial-plaza ONLY, with NO screenshots, host input or desktop
