@@ -1,0 +1,271 @@
+{
+  "scope": "Plaza-only alternating ON/OFF diagnostics, same new binary; no screenshots or fresh visual/audible validation. Short runs, not qualifying acceptance.",
+  "conditions": "Full JIT, whole process CPU mask1, Vulkan3x, normal clocks/speed, Cubeb Volume0, formatter explicitly ON(default OFF), rush/smooth OFF, two-second warmup. No indirect target counters or detailed runtime spans during timing.",
+  "experiment": "OPENMUA2_INDIRECT_HINTS=8036f9b4:8036f490,8036f560,8036f650; guarded up to three direct-call links for unconditional linked bcctr, disabled by default and excluded from debugging/static fallback. Misses retain original dispatch. Existing WriteExit/LinkBlockExits/UnlinkBlock handle downcount, return prediction, feature flags and invalidation.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_passed": 39,
+    "native_failed": 0,
+    "native_seconds": 7.68,
+    "local_lto": true,
+    "warnings": "Existing CMake deprecations, unavailable Wayland, long object paths, lz4 IPO policy; no compiler/linker diagnostics found.",
+    "tooling": "Python tooling unchanged, not rerun; prior 141 passed / 1 skipped is scoped to its earlier run."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16068608,
+      "sha256": "c5961c5d32ebeb99be9492bea5ea621757af405e0da0c754cfa0e2f4377c1311"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "5192d4628040773e3b2b3d4cdb1b731dab812070c6d5a2adbea7c8709a84ea25"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12203520,
+      "sha256": "6bf017925b4706473ab2043cc4368b06e16c1be161468e7011f0a995f31d6ede"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "5f5e7c01918ca1d7e9bfef528dc0e7b7713eef9f3b7aaf1eb25b1967b4aad0af"
+    },
+    "dolrecomp.exe": {
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    }
+  },
+  "runs": {
+    "on-1": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16009,
+        "emulated_ticks": 33859425600,
+        "intervals": 1392,
+        "seconds": 46.4398916,
+        "average_fps": 29.974230172406344,
+        "frame_ms": {
+          "median": 33.3608000000023,
+          "p95": 36.62350000000103,
+          "p99": 42.49659999999977,
+          "max": 61.5969999999999
+        },
+        "one_percent_low_fps": 20.798977878801438,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 741,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.0615969999999999,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.446400000000004,
+        "emulation_speed_percent": 100.0140146752625,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1392
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.005866666664369746,
+          "p99": 9.129933333333105,
+          "min": -16.930166666665595,
+          "max": 28.23033333333323
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "result": {
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 70.98399999999674
+      },
+      "hints_enabled": true,
+      "audio_interior_buckets": {
+        "dma_empty": 0,
+        "stream_empty": 0,
+        "max_callback_gap_ms": 12.6763
+      }
+    },
+    "off-1": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16017,
+        "emulated_ticks": 34054020000,
+        "intervals": 1400,
+        "seconds": 46.7130291,
+        "average_fps": 29.970225159301435,
+        "frame_ms": {
+          "median": 33.362300000002065,
+          "p95": 35.007300000000185,
+          "p99": 40.68690000000075,
+          "max": 57.089399999999735
+        },
+        "one_percent_low_fps": 20.935365200249034,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 743,
+        "frames_over_50ms": 5,
+        "longest_consecutive_over_50ms_seconds": 0.057089399999999735,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.71333333333334,
+        "emulation_speed_percent": 100.0006512815358,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1400
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0043666666646041685,
+          "p99": 7.320233333334078,
+          "min": -16.801266666665608,
+          "max": 23.722733333333064
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "result": {
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 69.40600000001723
+      },
+      "hints_enabled": false,
+      "audio_interior_buckets": {
+        "dma_empty": 0,
+        "stream_empty": 2,
+        "max_callback_gap_ms": 11.0374
+      }
+    },
+    "on-2": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16012,
+        "emulated_ticks": 33932398500,
+        "intervals": 1395,
+        "seconds": 46.5458989,
+        "average_fps": 29.970417007028736,
+        "frame_ms": {
+          "median": 33.3679999999994,
+          "p95": 34.84489999999951,
+          "p99": 39.595399999999614,
+          "max": 74.81780000000083
+        },
+        "one_percent_low_fps": 22.22210582071563,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 757,
+        "frames_over_50ms": 3,
+        "longest_consecutive_over_50ms_seconds": 0.07481780000000082,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.5465,
+        "emulation_speed_percent": 100.00129141345256,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1395
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.00133333333272867,
+          "p99": 6.228733333332944,
+          "min": -13.02616666666613,
+          "max": 41.451133333334155
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "result": {
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 69.04599999997299
+      },
+      "hints_enabled": true,
+      "audio_interior_buckets": {
+        "dma_empty": 1,
+        "stream_empty": 1,
+        "max_callback_gap_ms": 14.7507
+      }
+    },
+    "off-2": {
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14616,
+        "last_frame": 16011,
+        "emulated_ticks": 33932398500,
+        "intervals": 1395,
+        "seconds": 46.5463413,
+        "average_fps": 29.970132153007693,
+        "frame_ms": {
+          "median": 33.35570000000132,
+          "p95": 35.4383000000027,
+          "p99": 43.396300000001276,
+          "max": 57.63819999999953
+        },
+        "one_percent_low_fps": 20.62526067014715,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 739,
+        "frames_over_50ms": 5,
+        "longest_consecutive_over_50ms_seconds": 0.05763819999999953,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.5465,
+        "emulation_speed_percent": 100.00034095053569,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1395
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.010966666665349067,
+          "p99": 10.029633333334607,
+          "min": -11.965166666670592,
+          "max": 24.271533333332858
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "result": {
+        "route_completed": true,
+        "exit_code": 0,
+        "error": null,
+        "elapsed": 69.01600000000326
+      },
+      "hints_enabled": false,
+      "audio_interior_buckets": {
+        "dma_empty": 0,
+        "stream_empty": 2,
+        "max_callback_gap_ms": 12.1745
+      }
+    }
+  },
+  "order": [
+    "on-1",
+    "off-1",
+    "on-2",
+    "off-2"
+  ],
+  "decision": "Do not promote: ON has fewer >50ms frames but worse maximum stalls in both comparisons. No substantial or repeatable solid-30 gain established. Retain default-off guarded experiment; do not attribute the remaining stalls to dispatch without stronger evidence.",
+  "limitations": [
+    "No fresh visual or audible verification; muted callback telemetry cannot establish crackle status.",
+    "Native tests cover bounded hint parsing, not exhaustive generated-code/SMC behavior. Existing direct-link invalidation machinery is reused; broad correctness remains unproven.",
+    "No three qualifying repeats or ten-minute plaza combat acceptance. First-use compilation and non-JIT stalls remain."
+  ]
+}

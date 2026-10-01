@@ -264,6 +264,21 @@ void Jit64::bcctrx(UGeckoInstruction inst)
     AND(32, R(RSCRATCH), Imm32(0xFFFFFFFC));
     record_target();
     WriteBranchWatchDestInRSCRATCH(js.compilerPC, inst, BitSet32{RSCRATCH});
+    const auto& hints = JitCommon::GetIndirectHints();
+    if (hints && hints->origin == js.compilerPC && inst.LK_3 && jo.enableBlocklink &&
+        !IsDebuggingEnabled() && !IsStaticRecompFallback())
+    {
+      // A mismatch preserves RSCRATCH and follows the original dispatcher.
+      // A match uses ordinary direct-call links: downcount, BLR prediction,
+      // feature context and invalidation retain the existing WriteExit contract.
+      for (std::size_t i = 0; i < hints->size; ++i)
+      {
+        CMP(32, R(RSCRATCH), Imm32(hints->targets[i]));
+        const auto miss = J_CC(CC_NE, Jump::Near);
+        WriteExit(hints->targets[i], true, js.compilerPC + 4);
+        SetJumpTarget(miss);
+      }
+    }
     WriteExitDestInRSCRATCH(inst.LK_3, js.compilerPC + 4);
   }
   else

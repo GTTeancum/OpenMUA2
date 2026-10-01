@@ -41,5 +41,15 @@ int main()
   u64 sum = targets.overflow;
   for (const auto& e : targets.entries) sum += e.count;
   if (sum != targets.total) return 7;
+  for (const auto text : {"", "80000000", "80000000:", "80000001:80001000",
+                         "80000000:80001000,", "80000000:80001000,80001000",
+                         "80000000:80001000,80002000,80003000,80004000",
+                         "80000000:80001000:80002000", "80000000:0"})
+    if (JitCommon::ParseIndirectHints(text)) return 8;
+  const auto hints = JitCommon::ParseIndirectHints("80000000:80001000,80002000,80003000");
+  if (!hints || hints->origin != 0x80000000 || hints->size != 3 ||
+      hints->targets[0] != 0x80001000 || hints->targets[2] != 0x80003000) return 9;
+  const auto single = JitCommon::ParseIndirectHints("80000000:80001000");
+  if (!single || single->size != 1 || single->targets[0] != 0x80001000) return 10;
   return 0;
 }

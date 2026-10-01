@@ -46,6 +46,52 @@ struct IndirectTargetCounts
   }
 };
 
+// Explicit, immutable experiment; predictions are guarded against runtime CTR.
+// No guest addresses are baked into the runtime's source/default configuration.
+struct IndirectHints
+{
+  u32 origin{};
+  std::array<u32, 3> targets{};
+  std::size_t size{};
+};
+inline std::optional<IndirectHints> ParseIndirectHints(std::string_view text)
+{
+  const auto separator = text.find(':');
+  if (separator == std::string_view::npos) return {};
+  const auto origin = ParseIndirectProfileAddress(text.substr(0, separator));
+  if (!origin) return {};
+  IndirectHints hints;
+  hints.origin = *origin;
+  text.remove_prefix(separator + 1);
+  while (!text.empty())
+  {
+    const auto comma = text.find(',');
+    const auto target = ParseIndirectProfileAddress(text.substr(0, comma));
+    if (!target || hints.size == hints.targets.size()) return {};
+    for (std::size_t i = 0; i < hints.size; ++i)
+      if (hints.targets[i] == *target) return {};
+    hints.targets[hints.size++] = *target;
+    if (comma == std::string_view::npos) return hints;
+    text.remove_prefix(comma + 1);
+  }
+  return {};  // Missing target or trailing comma.
+}
+inline const std::optional<IndirectHints>& GetIndirectHints()
+{
+  static const auto hints = []() -> std::optional<IndirectHints> {
+    const char* raw = std::getenv("OPENMUA2_INDIRECT_HINTS");
+    if (!raw) return {};
+    const auto parsed = ParseIndirectHints(raw);
+    if (!parsed)
+      std::fprintf(stderr, "Invalid OPENMUA2_INDIRECT_HINTS; disabled\n");
+    else
+      std::fprintf(stderr, "Indirect hints: pc=%08x targets=%zu guarded=1 experimental=1\n",
+                   parsed->origin, parsed->size);
+    return parsed;
+  }();
+  return hints;
+}
+
 struct IndirectProfile
 {
   IndirectProfile()

@@ -1,5 +1,44 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Guarded direct-call experiment: mixed pacing results - 2026-10-01
+
+Added default-off OPENMUA2_INDIRECT_HINTS=origin:target1,target2,target3 for an
+explicit unconditional linked bcctr call site. Runtime CTR comparisons guard
+ordinary WriteExit direct-call links; mismatches retain original dispatch.
+Debugging/static fallback and disabled linking exclude the experiment. No guest
+addresses are baked into source defaults. Existing link management preserves
+feature-context matching, downcount, BLR return prediction and SMC unlinking;
+this reuse is not an exhaustive new generated-code/SMC correctness test.
+Native tests cover bounded parsing, duplicate/invalid/unaligned inputs and limits.
+
+Supported Windows JIT build passed: local LTO ON, 39/39 native tests (7.68s).
+Existing CMake warnings remain; no compiler/linker diagnostics found. Python
+unchanged, not rerun (prior 141 passed/1 skipped remains scoped to earlier run).
+Runner SHA256 c5961c5d32ebeb99be9492bea5ea621757af405e0da0c754cfa0e2f4377c1311.
+Other produced runtime executable sizes/hashes are in the evidence JSON.
+
+Same-binary alternating plaza runs, all exit0, one logical CPU, Vulkan3x, normal
+clocks/speed, Cubeb muted, formatter ON, rush/smooth OFF, no screenshots or
+intrusive target counters. Two-second warmup; final input endpoint before save.
+
+| Order | Mode | New FPS | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Hints ON | 29.9742 | 42.497 | 61.597 | 2 | 29 |
+| 2 | Hints OFF | 29.9702 | 40.687 | 57.089 | 5 | 29 |
+| 3 | Hints ON | 29.9704 | 39.595 | 74.818 | 3 | 29 |
+| 4 | Hints OFF | 29.9701 | 43.396 | 57.638 | 5 | 29 |
+
+Decision: do not promote. Fewer >50ms frames came with worse maximum stalls in
+both comparisons; no substantial/repeatable solid-30 gain is established. Keep
+this narrowly scoped experiment default OFF. Do not add more speculative targets
+without evidence. First-use compilation and non-JIT stalls remain the priorities.
+No fresh visual/audible verification or clean-sound claim. Goal UNMET: three
+qualifying repeats and ten-minute plaza combat acceptance remain outstanding.
+Keep plaza only and no screenshots. Evidence:
+evidence/windows-20260930/PLAZA-GUARDED-INDIRECT-CALLS.json.
+
+
+
 ## Selected indirect-call census - 2026-10-01
 
 Added default-off OPENMUA2_INDIRECT_PROFILE_PC diagnostic: one aligned hexadecimal
