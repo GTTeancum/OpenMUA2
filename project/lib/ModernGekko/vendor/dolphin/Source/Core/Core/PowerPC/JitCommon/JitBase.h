@@ -225,6 +225,8 @@ public:
   virtual JitBaseBlockCache* GetBlockCache() = 0;
 
   virtual void Jit(u32 em_address) = 0;
+  // Unlike Jit(), this may execute guest instructions. Dispatcher callers only.
+  virtual void JitForDispatch(u32 em_address) { Jit(em_address); }
 
   virtual void EraseSingleBlock(const JitBlock& block) = 0;
 

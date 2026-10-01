@@ -1,0 +1,968 @@
+{
+  "schema": 1,
+  "decision": "Retain a default-OFF experimental soft compilation allowance with immediate promotion of revisited code. Do not enable by default or claim consistent gains: two revised runs failed pacing badly. Goal remains unmet.",
+  "configuration": {
+    "environment": "OPENMUA2_JIT_BUDGET_US",
+    "default": "OFF",
+    "accepted_decimal_microseconds": [
+      250,
+      16000
+    ],
+    "invalid_or_zero": "OFF",
+    "tested_microseconds": 4000,
+    "window": "ticks_per_second / 30 guest ticks; an approximate 1/30-second window, not a frame boundary",
+    "soft_limit": "Revisited code and hooks may compile above the allowance; a single compilation is not interrupted. Host elapsed time includes preemption and profiling overhead.",
+    "cold_path": "Dispatcher-only; at most 256 interpreted instructions per call; charges interpreter-reported cycles to downcount, updates membase, explicitly rechecks dispatcher timing. Debugging, stepping and static fallback use ordinary compilation. Exact PC plus feature flags form bounded hotness hints; no game instructions, translations or results cached by the hints. Cache clearing resets both allowance and hints."
+  },
+  "scope": "Plaza only, one logical CPU2/mask4, full JIT, Vulkan3x/1920x1080 preset, normal clocks, muted Cubeb, formatter/identity cache ON, reserve524288. Runtime profiling OFF. Native frame/audio timing and guarded memory probes are diagnostic and perturb execution. No screenshots or host input. Probe receipt waits can vary input publication timing; equivalent enemy workload is not established.",
+  "runs": [
+    {
+      "variant": "on1",
+      "private_run": ".local/automation/plaza-jit-budget-on1-20261001",
+      "runner_sha256": "7d4582beee293a51c008acab9bf3d07f46c86eb3bee82d68a2a91c2846c26aa8",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 106.81199999997625,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14565,
+        "last_frame": 16100,
+        "emulated_ticks": 37337800500,
+        "intervals": 1535,
+        "seconds": 83.9837784,
+        "average_fps": 18.27733913910213,
+        "frame_ms": {
+          "median": 33.370200000007344,
+          "p95": 35.21780000001229,
+          "p99": 801.9473000000019,
+          "max": 905.0273
+        },
+        "one_percent_low_fps": 1.1902747825215465,
+        "rolling_1s_fps_min": 1,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 859,
+        "frames_over_50ms": 56,
+        "longest_consecutive_over_50ms_seconds": 34.680594,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 51.21783333333334,
+        "emulation_speed_percent": 60.98538826080411,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1535
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.003533333340674516,
+          "p99": 768.5806333333353,
+          "min": -21.753766666677958,
+          "max": 871.6606333333333
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        7,
+        8
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 23,
+        "opponent_health_decreases": 12,
+        "hero_position_changes": 55
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 33285,
+        "interpreted": 659574606,
+        "cycles": 742517320,
+        "hook_bypasses": 0
+      }
+    },
+    {
+      "variant": "promote-on1",
+      "private_run": ".local/automation/plaza-jit-budget-promote-on1-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.90700000000652,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16111,
+        "emulated_ticks": 36291855600,
+        "intervals": 1492,
+        "seconds": 49.783367,
+        "average_fps": 29.969849166690555,
+        "frame_ms": {
+          "median": 33.36315000000067,
+          "p95": 34.13569999999977,
+          "p99": 35.68660000000001,
+          "max": 41.61179999999831
+        },
+        "one_percent_low_fps": 25.851995601713877,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 821,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.78306666666667,
+        "emulation_speed_percent": 99.99939671952416,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1492
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0035166666659952606,
+          "p99": 2.3199333333333434,
+          "min": -8.374366666665702,
+          "max": 8.245133333331642
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        3,
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        3,
+        4,
+        5,
+        7,
+        8
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 19,
+        "opponent_health_decreases": 20,
+        "hero_position_changes": 46
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 40311,
+        "interpreted": 548456,
+        "cycles": 591595,
+        "hook_bypasses": 0,
+        "promotions": 20310
+      }
+    },
+    {
+      "variant": "off1",
+      "private_run": ".local/automation/plaza-jit-budget-off1-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.75,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16082,
+        "emulated_ticks": 35586450900,
+        "intervals": 1463,
+        "seconds": 48.8144155,
+        "average_fps": 29.970654877553535,
+        "frame_ms": {
+          "median": 33.3637999999965,
+          "p95": 34.1205,
+          "p99": 35.48110000000193,
+          "max": 55.13589999999979
+        },
+        "one_percent_low_fps": 25.258503948914367,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 810,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.05513589999999979,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 48.81543333333334,
+        "emulation_speed_percent": 100.00208510810364,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1463
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0028666666701676613,
+          "p99": 2.114433333335261,
+          "min": -14.212366666667267,
+          "max": 21.769233333333123
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 20,
+        "opponent_health_decreases": 14,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": null
+    },
+    {
+      "variant": "promote-on2",
+      "private_run": ".local/automation/plaza-jit-budget-promote-on2-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 73.5,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16112,
+        "emulated_ticks": 36316179900,
+        "intervals": 1493,
+        "seconds": 50.4855557,
+        "average_fps": 29.57281502202025,
+        "frame_ms": {
+          "median": 33.34680000000034,
+          "p95": 38.97570000000172,
+          "p99": 53.18450000000041,
+          "max": 177.38119999999924
+        },
+        "one_percent_low_fps": 11.295381454067973,
+        "rolling_1s_fps_min": 15,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 766,
+        "frames_over_50ms": 18,
+        "longest_consecutive_over_50ms_seconds": 0.33277189999999734,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.816433333333336,
+        "emulation_speed_percent": 98.67462612347424,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1493
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.019866666666326638,
+          "p99": 19.81783333333374,
+          "min": -10.64266666666648,
+          "max": 144.0145333333326
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 24,
+        "opponent_health_decreases": 20,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 39621,
+        "interpreted": 536693,
+        "cycles": 578707,
+        "hook_bypasses": 0,
+        "promotions": 19937
+      }
+    },
+    {
+      "variant": "off2",
+      "private_run": ".local/automation/plaza-jit-budget-off2-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 81.54699999996228,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14617,
+        "last_frame": 16121,
+        "emulated_ticks": 36583747200,
+        "intervals": 1504,
+        "seconds": 50.3015123,
+        "average_fps": 29.899697468936736,
+        "frame_ms": {
+          "median": 33.338000000000534,
+          "p95": 38.12080000000151,
+          "p99": 47.04770000000025,
+          "max": 79.24189999999953
+        },
+        "one_percent_low_fps": 18.661410058476605,
+        "rolling_1s_fps_min": 26,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 760,
+        "frames_over_50ms": 10,
+        "longest_consecutive_over_50ms_seconds": 0.10571049999999982,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 50.18346666666667,
+        "emulation_speed_percent": 99.7653238880189,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1504
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0286666666661356,
+          "p99": 13.681033333333579,
+          "min": -13.609466666665861,
+          "max": 45.875233333332865
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        3,
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 25,
+        "opponent_health_decreases": 23,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": null
+    },
+    {
+      "variant": "promote-on3",
+      "private_run": ".local/automation/plaza-jit-budget-promote-on3-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 83.48500000004424,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14618,
+        "last_frame": 16122,
+        "emulated_ticks": 36583747200,
+        "intervals": 1504,
+        "seconds": 50.3640288,
+        "average_fps": 29.862583193503376,
+        "frame_ms": {
+          "median": 33.3505000000045,
+          "p95": 40.54949999999913,
+          "p99": 46.68850000000191,
+          "max": 62.325500000000034
+        },
+        "one_percent_low_fps": 20.012242489342864,
+        "rolling_1s_fps_min": 24,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 777,
+        "frames_over_50ms": 4,
+        "longest_consecutive_over_50ms_seconds": 0.062325500000000034,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 50.18346666666667,
+        "emulation_speed_percent": 99.64148592232293,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1504
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.016166666662167928,
+          "p99": 13.32183333333524,
+          "min": -16.10886666667079,
+          "max": 28.958833333333363
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 13,
+        "opponent_health_decreases": 18,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 39479,
+        "interpreted": 513789,
+        "cycles": 554384,
+        "hook_bypasses": 0,
+        "promotions": 18738
+      }
+    },
+    {
+      "variant": "cpu-on2",
+      "private_run": ".local/automation/plaza-jit-budget-cpu-on2-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.57800000003772,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16103,
+        "emulated_ticks": 36097261200,
+        "intervals": 1484,
+        "seconds": 49.5164961,
+        "average_fps": 29.969810404254353,
+        "frame_ms": {
+          "median": 33.3597000000001,
+          "p95": 34.14929999999927,
+          "p99": 35.958900000000014,
+          "max": 45.61130000000091
+        },
+        "one_percent_low_fps": 25.088952882444715,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 821,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.516133333333336,
+        "emulation_speed_percent": 99.99926738219537,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1484
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.006966666666566312,
+          "p99": 2.5922333333333465,
+          "min": -12.408566666667022,
+          "max": 12.24463333333424
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 14,
+        "opponent_health_decreases": 19,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 40633,
+        "interpreted": 554504,
+        "cycles": 598086,
+        "hook_bypasses": 0,
+        "promotions": 20309
+      },
+      "cpu_correlation": {
+        "scope": "Read-only 20ms process CPU samples bracket ~1s frame windows. Windows CPU times are quantized. CPU fraction includes all game threads pinned to one CPU; missing CPU time does not distinguish intentional waits from host descheduling. Sampled cycles are not converted to elapsed time. No visual or audible correctness proof.",
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14619,
+          "last_frame": 16103,
+          "emulated_ticks": 36097261200,
+          "intervals": 1484,
+          "seconds": 49.5164961,
+          "average_fps": 29.969810404254353,
+          "frame_ms": {
+            "median": 33.3597000000001,
+            "p95": 34.14929999999927,
+            "p99": 35.958900000000014,
+            "max": 45.61130000000091
+          },
+          "one_percent_low_fps": 25.088952882444715,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 821,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 49.516133333333336,
+          "emulation_speed_percent": 99.99926738219537,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1484
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.006966666666566312,
+            "p99": 2.5922333333333465,
+            "min": -12.408566666667022,
+            "max": 12.24463333333424
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "cpu_samples": 3453,
+        "slow_windows": [
+          {
+            "start_frame": 14809,
+            "end_frame": 14838,
+            "start_seconds": 6.3398583,
+            "fps": 29.558592366829878,
+            "bracket_wall_ms": 1007.8047,
+            "process_cpu_ms": 703.125,
+            "cpu_fraction": 0.6976798183219427,
+            "cycles": 2890737446
+          },
+          {
+            "start_frame": 15010,
+            "end_frame": 15039,
+            "start_seconds": 13.0466134,
+            "fps": 29.58402715528054,
+            "bracket_wall_ms": 1007.1896,
+            "process_cpu_ms": 750.0,
+            "cpu_fraction": 0.7446462910260392,
+            "cycles": 2837909780
+          },
+          {
+            "start_frame": 15710,
+            "end_frame": 15739,
+            "start_seconds": 36.4030283,
+            "fps": 29.606643077318566,
+            "bracket_wall_ms": 1004.1726,
+            "process_cpu_ms": 671.875,
+            "cpu_fraction": 0.6690831835084925,
+            "cycles": 2417949917
+          },
+          {
+            "start_frame": 14871,
+            "end_frame": 14900,
+            "start_seconds": 8.4084555,
+            "fps": 29.637778315345756,
+            "bracket_wall_ms": 993.1542,
+            "process_cpu_ms": 765.625,
+            "cpu_fraction": 0.7709024439507984,
+            "cycles": 2983513114
+          },
+          {
+            "start_frame": 14686,
+            "end_frame": 14715,
+            "start_seconds": 2.2363982,
+            "fps": 29.666456955505428,
+            "bracket_wall_ms": 1006.9277,
+            "process_cpu_ms": 796.875,
+            "cpu_fraction": 0.7913924703829283,
+            "cycles": 2831667537
+          }
+        ],
+        "steady_cpu_fraction_median": 0.6934810572756047,
+        "window_cpu_fraction_median": 0.6934810572756047
+      }
+    },
+    {
+      "variant": "cpu-off2",
+      "private_run": ".local/automation/plaza-jit-budget-cpu-off2-20261001",
+      "runner_sha256": "56e02ff16bdffd46fd5369dd594ba1dcba9b779c31e7dd8facf9801c37bf2dcf",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 70.81300000002375,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16084,
+        "emulated_ticks": 35635099500,
+        "intervals": 1465,
+        "seconds": 48.8822749,
+        "average_fps": 29.96996361149305,
+        "frame_ms": {
+          "median": 33.3648999999987,
+          "p95": 34.19839999999752,
+          "p99": 35.294999999997856,
+          "max": 56.50070000000085
+        },
+        "one_percent_low_fps": 25.453435993262936,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 796,
+        "frames_over_50ms": 1,
+        "longest_consecutive_over_50ms_seconds": 0.05650070000000085,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 48.88216666666667,
+        "emulation_speed_percent": 99.99977858368182,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1465
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0017666666679710952,
+          "p99": 1.9283333333311865,
+          "min": -10.238466666666293,
+          "max": 23.134033333334177
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        3,
+        4,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 18,
+        "opponent_health_decreases": 19,
+        "hero_position_changes": 54
+      },
+      "budget_counters_whole_process": null,
+      "cpu_correlation": {
+        "scope": "Read-only 20ms process CPU samples bracket ~1s frame windows. Windows CPU times are quantized. CPU fraction includes all game threads pinned to one CPU; missing CPU time does not distinguish intentional waits from host descheduling. Sampled cycles are not converted to elapsed time. No visual or audible correctness proof.",
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14619,
+          "last_frame": 16084,
+          "emulated_ticks": 35635099500,
+          "intervals": 1465,
+          "seconds": 48.8822749,
+          "average_fps": 29.96996361149305,
+          "frame_ms": {
+            "median": 33.3648999999987,
+            "p95": 34.19839999999752,
+            "p99": 35.294999999997856,
+            "max": 56.50070000000085
+          },
+          "one_percent_low_fps": 25.453435993262936,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 796,
+          "frames_over_50ms": 1,
+          "longest_consecutive_over_50ms_seconds": 0.05650070000000085,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 48.88216666666667,
+          "emulation_speed_percent": 99.99977858368182,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1465
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0017666666679710952,
+            "p99": 1.9283333333311865,
+            "min": -10.238466666666293,
+            "max": 23.134033333334177
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "cpu_samples": 3427,
+        "slow_windows": [
+          {
+            "start_frame": 14944,
+            "end_frame": 14973,
+            "start_seconds": 10.844634,
+            "fps": 29.106009909291622,
+            "bracket_wall_ms": 1009.6764,
+            "process_cpu_ms": 796.875,
+            "cpu_fraction": 0.7892380172498833,
+            "cycles": 3118565518
+          },
+          {
+            "start_frame": 14624,
+            "end_frame": 14653,
+            "start_seconds": 0.1667988,
+            "fps": 29.661738556322273,
+            "bracket_wall_ms": 1010.0335,
+            "process_cpu_ms": 828.125,
+            "cpu_fraction": 0.8198985479194502,
+            "cycles": 3072143357
+          },
+          {
+            "start_frame": 14805,
+            "end_frame": 14834,
+            "start_seconds": 6.2067776,
+            "fps": 29.704869826602433,
+            "bracket_wall_ms": 990.4955,
+            "process_cpu_ms": 859.375,
+            "cpu_fraction": 0.8676213067096216,
+            "cycles": 3107136845
+          },
+          {
+            "start_frame": 15562,
+            "end_frame": 15591,
+            "start_seconds": 31.4651735,
+            "fps": 29.763661135586304,
+            "bracket_wall_ms": 1003.9753,
+            "process_cpu_ms": 656.25,
+            "cpu_fraction": 0.6536515390368668,
+            "cycles": 2411914101
+          },
+          {
+            "start_frame": 14719,
+            "end_frame": 14748,
+            "start_seconds": 3.3376012,
+            "fps": 29.7962848553601,
+            "bracket_wall_ms": 1008.1517,
+            "process_cpu_ms": 718.75,
+            "cpu_fraction": 0.7129383405295057,
+            "cycles": 2817998333
+          }
+        ],
+        "steady_cpu_fraction_median": 0.7272074959016468,
+        "window_cpu_fraction_median": 0.7273470277477907
+      }
+    },
+    {
+      "variant": "final-off",
+      "private_run": ".local/automation/plaza-jit-budget-final-off-20261001",
+      "runner_sha256": "29b055c6670581b9ad51ac072e31ce032c7f0d993b6c6ebf7a90db2ddf674d31",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.32800000003772,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16093,
+        "emulated_ticks": 35854018200,
+        "intervals": 1474,
+        "seconds": 49.1820425,
+        "average_fps": 29.970288444201966,
+        "frame_ms": {
+          "median": 33.3693499999983,
+          "p95": 34.14030000000068,
+          "p99": 35.94929999999863,
+          "max": 86.6119999999988
+        },
+        "one_percent_low_fps": 22.747231699814062,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 825,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.0866119999999988,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.18246666666667,
+        "emulation_speed_percent": 100.0008624421539,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1474
+        },
+        "host_minus_guest_interval_ms": {
+          "median": 0.0026833333316295116,
+          "p99": 2.58263333333196,
+          "min": -18.476066666669137,
+          "max": 53.245333333332134
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        7,
+        8
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 14,
+        "opponent_health_decreases": 10,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": null
+    },
+    {
+      "variant": "final-on",
+      "private_run": ".local/automation/plaza-jit-budget-final-on-20261001",
+      "runner_sha256": "29b055c6670581b9ad51ac072e31ce032c7f0d993b6c6ebf7a90db2ddf674d31",
+      "exit_code": 0,
+      "route_completed": true,
+      "elapsed_seconds": 71.375,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14619,
+        "last_frame": 16101,
+        "emulated_ticks": 36048612600,
+        "intervals": 1482,
+        "seconds": 49.4493764,
+        "average_fps": 29.970044273399573,
+        "frame_ms": {
+          "median": 33.36435000000115,
+          "p95": 34.195700000001494,
+          "p99": 36.27170000000035,
+          "max": 46.27139999999841
+        },
+        "one_percent_low_fps": 25.59622131516816,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30,
+        "frames_over_33_334ms": 820,
+        "frames_over_50ms": 0,
+        "longest_consecutive_over_50ms_seconds": 0.0,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 49.449400000000004,
+        "emulation_speed_percent": 100.0000477255766,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1482
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.0023166666655166646,
+          "p99": 2.9050333333336815,
+          "min": -10.829966666670368,
+          "max": 12.90473333333174
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "entity_probes": 15,
+      "heroes_alive": [
+        4
+      ],
+      "identified_opponents_with_positive_health": [
+        5,
+        6,
+        7
+      ],
+      "numeric_changes": {
+        "hero_health_decreases": 21,
+        "opponent_health_decreases": 15,
+        "hero_position_changes": 56
+      },
+      "budget_counters_whole_process": {
+        "limit_ns": 4000000,
+        "compiles": 40064,
+        "interpreted": 527677,
+        "cycles": 569415,
+        "hook_bypasses": 0,
+        "promotions": 19268
+      }
+    }
+  ],
+  "initial_failure": "The hard allowance without promotion interpreted 659574606 instructions and averaged 18.2773 FPS; rejected. Final implementation always includes promotion.",
+  "limitations": [
+    "All results, including pacing failures, retained. These are not three qualifying repeats or a ten-minute acceptance run.",
+    "Numeric entity changes support activity in the guarded plaza state but are not visual or audible correctness proof. Slot reuse can confound same-slot opponent health comparisons; counts are not exact damage or kill events.",
+    "Successful pairs reduced worst frames but did not improve P99; intermittent slowdowns persisted. Cause of the largest episodes remains unresolved.",
+    "Pure budget/hint regression tests and existing native suite do not exhaustively verify mixed JIT/interpreter MMU, exceptions, FPSCR, debugging or timing behavior. Keep the feature experimental and OFF.",
+    "Full runtime profiling changes measured compilation costs and therefore budget decisions; do not treat profiled runs as equivalent to unprofiled ones."
+  ],
+  "validation": {
+    "supported_command": "Build.cmd --cpu jit --jobs 2",
+    "build_exit_code": 0,
+    "native_passed": 40,
+    "native_failed": 0,
+    "native_seconds": 5.47,
+    "python_run": 157,
+    "python_passed": 156,
+    "python_skipped": 1,
+    "python_seconds": 19.561,
+    "initial_prototype_native_passed": 39,
+    "initial_prototype_native_seconds": 7.69,
+    "standalone_policy_checks": "Passed before integration; final native test covers parsing bounds, charging/overflow, window rollover, rollback, reset, full-key hints, CPU feature changes and collisions.",
+    "warnings": "Existing CMake deprecation, unavailable Wayland, object-path-length and lz4 IPO warnings. No compiler/linker warnings/errors found.",
+    "preserved_user_static_source_edits": true,
+    "local_lto": true
+  },
+  "diagnostic_launch_failures": [
+    "A private launcher path contained an escaped carriage return; no game launched. Windows execution policy blocked an optional PowerShell counter script; policy was not changed or bypassed. The waiting target-process sampler was stopped.",
+    "A retry inherited a CPU0-only launcher mask; the benchmark correctly rejected CPU2 before guest execution. The waiting sampler was stopped. Final launcher retained the normal allowed mask and pinned only the read-only sampler to CPU0; game log confirmed mask4."
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "bytes": 16073728,
+      "sha256": "29b055c6670581b9ad51ac072e31ce032c7f0d993b6c6ebf7a90db2ddf674d31"
+    },
+    "moderngekko-port.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "051725b5804c12c1355d9aad77b126685631a2676abf9617b058c3cf899ad86d"
+    },
+    "ModernGekko.exe": {
+      "private_path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "bytes": 12203520,
+      "sha256": "3222fc3d5395749b3097cd0d664dbb03461d659048c4248d4960008cbf5a54cf"
+    },
+    "moderngekko-module-info.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "18cac4f7c31c4db41481e0a4ccda58e2e3b48ce5c48dbc1f25ce3af3aef7d58c"
+    },
+    "dolrecomp.exe": {
+      "private_path": ".local/build/windows-x64/runtime/dolrecomp.exe",
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    },
+    "moderngekko_jit_compile_budget_test.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_jit_compile_budget_test.exe",
+      "bytes": 16384,
+      "sha256": "169cdb3c1ef4b4eb11e2a231d62263240050049b9000275a905662b96df0b4a7"
+    }
+  },
+  "goal": "UNMET; sustained nominal30 combat, qualifying repeats, ten-minute validation and audible/visual correctness remain open."
+}

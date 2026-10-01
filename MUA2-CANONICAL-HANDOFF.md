@@ -1,5 +1,62 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Default-off soft JIT compilation budget prototype - 2026-10-01
+
+Added OPENMUA2_JIT_BUDGET_US (decimal 250-16000 microseconds; unset/0/invalid is
+OFF). It tracks host compilation time over approximately 1/30-second guest-time
+windows. After the allowance is spent, a dispatcher-only path executes up to
+256 cold instructions, charges their reported cycles and updates memory mapping.
+Revisited PC/CPU-feature keys trigger ordinary JIT compilation immediately,
+even above the allowance. Hooks, debugging, stepping and static fallback retain
+ordinary compilation. Cache clearing resets budget and hints. The dispatcher
+explicitly checks timing after interpretation and handles shutdown.
+The initial hard 4ms allowance FAILED: 18.2773 FPS, 905.027ms worst frame and
+659,574,606 interpreted instructions. Reuse promotion reduced interpreted work
+to roughly half a million instructions in early revised trials. It is now part
+of every enabled budget configuration; the hard-only version was rejected.
+
+All timing below uses a 4ms soft allowance when ON; off variants disable it.
+Runtime profiling is OFF. First row is the rejected initial implementation.
+
+| Variant | New FPS | P99 ms | Worst ms | >50ms frames |
+| --- | --- | --- | --- | --- |
+| on1 | 18.2773 | 801.947 | 905.027 | 56 |
+| promote-on1 | 29.9698 | 35.687 | 41.612 | 0 |
+| off1 | 29.9707 | 35.481 | 55.136 | 1 |
+| promote-on2 | 29.5728 | 53.185 | 177.381 | 18 |
+| off2 | 29.8997 | 47.048 | 79.242 | 10 |
+| promote-on3 | 29.8626 | 46.689 | 62.326 | 4 |
+| cpu-on2 | 29.9698 | 35.959 | 45.611 | 0 |
+| cpu-off2 | 29.9700 | 35.295 | 56.501 | 1 |
+| final-off | 29.9703 | 35.949 | 86.612 | 2 |
+| final-on | 29.9700 | 36.272 | 46.271 | 0 |
+
+All ten routes completed with 15 guarded entity probes each. Results are MIXED:
+the final pair improved worst-frame time from 86.612 to 46.271ms, but earlier
+revised runs reached 177.381 and 62.326ms. Successful pairs did not improve P99.
+Do not discard failed runs, claim consistent gains or enable this by default.
+Probe receipt waits can vary input publication timing; enemy counts differ, so
+equivalent workload is not established. Larger intermittent drops remain unexplained.
+
+Supported Windows build passed 40/40 native tests (5.47s), including new budget
+and hotness-hint regression cases. Python: 156 passed, one skipped (19.561s).
+Existing CMake warnings only; no compiler/linker warnings/errors found. Final
+binary OFF and ON plaza checks both exited 0. Six binary hashes and all runs:
+evidence/windows-20260930/PLAZA-JIT-COMPILE-BUDGET.json.
+
+Single logical CPU2/mask4, full JIT, Vulkan3x/1080p preset, normal clocks, muted
+Cubeb processing, experimental formatter/identity cache ON, reserve524288.
+No screenshots or host input. Game data, raw probes and failed launcher logs
+remain private. The optional Windows counter script was blocked by execution
+policy; no policy change/bypass. A corrected target-only CPU sampler completed.
+
+Goal UNMET. This default-OFF prototype needs stronger mixed JIT/interpreter correctness
+coverage and controlled-input comparisons; current tests do not exhaustively
+verify MMU, exceptions, FPSCR or timing behavior. Full runtime profiling changes
+allowance decisions. Numeric entity activity is not visual/audio acceptance;
+three qualifying repeats and ten-minute combat validation remain outstanding.
+
+
 ## Read-only plaza CPU correlation - 2026-10-01
 
 Three additional plaza runs used a target-process-only, read-only CPU sampler

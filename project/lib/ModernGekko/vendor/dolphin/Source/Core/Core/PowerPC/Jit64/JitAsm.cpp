@@ -226,10 +226,29 @@ void Jit64AsmRoutineManager::Generate()
   ABI_CallFunction(JitTrampoline);
   ABI_PopRegistersAndAdjustStack({}, 0);
 
-  // If jitting triggered an ISI exception, MSR.DR may have changed
+  // Compilation exceptions or cold interpretation may change MSR.DR.
   MOV(64, R(RMEM), PPCSTATE(mem_ptr));
 
-  JMP(dispatcher_no_check);
+  FixupBranch budget_exit;
+  if (m_jit.CompileBudgetEnabled())
+  {
+    MOV(64, R(RSCRATCH), ImmPtr(system.GetCPU().GetStatePtr()));
+    // Pausing/single-stepping retains the ordinary slice-boundary path.
+    // PowerDown must exit even if cold interpretation consumed no cycles.
+    CMP(32, MatR(RSCRATCH), Imm32(std::to_underlying(CPU::State::PowerDown)));
+    const auto running = J_CC(CC_NE);
+    MOV(32, R(RSCRATCH), PPCSTATE(pc));
+    MOV(32, PPCSTATE(npc), R(RSCRATCH));
+    budget_exit = J();
+    SetJumpTarget(running);
+    // The C++ call clobbers RFLAGS; establish the timing condition explicitly.
+    CMP(32, PPCSTATE(downcount), Imm32(0));
+    JMP(dispatcher);
+  }
+  else
+  {
+    JMP(dispatcher_no_check);
+  }
 
   SetJumpTarget(bail);
   do_timing = GetCodePtr();
@@ -246,6 +265,8 @@ void Jit64AsmRoutineManager::Generate()
 
   // Landing pad for drec space
   dispatcher_exit = GetCodePtr();
+  if (m_jit.CompileBudgetEnabled())
+    SetJumpTarget(budget_exit);
   if (m_jit.IsStaticRecompFallback())
     SetJumpTarget(static_recomp_exit);
   if (enable_debugging)

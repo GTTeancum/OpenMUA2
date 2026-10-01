@@ -94,6 +94,8 @@ void Jit64::Init()
 
 void Jit64::ClearCache()
 {
+  m_compile_budget.Reset();
+  m_cold_visits.Clear();
   m_simple_formatter.ClearPending();
   blocks.Clear();
   blocks.ClearRangesToFree();
@@ -130,6 +132,7 @@ void Jit64::ResetFreeMemoryRanges()
 
 void Jit64::Shutdown()
 {
+  ReportCompileBudget();
   m_simple_formatter.Finish();
   FreeCodeSpace();
 

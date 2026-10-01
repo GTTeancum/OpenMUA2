@@ -32,6 +32,7 @@
 #include "Core/PowerPC/JitCommon/ConstantPropagation.h"
 #include "Core/PowerPC/JitCommon/JitBase.h"
 #include "Core/PowerPC/JitCommon/JitCache.h"
+#include "Core/PowerPC/JitCommon/JitCompileBudget.h"
 #include "Core/PowerPC/JitCommon/JitSimpleFormatter.h"
 
 class HostDisassembler;
@@ -63,6 +64,8 @@ public:
   // Jit!
 
   void Jit(u32 em_address) override;
+  void JitForDispatch(u32 em_address) override;
+  bool CompileBudgetEnabled() const;
   void Jit(u32 em_address, bool clear_cache_and_retry_on_failure);
   bool DoJit(u32 em_address, JitBlock* b, u32 nextPC);
 
@@ -274,6 +277,7 @@ public:
   void eieio(UGeckoInstruction inst);
 
 private:
+  void ReportCompileBudget() const;
   void CompileInstruction(PPCAnalyst::CodeOp& op);
 
   bool HandleFunctionHooking(u32 address);
@@ -293,6 +297,13 @@ private:
 
   JitCommon::ConstantPropagation m_constant_propagation;
   JitSimpleFormatter m_simple_formatter;
+  JitCompileBudget m_compile_budget;
+  JitColdCodeVisits m_cold_visits;
+  u64 m_budget_promotions = 0;
+  u64 m_budget_compiles = 0;
+  u64 m_budget_interpreted = 0;
+  u64 m_budget_cycles = 0;
+  u64 m_budget_hook_bypasses = 0;
 
   Jit64AsmRoutineManager asm_routines{*this};
 

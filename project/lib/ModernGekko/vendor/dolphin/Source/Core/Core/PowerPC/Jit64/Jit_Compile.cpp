@@ -4,6 +4,8 @@
 #include "Core/PowerPC/Jit64/Jit.h"
 
 #include <map>
+#include <cstdio>
+#include <cstdlib>
 #include <span>
 #include <sstream>
 #include <string>
@@ -29,6 +31,7 @@
 #include "Core/HW/GPFifo.h"
 #include "Core/HW/Memmap.h"
 #include "Core/HW/ProcessorInterface.h"
+#include "Core/HW/SystemTimers.h"
 #include "Core/Host.h"
 #include "Core/MachineContext.h"
 #include "Core/Cheats/PatchEngine.h"
@@ -48,6 +51,96 @@
 
 using namespace Gen;
 using namespace PowerPC;
+
+namespace
+{
+u64 CompileBudgetLimit()
+{
+  static const u64 limit = [] {
+    const char* value = std::getenv("OPENMUA2_JIT_BUDGET_US");
+    return value ? JitCompileBudget::ParseNanoseconds(value) : u64{0};
+  }();
+  return limit;
+}
+}
+
+bool Jit64::CompileBudgetEnabled() const
+{
+  return CompileBudgetLimit() != 0 && !IsDebuggingEnabled() && !IsStaticRecompFallback();
+}
+
+void Jit64::ReportCompileBudget() const
+{
+  if (CompileBudgetLimit())
+    std::fprintf(stderr, "JIT budget limit_ns=%llu compiles=%llu interpreted=%llu cycles=%llu hook_bypasses=%llu promotions=%llu\n",
+        static_cast<unsigned long long>(CompileBudgetLimit()),
+        static_cast<unsigned long long>(m_budget_compiles),
+        static_cast<unsigned long long>(m_budget_interpreted),
+        static_cast<unsigned long long>(m_budget_cycles),
+        static_cast<unsigned long long>(m_budget_hook_bypasses),
+        static_cast<unsigned long long>(m_budget_promotions));
+}
+
+void Jit64::JitForDispatch(u32 em_address)
+{
+  if (!CompileBudgetEnabled() || m_system.GetCPU().GetState() == CPU::State::Stepping)
+  {
+    Jit(em_address);
+    return;
+  }
+  const auto ticks_per_second = m_system.GetSystemTimers().GetTicksPerSecond();
+  m_compile_budget.Observe(m_system.GetCoreTiming().GetTicks(), ticks_per_second);
+  if (m_compile_budget.Exhausted(CompileBudgetLimit()) && m_ppc_state.pc == em_address)
+  {
+    // Execute only the current guest path. No speculative reads or precompilation.
+    // Never call SingleStep(): it advances and then overwrites the timing slice.
+    unsigned steps = 0;
+    while (steps < 256 && m_ppc_state.downcount > 0 &&
+           m_system.GetCPU().GetState() == CPU::State::Running)
+    {
+      const u32 pc = m_ppc_state.pc;
+      if (blocks.Dispatch())
+        return;
+      // Keep all HLE and formatter handling on the ordinary JIT path. The
+      // interpreter's replacement-hook cycle accounting uses a previous opcode.
+      if (m_simple_formatter.Handles(pc) ||
+          HLE::TryReplaceFunction(m_ppc_symbol_db, pc, PowerPC::CoreMode::JIT) ||
+          HLE::TryReplaceFunction(m_ppc_symbol_db, pc, PowerPC::CoreMode::Interpreter))
+      {
+        ++m_budget_hook_bypasses;
+        break;
+      }
+      // Never strand frequently revisited code in the interpreter, including
+      // idle loops recognized by the JIT. Promotion can exceed the soft budget.
+      if (m_cold_visits.Revisited(pc, static_cast<u32>(m_ppc_state.feature_flags)))
+      {
+        if (!steps)
+          ++m_budget_promotions;
+        break;
+      }
+      const int cycles = m_system.GetInterpreter().SingleStepInner();
+      m_ppc_state.downcount -= cycles;
+      ++steps;
+      ++m_budget_interpreted;
+      m_budget_cycles += cycles;
+      // MSR-changing and exception-generating instructions may change mappings.
+      m_system.GetJitInterface().UpdateMembase();
+      m_compile_budget.Observe(m_system.GetCoreTiming().GetTicks(), ticks_per_second);
+      if (!m_compile_budget.Exhausted(CompileBudgetLimit()))
+        break;
+    }
+    if (steps || m_ppc_state.downcount <= 0 ||
+        m_system.GetCPU().GetState() != CPU::State::Running)
+      return;
+  }
+  const auto begin = Common::RuntimeTiming::Now();
+  Jit(em_address);
+  const auto elapsed = Common::RuntimeTiming::Now() - begin;
+  m_compile_budget.Observe(m_system.GetCoreTiming().GetTicks(), ticks_per_second);
+  if (elapsed > 0)
+    m_compile_budget.Charge(static_cast<u64>(elapsed));
+  ++m_budget_compiles;
+}
 
 void Jit64::Jit(u32 em_address)
 {
