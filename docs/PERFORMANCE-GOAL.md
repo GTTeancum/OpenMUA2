@@ -1,5 +1,32 @@
 # OpenMUA2 sustained combat performance goal
 
+## V5 formatter comparison remains experimental - 2026-10-01
+
+A contemporaneous opt-in formatter run on the same v5 plaza route measured
+29.970 new FPS versus the three default-off runs at 26.659. All 1422 measured
+guest intervals were 33.367ms; normal game-clock speed remained 99.9997%.
+Host P99 was 36.292ms, maximum 61.831ms, two intervals exceeded 50ms and the
+minimum rolling second was 29 FPS. This is not a solid-30 acceptance pass.
+
+Shadow mode executed the original code and completed 1,858,169 comparisons with
+zero output/FPSCR/preserved-ABI mismatches. One call was pending at shutdown
+and is unverified. Its measured guest timestamp sequence exactly matched the
+original baseline; average was 26.659 FPS. Replacement combat outcomes differed:
+minimum four living heroes versus three in baseline/shadow. Equal input and
+normal clock speed do not prove world/animation/interrupt equivalence.
+
+This repeats the known benefit on corrected controls with enabled audio, not a
+new source optimization. Keep the rewrite default-off. It reduces game-library
+work but does not retain original loop latency or interrupt opportunities.
+Further validation must address those gameplay/timing effects, not just more
+output comparisons. No clock changes, reduced effects or relaxed acceptance.
+
+Both routes exited 0 using the existing verified Windows v5 runner (45/45 tests),
+full JIT, one logical CPU2/mask4, Vulkan3x/1920x1080 preset and Cubeb volume70.
+No rebuild, screenshots, host input, listening/visual acceptance or ten-minute
+session. Evidence: evidence/windows-20260930/XBOX-V5-FORMATTER-COMPARISON.json.
+
+
 ## V5 plaza: three failed frame-pacing repeats - 2026-10-01
 
 Three audio-enabled runs of the corrected v5 route reproduced 26.659 newly
