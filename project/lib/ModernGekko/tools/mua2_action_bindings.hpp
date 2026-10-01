@@ -80,4 +80,22 @@ inline bool MapPauseBack(std::span<std::uint8_t> active,
   return true;
 }
 
+// The experimental right-stick profile uses the native camera-enable source.
+// That source also backs three unrelated menu commands. Keep camera/turn values
+// intact, including negative CameraX; consume only these shared menu aliases.
+inline bool ConsumeCameraMenuAliases(std::span<std::uint8_t> active,
+                                    std::span<std::uint8_t> values) {
+  if (active.size()!=20 || values.size()!=124*4 ||
+      !(ReadBE(active,0)&(1u<<7)) || ReadBE(values,7*4)!=0x3f800000)
+    return false;
+  for (unsigned id : {99u,104u,122u}) {
+    const auto offset=4*(id/32), word=ReadBE(active,offset)&~(1u<<(id%32));
+    for(unsigned i=0;i<4;++i) {
+      active[offset+i]=std::uint8_t(word>>(24-8*i));
+      values[id*4+i]=0;
+    }
+  }
+  return true;
+}
+
 }

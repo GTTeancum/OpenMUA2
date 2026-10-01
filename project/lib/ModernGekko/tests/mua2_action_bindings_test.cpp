@@ -72,5 +72,24 @@ int main() {
   if (!MapPauseBack(active,values) || active!=mapped_active || values!=mapped_values) return 15;
   if (MapPauseBack(std::span(active).first(19),values) ||
       MapPauseBack(active,std::span(values).first(495))) return 16;
+  for (auto camera_x : {0xbf800000u,0u,0x3f800000u}) {
+    active.fill(0xff); values.fill(0xa5);
+    put(values,7*4,0x3f800000); put(values,2*4,camera_x);
+    auto original_active=active; auto original_values=values;
+    if (!ConsumeCameraMenuAliases(active,values)) return 17;
+    for (unsigned id=0;id<124;++id) {
+      const bool alias=id==99 || id==104 || id==122;
+      const bool bit=(ReadBE(active,id/32*4)&(1u<<(id%32)))!=0;
+      if (bit==alias || ReadBE(values,id*4)!=(alias?0:ReadBE(original_values,id*4))) return 18;
+    }
+    active=original_active;values=original_values;put(values,7*4,0);
+    auto rejected=values;
+    if (ConsumeCameraMenuAliases(active,values) || active!=original_active || values!=rejected) return 19;
+    put(values,7*4,0x3f800000);put(active,0,ReadBE(active,0)&~(1u<<7));
+    original_active=active;
+    if (ConsumeCameraMenuAliases(active,values) || active!=original_active || values!=original_values) return 20;
+  }
+  if (ConsumeCameraMenuAliases(std::span(active).first(19),values) ||
+      ConsumeCameraMenuAliases(active,std::span(values).first(495))) return 21;
   std::cout << "Transactional action binding checks passed\n";
 }

@@ -1,6 +1,30 @@
 # Current status — GitHub main
 
 
+## Experimental camera/menu separation - 2026-10-01
+
+The experimental hero profile restores horizontal right-stick camera input;
+LT reserves that stick for aiming. With OPENMUA2_HERO_BUTTONS=1, the guarded
+adapter consumes MenuViewBoosts99, MenuSwitchToPrevHero104 and MenuReallocate122
+from the shared camera-enable source, preserving signed CameraX and turn inputs.
+The initial private probe exposed those aliases; it was not shipped as a default.
+
+Windows JIT build exited 0: 45/45 tests, 9.04s; no compiler/linker warnings/errors,
+existing CMake warnings remain. Three subsequent plaza probes exited 0. Two
+11-snapshot camera probes preserve positive/negative camera values, LT suppression,
+release and port isolation without the three menu aliases. The 11-snapshot paused
+probe keeps entity position/health frozen during stick input, then resumes their
+updates after Start. The final run used the corrected checked-in profile; parsed
+persisted bindings match (comments/whitespace are normalized on serialization).
+
+One logical CPU, normal clocks, Vulkan3x, Null audio; no screenshots or host input.
+The first two runs overlapped build tail; none is FPS evidence. Native routing and
+entity observations do not establish visual camera/menu correctness or physical
+controller/audio acceptance. Defaults remain v4. Back/hero management, vertical
+camera support, broader menu/fusion interactions and default migration remain open.
+Evidence/profile/binary hashes: evidence/windows-20260930/CAMERA-MENU-ADAPTER.json.
+
+
 ## Experimental Start pause/resume - 2026-10-01
 
 The guarded input observer now maps Start to native Pause39 and MenuBack90 when
