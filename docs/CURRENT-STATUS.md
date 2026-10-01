@@ -1,5 +1,32 @@
 # Current status — GitHub main
 
+## Experimental direct D-pad hero selection - 2026-10-01
+
+OPENMUA2_HERO_BUTTONS=1 connects an experimental D-pad profile to the native
+single-index hero handoff. Up/Right/Down/Left select ordered roster slots 0/1/2/3.
+The adapter validates title/code, per-player input ownership, live full handles,
+and the current caller's actor array. It changes the requested index and limits
+the native search to one attempt; the game retains eligibility and handoff logic.
+No temporary actor-array pointer is retained. Default profiles remain v4.
+
+The supported Windows JIT build passed 45/45 tests in 7.66s, exit 0, with no
+compiler/linker warnings or errors; existing CMake warnings remain. The final
+21-snapshot plaza probe selected all four expected heroes, left self/diagonal
+requests unchanged, preserved selection during a hold, suppressed gameplay power
+bits, and returned to the initial CursorY-only baseline on release. Only injected
+port 0 responded. An initial synthetic-plus menu exit/skill-point leak was fixed;
+those actions are absent in the repeat. LT+B fusion also selected Iron Man and
+returned to idle with the request owner cleared while the new observer was enabled.
+
+Fixture: project/lib/ModernGekko/tests/data/mua1_hero_experimental.ini (process-local
+test device; requires both HERO_BUTTONS and FUSION_BUTTONS flags, not an installed
+physical-controller profile). Tests used one logical CPU, normal clocks, Vulkan3x,
+Null audio, no screenshots or host input. Numeric native behavior is not visual,
+audible, physical-controller or full menu validation. Dead/co-op cases, default
+migration, camera/menu integration, cancellation, audio and FPS acceptance remain
+open. Evidence/binary hashes: evidence/windows-20260930/DIRECT-HERO-BUTTONS.json.
+
+
 
 ## Fusion timeout and retry evidence - 2026-10-01
 

@@ -1,0 +1,435 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "f3275205239d632c4252f072645be00a9d8cdcee",
+  "feature": "Experimental direct D-pad hero selection",
+  "flag": "OPENMUA2_HERO_BUTTONS=1",
+  "default_enabled": false,
+  "fixture": "project/lib/ModernGekko/tests/data/mua1_hero_experimental.ini",
+  "fixture_bindings_match_live_profile": true,
+  "native_contract": {
+    "caller_hook": "0x80052fac",
+    "helper": "0x8005276c",
+    "hook_256_byte_sha1": "C60514A390882682A0BBC0896329C875B6A4AB0C",
+    "selection_order": [
+      "Up -> roster slot 0",
+      "Right -> roster slot 1",
+      "Down -> roster slot 2",
+      "Left -> roster slot 3"
+    ],
+    "behavior": "Replace native helper index only; use native eligibility and ownership transition. Stop native search loop after one attempt. Validate exact input ownership and live roster against the temporary caller array; retain no stack references."
+  },
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "log": ".local/logs/hero-buttons-menu-build.log",
+    "exit_code": 0,
+    "tests_passed": 45,
+    "tests_total": 45,
+    "test_seconds": 7.66,
+    "compiler_linker_warnings_errors": [],
+    "cmake_warnings": "Existing CMP0080/old minima, missing Wayland, long object paths, LZ4 IPO policy",
+    "binary_sha256": {
+      "moderngekko-run.exe": "95c8e3f928904ffeeadf0b4a347509b5a7a790029ce9aed9c2540ec9d9c27cd8",
+      "moderngekko-port.exe": "9456c01bcc6a2ad3b860aaa86e91b21f5771f01891cef851b1d923ebebe88757",
+      "ModernGekko.exe": "c30fa647bbcd2c5eae6aa0a3199b09a3c7796b09b9f6981f84b66e205b309c9d",
+      "moderngekko_mua2_hero_buttons_test.exe": "2ae6c2fd63cf95ded0e7a68c773582cf7f8cbd7cf2de18ce3fa6807ebf65e15f"
+    }
+  },
+  "direct_selection": {
+    "run": "hero-buttons-final-20261001",
+    "route_completed": true,
+    "exit_code": 0,
+    "snapshots": [
+      {
+        "step": "00-neutral",
+        "owner_slot": 2,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "01-press-up",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            65,
+            84,
+            94,
+            95
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "01-release-up",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "02-press-left",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5,
+            13,
+            63,
+            64,
+            67,
+            92,
+            97,
+            117
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "02-release-left",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "03-press-right",
+        "owner_slot": 1,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            68,
+            83,
+            93,
+            98,
+            116
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "03-release-right",
+        "owner_slot": 1,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "04-press-down",
+        "owner_slot": 2,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            66,
+            91,
+            96
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "04-release-down",
+        "owner_slot": 2,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "05-press-down",
+        "owner_slot": 2,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            66,
+            91,
+            96
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "05-release-down",
+        "owner_slot": 2,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "06-press-up",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            65,
+            84,
+            94,
+            95
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "06-release-up",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "07-press-right",
+        "owner_slot": 1,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            68,
+            83,
+            93,
+            98,
+            116
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "07-release-right",
+        "owner_slot": 1,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "08-press-left",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5,
+            13,
+            63,
+            64,
+            67,
+            92,
+            97,
+            117
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "08-release-left",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "09-diagonal",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            65,
+            68,
+            83,
+            84,
+            93,
+            94,
+            95,
+            98,
+            116
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "09-release",
+        "owner_slot": 3,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "10-hold-up",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5,
+            13,
+            64,
+            65,
+            84,
+            94,
+            95
+          ],
+          [],
+          [],
+          []
+        ]
+      },
+      {
+        "step": "10-release",
+        "owner_slot": 0,
+        "active_actions": [
+          [
+            5
+          ],
+          [],
+          [],
+          []
+        ]
+      }
+    ],
+    "power_suppression": true,
+    "release_and_port_isolation": true,
+    "menu_marker_leaks": []
+  },
+  "fusion_regression": {
+    "run": ".local/automation/hero-buttons-fusion-regression-20261001",
+    "exit_code": 0,
+    "snapshots": [
+      {
+        "step": "00-neutral",
+        "phase": 1,
+        "partner": "0x0",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "01-ready_aim",
+        "phase": 1,
+        "partner": "0x0",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "02-ready_accept",
+        "phase": 1,
+        "partner": "0x0",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "03-ready_release",
+        "phase": 1,
+        "partner": "0x0",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "04-request",
+        "phase": 1,
+        "partner": "0x0",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "05-select",
+        "phase": 1,
+        "partner": "0x934ba758",
+        "request_owner": "0x934bb190"
+      },
+      {
+        "step": "06-settle",
+        "phase": 4,
+        "partner": "0x934ba758",
+        "request_owner": "0x0"
+      },
+      {
+        "step": "07-release",
+        "phase": 0,
+        "partner": "0x934ba758",
+        "request_owner": "0x0"
+      }
+    ]
+  },
+  "preliminary": {
+    "native_trace": ".local/automation/hero-native-selector-callers-20261001",
+    "native_trace_scope": "Intrusive JIT caller sample confirms helper with eight switches; not performance evidence. Prologue merges mean function-entry address itself had no sample.",
+    "first_build_tests": "45/45 in 13.18s",
+    "first_run": ".local/automation/hero-buttons-direct-20261001",
+    "failure": "Selection worked, but synthetic plus input leaked MenuExit105 and MenuAddSkillPoint118. Both are suppressed in the final binary and absent in repeat samples.",
+    "analysis_correction": "Standing CursorY action5 is the initial baseline; release checks compare with that baseline rather than requiring an empty bitset."
+  },
+  "limits": [
+    "Final behavior tests used prepared tutorial plaza and process-local input only, on one logical processor (mask4), normal clocks, Vulkan3x, Null audio, no screenshots.",
+    "Some runs overlap unrelated final build linking; no performance claims.",
+    "No physical controller, visual animation, audible sound or full menu-flow acceptance.",
+    "Dead/absent/other-player eligibility remains delegated to native checks, without live multiplayer/fallen-hero validation.",
+    "Default profile migration, camera/menu polish, fusion cancellation, audio and full FPS goal remain open."
+  ]
+}

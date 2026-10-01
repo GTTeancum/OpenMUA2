@@ -7,6 +7,7 @@
 #include "mua2_action_bindings.hpp"
 #include "mua2_interaction_context.hpp"
 #include "mua2_fusion_buttons.hpp"
+#include "mua2_hero_buttons.hpp"
 #include "Common/HookableEvent.h"
 #include "Common/IOFile.h"
 #include "Common/StringUtil.h"
@@ -69,6 +70,31 @@ static_assert(sizeof(ModernGekkoModuleDesc) == sizeof(StaticRecompModuleDesc));
 static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
               offsetof(StaticRecompModuleDesc, chunk_hashes));
 bool s_fusion_buttons_enabled = false;
+bool s_hero_buttons_enabled = false;
+
+void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
+{
+  if (!s_hero_buttons_enabled) return;
+  auto& system = guard.GetSystem();
+  auto& memory = system.GetMemory();
+  const auto* code = memory.GetPointerForRange(0x80052fac, 256);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 256)) !=
+                   "C60514A390882682A0BBC0896329C875B6A4AB0C") return;
+  auto& state = system.GetPPCState();
+  if (std::uint64_t(state.gpr[1]) + 0x28 != state.gpr[5]) return;
+  const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto* bytes = memory.GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  const auto index = moderngekko::controls::HeroButtonIndex(
+      read, state.gpr[3], state.gpr[4], state.gpr[22], state.gpr[5]);
+  if (index) {
+    state.gpr[6] = *index;
+    // A direct request gets one native attempt. Never fall through to another
+    // hero if the selected hero is dead, controlled elsewhere, or ineligible.
+    state.gpr[19] = 3;
+  }
+}
 
 void ObserveFusionCandidate(const Core::CPUThreadGuard& guard, u32 entry,
                             std::string_view digest, unsigned owner_register,
@@ -183,6 +209,9 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes), request_context);
     return;
   }
+  if (s_hero_buttons_enabled)
+    moderngekko::controls::ConsumeHeroMarkers(
+        std::span<u8>(active, 20), std::span<const u8>(values, value_bytes));
   const bool context = moderngekko::controls::HasCoopInteraction(
       read, (object - first_input) / input_stride);
   moderngekko::controls::ApplyInteractionButtons(
@@ -1398,10 +1427,13 @@ RuntimeRunResult Runtime::Run() {
   }
   m_impl->booted = true;
   s_fusion_buttons_enabled = false;
+  s_hero_buttons_enabled = false;
+  const char* hero_buttons = std::getenv("OPENMUA2_HERO_BUTTONS");
+  const bool want_hero_buttons = hero_buttons && std::string_view(hero_buttons) == "1";
   const char* fusion_buttons = std::getenv("OPENMUA2_FUSION_BUTTONS");
   const bool want_fusion_buttons = fusion_buttons && std::string_view(fusion_buttons) == "1";
   if (const char* enabled = std::getenv("OPENMUA2_CONTEXT_X");
-      (enabled && std::string_view(enabled) == "1") || want_fusion_buttons) {
+      (enabled && std::string_view(enabled) == "1") || want_fusion_buttons || want_hero_buttons) {
     std::ifstream input(m_impl->metadata.main_dol, std::ios::binary);
     const std::vector<char> bytes{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
@@ -1409,6 +1441,11 @@ RuntimeRunResult Runtime::Run() {
       const Core::CPUThreadGuard guard(Core::System::GetInstance());
       const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
+      if (installed && want_hero_buttons) {
+        s_hero_buttons_enabled = HLE::SetExternalStartObserver(guard, 0x80052fac, ObserveHeroCandidate);
+        std::fprintf(stderr, "[openmua2] experimental hero-button observer %s\n",
+                     s_hero_buttons_enabled ? "installed" : "rejected");
+      }
       if (installed && want_fusion_buttons) {
         const bool screen = HLE::SetExternalStartObserver(guard, 0x81068a60, ObserveFusionScreenCandidate);
         const bool world = HLE::SetExternalStartObserver(guard, 0x810692c4, ObserveFusionWorldCandidate);

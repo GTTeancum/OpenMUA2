@@ -2168,3 +2168,12 @@ LT + A/B/X/Y selects a fusion partner, following MUA2 Xbox 360. The v4 table abo
 records current behavior only and is not the desired finished layout.
 See [implementation plan](MUA1-XBOX-CONTROL-PLAN.md) for context, menu, revival
 and validation requirements.
+
+## Control validation checkpoint - 2026-10-01
+
+The opt-in direct D-pad selector now passes native ownership-change checks for
+all four plaza heroes, self/diagonal rejection, hold/release and an LT+B fusion
+regression. The Windows build passed 45/45 tests. These muted numeric tests do
+not satisfy combat frame-pacing, visual or audio acceptance; the full goal and
+single-core/normal-clock/rendering requirements are unchanged. See
+evidence/windows-20260930/DIRECT-HERO-BUTTONS.json.

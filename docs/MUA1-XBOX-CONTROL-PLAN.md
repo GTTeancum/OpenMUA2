@@ -2,7 +2,8 @@
 
 The user's 2026-10-01 correction supersedes the earlier PS2-derived target and
 v4 profile. Successful input-routing probes do not establish a correct layout.
-The current binary still implements v4; this document is the implementation plan.
+The default generated profile remains v4; guarded opt-in adapters are described
+below. This document tracks the remaining migration and acceptance work.
 
 ## Required common controls
 
@@ -31,8 +32,8 @@ Xbox reference and a matching action in this version before being assigned.
 Fusion and partner selection need an additional binding. Proposed extension:
 Hold LT, then press A/B/X/Y for the teammate indicated by the button prompt. This replaces
 MUA1's team-command use of LT. The user requested this MUA2 Xbox 360
-pattern, confirmed by the [Xbox 360 gameplay reference](https://drkwaitingroom.com/2024/04/28/game-corner-marvel-alliance2/). The exact selection/confirmation interaction is
-not yet implemented or validated. Do not silently substitute trigger cycling.
+pattern, confirmed by the [Xbox 360 gameplay reference](https://drkwaitingroom.com/2024/04/28/game-corner-marvel-alliance2/). Native partner selection now has opt-in numeric validation; cancellation,
+revival and full-flow acceptance remain open. Do not substitute trigger cycling.
 
 In this Wii-derived version, revival uses fusion selection with a fallen hero.
 Keep it within the same selection flow; do not import the separate health-pack
@@ -185,3 +186,29 @@ Windows result still applies to 539b16a8. Single logical CPU, normal clocks,
 Vulkan 3x, Null audio, process-local input; no screenshots or visual/audio/FPS
 acceptance. Full Xbox migration and the performance goal remain open.
 Evidence: evidence/windows-20260930/FUSION-TIMEOUT-RETRY.json.
+
+## Experimental direct D-pad hero selection - 2026-10-01
+
+OPENMUA2_HERO_BUTTONS=1 connects an experimental D-pad profile to the native
+single-index hero handoff. Up/Right/Down/Left select ordered roster slots 0/1/2/3.
+The adapter validates title/code, per-player input ownership, live full handles,
+and the current caller's actor array. It changes the requested index and limits
+the native search to one attempt; the game retains eligibility and handoff logic.
+No temporary actor-array pointer is retained. Default profiles remain v4.
+
+The supported Windows JIT build passed 45/45 tests in 7.66s, exit 0, with no
+compiler/linker warnings or errors; existing CMake warnings remain. The final
+21-snapshot plaza probe selected all four expected heroes, left self/diagonal
+requests unchanged, preserved selection during a hold, suppressed gameplay power
+bits, and returned to the initial CursorY-only baseline on release. Only injected
+port 0 responded. An initial synthetic-plus menu exit/skill-point leak was fixed;
+those actions are absent in the repeat. LT+B fusion also selected Iron Man and
+returned to idle with the request owner cleared while the new observer was enabled.
+
+Fixture: project/lib/ModernGekko/tests/data/mua1_hero_experimental.ini (process-local
+test device; requires both HERO_BUTTONS and FUSION_BUTTONS flags, not an installed
+physical-controller profile). Tests used one logical CPU, normal clocks, Vulkan3x,
+Null audio, no screenshots or host input. Numeric native behavior is not visual,
+audible, physical-controller or full menu validation. Dead/co-op cases, default
+migration, camera/menu integration, cancellation, audio and FPS acceptance remain
+open. Evidence/binary hashes: evidence/windows-20260930/DIRECT-HERO-BUTTONS.json.
