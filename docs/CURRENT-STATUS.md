@@ -1,5 +1,25 @@
 # Current status — GitHub main
 
+
+## Fusion timeout and retry evidence - 2026-10-01
+
+Two new prepared-plaza runs distinguish delayed native exit from release-to-cancel.
+After the tutorial Ready confirmation, releasing LT left phase 1 at the 500ms
+snapshot and reached phase 0 later. Holding LT for 6500ms also reached phase 0.
+Both retained request_owner; that field alone is not evidence of a stuck request.
+A subsequent LT request advanced the sequence from 1 to 2, LT+B selected the
+expected Iron Man actor, and the native flow returned to phase 0 with owner cleared.
+Immediate release cancellation is still unimplemented/unverified. Do not clear
+native globals merely because the owner remains populated during phase 0.
+
+Both corrected routes completed with exit 0. An initial hold/retry route was
+rejected for a boolean button value; the numeric-input correction used a new
+output directory. No runtime source changes or rebuild: the previous 44/44
+Windows result still applies to 539b16a8. Single logical CPU, normal clocks,
+Vulkan 3x, Null audio, process-local input; no screenshots or visual/audio/FPS
+acceptance. Full Xbox migration and the performance goal remain open.
+Evidence: evidence/windows-20260930/FUSION-TIMEOUT-RETRY.json.
+
 ## Experimental native fusion partner selection - 2026-10-01
 
 OPENMUA2_FUSION_BUTTONS=1 now substitutes a validated roster actor at the native

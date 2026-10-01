@@ -1,0 +1,179 @@
+{
+  "source_head": "539b16a860969a3c58cd267f66e8da3e23aa3504",
+  "date": "2026-10-01",
+  "scope": "Prepared tutorial plaza, native fusion timeout and retry; not complete control acceptance",
+  "settings": {
+    "cpu": "full JIT",
+    "logical_processors": 1,
+    "affinity_mask": "0x4",
+    "efb_scale": 3,
+    "normal_clocks": true,
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false
+  },
+  "runs": [
+    {
+      "path": ".local/automation/fusion-cancel-release-20261001",
+      "route_completed": true,
+      "exit_code": 0,
+      "snapshots": [
+        {
+          "step": "00-neutral",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "01-ready_aim",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "02-ready_accept",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "03-ready_release",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "04-request",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "05-lt-release",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "06-settle",
+          "phase": 0,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "07-release",
+          "phase": 0,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        }
+      ]
+    },
+    {
+      "path": ".local/automation/fusion-cancel-hold-retry-fixed-20261001",
+      "route_completed": true,
+      "exit_code": 0,
+      "snapshots": [
+        {
+          "step": "00-neutral",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "01-ready_aim",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "02-ready_accept",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "03-ready_release",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "04-request",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "05-hold",
+          "phase": 0,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "06-release",
+          "phase": 0,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 1
+        },
+        {
+          "step": "07-retry-request",
+          "phase": 1,
+          "partner": "0x0",
+          "request_owner": "0x934bb190",
+          "sequence": 2
+        },
+        {
+          "step": "08-retry-select",
+          "phase": 1,
+          "partner": "0x934ba758",
+          "request_owner": "0x934bb190",
+          "sequence": 2
+        },
+        {
+          "step": "09-retry-settle",
+          "phase": 0,
+          "partner": "0x934ba758",
+          "request_owner": "0x0",
+          "sequence": 2
+        },
+        {
+          "step": "10-neutral",
+          "phase": 0,
+          "partner": "0x934ba758",
+          "request_owner": "0x0",
+          "sequence": 2
+        }
+      ]
+    }
+  ],
+  "failed_attempt": {
+    "path": ".local/automation/fusion-cancel-hold-retry-20261001",
+    "reason": "Private route used JSON true instead of numeric 1 for button b; harness rejected input. Corrected route used a new output directory."
+  },
+  "conclusions": [
+    "Release did not immediately exit phase 1 at the 500ms snapshot.",
+    "Both holding LT and releasing it reached phase 0 by their later snapshots; this does not establish release-to-cancel.",
+    "Retained request_owner at phase 0 did not prevent a new request (sequence 1 to 2), valid partner selection, and subsequent phase 0 with cleared owner.",
+    "Do not zero native globals as a cancellation workaround. Immediate cancellation still needs a validated native transition."
+  ],
+  "limitations": [
+    "Prepared save only; no general timeout duration established.",
+    "No visual, audible, physical-controller, FPS or full-layout acceptance.",
+    "No runtime source change or rebuild; preceding 44/44 build applies to source_head."
+  ]
+}
