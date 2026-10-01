@@ -2,6 +2,23 @@
 
 ## Live Xbox action routing probe - 2026-10-01
 
+## Hero ownership research - 2026-10-01
+
+A bounded plaza route used eight RT presses and nine identity-guarded entity
+snapshots. All four heroes remained alive. One candidate control flag followed
+one hero through two identical four-hero cycles; code inspection also found it
+used when counting controlled team actors. An indexed team-identity lookup was
+identified, but its identities are not yet mapped to live fixed D-pad slots.
+This is research evidence, not a finished ownership or direct-selection adapter.
+Dead-hero and multiplayer behavior remain untested. Contextual X remains open.
+
+Harness/native exit 0; 4.5 guest seconds, CPU2/mask4, Vulkan3x, normal clocks,
+silent Null audio. No source change, rebuild, screenshots, host input, guest
+memory writes, visual/audio correctness or FPS acceptance. Existing df47dfab
+binary retained. Raw data stays private; aggregate evidence:
+evidence/windows-20260930/XBOX-HERO-OWNERSHIP-RESEARCH.json.
+Audio/controls remain the active priority; no renewed FPS sweep.
+
 A bounded tutorial-plaza probe confirmed the input layer's active-action bits:
 A -> light attack; X -> grab; LB -> block AND contextual action; RT -> next hero;
 LT -> previous hero; D-pad Up -> power 4. Only the object corresponding to

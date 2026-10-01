@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Selected-hero research in tutorial plaza; no new control implementation.",
+  "route_completed": true,
+  "native_exit_code": 0,
+  "guest_seconds": 4.5,
+  "snapshots": 9,
+  "next_hero_presses": 8,
+  "heroes_alive_min": 4,
+  "observation": "One candidate control flag follows a unique hero through two identical four-hero cycles. Game code tests this flag while counting controlled team actors.",
+  "team_lookup": "Code inspection identifies an indexed team-identity lookup used by the team actor lookup. Identities have not yet been matched to live fixed D-pad slots.",
+  "limitations": [
+    "Candidate flag is not yet a supported per-player ownership contract.",
+    "Dead heroes, multiple local players and arbitrary team compositions are untested.",
+    "Direct D-pad hero selection and contextual X are not implemented.",
+    "No visual, audible, device playback or FPS acceptance."
+  ],
+  "configuration": {
+    "cpu": "JIT",
+    "logical_cpu": 2,
+    "affinity_mask": 4,
+    "graphics": "Vulkan",
+    "efb_scale": 3,
+    "normal_clocks": true,
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false,
+    "guest_memory_writes": false
+  },
+  "runner_sha256": "c879d5f99cc0c817be224067013caebd027fc64f2f2e878d206108f253805084",
+  "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+  "source_changed": false,
+  "rebuild_required": false,
+  "private_evidence": ".local/automation/hero-cycle-ownership-20261001"
+}
