@@ -1,5 +1,33 @@
 # OpenMUA2 sustained combat performance goal
 
+## Xbox rumble and persisted profile migration - 2026-10-01
+
+Fixed a concrete output mismatch: generated profiles used Wiimote-only Motor,
+while SDL/XInput gamepads expose Motor L and Motor R. Profile v4 routes rumble
+to both. A process-local output test through the real expression parser verifies
+strength and release on both motors; the old expression resolves zero outputs.
+No physical controller is driven. Physical/game-triggered vibration is unverified.
+
+The runtime saves INI profiles without the generated banner or empty sections.
+The previous exact-template upgrade detector consequently missed its own saved
+profiles. It now accepts both exact generated and known persisted forms for
+v1-v3, preserving device selections and exact .pre-v4-*.bak backups. Modified
+bindings or extra comments remain untouched. All six forms are regression-tested;
+a copy of the actual prior run's v3 profile also upgraded with an exact backup.
+Legacy templates contain only our own controller configuration, not game assets.
+
+Replaced the bottom quick-reference table in docs/PERFORMANCE-GOAL.md with the
+implemented layout. X grabs; LB handles the tested statue use; LT/RT cycle
+heroes; D-pad is menus/direct powers; Start pauses and B resumes. Contextual X,
+direct D-pad hero selection and full fusion/revive remain unfinished.
+
+Supported Windows build passed: 41/41 native tests, 9.02s. Existing CMake warnings
+remain; no compiler/linker warnings/errors. No game launch, screenshot, host
+input, new audio/FPS measurement or acceptance claim. Full binary hashes and
+scoped evidence: evidence/windows-20260930/XBOX-RUMBLE-PROFILE-V4.json.
+The performance goal remains unmet; user priority remains audio/controls.
+
+
 ## Audio running-state attribution and B resume - 2026-10-01
 
 Added opt-in diagnostic counters for empty mixer reads while Core is Running
@@ -1896,56 +1924,44 @@ costs under the whole-process one-core limit, then close remaining control gaps.
 Private assets, saves, captures and logs stay in .local. User StaticRecomp edits,
 Build-With-Log.cmd and the unfinished static experiment stash remain preserved.
 
-## Xbox / XInput controls — quick reference
+## Xbox / XInput controls — current quick reference (v4)
 
-**PS2 target layout below; not the current complete implementation.** User testing
-is deferred after poor frame rate/audio. New profiles use A attack, B heavy/back,
-X grab, Y jump, LB block/use, Start pause, right stick camera and RB+face powers.
-RB+A/B/X/Y selects down/right/left/up power slots. LT/RT currently cycle heroes;
-D-pad still navigates menus/direct powers. Contextual X use, direct D-pad hero
-selection and full fusion/revive behavior remain open. Fusion has a candidate
-LB+RB request with delayed face-button partner aiming, tested only in a prepared
-Spider-Man/Captain America sequence. No physical motion or manual pointer is an
-intended requirement. Xbox gamepads are the supported target; Wii prompts remain.
+This table describes the implemented layout, not the unfinished PS2 target.
+The input adapter uses an Xbox gamepad; physical Wiimotes and mouse aiming are
+not required. Wii UI prompts remain unchanged.
 
-| Xbox control | Action | PS2 equivalent |
-| --- | --- | --- |
-| Left stick | Move | Left analog stick |
-| Right stick | Rotate camera | Right analog stick |
-| A | Light attack; confirm in menus | Cross |
-| B | Heavy attack; hold to charge | Circle |
-| X | Grab / use / interact | Square |
-| Y | Jump; flight where supported | Triangle |
-| LB (hold) | Block | L1 |
-| RB (hold) + A / B / X / Y | Use the corresponding power | R1 + face button |
-| LB + RB (hold), then a face button | Fusion attack / revive teammate | L1 + R1, then face button |
-| D-pad | Select hero | Directional buttons |
-| Start / Menu | Pause; press B to resume (current port) | Start |
+| Xbox control | Current action |
+| --- | --- |
+| Left stick | Move |
+| Right stick left/right | Rotate camera |
+| A | Light attack; confirm |
+| B | Heavy attack; hold to charge; menu back; resume from pause |
+| X | Grab (combined attack inputs); general contextual use is not implemented |
+| Y | Jump |
+| LB | Block; contextual use at the tested statue prompt |
+| RB + A / B / X / Y | Power slots down / right / left / up |
+| LT / RT | Cycle heroes |
+| D-pad | Menu navigation / direct power inputs; does not directly select a hero |
+| Start / Menu | Pause; use B to resume, not Start again |
+| LB + RB, right stick, then A | Request fusion, aim, confirm; limited tutorial validation |
+| Back / View + right stick sideways | Simulated shake for the statue interaction |
+| Back / View + right stick up | Simulated lift for the statue interaction |
+| Back / View + right stick down | Simulated downward swing; other interactions unverified |
 
-Power-slot order, direct hero selection, camera behavior and fusion/revive still
-need validation against the Wii game. The PS2 manual lists Triangle for menu
-back/cancel, which translates to Y in this target layout.
+At the statue's "Knock Down Statue" prompt, press LB, then use Back/View plus
+sideways stick for shake and promptly up for lift. Back/View suppresses camera
+rotation; LB+RB fusion aiming takes priority over these gestures. With the stick
+neutral, fusion face-button corner shortcuts remain available. Full partner
+selection, revive, flight and all powers still need gameplay validation.
 
-Sources: [Activision PS2 manual](https://www.gamesdatabase.org/Media/SYSTEM/Sony_Playstation_2/Manual/formated/Marvel_Ultimate_Alliance_2_-_2009_-_Activision.pdf),
-printed pages 4–5. Its gameplay table repeats Cross for both attack and jump;
-[the PS2 review](https://www.cheatcc.com/articles/marvel-ultimate-alliance-2-review-for-playstation-2-ps2-psx2/)
-corroborates Triangle for jump/flight.
+Profile v4 fixes Xbox rumble output names (Motor L / Motor R). Software tests
+verify both outputs and release; physical vibration has not been tested.
+Unmodified generated v1-v3 profiles, including the runtime-saved form, upgrade
+automatically with an exact backup. Customized bindings stay unchanged.
 
-Current generated profile v2 fusion aiming: **hold LB+RB, aim with the right
-stick, then press A to confirm**. This also reaches the tutorial ready icon.
-With the stick neutral, face-button corner shortcuts remain available. This is
-gamepad-only aiming; no physical Wiimote or mouse is required. Verified scope is
-the prepared Spider-Man/Captain America tutorial sequence, not all partner/revive
-flows. Unmodified generated v1/v2 profiles now upgrade to v3 with an original backup;
-customized profiles remain unchanged.
-
-Generated profile v3 adds Safeguard gestures: at the statue's "Knock Down
-Statue" prompt, press LB. Hold Back/View and push the right stick sideways
-for the shake prompt, then promptly up when the lift prompt appears. Back/View suppresses camera
-rotation; LB+RB fusion aiming suppresses these gestures. Down maps a downward
-swing but has not been verified in another interaction. Unmodified generated
-v1/v2 profiles now upgrade automatically with a backup; custom bindings are preserved.
-
-Current pause behavior (numeric plaza test, 2026-10-01): **Start pauses; B resumes.**
-Pressing Start again does not resume. Menu visuals and a physical gamepad were
-not tested. Audio crackling remains unresolved.
+The remaining PS2-layout gaps are contextual X use, direct D-pad hero selection,
+and full fusion/revive behavior. Historical target sources:
+[Activision PS2 manual](https://www.gamesdatabase.org/Media/SYSTEM/Sony_Playstation_2/Manual/formated/Marvel_Ultimate_Alliance_2_-_2009_-_Activision.pdf),
+printed pages 4–5, and [PS2 review](https://www.cheatcc.com/articles/marvel-ultimate-alliance-2-review-for-playstation-2-ps2-psx2/).
+The current port uses B for back/resume. Audible quality remains unverified;
+no physical controller or menu visuals were assessed in the latest checks.

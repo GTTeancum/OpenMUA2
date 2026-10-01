@@ -416,7 +416,7 @@ bool GenerateControllerConfig(const fs::path &user_directory,
           manual_aim + ") | (" + std::string(preset) + " & !" + manual_aim + "))\n";
     };
     output << "Device = " << controllers[i] << '\n'
-           << "# OpenMUA2 Xbox action layout v3\n"
+           << "# OpenMUA2 Xbox action layout v4\n"
               "Buttons/A = ((!`Shoulder R`) & (`Button A` | `Button X`)) | hold(`Shoulder L` & `Shoulder R` & (`Button A` | `Button B` | `Button X` | `Button Y`), 0.12)\n"
               "Buttons/B = ((!`Shoulder R`) & (`Button B` | `Button X`))\n"
               "Buttons/1 = !`Back` & (!(`Shoulder L` & `Shoulder R`)) & ((`Right X+` > 0.2) | (`Right X-` > 0.2))\n"
@@ -441,7 +441,7 @@ bool GenerateControllerConfig(const fs::path &user_directory,
               "Swing/Down = `Back` & !(`Shoulder L` & `Shoulder R`) & `Right Y-`\n"
               "Shake/Y = \n"
               "Shake/Z = \n"
-              "Rumble/Motor = Motor\n"
+              "Rumble/Motor = `Motor L` | `Motor R`\n"
               "Extension = Nunchuk\n"
               "Nunchuk/Buttons/C = `Button Y` & !`Shoulder R`\n"
               "Nunchuk/Buttons/Z = `Shoulder L`\n"
@@ -504,13 +504,15 @@ bool EnsureControllerConfig(const fs::path &user_directory,
       }
       return result;
     };
-    const bool managed_legacy = !existing.empty() &&
-        (normalized(original) == normalized(legacy::Profile(existing, 1)) ||
-         normalized(original) == normalized(legacy::Profile(existing, 2)));
+    bool managed_legacy = false;
+    for (int version : {1, 2, 3})
+      for (bool persisted : {false, true})
+        managed_legacy |= !existing.empty() && normalized(original) ==
+            normalized(legacy::Profile(existing, version, persisted));
     if (managed_legacy) {
       const auto suffix = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
       const auto staging = user_directory / (".controller-upgrade-" + suffix);
-      const fs::path backup = destination.string() + ".pre-v3-" + suffix + ".bak";
+      const fs::path backup = destination.string() + ".pre-v4-" + suffix + ".bak";
       const auto staged = ControllerConfigPath(staging);
       const auto cleanup = [&] {
         std::error_code ignored;
@@ -536,7 +538,7 @@ bool EnsureControllerConfig(const fs::path &user_directory,
         return false;
       }
       cleanup();
-      if (message) *message = "updated generated Xbox controls to v3; original: " + backup.string();
+      if (message) *message = "updated generated Xbox controls to v4; original: " + backup.string();
       return true;
     }
 #endif

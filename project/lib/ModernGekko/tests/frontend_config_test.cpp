@@ -100,7 +100,7 @@ int main() {
     return 5;
   }
 #else
-  if (!generated.contains("# OpenMUA2 Xbox action layout v3\n") ||
+  if (!generated.contains("# OpenMUA2 Xbox action layout v4\n") ||
       !generated.contains("Buttons/2 = Start\n") ||
       !generated.contains("Buttons/Home = \n") ||
       !generated.contains("Extension = Nunchuk\n") ||
@@ -146,12 +146,13 @@ int main() {
   const auto read = [](const fs::path& path) {
     std::ifstream input(path); return std::string(std::istreambuf_iterator<char>(input), {});
   };
-  for (int version : {1, 2}) {
-    const auto original = moderngekko::frontend::legacy::Profile(netplay_config.controllers, version);
+  for (int version : {1, 2, 3}) {
+   for (bool persisted : {false, true}) {
+    const auto original = moderngekko::frontend::legacy::Profile(netplay_config.controllers, version, persisted);
     { std::ofstream output(config_path); output << original; }
     // The devices in the old profile win over an unrelated current selection.
     if (!moderngekko::frontend::EnsureControllerConfig(directory, "SDL/9/Other", &error) ||
-        !read(config_path).contains("# OpenMUA2 Xbox action layout v3") ||
+        !read(config_path).contains("# OpenMUA2 Xbox action layout v4") ||
         moderngekko::frontend::ReadConfiguredControllers(directory) != netplay_config.controllers)
       return 20;
     bool backup_found = false;
@@ -169,6 +170,7 @@ int main() {
     { std::ofstream output(config_path); output << customized; }
     if (!moderngekko::frontend::EnsureControllerConfig(directory, controller, &error) ||
         read(config_path) != customized) return 24;
+  }
   }
 #endif
   fs::remove_all(directory);

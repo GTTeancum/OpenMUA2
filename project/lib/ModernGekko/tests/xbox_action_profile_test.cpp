@@ -14,6 +14,15 @@
 // A process-local device: never initializes SDL, discovers hardware or emits
 // host input. Exercise the real generated profile with Dolphin's real parser.
 class TestPad final : public ciface::Core::Device {
+  class Output final : public Device::Output {
+  public:
+    Output(std::string name, double& value) : m_name(std::move(name)), m_value(value) {}
+    std::string GetName() const override { return m_name; }
+    void SetState(ControlState value) override { m_value = value; }
+  private:
+    std::string m_name;
+    double& m_value;
+  };
   class Input final : public Device::Input {
   public:
     Input(std::string name, double& value) : m_name(std::move(name)), m_value(value) {}
@@ -25,6 +34,8 @@ class TestPad final : public ciface::Core::Device {
   };
 public:
   TestPad() {
+    AddOutput(new Output("Motor L", motors[0]));
+    AddOutput(new Output("Motor R", motors[1]));
     for (const char* name : {"Button A", "Button B", "Button X", "Button Y",
         "Shoulder L", "Shoulder R", "Trigger L", "Trigger R", "Start", "Back",
         "Pad N", "Pad S", "Pad W", "Pad E", "Left X+", "Left X-", "Left Y+",
@@ -35,6 +46,7 @@ public:
   std::string GetName() const override { return "Test Pad"; }
   std::string GetSource() const override { return "Test"; }
   std::map<std::string, double> values;
+  double motors[2]{};
 };
 class TestDevices final : public ciface::Core::DeviceContainer {
 public:
@@ -57,6 +69,21 @@ int main(int argc, char** argv) {
   ciface::Core::DeviceQualifier qualifier("Test", 0, "Test Pad");
   ep::ControlEnvironment::VariableContainer vars;
   ep::ControlEnvironment env(devices, qualifier, vars);
+  std::string rumble;
+  if (!section->Get("Rumble/Motor", &rumble)) return 30;
+  auto output = ep::ParseExpression(rumble);
+  if (!output.expr) return 31;
+  output.expr->UpdateReferences(env);
+  if (output.expr->CountNumControls() != 2) return 32;
+  for (double value : {0.75, 0.0}) {
+    output.expr->SetValue(value);
+    if (pad->motors[0] != value || pad->motors[1] != value) return 33;
+  }
+  // The prior Wiimote-only output cannot resolve against Xbox motor names.
+  auto old_output = ep::ParseExpression("Motor");
+  if (!old_output.expr) return 34;
+  old_output.expr->UpdateReferences(env);
+  if (old_output.expr->CountNumControls() != 0) return 35;
   std::map<std::string, std::unique_ptr<ep::Expression>> expressions;
   for (const char* key : {"Buttons/A", "Buttons/B", "Buttons/1", "Buttons/2",
       "Buttons/-", "Buttons/+", "Buttons/Home", "D-Pad/Up", "D-Pad/Down",

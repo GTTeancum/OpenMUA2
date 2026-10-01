@@ -1,5 +1,33 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Xbox rumble and persisted profile migration - 2026-10-01
+
+Fixed a concrete output mismatch: generated profiles used Wiimote-only Motor,
+while SDL/XInput gamepads expose Motor L and Motor R. Profile v4 routes rumble
+to both. A process-local output test through the real expression parser verifies
+strength and release on both motors; the old expression resolves zero outputs.
+No physical controller is driven. Physical/game-triggered vibration is unverified.
+
+The runtime saves INI profiles without the generated banner or empty sections.
+The previous exact-template upgrade detector consequently missed its own saved
+profiles. It now accepts both exact generated and known persisted forms for
+v1-v3, preserving device selections and exact .pre-v4-*.bak backups. Modified
+bindings or extra comments remain untouched. All six forms are regression-tested;
+a copy of the actual prior run's v3 profile also upgraded with an exact backup.
+Legacy templates contain only our own controller configuration, not game assets.
+
+Replaced the bottom quick-reference table in docs/PERFORMANCE-GOAL.md with the
+implemented layout. X grabs; LB handles the tested statue use; LT/RT cycle
+heroes; D-pad is menus/direct powers; Start pauses and B resumes. Contextual X,
+direct D-pad hero selection and full fusion/revive remain unfinished.
+
+Supported Windows build passed: 41/41 native tests, 9.02s. Existing CMake warnings
+remain; no compiler/linker warnings/errors. No game launch, screenshot, host
+input, new audio/FPS measurement or acceptance claim. Full binary hashes and
+scoped evidence: evidence/windows-20260930/XBOX-RUMBLE-PROFILE-V4.json.
+The performance goal remains unmet; user priority remains audio/controls.
+
+
 ## Audio running-state attribution and B resume - 2026-10-01
 
 Added opt-in diagnostic counters for empty mixer reads while Core is Running

@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "changes": [
+    "Profile v4 routes rumble to Motor L and Motor R, the names exposed by SDL/XInput, instead of Wiimote-only Motor.",
+    "Exact generated v1/v2/v3 templates and their runtime-persisted forms upgrade with an original backup and preserved device selection. Custom bindings/extra comments remain unchanged.",
+    "Bottom-of-goal quick reference now describes current implemented controls, with unfinished PS2 targets listed as gaps."
+  ],
+  "source_evidence": [
+    "SDL/SDLGamepad.cpp exposes Motor L / Motor R",
+    "XInput/XInput.cpp exposes Motor L / Motor R",
+    "Runtime-saved private v3 file omitted generated banner and empty sections, making old full-template comparison fail."
+  ],
+  "tests": {
+    "supported_windows_build": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_passed": 41,
+    "native_seconds": 9.02,
+    "rumble": "Real expression parser resolves two process-local outputs; strength 0.75 and release 0 reach both. Old Motor expression resolves zero controls.",
+    "migration": "v1/v2/v3 generated and persisted templates; devices and exact backups retained; custom comments and changed deadzones preserved. Actual runtime-saved v3 private copy upgraded with exact backup.",
+    "physical_controller_used": false,
+    "game_launched": false,
+    "new_fps_measurement": false,
+    "screenshots": false,
+    "warnings": "Existing CMake deprecation, Wayland, object path and lz4 IPO warnings. No compiler/linker warnings/errors."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16114688,
+      "sha256": "c879d5f99cc0c817be224067013caebd027fc64f2f2e878d206108f253805084",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-run.exe"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "5f8a9ba8dcda9c1ee09598a6d9bde7f1fbbf523881a02da53e4fa9d3a3f10a5b",
+      "private_path": ".local/build/windows-x64/runtime/ModernGekko.exe"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "6b1b799f5778301032587afd53dcea238d1ae8be3f834e2549067d2b76cd9a3b",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-port.exe"
+    },
+    "moderngekko_frontend_config_test.exe": {
+      "bytes": 152576,
+      "sha256": "83dbb2d14795d7adedbf3a2f3f79691ebe69f633d29e89c62fa37bb2d89fa716",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_frontend_config_test.exe"
+    },
+    "moderngekko_frontend_config_gamecube_test.exe": {
+      "bytes": 117760,
+      "sha256": "a03c05c725d2fe0fe80cac452d67b20e695d1804c376a57b823929684293f475",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_frontend_config_gamecube_test.exe"
+    },
+    "moderngekko_xbox_action_profile_test.exe": {
+      "bytes": 297984,
+      "sha256": "981d00a10c365da3bd97200e93c041193c2b158eb8eb142ae2f871808c7aa4c4",
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_xbox_action_profile_test.exe"
+    }
+  },
+  "limits": [
+    "Physical vibration and game-triggered rumble are unverified.",
+    "Contextual X use, direct D-pad hero selection and full fusion/revive remain open.",
+    "No new audio, gameplay or FPS acceptance claim.",
+    "Only exact known managed forms migrate; unknown/custom profiles are preserved."
+  ]
+}
