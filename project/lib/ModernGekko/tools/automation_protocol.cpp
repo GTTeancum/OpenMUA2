@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string_view>
 #include <system_error>
+#include <unordered_set>
 #include <utility>
 
 namespace moderngekko::automation
@@ -617,10 +618,16 @@ bool LoadXboxSequence(const std::filesystem::path& directory,
   std::vector<Command> result;
   std::uint64_t milliseconds = 0, bytes = 0;
   int port = -1;
-  std::vector<std::filesystem::path> outputs;
+  std::unordered_set<std::filesystem::path> outputs, sources;
   const auto files = ListCommandFiles(directory);
   const auto fail = [&](const char* message) { if (error) *error = message; return false; };
   if (files.empty() || files.size() > 2048) return fail("sequence requires 1..2048 command files");
+  // Normalize each source once; large routes must not repeat filesystem work
+  // for every output. Keep the same lexical collision semantics.
+  sources.reserve(files.size());
+  outputs.reserve(files.size());
+  for (const auto& file : files)
+    sources.insert(std::filesystem::absolute(file).lexically_normal());
   for (const auto& file : files) {
     Command item;
     if (!ParseCommandFile(file, &item, error)) return false;
@@ -642,11 +649,9 @@ bool LoadXboxSequence(const std::filesystem::path& directory,
     }
     if (!item.path.empty()) {
       item.path = std::filesystem::absolute(ResolveControlPath(directory, item.path)).lexically_normal();
-      if (std::ranges::find(outputs, item.path) != outputs.end()) return fail("duplicate sequence output");
-      for (const auto& source : files)
-        if (item.path == std::filesystem::absolute(source).lexically_normal())
-          return fail("sequence output would overwrite an input command");
-      outputs.push_back(item.path);
+      if (!outputs.insert(item.path).second) return fail("duplicate sequence output");
+      if (sources.contains(item.path))
+        return fail("sequence output would overwrite an input command");
     }
     result.push_back(std::move(item));
   }

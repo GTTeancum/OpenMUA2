@@ -1,0 +1,1044 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "7ff0d2ce90ab5aa8a97b088ebfc3a906c22c5db5",
+  "change": "Normalize sequence source paths once and use lexical-path hash sets for duplicate/collision checks; retain2048-command,600-second,64MiB limits and safety checks.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "log": ".local/logs/sequence-path-fixed-build.log",
+    "exit_code": 0,
+    "tests_passed": 45,
+    "test_seconds": 7.22,
+    "protocol_test_seconds": 1.65,
+    "compiler_linker_warnings_errors": [],
+    "existing_cmake_warnings": "Deprecated policies/minimum versions, missing Wayland, long object paths, LZ4 IPO policy",
+    "binaries": {
+      "moderngekko-run.exe": {
+        "bytes": 16147968,
+        "sha256": "9924c74b12c905d9dd9072b0dc447238689133e26ebff10a7f811eac587f60c1"
+      },
+      "moderngekko-port.exe": {
+        "bytes": 243712,
+        "sha256": "2b8f2fb5aeb3f8f3a4183d04ce61fe653973276e475b0bf801e96cc25428c816"
+      },
+      "ModernGekko.exe": {
+        "bytes": 12206080,
+        "sha256": "ee5b9cf3383871c7d2c3ffe7434c428ff80faac92f0578484e00bee1df28744e"
+      }
+    },
+    "scope": "The preceding unchanged-source build passed45/45 in7.89s after an edit script stopped before writing; it is not validation of this fix."
+  },
+  "tests": "Existing collision and unsupported command tests plus2048 valid commands, lexical duplicate-output alias, lexical input-overwrite alias, and2049-command rejection.",
+  "failed_attempts": [
+    {
+      "private_directory": ".local/automation/v5-endurance-20261001",
+      "route_completed": false,
+      "error": "RuntimeError: 000001.txt: sequence requires 1..2048 command files"
+    },
+    {
+      "private_directory": ".local/automation/v5-endurance-bounded-20261001",
+      "route_completed": false,
+      "error": "RuntimeError: 000001.txt: sequence exceeds ten minutes"
+    },
+    {
+      "private_directory": ".local/automation/v5-endurance-600-20261001",
+      "route_completed": false,
+      "error": "RuntimeError: 000001.txt: sequence start must be now or within the next 60 guest seconds"
+    },
+    {
+      "private_directory": ".local/automation/v5-endurance-fixed-20261001",
+      "route_completed": false,
+      "error": "RuntimeError: 000001.txt: sequence start must be now or within the next 60 guest seconds"
+    }
+  ],
+  "run": {
+    "private_directory": ".local/automation/v5-endurance-now-20261001",
+    "exit_code": 0,
+    "route_completed": true,
+    "requested_guest_sequence_start": 0,
+    "settings": "Full JIT, formatter opt-in ON, identity cache OFF, whole-process CPU2/mask4, Vulkan3x/1920x1080 preset, normal clocks, Cubeb volume70, no screenshots/host input.",
+    "timing": {
+      "scope": "All recorded new frames between first route probe and terminal marker, without warmup trimming. Not visual, audible or continuous-combat acceptance.",
+      "route_completed": true,
+      "exit_code": 0,
+      "route_guest_seconds": 600.0000000192044,
+      "whole": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 15022,
+        "last_frame": 33003,
+        "emulated_ticks": 437375238300,
+        "intervals": 17981,
+        "seconds": 599.9656015,
+        "average_fps": 29.97005154136324,
+        "frame_ms": {
+          "median": 33.36329999999066,
+          "p95": 34.01409999997895,
+          "p99": 34.60199999994984,
+          "max": 50.975400000002224
+        },
+        "one_percent_low_fps": 28.073370002042,
+        "rolling_1s_fps_min": 29,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 10217,
+        "frames_over_50ms": 2,
+        "longest_consecutive_over_50ms_seconds": 0.050975400000002224,
+        "warmup_seconds": 0,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 599.9660333333334,
+        "emulation_speed_percent": 100.00007197634869,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 17981
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.00336666667601071,
+          "p99": 1.2353333332831702,
+          "min": -13.614166666685259,
+          "max": 17.608733333335554
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "minutes": [
+        {
+          "minute": 1,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 15022,
+            "last_frame": 16819,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9599696,
+            "average_fps": 29.969995181585283,
+            "frame_ms": {
+              "median": 33.362000000000336,
+              "p95": 33.98059999999958,
+              "p99": 34.59039999999991,
+              "max": 50.975400000002224
+            },
+            "one_percent_low_fps": 27.13375312264221,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 997,
+            "frames_over_50ms": 2,
+            "longest_consecutive_over_50ms_seconds": 0.050975400000002224,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99988392255624,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.004666666666333641,
+              "p99": 1.2237333333332407,
+              "min": -9.51386666666644,
+              "max": 17.608733333335554
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 2,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 16820,
+            "last_frame": 18617,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9601283,
+            "average_fps": 29.969915858235414,
+            "frame_ms": {
+              "median": 33.3673000000001,
+              "p95": 33.94850000000105,
+              "p99": 34.484400000003745,
+              "max": 37.79039999999867
+            },
+            "one_percent_low_fps": 28.444804042954704,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1016,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99961924697884,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": 0.000633333333430186,
+              "p99": 1.117733333337076,
+              "min": -5.046166666667143,
+              "max": 4.423733333332
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 3,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 18618,
+            "last_frame": 20415,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9600485,
+            "average_fps": 29.969955744782293,
+            "frame_ms": {
+              "median": 33.36550000000216,
+              "p95": 34.004800000005275,
+              "p99": 34.445300000001566,
+              "max": 37.55509999999873
+            },
+            "one_percent_low_fps": 28.61825348522561,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1022,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99975233509026,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.0011666666645121504,
+              "p99": 1.078633333334897,
+              "min": -4.716966666664116,
+              "max": 4.188433333332061
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 4,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 20416,
+            "last_frame": 22213,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9601261,
+            "average_fps": 29.969916957863106,
+            "frame_ms": {
+              "median": 33.363000000001364,
+              "p95": 33.99229999999953,
+              "p99": 34.44650000000138,
+              "max": 37.324400000000146
+            },
+            "one_percent_low_fps": 28.545646868146576,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1038,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.9996229160699,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.0036666666653056845,
+              "p99": 1.0798333333347094,
+              "min": -3.9834666666668377,
+              "max": 3.957733333333477
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 5,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 22214,
+            "last_frame": 24012,
+            "emulated_ticks": 43735091400,
+            "intervals": 1798,
+            "seconds": 59.9931656,
+            "average_fps": 29.970080458631443,
+            "frame_ms": {
+              "median": 33.362450000000266,
+              "p95": 34.04259999999937,
+              "p99": 35.0280000000005,
+              "max": 39.75200000000001
+            },
+            "one_percent_low_fps": 27.765227723456274,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 998,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.99326666666667,
+            "emulation_speed_percent": 100.00016846363359,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1798
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.004216666666403968,
+              "p99": 1.6613333333338338,
+              "min": -6.5850666666652655,
+              "max": 6.38533333333334
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 6,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 24013,
+            "last_frame": 25810,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9606691,
+            "average_fps": 29.969645552204156,
+            "frame_ms": {
+              "median": 33.36209999999973,
+              "p95": 34.0929999999986,
+              "p99": 35.07019999999983,
+              "max": 37.501499999997634
+            },
+            "one_percent_low_fps": 27.946912665743284,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 996,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99871732585454,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.004566666666941388,
+              "p99": 1.70353333333316,
+              "min": -3.9462666666673223,
+              "max": 4.134833333330964
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 7,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 25811,
+            "last_frame": 27608,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9599418,
+            "average_fps": 29.97000907696011,
+            "frame_ms": {
+              "median": 33.36299999999959,
+              "p95": 34.105299999996674,
+              "p99": 34.953399999999135,
+              "max": 41.00650000000172
+            },
+            "one_percent_low_fps": 27.723878792433435,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 995,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99993028679025,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.0036666666670820414,
+              "p99": 1.5867333333324658,
+              "min": -5.526966666672531,
+              "max": 7.639833333335052
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 8,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 27609,
+            "last_frame": 29406,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9603211,
+            "average_fps": 29.969819491176807,
+            "frame_ms": {
+              "median": 33.361799999994446,
+              "p95": 33.96709999999992,
+              "p99": 34.24100000000152,
+              "max": 46.927699999997685
+            },
+            "one_percent_low_fps": 28.102588185921302,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1066,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 99.99929770222663,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.004866666672223574,
+              "p99": 0.8743333333348507,
+              "min": -13.614166666663943,
+              "max": 13.561033333331016
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 9,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 29407,
+            "last_frame": 31204,
+            "emulated_ticks": 43710767100,
+            "intervals": 1797,
+            "seconds": 59.9597856,
+            "average_fps": 29.97008715121223,
+            "frame_ms": {
+              "median": 33.36329999999954,
+              "p95": 34.01490000000251,
+              "p99": 34.4200999999984,
+              "max": 35.90340000000225
+            },
+            "one_percent_low_fps": 28.49851760210972,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1044,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.959900000000005,
+            "emulation_speed_percent": 100.00019079454482,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1797
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.003366666667128926,
+              "p99": 1.0534333333317298,
+              "min": -2.697666666667056,
+              "max": 2.536733333335581
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        },
+        {
+          "minute": 10,
+          "frames": {
+            "scope": "new-frame callback timing, not display scanout or correctness proof",
+            "first_frame": 31205,
+            "last_frame": 33003,
+            "emulated_ticks": 43735091400,
+            "intervals": 1798,
+            "seconds": 59.9931345,
+            "average_fps": 29.970095994900884,
+            "frame_ms": {
+              "median": 33.36325000000073,
+              "p95": 33.967799999999215,
+              "p99": 34.34399999999993,
+              "max": 36.73479999999785
+            },
+            "one_percent_low_fps": 28.630434533648344,
+            "rolling_1s_fps_min": 29,
+            "rolling_1s_fps_median": 30.0,
+            "frames_over_33_334ms": 1041,
+            "frames_over_50ms": 0,
+            "longest_consecutive_over_50ms_seconds": 0.0,
+            "warmup_seconds": 0,
+            "dropped_samples": 0,
+            "guest_ticks_per_second": 729000000,
+            "emulated_seconds": 59.99326666666667,
+            "emulation_speed_percent": 100.00022030298595,
+            "guest_frame_ms": {
+              "median": 33.36666666666667,
+              "p99": 33.36666666666667,
+              "max": 33.36666666666667
+            },
+            "guest_interval_counts_ms": {
+              "33.367": 1798
+            },
+            "host_minus_guest_interval_ms": {
+              "median": -0.003416666665936874,
+              "p99": 0.9773333333332607,
+              "min": -3.6557666666618,
+              "max": 3.3681333333311776
+            },
+            "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+          }
+        }
+      ]
+    },
+    "combat": {
+      "samples": 48,
+      "heroes_alive_min": 3,
+      "opponents_positive_range": [
+        2,
+        7
+      ],
+      "pairs": [
+        {
+          "from": "01-001-pool.bin",
+          "to": "01-005-pool.bin",
+          "ticks": 10541340001,
+          "position": 10,
+          "health": 7
+        },
+        {
+          "from": "01-005-pool.bin",
+          "to": "01-010-pool.bin",
+          "ticks": 12830400005,
+          "position": 10,
+          "health": 9
+        },
+        {
+          "from": "01-010-pool.bin",
+          "to": "01-tail-pool.bin",
+          "ticks": 13078259996,
+          "position": 9,
+          "health": 5
+        },
+        {
+          "from": "01-tail-pool.bin",
+          "to": "02-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "02-001-pool.bin",
+          "to": "02-005-pool.bin",
+          "ticks": 10541340030,
+          "position": 8,
+          "health": 4
+        },
+        {
+          "from": "02-005-pool.bin",
+          "to": "02-010-pool.bin",
+          "ticks": 12830399969,
+          "position": 8,
+          "health": 4
+        },
+        {
+          "from": "02-010-pool.bin",
+          "to": "02-tail-pool.bin",
+          "ticks": 13078260016,
+          "position": 8,
+          "health": 7
+        },
+        {
+          "from": "02-tail-pool.bin",
+          "to": "03-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "03-001-pool.bin",
+          "to": "03-005-pool.bin",
+          "ticks": 10541339991,
+          "position": 7,
+          "health": 8
+        },
+        {
+          "from": "03-005-pool.bin",
+          "to": "03-010-pool.bin",
+          "ticks": 12830400012,
+          "position": 7,
+          "health": 5
+        },
+        {
+          "from": "03-010-pool.bin",
+          "to": "03-tail-pool.bin",
+          "ticks": 13078259982,
+          "position": 8,
+          "health": 6
+        },
+        {
+          "from": "03-tail-pool.bin",
+          "to": "04-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "04-001-pool.bin",
+          "to": "04-005-pool.bin",
+          "ticks": 10541340000,
+          "position": 7,
+          "health": 4
+        },
+        {
+          "from": "04-005-pool.bin",
+          "to": "04-010-pool.bin",
+          "ticks": 12830400020,
+          "position": 6,
+          "health": 6
+        },
+        {
+          "from": "04-010-pool.bin",
+          "to": "04-tail-pool.bin",
+          "ticks": 13078259987,
+          "position": 5,
+          "health": 3
+        },
+        {
+          "from": "04-tail-pool.bin",
+          "to": "05-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "05-001-pool.bin",
+          "to": "05-005-pool.bin",
+          "ticks": 10541340048,
+          "position": 6,
+          "health": 4
+        },
+        {
+          "from": "05-005-pool.bin",
+          "to": "05-010-pool.bin",
+          "ticks": 12830399974,
+          "position": 7,
+          "health": 5
+        },
+        {
+          "from": "05-010-pool.bin",
+          "to": "05-tail-pool.bin",
+          "ticks": 13078259972,
+          "position": 7,
+          "health": 6
+        },
+        {
+          "from": "05-tail-pool.bin",
+          "to": "06-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "06-001-pool.bin",
+          "to": "06-005-pool.bin",
+          "ticks": 10541340004,
+          "position": 7,
+          "health": 3
+        },
+        {
+          "from": "06-005-pool.bin",
+          "to": "06-010-pool.bin",
+          "ticks": 12830399999,
+          "position": 6,
+          "health": 4
+        },
+        {
+          "from": "06-010-pool.bin",
+          "to": "06-tail-pool.bin",
+          "ticks": 13078260001,
+          "position": 6,
+          "health": 4
+        },
+        {
+          "from": "06-tail-pool.bin",
+          "to": "07-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "07-001-pool.bin",
+          "to": "07-005-pool.bin",
+          "ticks": 10541340002,
+          "position": 6,
+          "health": 2
+        },
+        {
+          "from": "07-005-pool.bin",
+          "to": "07-010-pool.bin",
+          "ticks": 12830400008,
+          "position": 6,
+          "health": 3
+        },
+        {
+          "from": "07-010-pool.bin",
+          "to": "07-tail-pool.bin",
+          "ticks": 13078259987,
+          "position": 6,
+          "health": 4
+        },
+        {
+          "from": "07-tail-pool.bin",
+          "to": "08-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "08-001-pool.bin",
+          "to": "08-005-pool.bin",
+          "ticks": 10541340005,
+          "position": 5,
+          "health": 2
+        },
+        {
+          "from": "08-005-pool.bin",
+          "to": "08-010-pool.bin",
+          "ticks": 12830400021,
+          "position": 5,
+          "health": 3
+        },
+        {
+          "from": "08-010-pool.bin",
+          "to": "08-tail-pool.bin",
+          "ticks": 13078259970,
+          "position": 6,
+          "health": 3
+        },
+        {
+          "from": "08-tail-pool.bin",
+          "to": "09-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "09-001-pool.bin",
+          "to": "09-005-pool.bin",
+          "ticks": 10541340000,
+          "position": 6,
+          "health": 3
+        },
+        {
+          "from": "09-005-pool.bin",
+          "to": "09-010-pool.bin",
+          "ticks": 12830400007,
+          "position": 6,
+          "health": 2
+        },
+        {
+          "from": "09-010-pool.bin",
+          "to": "09-tail-pool.bin",
+          "ticks": 13078259995,
+          "position": 7,
+          "health": 2
+        },
+        {
+          "from": "09-tail-pool.bin",
+          "to": "10-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "10-001-pool.bin",
+          "to": "10-005-pool.bin",
+          "ticks": 10541340003,
+          "position": 9,
+          "health": 1
+        },
+        {
+          "from": "10-005-pool.bin",
+          "to": "10-010-pool.bin",
+          "ticks": 12830399997,
+          "position": 9,
+          "health": 3
+        },
+        {
+          "from": "10-010-pool.bin",
+          "to": "10-tail-pool.bin",
+          "ticks": 13078259998,
+          "position": 9,
+          "health": 5
+        },
+        {
+          "from": "10-tail-pool.bin",
+          "to": "11-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "11-001-pool.bin",
+          "to": "11-005-pool.bin",
+          "ticks": 10541340005,
+          "position": 7,
+          "health": 6
+        },
+        {
+          "from": "11-005-pool.bin",
+          "to": "11-010-pool.bin",
+          "ticks": 12830400009,
+          "position": 7,
+          "health": 6
+        },
+        {
+          "from": "11-010-pool.bin",
+          "to": "11-tail-pool.bin",
+          "ticks": 13078259996,
+          "position": 7,
+          "health": 5
+        },
+        {
+          "from": "11-tail-pool.bin",
+          "to": "12-001-pool.bin",
+          "ticks": 0,
+          "position": 0,
+          "health": 0
+        },
+        {
+          "from": "12-001-pool.bin",
+          "to": "12-005-pool.bin",
+          "ticks": 10541339990,
+          "position": 7,
+          "health": 6
+        },
+        {
+          "from": "12-005-pool.bin",
+          "to": "12-010-pool.bin",
+          "ticks": 12830400002,
+          "position": 7,
+          "health": 5
+        },
+        {
+          "from": "12-010-pool.bin",
+          "to": "12-tail-pool.bin",
+          "ticks": 13078260012,
+          "position": 6,
+          "health": 3
+        }
+      ],
+      "zero_elapsed_pairs": 11,
+      "positive_elapsed_pairs": 36,
+      "positive_elapsed_pairs_without_health_change": 0,
+      "positive_elapsed_pairs_without_position_change": 0
+    },
+    "audio": {
+      "schema": 1,
+      "scope": "Mixer empty reads and queue trims; not audible dropouts, combat boundaries or device playback.",
+      "covered_buckets": 618,
+      "initial_complete_buckets_without_main_empty_reads": 615,
+      "final_bucket_second": 617,
+      "overflow_bucket_present": false,
+      "core_state_counters_available": true,
+      "queue_trim_counters_available": true,
+      "channels": {
+        "dma": {
+          "total_empty_dequeues": 172,
+          "before_final_bucket_empty_dequeues": 9,
+          "final_bucket_empty_dequeues": 163,
+          "nonzero_buckets": [
+            {
+              "second": 615,
+              "empty_dequeues": 3
+            },
+            {
+              "second": 616,
+              "empty_dequeues": 6
+            },
+            {
+              "second": 617,
+              "empty_dequeues": 163
+            }
+          ],
+          "empty_while_core_running": 9,
+          "empty_while_core_not_running": 163,
+          "queue_trims": {
+            "events": 4,
+            "discarded_granules": 43,
+            "events_running": 4,
+            "events_not_running": 0,
+            "nonzero_buckets": [
+              {
+                "second": 0,
+                "queue_trim_events": 2,
+                "queue_trimmed_granules": 22,
+                "queue_trim_running": 2,
+                "queue_trim_not_running": 0
+              },
+              {
+                "second": 616,
+                "queue_trim_events": 2,
+                "queue_trimmed_granules": 21,
+                "queue_trim_running": 2,
+                "queue_trim_not_running": 0
+              }
+            ]
+          }
+        },
+        "music": {
+          "total_empty_dequeues": 254,
+          "before_final_bucket_empty_dequeues": 10,
+          "final_bucket_empty_dequeues": 244,
+          "nonzero_buckets": [
+            {
+              "second": 615,
+              "empty_dequeues": 3
+            },
+            {
+              "second": 616,
+              "empty_dequeues": 7
+            },
+            {
+              "second": 617,
+              "empty_dequeues": 244
+            }
+          ],
+          "empty_while_core_running": 10,
+          "empty_while_core_not_running": 244,
+          "queue_trims": {
+            "events": 5,
+            "discarded_granules": 84,
+            "events_running": 5,
+            "events_not_running": 0,
+            "nonzero_buckets": [
+              {
+                "second": 0,
+                "queue_trim_events": 2,
+                "queue_trimmed_granules": 35,
+                "queue_trim_running": 2,
+                "queue_trim_not_running": 0
+              },
+              {
+                "second": 616,
+                "queue_trim_events": 3,
+                "queue_trimmed_granules": 49,
+                "queue_trim_running": 3,
+                "queue_trim_not_running": 0
+              }
+            ]
+          }
+        }
+      },
+      "max_callback_gap_ms": 14.1239,
+      "limitations": [
+        "Final bucket is retained, not discarded or classified as shutdown.",
+        "One empty dequeue is a granule read, not one audible dropout.",
+        "Queue trims count discarded granules; they do not prove an audible defect.",
+        "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+        "Bucket 1200, if present, combines all later observations.",
+        "Core Running includes in-game menus; not-running can include host pause or shutdown."
+      ]
+    },
+    "ancillary": {
+      "scope": "Full interior audio buckets only; boundary buckets remain in audio-analysis.json. Private PCM is a trailing pre-volume capture, not device output.",
+      "audio_channels": {
+        "0": {
+          "fully_contained_buckets": 599,
+          "empty_dequeues": 0,
+          "queue_trim_events": 0,
+          "max_callback_gap_ms": 0.0
+        },
+        "1": {
+          "fully_contained_buckets": 599,
+          "empty_dequeues": 0,
+          "queue_trim_events": 0,
+          "max_callback_gap_ms": 0.0
+        },
+        "11": {
+          "fully_contained_buckets": 599,
+          "empty_dequeues": 0,
+          "queue_trim_events": 0,
+          "max_callback_gap_ms": 14.1239
+        }
+      },
+      "latched_game_elapsed_seconds": 599.999417695,
+      "pcm_tail_seconds": 60.0,
+      "pcm_peak": 23714,
+      "pcm_clipped_samples": 0
+    },
+    "sha256": {
+      "run.json": "0109351e4cfd7d0fe7931b398c4a44393019d9f5f1eb16a2c5e96c12521a1fb1",
+      "result.json": "b00f1eb3ca3d589da0868e8ceb40629a98705120c0e586ede80afa3a55fffe77",
+      "runtime.log": "ecb162582434198422558738c7e920979d6e558c1b5ceac9566a535d1136ae0f",
+      "frames.csv": "a4cc23eefbf19ab7c05e4fc8e04ef199640761b18eae62a047e5a2aea8e744b8",
+      "audio-profile.csv": "e09668a68e653e36c70082b8ad2931555e775d39b831caf67196be469cd7d4c4",
+      "measurement-end.txt": "18d844ccd045a69a3abeff0198e63126d0fbb829ed287caf23fd8842d5a3ea7c"
+    }
+  },
+  "limits": [
+    "One600-second scheduled route; first-to-last recorded frame spans599.9656 host seconds because endpoint probes need not coincide with frames. No warmup trimming.",
+    "Start-now avoids missed absolute-start deadlines; not an identical-state A/B comparison. The loader fix alone did not make the old short start margin valid.",
+    "Repeated varied action cycle with48 guarded entity samples, not every-frame visual proof. Eleven zero-time boundary pairs are retained; all36 elapsed pairs show health and position changes.",
+    "Two host frames exceed50ms; minimum rolling second29,1%low28.07. No claim of completed solid30 acceptance.",
+    "No visual/listening/device-output or physical-controller validation. PCM retains only final60 seconds before volume.",
+    "Full audio counters retain startup and terminal events;599 fully interior buckets had no empty reads/trims, which does not prove audible quality.",
+    "Formatter remains default-off; three qualifying repeats, broader gameplay/timing correctness and visual/audio acceptance still outstanding.",
+    "All proprietary assets, raw states/audio/dumps and user static edits remain outside this commit."
+  ]
+}

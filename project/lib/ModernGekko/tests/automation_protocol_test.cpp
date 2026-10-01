@@ -323,6 +323,31 @@ int main()
     output.close();
     if (automation::ParseCommandFile(sequence / "04.txt", &command, &error)) return 43;
   }
+  // Exercise the supported route boundary without quadratic path comparisons.
+  const auto large = root / "large-sequence";
+  std::filesystem::create_directory(large);
+  for (unsigned i = 0; i < 2048; ++i) {
+    std::ofstream output(large / (std::to_string(i) + ".txt"));
+    output << "command=xbox_time\nport=0\nmilliseconds=1\npath=../large-out/"
+           << i << ".txt\n";
+  }
+  if (!automation::LoadXboxSequence(large, &movie, &error) || movie.size() != 2048)
+    return 44;
+  const auto overwrite_last = [&](const char* path) {
+    std::ofstream output(large / "2047.txt");
+    output << "command=read_timing\npath=" << path << '\n';
+  };
+  overwrite_last("../large-out/sub/../0.txt");
+  if (automation::LoadXboxSequence(large, &movie, &error) ||
+      error != "duplicate sequence output") return 45;
+  overwrite_last("./nested/../0.txt");
+  if (automation::LoadXboxSequence(large, &movie, &error) ||
+      error != "sequence output would overwrite an input command") return 46;
+  overwrite_last("../large-out/2047.txt");
+  { std::ofstream extra(large / "2048.txt"); extra << "command=read_timing\npath=../extra.txt\n"; }
+  if (automation::LoadXboxSequence(large, &movie, &error) ||
+      error != "sequence requires 1..2048 command files") return 47;
+
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return 0;

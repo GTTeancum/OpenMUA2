@@ -1,5 +1,43 @@
 # OpenMUA2 sustained combat performance goal
 
+## Ten-minute v5 diagnostic and sequence-loader fix - 2026-10-01
+
+Sequence loading now normalizes each input path once and uses lexical-path hash
+sets for collision checks. The previous nested loop repeated filesystem work
+for every output. Existing limits and rejection behavior remain. New tests cover
+2048 commands, normalized duplicate/output-to-input aliases, and2049 rejection.
+Supported Windows build exited0:45/45 tests in7.22s (protocol1.65s), no compiler/
+linker warnings/errors; existing CMake warnings remain. Binary hashes and sizes
+are in evidence/windows-20260930/V5-ENDURANCE-SEQUENCE-LOADER.json.
+
+Four failed preparations are retained: too many commands, over600 seconds, and
+two missed absolute start deadlines (including one after the loader fix). The
+successful retry uses the existing start-now option and1573 commands over exactly
+600 scheduled seconds. It is not an identical-state A/B comparison. No limit was
+relaxed. The earlier unchanged-source build is not validation of the fix.
+
+The completed route exited0:17981 new-frame intervals across599.9656 host seconds,
+29.97005 FPS, normal100.00007% game-clock speed, P99 34.602ms, maximum50.975ms,
+two frames over50ms, minimum rolling second29,1%low28.073. Every guest interval
+was33.367ms. No warmup trimming; all ten minute averages were29.9696-29.9701.
+This is stronger endurance evidence, not completion of solid30 acceptance.
+
+All48 guarded entity samples retained at least3 living heroes and2-7 positive-
+health opponents. All36 positive-duration sample pairs changed both health and
+positions; the11 unchanged pairs were zero-time cycle-boundary duplicates.
+Latched gameplay time advanced599.999418s. These are sampled combat observations,
+not continuous visual proof. All599 fully interior audio buckets had zero main
+channel empty reads or trims. Full counters retain startup/terminal events.
+Private pre-volume PCM retains the final60s, no clipped samples; audible quality
+is unverified.
+
+Full JIT, one logical CPU2/mask4, Vulkan3x/1080p preset, normal clocks, Cubeb70%,
+formatter explicitly ON and identity cache OFF. The formatter remains default-
+off. No screenshots or host input. Three qualifying repeats, broader timing/
+gameplay correctness and visual/audio acceptance remain open. User edits and
+proprietary data are preserved. Evidence: V5-ENDURANCE-SEQUENCE-LOADER.json.
+
+
 ## Gameplay-clock comparison - 2026-10-01
 
 Read-only samples now check the native clock object identity before reading its
