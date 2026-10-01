@@ -40,6 +40,31 @@ class AudioProfileAnalysisTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             module.analyze('\n'.join(text).replace(',0,61', ',0,60'))
 
+    def test_queue_trims_are_optional_and_retain_state_and_granules(self):
+        old = module.analyze(profile())
+        self.assertFalse(old['queue_trim_counters_available'])
+        self.assertNotIn('queue_trims', old['channels']['dma'])
+        lines = profile().splitlines()
+        lines[0] += ',queue_trim_events,queue_trimmed_granules,queue_trim_running,queue_trim_not_running'
+        for i in range(1, len(lines)):
+            second, _, channel, *_ = lines[i].split(',')
+            lines[i] += ',2,17,1,1' if (second, channel) == ('2', '0') else ',0,0,0,0'
+        text = '\n'.join(lines)
+        result = module.analyze(text)
+        trims = result['channels']['dma']['queue_trims']
+        self.assertEqual((trims['events'], trims['discarded_granules'],
+                          trims['events_running'], trims['events_not_running']), (2, 17, 1, 1))
+        self.assertEqual(trims['nonzero_buckets'][0]['second'], 2)
+        self.assertEqual(result['channels']['music']['queue_trims']['events'], 0)
+        for invalid in (',2,17,1,0', ',2,1,1,1', ',0,17,0,0', ',2,-1,1,1'):
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                module.analyze(text.replace(',2,17,1,1', invalid))
+
+    def test_partial_queue_trim_schema_rejected(self):
+        text = profile().replace('max_callback_gap_ns', 'max_callback_gap_ns,queue_trim_events')
+        with self.assertRaises(ValueError):
+            module.analyze(text)
+
     def test_partial_state_schema_rejected(self):
         text = profile().replace('max_callback_gap_ns', 'max_callback_gap_ns,empty_running')
         with self.assertRaises(ValueError):

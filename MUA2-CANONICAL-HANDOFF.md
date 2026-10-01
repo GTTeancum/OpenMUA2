@@ -1,5 +1,35 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Audio queue trims and native output log - 2026-10-01
+
+Added opt-in counters for queue-trim events, discarded granules and Running/not-
+Running attribution. The analyzer preserves older logs as lacking trim evidence
+and rejects inconsistent new counters. Playback, buffer limits and defaults are
+unchanged; this is diagnostic work, not an audible crackling fix.
+
+Native application logs show WASAPI requested/mix formats both at stereo 48kHz,
+a 1056-frame (22ms) render buffer, and no logged device reinitialization/failure.
+The instrumented plaza route had three trims per main channel, confined to buckets
+0 and 56. Buckets 1-55 had neither queue trims nor empty reads. Replacing its closing
+pause/resume sequence with equal-duration neutral gameplay left only bucket-0
+trims and ZERO empty reads while Core was Running. All later empty reads in that
+run were not-Running. This supports a transition association, not exact timing or
+an audible-clean claim. Do not enlarge buffers or change clocks from these counts.
+
+All three runs exited 0. The no-menu run decoded 16 guarded entity probes (at least
+three living heroes, 4-7 positive-health opponents), captured 57.772s of private
+pre-volume PCM with zero clipped samples, and recorded maximum callback gap 11.1441ms
+and work 1.6604ms. Full JIT, one logical CPU, normal clocks, Vulkan3x, muted Cubeb;
+no host input, screenshots or FPS measurements. Physical output used during the
+user's earlier crackling test has not yet been confirmed. Listening/device output,
+full control migration and combat performance acceptance remain open.
+
+Windows build: 45/45 native tests, 5.87s, exit 0; Python: 169 passed, 1 skipped (170 run,
+42.995s). No compiler/linker warnings/errors; existing CMake warnings remain. An
+initial build was deliberately stopped to correct trim-only bucket retention.
+Evidence and binary hashes: evidence/windows-20260930/AUDIO-QUEUE-TRIMS.json.
+
+
 ## Experimental direct D-pad hero selection - 2026-10-01
 
 OPENMUA2_HERO_BUTTONS=1 connects an experimental D-pad profile to the native

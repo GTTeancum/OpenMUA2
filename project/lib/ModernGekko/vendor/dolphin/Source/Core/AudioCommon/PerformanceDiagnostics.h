@@ -25,6 +25,8 @@ struct Counters
   std::atomic<std::uint64_t> subnormal_fades{}, empty_dequeues{}, produced_frames{};
   std::atomic<std::uint64_t> max_callback_gap_ns{}, mxcsr{};
   std::atomic<std::uint64_t> empty_running{}, empty_not_running{};
+  std::atomic<std::uint64_t> queue_trim_events{}, queue_trimmed_granules{};
+  std::atomic<std::uint64_t> queue_trim_running{}, queue_trim_not_running{};
 };
 
 // Bounded numeric diagnostics only: no samples, disk I/O or allocations on the
@@ -54,19 +56,21 @@ public:
   {
     if (!Enabled() || m_flushed.exchange(true)) return;
     std::ofstream out(m_path);
-    out << "second,bucket_start_host_ns,channel,calls,samples,wall_ns,max_wall_ns,subnormal_fade_calls,empty_dequeues,produced_frames,max_callback_gap_ns,mxcsr,empty_running,empty_not_running\n";
+    out << "second,bucket_start_host_ns,channel,calls,samples,wall_ns,max_wall_ns,subnormal_fade_calls,empty_dequeues,produced_frames,max_callback_gap_ns,mxcsr,empty_running,empty_not_running,queue_trim_events,queue_trimmed_granules,queue_trim_running,queue_trim_not_running\n";
     const auto start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(m_start.time_since_epoch()).count();
     for (std::size_t second = 0; second < m_rows->size(); ++second)
       for (std::size_t channel = 0; channel < 12; ++channel)
       {
         const auto& r = (*m_rows)[second][channel];
-        if (!r.calls && !r.produced_frames && !r.empty_dequeues) continue;
+        if (!r.calls && !r.produced_frames && !r.empty_dequeues && !r.queue_trim_events) continue;
         out << second << ',' << start_ns + second * 1000000000ULL << ','
             << channel << ',' << r.calls << ',' << r.samples << ','
             << r.wall_ns << ',' << r.max_wall_ns << ',' << r.subnormal_fades << ','
             << r.empty_dequeues << ',' << r.produced_frames << ','
             << r.max_callback_gap_ns << ',' << r.mxcsr << ','
-            << r.empty_running << ',' << r.empty_not_running << '\n';
+            << r.empty_running << ',' << r.empty_not_running << ','
+            << r.queue_trim_events << ',' << r.queue_trimmed_granules << ','
+            << r.queue_trim_running << ',' << r.queue_trim_not_running << '\n';
       }
   }
 private:
@@ -131,6 +135,15 @@ inline void EmptyDequeue(bool core_running)
   auto& row = Get().At(current_channel);
   row.empty_dequeues.fetch_add(1, std::memory_order_relaxed);
   (core_running ? row.empty_running : row.empty_not_running)
+      .fetch_add(1, std::memory_order_relaxed);
+}
+inline void QueueTrim(std::size_t granules, bool core_running)
+{
+  if (!Get().Enabled()) return;
+  auto& row = Get().At(current_channel);
+  row.queue_trim_events.fetch_add(1, std::memory_order_relaxed);
+  row.queue_trimmed_granules.fetch_add(granules, std::memory_order_relaxed);
+  (core_running ? row.queue_trim_running : row.queue_trim_not_running)
       .fetch_add(1, std::memory_order_relaxed);
 }
 inline void CallbackState(std::uint32_t mxcsr)

@@ -586,6 +586,10 @@ bool Mixer::MixerFifo::Dequeue(Granule* granule)
   {
     // Jump the playhead to half the queue size behind the head.
     const std::size_t gap = (granule_queue_size >> 1) + 1;
+    if (AudioCommon::Performance::Get().Enabled())
+      AudioCommon::Performance::QueueTrim(
+          ((head - tail) & GRANULE_QUEUE_MASK) - gap,
+          Core::GetState(Core::System::GetInstance()) == Core::State::Running);
     tail = (head - gap) & GRANULE_QUEUE_MASK;
   }
 

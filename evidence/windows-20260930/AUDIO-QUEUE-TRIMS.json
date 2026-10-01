@@ -1,0 +1,389 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "5e80f0c22d669f5ac9fab3c95a1ca8e0a35930e8",
+  "change": "Opt-in queue-trim events, discarded-granule totals and running/not-running attribution. Playback, queue limits and defaults unchanged.",
+  "device_observation": {
+    "backend": "WASAPI",
+    "requested_and_mix_rate_hz": 48000,
+    "channels": 2,
+    "output_buffer_frames": 1056,
+    "buffer_duration_ms": 22,
+    "logged_device_reinitialization_or_failure": false,
+    "physical_output_used_in_user_test": "Not yet confirmed; asked user.",
+    "scope": "Native application stream log; not device-output capture or audible acceptance."
+  },
+  "runs": [
+    {
+      "path": ".local/automation/audio-device-log-20261001",
+      "profile_sha256": "87126b51e80a01435353084ba3fafd7ffc7d66b47ca67380230262213ffb0937",
+      "native_log_sha256": "424b414f3958cd2409f6fe7dae40f646a15859c91eb3e68f2f824a6c246d8cf5",
+      "runner_sha256": "95c8e3f928904ffeeadf0b4a347509b5a7a790029ce9aed9c2540ec9d9c27cd8",
+      "audio": {
+        "schema": 1,
+        "scope": "Mixer empty-read counters; not audible dropouts, combat boundaries or device playback.",
+        "covered_buckets": 58,
+        "initial_complete_buckets_without_main_empty_reads": 56,
+        "final_bucket_second": 57,
+        "overflow_bucket_present": false,
+        "core_state_counters_available": true,
+        "channels": {
+          "dma": {
+            "total_empty_dequeues": 51,
+            "before_final_bucket_empty_dequeues": 1,
+            "final_bucket_empty_dequeues": 50,
+            "nonzero_buckets": [
+              {
+                "second": 56,
+                "empty_dequeues": 1
+              },
+              {
+                "second": 57,
+                "empty_dequeues": 50
+              }
+            ],
+            "empty_while_core_running": 1,
+            "empty_while_core_not_running": 50
+          },
+          "music": {
+            "total_empty_dequeues": 70,
+            "before_final_bucket_empty_dequeues": 0,
+            "final_bucket_empty_dequeues": 70,
+            "nonzero_buckets": [
+              {
+                "second": 57,
+                "empty_dequeues": 70
+              }
+            ],
+            "empty_while_core_running": 0,
+            "empty_while_core_not_running": 70
+          }
+        },
+        "max_callback_gap_ms": 11.1341,
+        "limitations": [
+          "Final bucket is retained, not discarded or classified as shutdown.",
+          "One empty dequeue is a granule read, not one audible dropout.",
+          "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+          "Bucket 1200, if present, combines all later observations.",
+          "Core Running includes in-game menus; not-running can include host pause or shutdown."
+        ]
+      },
+      "functional": {
+        "route_exit_code": 0,
+        "entity_probe_count": 15,
+        "heroes_alive_min": 3,
+        "opponents_positive_range": [
+          4,
+          7
+        ],
+        "paused_changes": {
+          "position": 0,
+          "health": 0
+        },
+        "resumed_changes": {
+          "position": 8,
+          "health": 1
+        },
+        "profile_backup_exact": true,
+        "audio": {
+          "0": {
+            "empty_dequeues": 51,
+            "max_callback_gap_ms": 0.0
+          },
+          "1": {
+            "empty_dequeues": 70,
+            "max_callback_gap_ms": 0.0
+          },
+          "11": {
+            "empty_dequeues": 0,
+            "max_callback_gap_ms": 11.1341
+          }
+        },
+        "pcm_duration_seconds": 57.192,
+        "pcm_peak": 30846,
+        "pcm_clipped_samples": 0,
+        "frames_csv_exists": false,
+        "resume_verified": true
+      },
+      "max_callback_work_ms": 1.8717
+    },
+    {
+      "path": ".local/automation/audio-queue-trims-20261001",
+      "profile_sha256": "64f501c71237060e9843a92e680082699579787ab2e7380592dcf94ca42967a4",
+      "native_log_sha256": "e476da89a8ec15256f4ffd022ae27daa06b782b7157d79229a5da1cbadb56737",
+      "runner_sha256": "210efa37feb796fe913f8fcdba607d693b63a7ecf2b8c41d3b05da9b885d7e73",
+      "audio": {
+        "schema": 1,
+        "scope": "Mixer empty reads and queue trims; not audible dropouts, combat boundaries or device playback.",
+        "covered_buckets": 58,
+        "initial_complete_buckets_without_main_empty_reads": 56,
+        "final_bucket_second": 57,
+        "overflow_bucket_present": false,
+        "core_state_counters_available": true,
+        "queue_trim_counters_available": true,
+        "channels": {
+          "dma": {
+            "total_empty_dequeues": 52,
+            "before_final_bucket_empty_dequeues": 1,
+            "final_bucket_empty_dequeues": 51,
+            "nonzero_buckets": [
+              {
+                "second": 56,
+                "empty_dequeues": 1
+              },
+              {
+                "second": 57,
+                "empty_dequeues": 51
+              }
+            ],
+            "empty_while_core_running": 1,
+            "empty_while_core_not_running": 51,
+            "queue_trims": {
+              "events": 3,
+              "discarded_granules": 31,
+              "events_running": 3,
+              "events_not_running": 0,
+              "nonzero_buckets": [
+                {
+                  "second": 0,
+                  "queue_trim_events": 2,
+                  "queue_trimmed_granules": 21,
+                  "queue_trim_running": 2,
+                  "queue_trim_not_running": 0
+                },
+                {
+                  "second": 56,
+                  "queue_trim_events": 1,
+                  "queue_trimmed_granules": 10,
+                  "queue_trim_running": 1,
+                  "queue_trim_not_running": 0
+                }
+              ]
+            }
+          },
+          "music": {
+            "total_empty_dequeues": 77,
+            "before_final_bucket_empty_dequeues": 1,
+            "final_bucket_empty_dequeues": 76,
+            "nonzero_buckets": [
+              {
+                "second": 56,
+                "empty_dequeues": 1
+              },
+              {
+                "second": 57,
+                "empty_dequeues": 76
+              }
+            ],
+            "empty_while_core_running": 1,
+            "empty_while_core_not_running": 76,
+            "queue_trims": {
+              "events": 3,
+              "discarded_granules": 48,
+              "events_running": 3,
+              "events_not_running": 0,
+              "nonzero_buckets": [
+                {
+                  "second": 0,
+                  "queue_trim_events": 2,
+                  "queue_trimmed_granules": 32,
+                  "queue_trim_running": 2,
+                  "queue_trim_not_running": 0
+                },
+                {
+                  "second": 56,
+                  "queue_trim_events": 1,
+                  "queue_trimmed_granules": 16,
+                  "queue_trim_running": 1,
+                  "queue_trim_not_running": 0
+                }
+              ]
+            }
+          }
+        },
+        "max_callback_gap_ms": 11.5664,
+        "limitations": [
+          "Final bucket is retained, not discarded or classified as shutdown.",
+          "One empty dequeue is a granule read, not one audible dropout.",
+          "Queue trims count discarded granules; they do not prove an audible defect.",
+          "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+          "Bucket 1200, if present, combines all later observations.",
+          "Core Running includes in-game menus; not-running can include host pause or shutdown."
+        ]
+      },
+      "functional": {
+        "route_exit_code": 0,
+        "entity_probe_count": 15,
+        "heroes_alive_min": 3,
+        "opponents_positive_range": [
+          4,
+          7
+        ],
+        "paused_changes": {
+          "position": 0,
+          "health": 0
+        },
+        "resumed_changes": {
+          "position": 8,
+          "health": 1
+        },
+        "profile_backup_exact": true,
+        "audio": {
+          "0": {
+            "empty_dequeues": 52,
+            "max_callback_gap_ms": 0.0
+          },
+          "1": {
+            "empty_dequeues": 77,
+            "max_callback_gap_ms": 0.0
+          },
+          "11": {
+            "empty_dequeues": 0,
+            "max_callback_gap_ms": 11.5664
+          }
+        },
+        "pcm_duration_seconds": 57.192,
+        "pcm_peak": 30846,
+        "pcm_clipped_samples": 0,
+        "frames_csv_exists": false,
+        "resume_verified": true
+      },
+      "max_callback_work_ms": 1.4519
+    },
+    {
+      "path": ".local/automation/audio-queue-trims-no-menu-20261001",
+      "profile_sha256": "b5a39aed5848182509f8523487e8661397d4ad246c01a6ce088a864a333b29ff",
+      "native_log_sha256": "b707a7dd8a48f8a19f0c360363bbb7ca1f52f1d8eee3dd7bdd1c2b60107aaf5b",
+      "runner_sha256": "210efa37feb796fe913f8fcdba607d693b63a7ecf2b8c41d3b05da9b885d7e73",
+      "audio": {
+        "schema": 1,
+        "scope": "Mixer empty reads and queue trims; not audible dropouts, combat boundaries or device playback.",
+        "covered_buckets": 59,
+        "initial_complete_buckets_without_main_empty_reads": 57,
+        "final_bucket_second": 58,
+        "overflow_bucket_present": false,
+        "core_state_counters_available": true,
+        "queue_trim_counters_available": true,
+        "channels": {
+          "dma": {
+            "total_empty_dequeues": 48,
+            "before_final_bucket_empty_dequeues": 45,
+            "final_bucket_empty_dequeues": 3,
+            "nonzero_buckets": [
+              {
+                "second": 57,
+                "empty_dequeues": 45
+              },
+              {
+                "second": 58,
+                "empty_dequeues": 3
+              }
+            ],
+            "empty_while_core_running": 0,
+            "empty_while_core_not_running": 48,
+            "queue_trims": {
+              "events": 2,
+              "discarded_granules": 21,
+              "events_running": 2,
+              "events_not_running": 0,
+              "nonzero_buckets": [
+                {
+                  "second": 0,
+                  "queue_trim_events": 2,
+                  "queue_trimmed_granules": 21,
+                  "queue_trim_running": 2,
+                  "queue_trim_not_running": 0
+                }
+              ]
+            }
+          },
+          "music": {
+            "total_empty_dequeues": 73,
+            "before_final_bucket_empty_dequeues": 69,
+            "final_bucket_empty_dequeues": 4,
+            "nonzero_buckets": [
+              {
+                "second": 57,
+                "empty_dequeues": 69
+              },
+              {
+                "second": 58,
+                "empty_dequeues": 4
+              }
+            ],
+            "empty_while_core_running": 0,
+            "empty_while_core_not_running": 73,
+            "queue_trims": {
+              "events": 2,
+              "discarded_granules": 33,
+              "events_running": 2,
+              "events_not_running": 0,
+              "nonzero_buckets": [
+                {
+                  "second": 0,
+                  "queue_trim_events": 2,
+                  "queue_trimmed_granules": 33,
+                  "queue_trim_running": 2,
+                  "queue_trim_not_running": 0
+                }
+              ]
+            }
+          }
+        },
+        "max_callback_gap_ms": 11.1441,
+        "limitations": [
+          "Final bucket is retained, not discarded or classified as shutdown.",
+          "One empty dequeue is a granule read, not one audible dropout.",
+          "Queue trims count discarded granules; they do not prove an audible defect.",
+          "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+          "Bucket 1200, if present, combines all later observations.",
+          "Core Running includes in-game menus; not-running can include host pause or shutdown."
+        ]
+      },
+      "functional": {
+        "route_exit_code": 0,
+        "entity_probe_count": 16,
+        "heroes_alive_min": 3,
+        "opponents_positive_range": [
+          4,
+          7
+        ],
+        "pcm_duration_seconds": 57.772,
+        "pcm_peak": 30846,
+        "pcm_clipped_samples": 0,
+        "max_callback_work_ms": 1.6604
+      },
+      "max_callback_work_ms": 1.6604
+    }
+  ],
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "log": ".local/logs/audio-queue-trims-final-build.log",
+    "exit_code": 0,
+    "native_tests_passed": 45,
+    "native_test_seconds": 5.87,
+    "python_tests_run": 170,
+    "python_tests_passed": 169,
+    "python_tests_skipped": 1,
+    "python_seconds": 42.995,
+    "compiler_linker_warnings_errors": [],
+    "existing_cmake_warnings": "CMP0080/old minimum versions, missing Wayland on Windows, object-path lengths, LZ4 IPO policy",
+    "binary_sha256": {
+      "moderngekko-run.exe": "210efa37feb796fe913f8fcdba607d693b63a7ecf2b8c41d3b05da9b885d7e73",
+      "moderngekko-port.exe": "6f1e3c83a74510a6523ea28ffcc2aa78952add20b868bb7b7fef858a376a1b08",
+      "ModernGekko.exe": "b262a05bb62f7bd3a24f0444b5128e1d02739348dba941a5aa33100e2b780f08",
+      "moderngekko_audio_continuity_test.exe": "ffc70e782bf7231f8327066adf1bc1ab023789fc615bf01365f5c889f0f2feec"
+    },
+    "initial_attempt": "Stopped before completion to retain trim-only time buckets in diagnostic output; final corrected build completed."
+  },
+  "conclusions": [
+    "Matched-route trim-enabled run observed 3 queue trims per main channel, in buckets 0 and 56 only. Buckets 1-55 had neither trims nor empty dequeues.",
+    "Replacing closing pause/resume with equal-duration neutral gameplay removed late trims and Running-state empty reads. Only bucket0 trims remained; all subsequent empty reads were explicitly not-Running.",
+    "This supports a transition association, not proof of the exact responsible call or an audible defect. Do not enlarge buffers or alter playback clocks based on these results."
+  ],
+  "limits": [
+    "All runs used muted Cubeb and private pre-volume PCM, normal clocks, full JIT, one logical processor (CPU2/mask4), existing Vulkan3x / 1920x1080 preset.",
+    "No host input, screenshots, physical controller or listening assessment. Native logs do not rule out Windows/device playback glitches.",
+    "Raw game state, audio and logs stay private in .local.",
+    "No new FPS measurement or claim. Full controls, audio acceptance and sustained combat performance remain open."
+  ]
+}

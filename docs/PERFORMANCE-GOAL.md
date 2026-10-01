@@ -2177,3 +2177,12 @@ regression. The Windows build passed 45/45 tests. These muted numeric tests do
 not satisfy combat frame-pacing, visual or audio acceptance; the full goal and
 single-core/normal-clock/rendering requirements are unchanged. See
 evidence/windows-20260930/DIRECT-HERO-BUTTONS.json.
+
+## Audio diagnostic checkpoint - 2026-10-01
+
+Native output logging and queue-trim counters narrow current plaza audio events
+to startup/transition buckets. A route without its closing pause/resume sequence
+had no Running-state empty reads and no queue trims after bucket0. These muted
+numeric results do not establish audible quality or satisfy any visual/FPS gate.
+Playback and all performance requirements remain unchanged. Evidence:
+evidence/windows-20260930/AUDIO-QUEUE-TRIMS.json.
