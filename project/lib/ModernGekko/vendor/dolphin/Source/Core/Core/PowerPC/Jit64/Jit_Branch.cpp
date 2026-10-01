@@ -8,6 +8,7 @@
 #include "Common/x64Emitter.h"
 #include "Core/Debugger/BranchWatch.h"
 #include "Core/PowerPC/Gekko.h"
+#include "Core/PowerPC/JitCommon/JitIndirectProfile.h"
 #include "Core/PowerPC/Jit64/RegCache/JitRegCache.h"
 #include "Core/PowerPC/Jit64Common/Jit64PowerPCState.h"
 #include "Core/PowerPC/PPCAnalyst.h"
@@ -233,6 +234,18 @@ void Jit64::bcctrx(UGeckoInstruction inst)
   INSTRUCTION_START
   JITDISABLE(bJITBranchOff);
 
+  const auto record_target = [&] {
+    if (JitCommon::GetIndirectProfile().address != js.compilerPC) return;
+    // Both branch paths have flushed guest register caches before this call.
+    // Preserve RSCRATCH: the ordinary branch machinery still consumes it.
+    const BitSet32 saved{RSCRATCH};
+    ABI_PushRegistersAndAdjustStack(saved, 0);
+    MOV(32, R(ABI_PARAM1), R(RSCRATCH));
+    MOV(32, R(ABI_PARAM2), PPCSTATE(feature_flags));
+    ABI_CallFunction(&JitCommon::RecordIndirectTarget);
+    ABI_PopRegistersAndAdjustStack(saved, 0);
+  };
+
   // bcctrx doesn't decrement and/or test CTR
   DEBUG_ASSERT_MSG(POWERPC, inst.BO_2 & BO_DONT_DECREMENT_FLAG,
                    "bcctrx with decrement and test CTR option is invalid!");
@@ -249,6 +262,7 @@ void Jit64::bcctrx(UGeckoInstruction inst)
     if (inst.LK_3)
       MOV(32, PPCSTATE_LR, Imm32(js.compilerPC + 4));  // LR = PC + 4;
     AND(32, R(RSCRATCH), Imm32(0xFFFFFFFC));
+    record_target();
     WriteBranchWatchDestInRSCRATCH(js.compilerPC, inst, BitSet32{RSCRATCH});
     WriteExitDestInRSCRATCH(inst.LK_3, js.compilerPC + 4);
   }
@@ -272,6 +286,7 @@ void Jit64::bcctrx(UGeckoInstruction inst)
       RCForkGuard fpr_guard = fpr.Fork();
       gpr.Flush();
       fpr.Flush();
+      record_target();
       WriteBranchWatchDestInRSCRATCH(js.compilerPC, inst, BitSet32{RSCRATCH});
       WriteExitDestInRSCRATCH(inst.LK_3, js.compilerPC + 4);
       // Would really like to continue the block here, but it ends. TODO.

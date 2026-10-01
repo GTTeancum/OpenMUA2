@@ -1,5 +1,44 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Selected indirect-call census - 2026-10-01
+
+Added default-off OPENMUA2_INDIRECT_PROFILE_PC diagnostic: one aligned hexadecimal
+bcctr instruction address, 64 destination/feature-flag counters, explicit total
+and overflow, flushed after CPU shutdown. Disabled emits no runtime counter call.
+Both taken branch forms retain ordinary dispatch and timing; guest register caches
+are flushed and the destination scratch register is saved around the helper.
+Selector validation, distinct translation contexts, overflow and reconciliation
+are covered by native tests. Counts cover the whole process, including boot;
+they are intrusive diagnostics, not an FPS benchmark or correctness proof.
+
+Supported Windows JIT build passed, local LTO ON: 39/39 native tests in 6.21s.
+Existing CMake warnings remain; no compiler/linker diagnostics found. Python
+tooling unchanged and not rerun (previous 141 passed/1 skipped remains scoped).
+Runner SHA256 d2e0314de0d66725d60608b6b224cbea5ffb73e82fb57675d9769e027282b849.
+Runtime binary sizes/hashes are recorded in the evidence JSON.
+
+Selected 8036f9b4 in the plaza route: 114,958,803 calls, seven destinations, all
+feature flags3, zero overflow, exact count reconciliation; runtime/harness exit0.
+Three busiest targets each receive about26% of calls (combined78%). Private
+instruction inspection identifies short float-vertex-attribute graphics FIFO
+writers. No proprietary code/data is included in the evidence or source.
+This rules against a simple one-target predictor; it does not establish the
+benefit of a multi-target cache over the existing direct entry-point dispatcher.
+Next test a guarded polymorphic dispatch optimization only with preserved
+feature flags/downcount/return prediction/cache invalidation and measured gains.
+Separately address first-use JIT compilation bursts; avoid guest-cycle hacks.
+
+Counter-disabled follow-up also exited0 and emitted no profile summary. After
+two seconds: 46.581s, 29.9696 new FPS, P99 43.534ms, maximum101.092ms, five frames
+>50ms, lowest rolling second28, guest speed99.9986%. No performance gain claimed.
+Both runs: one logical CPU, Vulkan3x, normal speed/clocks, Cubeb muted, formatter
+experiment ON, rush/smooth OFF, no screenshots. Audio crackle and fresh visual
+correctness remain unverified. Goal UNMET; three qualifying repeats and ten-minute
+plaza combat acceptance are still outstanding. Preserve plaza-only/no-capture.
+Evidence: evidence/windows-20260930/PLAZA-INDIRECT-TARGETS.json.
+
+
+
 ## Plaza pacing hypothesis rejected; refreshed hot-block profile - 2026-10-01
 
 Tested existing RushFramePresentation=True plus SmoothEarlyPresentation=True in

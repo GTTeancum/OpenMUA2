@@ -20,6 +20,7 @@
 #include "InputCommon/InputConfig.h"
 #include "InputCommon/ControllerInterface/ControllerInterface.h"
 #include "Core/Host.h"
+#include "Core/PowerPC/JitCommon/JitIndirectProfile.h"
 #include "Core/NetPlay/NetPlayClient.h"
 #include "Core/PowerPC/JitInterface.h"
 #include "Core/PowerPC/PowerPC.h"
@@ -1198,6 +1199,7 @@ RuntimeRunResult Runtime::Run() {
     std::fprintf(stderr, "[moderngekko] runtime: shutting down core\n");
   Core::Shutdown(Core::System::GetInstance());
   Common::RuntimeTiming::Get().Flush();
+  JitCommon::GetIndirectProfile().Flush();
   if (m_impl->frame_timing) {
     std::ofstream output(m_impl->frame_timing_path);
     m_impl->frame_timing->Write(output);

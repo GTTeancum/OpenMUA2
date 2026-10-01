@@ -1,0 +1,139 @@
+{
+  "scope": "Plaza only, screenshots disabled. Intrusive single-call whole-process census, including boot/restore. No fresh visual or audible verification.",
+  "conditions": "Full JIT, whole-process CPU mask1, Vulkan 3x EFB, normal clocks/speed, Cubeb Volume0, formatter explicitly ON (default OFF). Rush/smooth OFF.",
+  "selector": "8036f9b4",
+  "total": 114958803,
+  "targets": [
+    {
+      "target": "8036f490",
+      "flags": 3,
+      "count": 30064449
+    },
+    {
+      "target": "8036f560",
+      "flags": 3,
+      "count": 30061359
+    },
+    {
+      "target": "8036f650",
+      "flags": 3,
+      "count": 30061359
+    },
+    {
+      "target": "8036f540",
+      "flags": 3,
+      "count": 8256182
+    },
+    {
+      "target": "8036f630",
+      "flags": 3,
+      "count": 8256182
+    },
+    {
+      "target": "8036f6f0",
+      "flags": 3,
+      "count": 8256182
+    },
+    {
+      "target": "8036f5f0",
+      "flags": 3,
+      "count": 3090
+    }
+  ],
+  "overflow": 0,
+  "top_three_share_percent": 78.45172761584861,
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_passed": 39,
+    "native_failed": 0,
+    "native_seconds": 6.21,
+    "local_lto": true,
+    "warnings": "Existing CMake deprecation, unavailable Wayland, long object paths and lz4 IPO-policy warnings; no compiler/linker diagnostics found.",
+    "tooling_tests": "Not rerun: Python tooling unchanged. Previous checkpoint 141 passed / 1 skipped remains scoped to that run."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16067072,
+      "sha256": "d2e0314de0d66725d60608b6b224cbea5ffb73e82fb57675d9769e027282b849"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "fa4933ab02d88b652e547191e795e1409e8d0b55c1ce2f3c6167865c5c849ddf"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "415b84dbb5ff0111dca264ad28dcbba68b6f51efba5b6e502a480be5d3aa30c4"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12201984,
+      "sha256": "f6fea9127b3a8851a0eb7a8738b820a20b908c996d079b4117e22b7e36adc531"
+    },
+    "dolrecomp.exe": {
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    }
+  },
+  "runs": {
+    "plaza-indirect-targets-20261001": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 71.17200000002049
+    },
+    "plaza-indirect-off-20261001": {
+      "route_completed": true,
+      "exit_code": 0,
+      "error": null,
+      "elapsed": 69.54699999996228,
+      "timing": {
+        "scope": "new-frame callback timing, not display scanout or correctness proof",
+        "first_frame": 14616,
+        "last_frame": 16012,
+        "emulated_ticks": 33956722800,
+        "intervals": 1396,
+        "seconds": 46.5805304,
+        "average_fps": 29.969602922340275,
+        "frame_ms": {
+          "median": 33.35599999999683,
+          "p95": 35.284400000000105,
+          "p99": 43.533799999998735,
+          "max": 101.09150000000255
+        },
+        "one_percent_low_fps": 18.570984004811525,
+        "rolling_1s_fps_min": 28,
+        "rolling_1s_fps_median": 30.0,
+        "frames_over_33_334ms": 734,
+        "frames_over_50ms": 5,
+        "longest_consecutive_over_50ms_seconds": 0.1300574999999995,
+        "warmup_seconds": 2,
+        "dropped_samples": 0,
+        "guest_ticks_per_second": 729000000,
+        "emulated_seconds": 46.57986666666667,
+        "emulation_speed_percent": 99.99857508420871,
+        "guest_frame_ms": {
+          "median": 33.36666666666667,
+          "p99": 33.36666666666667,
+          "max": 33.36666666666667
+        },
+        "guest_interval_counts_ms": {
+          "33.367": 1396
+        },
+        "host_minus_guest_interval_ms": {
+          "median": -0.010666666669836844,
+          "p99": 10.167133333332066,
+          "min": -16.351366666669602,
+          "max": 67.72483333333588
+        },
+        "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+      },
+      "counter_disabled_confirmed": true
+    }
+  },
+  "findings": [
+    "All seven observed targets use feature flags3. No fixed-table overflow. Counts reconcile exactly.",
+    "Three busiest destinations load float vertex attributes and write to graphics FIFO. Private code inspection; no proprietary instruction listing included.",
+    "One-target prediction has only about 26% coverage; top three about78%. Direct dispatcher already uses an entry-point map. Need measured benefit before a polymorphic call-site optimization.",
+    "No optimization or new speed gain in this checkpoint; this adds a disabled diagnostic. Compile-burst and non-compilation stalls remain."
+  ]
+}
