@@ -1,5 +1,26 @@
 # Current status — GitHub main
 
+## RT/LT and direct-selection research - 2026-10-01
+
+A disposable profile routes RT+face to all four powers. The corrected 15-snapshot
+probe passes modifier suppression, release and port isolation. An initial
+both-trigger Block/PowerShift2 leak was found and corrected in that private
+profile. These are routing results, not power animation/effect acceptance.
+
+LT enters the native fusion-request state in two plaza runs. Neither release nor
+subsequent B cancels it in the prepared tutorial save. Partner selection and
+fusion completion are not established. The ordered native four-actor roster is
+now identified and matched against live actor handles/types; target/sequence
+encoding is located, but its complete eligibility/consumption contract remains
+under investigation. Fixed pointer corners must not substitute for direct selection.
+
+Production defaults and source binaries are unchanged. No rebuild was needed;
+the preceding 43/43 result applies to dd302e0a. One logical CPU, Vulkan3x, normal
+clocks, Null audio, process-local input and read-only memory probes; no screenshots,
+visual/audio acceptance or new FPS claim. Next: native partner selection/cancel,
+then profile integration/migration. Evidence: evidence/windows-20260930/TRIGGER-FUSION-RESEARCH.json.
+
+
 ## Experimental context-aware button gestures - 2026-10-01
 
 The opt-in OPENMUA2_CONTEXT_X=1 adapter now replaces shake/lift with A/B only

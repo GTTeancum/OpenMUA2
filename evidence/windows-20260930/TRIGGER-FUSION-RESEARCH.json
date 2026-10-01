@@ -1,0 +1,121 @@
+{
+  "date": "2026-10-01",
+  "scope": "Disposable-profile RT power and LT fusion-entry probes; production defaults unchanged",
+  "base_commit": "dd302e0ae932a00a434d3b6dfedd983b576e8a8e",
+  "new_build": false,
+  "build_basis": "Unchanged supported Windows JIT binary from dd302e0a; previous43/43 result is not a new test-suite run.",
+  "findings": [
+    "Verified native ordered four-actor roster matches live actor handles/types in the sampled plaza. This supports direct hero/fusion target work; multiplayer/dead/missing-slot behavior remains unverified.",
+    "Corrected private profile: RT+A/B/X/Y -> native Power1/Power3/Power2/Power4 respectively, without ordinary selected combat actions or hero-cycle actions.",
+    "15 corrected routing snapshots passed: neutral RT, four powers, both triggers+A suppressed, ordinary A restored, releases clear, only injected port0 responds. This proves routing, not all power animations/effects.",
+    "Initial both-trigger test produced unintended Block/PowerShift2. Corrected trigger precedence in disposable profile; original failure retained.",
+    "LT entered native fusion-request state twice (phase1, nonzero owner, sequence1), using original game code.",
+    "Release and subsequent B did not exit that state in the prepared tutorial save. Partner selection, cancellation and completed fusion remain unproven.",
+    "Old fixed-pointer presets are insufficient for reliable face-button partner selection. Native target and sequence encoding located, but its full consumption/eligibility contract is still under investigation."
+  ],
+  "runs": [
+    {
+      "private_run": ".local/automation/trigger-power-probe-20261001",
+      "exit_code": 0,
+      "runner_sha256": "0db578e4491cfcc04e4ec3190bb0973dafeb6b9fbb9f3c5c07c776d413d63fa8",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "result_sha256": "66c04d82d5362ecd53686b5dd97a38b55738954306c35d86a6a10d1c607df7e2",
+      "input_snapshots": 15
+    },
+    {
+      "private_run": ".local/automation/trigger-power-probe-fixed-20261001",
+      "exit_code": 0,
+      "runner_sha256": "0db578e4491cfcc04e4ec3190bb0973dafeb6b9fbb9f3c5c07c776d413d63fa8",
+      "state_sha256": "b09243296d5c9db16a1b45103630dde3a17f01eebae2e2eb7fa983016a57e32e",
+      "result_sha256": "6fc620ae4499ef1858074441c72f8b56a46e81218d55148ed78b9fda50d15330",
+      "input_snapshots": 15
+    },
+    {
+      "private_run": ".local/automation/trigger-fusion-probe-20261001",
+      "exit_code": 0,
+      "runner_sha256": "0db578e4491cfcc04e4ec3190bb0973dafeb6b9fbb9f3c5c07c776d413d63fa8",
+      "state_sha256": "775f21d00a46d83af89f846b60791e47ae6a82cc71529cd99fcbb1d34911ddca",
+      "result_sha256": "cfc2fec2fd4a1dc989d338fb4921a6de1b45e61f2054168d82c60227d0cad449",
+      "input_snapshots": 3,
+      "request_state": [
+        {
+          "snapshot": "00-neutral",
+          "request_phase": 0,
+          "sequence": 0,
+          "request_owner_present": false
+        },
+        {
+          "snapshot": "01-lt",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        },
+        {
+          "snapshot": "02-release",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/trigger-fusion-cancel-probe-20261001",
+      "exit_code": 0,
+      "runner_sha256": "0db578e4491cfcc04e4ec3190bb0973dafeb6b9fbb9f3c5c07c776d413d63fa8",
+      "state_sha256": "775f21d00a46d83af89f846b60791e47ae6a82cc71529cd99fcbb1d34911ddca",
+      "result_sha256": "d3f4c058dddb4d6bea93197d2c05d54e5ef423d5c0bed98545f9665c6df6dd61",
+      "input_snapshots": 5,
+      "request_state": [
+        {
+          "snapshot": "00-neutral",
+          "request_phase": 0,
+          "sequence": 0,
+          "request_owner_present": false
+        },
+        {
+          "snapshot": "01-lt",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        },
+        {
+          "snapshot": "02-release",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        },
+        {
+          "snapshot": "03-b_cancel",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        },
+        {
+          "snapshot": "04-cancel_release",
+          "request_phase": 1,
+          "sequence": 1,
+          "request_owner_present": true
+        }
+      ]
+    }
+  ],
+  "constraints": {
+    "logical_processor": 2,
+    "affinity_mask": 4,
+    "normal_clocks": true,
+    "graphics": "Vulkan3x EFB",
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false,
+    "fps_claim": false,
+    "automation_memory_write_commands": false,
+    "existing_context_adapter_enabled": true
+  },
+  "next": "Implement direct eligible-partner selection and cancellation through the validated native flow, then integrate RT/LT and exact managed-profile migration. Keep custom profiles and default controls unchanged until validation.",
+  "limitations": [
+    "No visual/audio/physical-controller acceptance.",
+    "Default controls remain v4; this private profile is not a delivered MUA1 layout.",
+    "No performance or audio changes in this checkpoint.",
+    "All game states, memory snapshots, disassembly and experimental profile remain under .local."
+  ]
+}
