@@ -1,5 +1,33 @@
 # OpenMUA2 sustained combat performance goal
 
+## V5 plaza: three failed frame-pacing repeats - 2026-10-01
+
+Three audio-enabled runs of the corrected v5 route reproduced 26.659 newly
+rendered FPS over the exact commanded interval (47.414s, 1264 frame intervals;
+no warmup trimming). Each minimum rolling one-second rate was 23 FPS. P99 frame
+times were 52.766 / 52.263 / 53.232ms; maxima 67.228 / 67.316 / 67.141ms.
+All routes exited 0 with zero dropped frame-trace samples, but all FAIL the
+sustained nominal 30 FPS requirement. These are not three passing acceptance runs.
+
+Guest frame timestamps matched exactly across all three repeats: 333 intervals
+at 50.050ms and five at 66.733ms in each run. Emulated clock speed remained
+99.9997-100.0006%. This corroborates the earlier ORIGINAL-FORMATTER-CADENCE
+finding with corrected controls and enabled audio; it is not a new host-hitch
+fix. Investigate known original formatter/game-side work and frame production
+without changing clocks, dropping effects or weakening correctness gates.
+
+Each run has 16 guarded entity samples, at least three living heroes and 3-7
+positive-health opponents; every adjacent sample shows position and health
+changes. This supports sampled combat activity, not continuous visual acceptance.
+Full JIT, one logical CPU2/mask4, Vulkan 3x EFB / 1920x1080 preset, Cubeb volume70;
+no screenshots or host input. Audio profiling and probes add diagnostic overhead.
+No listening/visual/physical-controller acceptance or ten-minute session.
+
+No source/default changes or rebuild; runner matches the verified 45/45-test
+Windows v5 build. Raw traces, audio and game data remain private. Complete metrics,
+audio counters and hashes: evidence/windows-20260930/XBOX-V5-FRAME-REPEATS.json.
+
+
 ## Experimental native fusion partner selection - 2026-10-01
 
 OPENMUA2_FUSION_BUTTONS=1 now substitutes a validated roster actor at the native
