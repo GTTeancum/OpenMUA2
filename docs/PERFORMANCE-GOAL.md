@@ -1,5 +1,50 @@
 # OpenMUA2 sustained combat performance goal
 
+## Frame-boundary CPU counters and repeated hitch diagnostics - 2026-10-01
+
+Added opt-in callback-thread/process cumulative CPU time, thread cycles and
+thread identity at newly rendered frame boundaries. Runtime profiling enables
+the OS queries; ordinary frame traces retain unavailable (-1) fields. Analyzer
+reports whole-window and per-frame deltas, rejects unavailable/regressing or
+changed-thread readings, and does not convert cycles into wall time. Windows
+CPU times in these runs advance in 15.625ms increments; sequential queries are
+not atomic and cannot precisely separate scheduling from execution per frame.
+
+Build.cmd --cpu jit --jobs 2 initially failed a Windows min macro collision;
+fixed NOMINMAX in the new header, then the supported build passed 39/39 native
+tests in 8.87s. Final tooling: 142 run, 141 passed, one skipped in 19.929s.
+No compiler/linker warning or error in final build; existing CMake warnings
+remain. Local LTO ON, source default OFF. User static changes remain untouched.
+
+Same extended hero route, JIT, one logical CPU (mask1), Vulkan, 3x EFB, normal
+speed, Cubeb muted, formatter experiment ON (normal launch default remains OFF).
+Two-second warmup, endpoint before save; frame and audio telemetry remain on:
+
+| Run | Seconds | New FPS | P99 ms | Worst ms | >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Detailed profile 1 | 46.9803 | 29.9700 | 38.2873 | 66.4966 | 2 | 29 |
+| Detailed profile 2 | 47.0796 | 29.9705 | 43.4118 | 96.9200 | 9 | 28 |
+| Detailed profile 3 | 46.8468 | 29.9701 | 43.3577 | 80.2466 | 5 | 28 |
+| No detailed runtime profile | 46.5130 | 29.9701 | 41.7470 | 62.7387 | 3 | 29 |
+
+All completed successfully, near 100% guest speed. Average 29.97 is nominal 30;
+remaining issue is intermittent hitches, not a sustained 17-18 FPS collapse in
+this route. These are not three qualifying acceptance runs. Repeat2 frame14642
+has 96.92ms host/33.3667ms guest, no JIT compilation, 88.53 million thread cycles
+versus 97.34 million in the preceding 33.90ms frame, and 62.5ms quantized CPU time.
+It is not explained by extra instruction cycles alone; scheduling/frequency and
+runtime costs are not individually resolved. Other long frames contain large
+compilation bursts. Hitches remain without detailed runtime instrumentation;
+one comparison does not quantify profiler overhead or establish a host cause.
+
+Interior DMA/stream empty dequeues: 0/2, 1/3, 1/1 and 1/1 respectively. No new
+native visual captures or audible/device verification; prior route snapshots
+do not prove current continuous visual behavior. Crackling remains unresolved.
+Next narrow non-compilation host/runtime stalls and separately address cold
+compilation bursts; preserve normal-speed/correctness constraints. Three
+qualifying repeats and ten-minute varied combat remain outstanding. Goal active.
+Evidence/binary hashes: evidence/windows-20260930/FRAME-CPU-COUNTERS.json.
+
 ## CPU graphics dispatch tracing and affinity diagnostic - 2026-10-01
 
 Added opt-in RunGpuOnCpu timing for dispatches >=100us and analyzer coverage

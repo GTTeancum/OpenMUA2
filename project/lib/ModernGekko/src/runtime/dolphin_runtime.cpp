@@ -1146,7 +1146,10 @@ RuntimeRunResult Runtime::Run() {
           const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
               std::chrono::steady_clock::now().time_since_epoch()).count();
           m_impl->frame_timing->Record(info.frame_count, info.present_count,
-                                     info.emulated_timestamp, ns, false);
+                                     info.emulated_timestamp, ns, false,
+                                     Common::RuntimeTiming::Get().trace ?
+                                         moderngekko::telemetry::FrameCpuCounters::Read() :
+                                         moderngekko::telemetry::FrameCpuCounters{});
         }
         m_impl->automation_state.frame_count.store(info.frame_count,
                                                    std::memory_order_relaxed);

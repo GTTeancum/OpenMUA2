@@ -34,6 +34,18 @@ def union_ns(intervals, begin, end):
     return total
 
 
+def frame_cpu_delta(a, b):
+    # Counters sampled sequentially; quantized Windows accounting can exceed
+    # one short wall interval. Do not clamp or infer precise off-CPU duration.
+    if a.get('thread_id', -1) < 0 or a.get('thread_id') != b.get('thread_id'):
+        return None
+    result = {}
+    for field in ('thread_cpu_ns', 'process_cpu_ns', 'thread_cycles'):
+        first, last = a.get(field, -1), b.get(field, -1)
+        result[field] = last - first if 0 <= first <= last else None
+    return result
+
+
 def analyze(frame_text, span_text, start_frame=0, end_frame=None, ticks_per_second=729000000):
     if ticks_per_second <= 0:
         raise ValueError('ticks_per_second must be positive')
@@ -87,8 +99,11 @@ def analyze(frame_text, span_text, start_frame=0, end_frame=None, ticks_per_seco
                           'guest_ms': (b['guest_ticks'] - a['guest_ticks']) * 1000 / ticks_per_second,
                           'cpu_thread_wait_union_ms': waits / 1e6,
                           'cpu_thread_unclassified_ms': (high - low - waits) / 1e6,
-                          'cpu_thread_coverage_ms': covered})
-    return {'scope': 'elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed',
+                          'cpu_thread_coverage_ms': covered,
+                          'frame_cpu_counters': frame_cpu_delta(a, b)})
+    return {'frame_cpu_scope': 'Cumulative callback-thread/process counters; -1 or missing means unavailable. Windows CPU time is quantized; sequential sampling is not atomic. Cycles are not wall time. Callback thread is the guest CPU thread only with single-thread rendering.',
+            'frame_cpu_window': frame_cpu_delta(frames[0], frames[-1]),
+            'scope': 'elapsed spans, not CPU utilization or visual correctness; coverage is merged, not summed',
             'gpu_decode_scope': 'Only CPU-side FIFO dispatches >=100us are traced; includes nested rendering, waits and preemption. Coverage is a lower bound, not total decoding time.',
             'first_frame': frames[0]['frame'], 'last_frame': frames[-1]['frame'],
             'seconds': (end - begin) / 1e9, 'cpu_thread': cpu_thread,

@@ -1,0 +1,595 @@
+{
+  "schema": 1,
+  "source_parent": "bdde4ecc47c9076bddf6db17cd830d1ae09a5a57",
+  "change": "Opt-in cumulative frame-boundary callback-thread and process CPU times, callback-thread cycles/id, analyzer deltas and regression coverage. No performance fix claimed.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "first_attempt": "Failed Windows min macro collision; fixed NOMINMAX in new counter header. Failure log retained privately.",
+    "final_exit_code": 0,
+    "native_passed": 39,
+    "native_seconds": 8.87,
+    "tooling_run": 142,
+    "tooling_passed": 141,
+    "tooling_skipped": 1,
+    "tooling_seconds": 19.929,
+    "warnings": "Existing CMake deprecation/Wayland/long object paths/lz4 IPO warnings. No compiler/linker warnings/errors in final build. Local LTO ON, source default OFF.",
+    "binary_sha256": {
+      "moderngekko-run.exe": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "moderngekko-port.exe": "361d81110b59555ad341e56e9f5ff86420792d1f998d07cce3ed421d3dfe51ad",
+      "moderngekko-module-info.exe": "112563101f728e0b50ffba3dfb68def5773ae31a0baebab5630df8b71e8e8444",
+      "ModernGekko.exe": "1e2bf19113a510492af4b9a8f8174e15c797e30508218d1323ced92cd6e11ebb"
+    }
+  },
+  "conditions": "JIT, CPU affinity mask1, Vulkan, 3x EFB, normal speed, Cubeb muted, formatter experiment ON (launch default OFF), no screenshots. Two-second warmup, last hold endpoint before save.",
+  "runs": {
+    "frame-cpu-spans-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "runtime_profile": true,
+      "seconds": 46.9802843,
+      "timing": {
+        "average_fps": 29.97001872123622,
+        "frame_ms": {
+          "median": 33.372899999998154,
+          "p95": 34.69250000000024,
+          "p99": 38.28730000000036,
+          "max": 66.49660000000068
+        },
+        "frames_over_50ms": 2,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 99.99996246652486
+      },
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ],
+      "cpu_window": {
+        "thread_cpu_ns": 33437500000,
+        "process_cpu_ns": 34984375000,
+        "thread_cycles": 126392212977
+      },
+      "worst_frames": [
+        {
+          "frame": 14887,
+          "host_ms": 66.4966,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.0769,
+          "cpu_thread_unclassified_ms": 60.4197,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1236,
+            "jit_compile": 35.6208,
+            "throttle": 6.0731,
+            "gpu_fence": 0.0038,
+            "jit_finalize": 4.732,
+            "jit_analyze": 2.4857,
+            "jit_emit": 27.4044,
+            "jit_backpatch": 11.8787,
+            "jit_ranges": 0.1806,
+            "jit_links": 0.2289,
+            "gpu_decode_slow": 1.0694
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 62500000,
+            "process_cpu_ns": 62500000,
+            "thread_cycles": 220129417
+          }
+        },
+        {
+          "frame": 14972,
+          "host_ms": 56.2189,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 2.1726,
+          "cpu_thread_unclassified_ms": 54.0463,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1455,
+            "jit_compile": 28.47,
+            "throttle": 2.169,
+            "gpu_fence": 0.0036,
+            "jit_finalize": 6.2119,
+            "jit_analyze": 2.641,
+            "jit_emit": 18.4975,
+            "jit_backpatch": 0.1725,
+            "jit_ranges": 0.1004,
+            "jit_links": 0.9224,
+            "gpu_decode_slow": 1.4501
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 46875000,
+            "thread_cycles": 187784976
+          }
+        },
+        {
+          "frame": 14688,
+          "host_ms": 47.403,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.2984,
+          "cpu_thread_unclassified_ms": 40.1046,
+          "cpu_thread_coverage_ms": {
+            "present": 0.2952,
+            "jit_compile": 16.086,
+            "throttle": 7.295,
+            "gpu_fence": 0.0034,
+            "jit_finalize": 3.1466,
+            "jit_analyze": 1.4288,
+            "jit_emit": 10.8864,
+            "jit_backpatch": 0.3531,
+            "jit_links": 0.3026,
+            "gpu_decode_slow": 0.4862
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 147322757
+          }
+        },
+        {
+          "frame": 14708,
+          "host_ms": 45.546,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.0124,
+          "cpu_thread_unclassified_ms": 45.5336,
+          "cpu_thread_coverage_ms": {
+            "present": 0.0858,
+            "jit_compile": 20.8191,
+            "throttle": 0.0027,
+            "gpu_fence": 0.0097,
+            "jit_finalize": 5.409,
+            "jit_analyze": 1.6203,
+            "jit_emit": 13.0547,
+            "jit_ranges": 0.4371,
+            "jit_links": 1.494,
+            "gpu_decode_slow": 1.2748
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 156568975
+          }
+        },
+        {
+          "frame": 14657,
+          "host_ms": 45.0388,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 2.1826,
+          "cpu_thread_unclassified_ms": 42.8562,
+          "cpu_thread_coverage_ms": {
+            "present": 0.1293,
+            "jit_compile": 14.8323,
+            "throttle": 2.1787,
+            "gpu_fence": 0.0039,
+            "jit_finalize": 2.8234,
+            "jit_analyze": 1.2483,
+            "jit_emit": 9.8991,
+            "jit_backpatch": 0.2335,
+            "gpu_decode_slow": 1.3348
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 15625000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 135660813
+          }
+        }
+      ],
+      "late_hero_cycles": {
+        "frame_cpu_window": {
+          "thread_cpu_ns": 24796875000,
+          "process_cpu_ns": 25859375000,
+          "thread_cycles": 94573818397
+        },
+        "timing": {
+          "average_fps": 29.97091411917564,
+          "frame_ms": {
+            "median": 33.37250000000025,
+            "p95": 34.385200000000005,
+            "p99": 37.52489999999975,
+            "max": 56.21889999999996
+          },
+          "frames_over_50ms": 1,
+          "rolling_1s_fps_min": 29,
+          "emulation_speed_percent": 100.00295011098274
+        },
+        "seconds": 35.9014742
+      },
+      "trace_header": [
+        "# steady_clock spans; elapsed time includes preemption; nested spans overlap",
+        "# gpu_decode_slow_min_ns=100000",
+        "# dropped_samples=0"
+      ],
+      "audio": {
+        "interior_seconds": 46,
+        "dma_empty_dequeues": 0,
+        "stream_empty_dequeues": 2,
+        "max_callback_gap_ms": 12.0552
+      }
+    },
+    "frame-cpu-spans-repeat2-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "runtime_profile": true,
+      "seconds": 47.0795739,
+      "timing": {
+        "average_fps": 29.97053463136802,
+        "frame_ms": {
+          "median": 33.350300000002164,
+          "p95": 35.12689999999985,
+          "p99": 43.411799999999445,
+          "max": 96.92
+        },
+        "frames_over_50ms": 9,
+        "rolling_1s_fps_min": 28,
+        "emulation_speed_percent": 100.00168388666464
+      },
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ],
+      "cpu_window": {
+        "thread_cpu_ns": 32421875000,
+        "process_cpu_ns": 34859375000,
+        "thread_cycles": 125176270190
+      },
+      "worst_frames": [
+        {
+          "frame": 14642,
+          "host_ms": 96.92,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.0113,
+          "cpu_thread_unclassified_ms": 96.9087,
+          "cpu_thread_coverage_ms": {
+            "gpu_fence": 0.0057,
+            "throttle": 0.0056,
+            "present": 0.1551,
+            "gpu_decode_slow": 13.6624
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 62500000,
+            "process_cpu_ns": 62500000,
+            "thread_cycles": 88532390
+          }
+        },
+        {
+          "frame": 14820,
+          "host_ms": 65.9341,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 3.9988,
+          "cpu_thread_unclassified_ms": 61.9353,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 23.3302,
+            "gpu_fence": 0.0031,
+            "throttle": 3.9957,
+            "present": 0.1262,
+            "jit_links": 1.6112,
+            "jit_analyze": 2.9909,
+            "jit_finalize": 7.8168,
+            "gpu_decode_slow": 2.1675,
+            "jit_ranges": 0.2146,
+            "jit_backpatch": 1.717,
+            "jit_compile": 35.4625
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 46875000,
+            "process_cpu_ns": 46875000,
+            "thread_cycles": 208478453
+          }
+        },
+        {
+          "frame": 14866,
+          "host_ms": 59.6181,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 7.1056,
+          "cpu_thread_unclassified_ms": 52.5125,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 25.2639,
+            "gpu_fence": 0.0029,
+            "throttle": 7.1027,
+            "present": 0.1265,
+            "jit_links": 0.1283,
+            "jit_analyze": 1.4179,
+            "jit_finalize": 2.3325,
+            "gpu_decode_slow": 0.4817,
+            "jit_backpatch": 17.0607,
+            "jit_compile": 29.5776
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 62500000,
+            "process_cpu_ns": 62500000,
+            "thread_cycles": 191044675
+          }
+        },
+        {
+          "frame": 15676,
+          "host_ms": 52.4964,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 8.958,
+          "cpu_thread_unclassified_ms": 43.5384,
+          "cpu_thread_coverage_ms": {
+            "throttle": 8.958,
+            "present": 0.1036,
+            "gpu_decode_slow": 14.5431
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 70836915
+          }
+        },
+        {
+          "frame": 15015,
+          "host_ms": 51.13,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 8.9463,
+          "cpu_thread_unclassified_ms": 42.1837,
+          "cpu_thread_coverage_ms": {
+            "jit_emit": 0.0961,
+            "gpu_fence": 0.0025,
+            "throttle": 8.9438,
+            "present": 0.0953,
+            "jit_analyze": 0.0227,
+            "jit_finalize": 0.0511,
+            "gpu_decode_slow": 1.4304,
+            "jit_compile": 0.1867
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 15625000,
+            "process_cpu_ns": 15625000,
+            "thread_cycles": 85157022
+          }
+        }
+      ],
+      "late_hero_cycles": {
+        "frame_cpu_window": {
+          "thread_cpu_ns": 24109375000,
+          "process_cpu_ns": 26078125000,
+          "thread_cycles": 94074173239
+        },
+        "timing": {
+          "average_fps": 29.977920140758375,
+          "frame_ms": {
+            "median": 33.35340000000109,
+            "p95": 34.920599999999524,
+            "p99": 42.030900000000315,
+            "max": 52.496399999999
+          },
+          "frames_over_50ms": 4,
+          "rolling_1s_fps_min": 29,
+          "emulation_speed_percent": 100.02632686966379
+        },
+        "seconds": 36.126589
+      },
+      "trace_header": [
+        "# steady_clock spans; elapsed time includes preemption; nested spans overlap",
+        "# gpu_decode_slow_min_ns=100000",
+        "# dropped_samples=0"
+      ],
+      "audio": {
+        "interior_seconds": 46,
+        "dma_empty_dequeues": 1,
+        "stream_empty_dequeues": 3,
+        "max_callback_gap_ms": 13.5543
+      }
+    },
+    "frame-cpu-spans-repeat3-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "runtime_profile": true,
+      "seconds": 46.8467503,
+      "timing": {
+        "average_fps": 29.970061765415565,
+        "frame_ms": {
+          "median": 33.35144999999695,
+          "p95": 36.27669999999927,
+          "p99": 43.35769999999983,
+          "max": 80.24659999999972
+        },
+        "frames_over_50ms": 5,
+        "rolling_1s_fps_min": 28,
+        "emulation_speed_percent": 100.00010609060327
+      },
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ],
+      "cpu_window": {
+        "thread_cpu_ns": 32453125000,
+        "process_cpu_ns": 34203125000,
+        "thread_cycles": 124350044284
+      },
+      "worst_frames": [
+        {
+          "frame": 14820,
+          "host_ms": 80.2466,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 6.4506,
+          "cpu_thread_unclassified_ms": 73.796,
+          "cpu_thread_coverage_ms": {
+            "gpu_decode_slow": 0.3984,
+            "jit_finalize": 8.8438,
+            "throttle": 6.4487,
+            "jit_compile": 43.7011,
+            "jit_analyze": 3.4326,
+            "present": 0.1059,
+            "jit_ranges": 0.1748,
+            "jit_emit": 30.2034,
+            "gpu_fence": 0.0019,
+            "jit_backpatch": 6.8466,
+            "jit_links": 2.3293
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 62500000,
+            "process_cpu_ns": 62500000,
+            "thread_cycles": 236060033
+          }
+        },
+        {
+          "frame": 15586,
+          "host_ms": 69.6855,
+          "guest_ms": 50.05,
+          "cpu_thread_wait_union_ms": 13.1994,
+          "cpu_thread_unclassified_ms": 56.4861,
+          "cpu_thread_coverage_ms": {
+            "gpu_decode_slow": 0.3335,
+            "jit_finalize": 5.3495,
+            "throttle": 13.1961,
+            "jit_compile": 26.8683,
+            "jit_analyze": 2.5143,
+            "present": 0.134,
+            "jit_ranges": 1.0892,
+            "jit_emit": 18.0718,
+            "gpu_fence": 0.0033,
+            "jit_backpatch": 0.4274,
+            "jit_links": 0.1243
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 200904227
+          }
+        },
+        {
+          "frame": 14821,
+          "host_ms": 58.7821,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 0.0054,
+          "cpu_thread_unclassified_ms": 58.7767,
+          "cpu_thread_coverage_ms": {
+            "gpu_decode_slow": 0.5453,
+            "jit_finalize": 3.3787,
+            "throttle": 0.0021,
+            "jit_compile": 36.4799,
+            "jit_analyze": 1.4736,
+            "present": 0.102,
+            "jit_emit": 31.0935,
+            "gpu_fence": 0.0033,
+            "jit_backpatch": 21.3587,
+            "jit_links": 0.6251
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 46875000,
+            "process_cpu_ns": 46875000,
+            "thread_cycles": 200817728
+          }
+        },
+        {
+          "frame": 14623,
+          "host_ms": 56.4671,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 3.8491,
+          "cpu_thread_unclassified_ms": 52.618,
+          "cpu_thread_coverage_ms": {
+            "gpu_decode_slow": 1.7768,
+            "jit_finalize": 0.643,
+            "throttle": 3.8491,
+            "jit_compile": 1.6053,
+            "jit_analyze": 0.0641,
+            "present": 0.0838,
+            "jit_ranges": 0.4745,
+            "jit_emit": 0.7704
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 31250000,
+            "process_cpu_ns": 31250000,
+            "thread_cycles": 101011008
+          }
+        },
+        {
+          "frame": 14744,
+          "host_ms": 53.0132,
+          "guest_ms": 33.36666666666667,
+          "cpu_thread_wait_union_ms": 4.6262,
+          "cpu_thread_unclassified_ms": 48.387,
+          "cpu_thread_coverage_ms": {
+            "gpu_decode_slow": 1.5348,
+            "jit_finalize": 4.2151,
+            "throttle": 4.6262,
+            "jit_compile": 16.5541,
+            "jit_analyze": 1.4242,
+            "present": 0.2012,
+            "jit_ranges": 0.204,
+            "jit_emit": 10.1003,
+            "jit_links": 1.0176
+          },
+          "frame_cpu_counters": {
+            "thread_cpu_ns": 46875000,
+            "process_cpu_ns": 46875000,
+            "thread_cycles": 157695509
+          }
+        }
+      ],
+      "late_hero_cycles": {
+        "frame_cpu_window": {
+          "thread_cpu_ns": 24078125000,
+          "process_cpu_ns": 25468750000,
+          "thread_cycles": 92974251972
+        },
+        "timing": {
+          "average_fps": 29.974411322744764,
+          "frame_ms": {
+            "median": 33.353199999996974,
+            "p95": 35.693699999999495,
+            "p99": 41.79710000000014,
+            "max": 69.68549999999851
+          },
+          "frames_over_50ms": 1,
+          "rolling_1s_fps_min": 29,
+          "emulation_speed_percent": 100.01461911355837
+        },
+        "seconds": 35.7972001
+      },
+      "trace_header": [
+        "# steady_clock spans; elapsed time includes preemption; nested spans overlap",
+        "# gpu_decode_slow_min_ns=100000",
+        "# dropped_samples=0"
+      ],
+      "audio": {
+        "interior_seconds": 46,
+        "dma_empty_dequeues": 1,
+        "stream_empty_dequeues": 1,
+        "max_callback_gap_ms": 12.9433
+      }
+    },
+    "frame-cpu-unprofiled-20261001": {
+      "exit_code": 0,
+      "route_completed": true,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "runtime_profile": false,
+      "seconds": 46.5130044,
+      "timing": {
+        "average_fps": 29.970113046492436,
+        "frame_ms": {
+          "median": 33.37024999999905,
+          "p95": 35.553799999995306,
+          "p99": 41.74699999999376,
+          "max": 62.7386999999997
+        },
+        "frames_over_50ms": 3,
+        "rolling_1s_fps_min": 29,
+        "emulation_speed_percent": 100.0002771984631
+      },
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ],
+      "audio": {
+        "interior_seconds": 45,
+        "dma_empty_dequeues": 1,
+        "stream_empty_dequeues": 1,
+        "max_callback_gap_ms": 13.441
+      }
+    }
+  },
+  "interpretation": "Repeat2 frame14642: 96.92ms host for33.3667ms guest; no JIT compile; 88,532,390 thread cycles versus97,335,960 in preceding33.9006ms frame. Recorded thread/process CPU delta62.5ms. Counters do not establish exact cause: CPU time has15.625ms quantization, cycles are not wall time, and frequency/scheduling are not identified by these readings.",
+  "limits": [
+    "No new visual captures or audible/device verification. Route previously visually reviewed; this is not current visual correctness proof.",
+    "CPU counters sampled sequentially, not atomically; -1 unavailable; a callback-thread change invalidates thread deltas.",
+    "Detailed runtime profiling adds overhead. Separate unprofiled means no runtime spans/counters, but frame/audio telemetry remains. Runs are not deterministic.",
+    "Three profiled repeats do not satisfy acceptance; ten-minute varied combat still outstanding; goal remains active/unmet."
+  ]
+}

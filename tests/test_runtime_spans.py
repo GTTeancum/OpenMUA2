@@ -11,6 +11,30 @@ SPANS = '# dropped_samples=0\nkind,begin_ns,end_ns,target_ns,thread\nthrottle,11
 
 
 class RuntimeSpansTest(unittest.TestCase):
+    def test_frame_cpu_counters_are_exposed_for_window_and_worst_frames(self):
+        lines = FRAMES.splitlines()
+        frames = []
+        for line in lines:
+            if line.startswith('#'):
+                frames.append(line)
+            elif line.startswith('epoch,'):
+                frames.append(line + ',thread_cpu_ns,process_cpu_ns,thread_cycles,thread_id')
+            else:
+                frame = int(line.split(',')[1])
+                frames.append(line + f',{frame * 100},{frame * 200},{frame * 300},7')
+        result = mod.analyze('\n'.join(frames), SPANS)
+        self.assertEqual(result['frame_cpu_window']['thread_cpu_ns'], 200)
+        self.assertEqual(result['worst_frames'][0]['frame_cpu_counters']['thread_cycles'], 300)
+
+    def test_frame_cpu_deltas_preserve_quantization_and_reject_thread_change(self):
+        a = {'thread_id': 7, 'thread_cpu_ns': 100, 'process_cpu_ns': 200, 'thread_cycles': 30}
+        b = {'thread_id': 7, 'thread_cpu_ns': 500, 'process_cpu_ns': 800, 'thread_cycles': 90}
+        self.assertEqual(mod.frame_cpu_delta(a, b), {'thread_cpu_ns': 400, 'process_cpu_ns': 600, 'thread_cycles': 60})
+        self.assertIsNone(mod.frame_cpu_delta(a, dict(b, thread_id=8)))
+        self.assertIsNone(mod.frame_cpu_delta({}, {}))
+        self.assertIsNone(mod.frame_cpu_delta(a, dict(b, thread_cpu_ns=-1))['thread_cpu_ns'])
+        self.assertIsNone(mod.frame_cpu_delta(a, dict(b, thread_cycles=20))['thread_cycles'])
+
     def test_nested_spans_do_not_double_count_or_include_other_thread(self):
         result = mod.analyze(FRAMES, SPANS)
         self.assertAlmostEqual(result['cpu_thread_wait_seconds'], 100e-9)

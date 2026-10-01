@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <ostream>
 #include <vector>
+#include "frame_cpu_counters.hpp"
 
 namespace moderngekko::telemetry {
 // Owned by the video thread while running; read only after Core::Shutdown joins it.
@@ -14,7 +15,8 @@ public:
     m_samples.reserve(capacity);
   }
   void Record(std::uint64_t frame, std::uint64_t present,
-              std::uint64_t guest_ticks, std::int64_t host_ns, bool duplicate) {
+              std::uint64_t guest_ticks, std::int64_t host_ns, bool duplicate,
+              FrameCpuCounters counters = {}) {
     if (duplicate)
       return;
     if (m_started && frame <= m_previous_frame)
@@ -25,20 +27,23 @@ public:
       ++m_dropped;
       return;
     }
-    m_samples.push_back({m_epoch, frame, present, guest_ticks, host_ns});
+    m_samples.push_back({m_epoch, frame, present, guest_ticks, host_ns, counters});
   }
   void Write(std::ostream& out) const {
     out << "# host_ns=steady_clock after_present callback; not display scanout\n"
         << "# dropped_samples=" << m_dropped << '\n'
-        << "epoch,frame,present,guest_ticks,host_ns\n";
+        << "epoch,frame,present,guest_ticks,host_ns,thread_cpu_ns,process_cpu_ns,thread_cycles,thread_id\n";
     for (const auto& s : m_samples)
       out << s.epoch << ',' << s.frame << ',' << s.present << ','
-          << s.guest_ticks << ',' << s.host_ns << '\n';
+          << s.guest_ticks << ',' << s.host_ns << ',' << s.counters.thread_ns << ','
+          << s.counters.process_ns << ',' << s.counters.thread_cycles << ','
+          << s.counters.thread_id << '\n';
   }
 private:
   struct Sample {
     std::uint64_t epoch, frame, present, guest_ticks;
     std::int64_t host_ns;
+    FrameCpuCounters counters;
   };
   std::vector<Sample> m_samples;
   std::size_t m_capacity;
