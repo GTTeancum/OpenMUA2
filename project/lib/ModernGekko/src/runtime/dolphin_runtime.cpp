@@ -67,15 +67,16 @@ static_assert(sizeof(ModernGekkoModuleDesc) == sizeof(StaticRecompModuleDesc));
 static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
               offsetof(StaticRecompModuleDesc, chunk_hashes));
 // Experimental context-use rebind: observes the original evaluator, preserving
-// its instructions, action thresholds, per-player queues and timing.
+// its instructions, action thresholds, per-player queues and timing. Runs after
+// evaluation so the experimental chord can retain digital use magnitude.
 void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
 {
   auto& system = guard.GetSystem();
   auto& memory = system.GetMemory();
-  constexpr u32 entry = 0x810f833c;
+  constexpr u32 entry = 0x810f8544;
   const auto* code = memory.GetPointerForRange(entry, 256);
   if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 256)) !=
-                   "7BC404D22B067454B756A99F29C183FD20E16EDC")
+                   "E312A14ED77641256F3D5BE04DC06C21878D6CFF")
     return;
   const u32 object = system.GetPPCState().gpr[15];
   if ((object & 3) || object < 0x80000000 || object > 0x817f4200)
@@ -87,6 +88,35 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
       std::span<u8>(data + 4, moderngekko::controls::DescriptorTableSize));
   if (result == moderngekko::controls::RebindResult::Applied)
     std::fprintf(stderr, "[openmua2] experimental X-use descriptor applied to input object %08x\n", object);
+  // Rebinding occurs after this evaluation. Its first output still uses the
+  // stock descriptor; normalize only subsequent evaluations of our chord.
+  if (result != moderngekko::controls::RebindResult::AlreadyApplied)
+    return;
+  const auto& state = system.GetPPCState();
+  constexpr u32 value_bytes = 124 * 4;
+  const u32 active_address = state.gpr[14];
+  if (state.gpr[17] < value_bytes)
+    return;
+  const u32 values_address = state.gpr[17] - value_bytes;
+  const auto ram_range = [](u32 address, u32 size) {
+    return !(address & 3) &&
+        ((address >= 0x80000000 && address <= 0x81800000 - size) ||
+         (address >= 0x90000000 && address <= 0x94000000 - size));
+  };
+  const auto overlaps = [](u32 a, u32 n, u32 b, u32 m) {
+    return std::uint64_t(a) < std::uint64_t(b) + m &&
+           std::uint64_t(b) < std::uint64_t(a) + n;
+  };
+  if (!ram_range(active_address, 20) || !ram_range(values_address, value_bytes) ||
+      overlaps(active_address, 20, values_address, value_bytes) ||
+      overlaps(values_address, value_bytes, object, 4 + moderngekko::controls::DescriptorTableSize))
+    return;
+  const auto* active = memory.GetPointerForRange(active_address, 20);
+  auto* values = memory.GetPointerForRange(values_address, value_bytes);
+  if (active && values)
+    moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
+                                            std::span<u8>(values, value_bytes));
+
 }
 
 std::mutex s_runtime_mutex;
@@ -1301,7 +1331,7 @@ RuntimeRunResult Runtime::Run() {
     if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
                             "21822B3930C04E47176A977404A719485CD7C492") {
       const Core::CPUThreadGuard guard(Core::System::GetInstance());
-      const bool installed = HLE::SetExternalStartObserver(guard, 0x810f833c, ObserveMua2InputBindings);
+      const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
     } else {
       std::fprintf(stderr, "[openmua2] experimental X-use rejected: executable identity mismatch\n");

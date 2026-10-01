@@ -1,0 +1,95 @@
+{
+  "date": "2026-10-01",
+  "scope": "Experimental contextual X value normalization; default OFF",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit": 0,
+    "native_tests": 42,
+    "failed": 0,
+    "seconds": 6.47,
+    "compiler_linker_warnings_errors": 0,
+    "existing_cmake_warnings_remain": true,
+    "private_log": ".local/logs/context-x-normalized-build.log"
+  },
+  "behavior": "After original evaluation, preserve action bits and normalize the accepted two-button use chord to digital 1, inactive partial chords to 0. Exact executable/code/descriptor and RAM-range/output checks. First stock evaluation is not normalized.",
+  "interaction_runs": [
+    {
+      "private_run": ".local/automation/context-statue-normalized-20261001",
+      "mission_complete": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "route_exit": 0
+    },
+    {
+      "private_run": ".local/automation/context-statue-normalized-repeat-20261001",
+      "mission_complete": [
+        false,
+        false,
+        false,
+        true,
+        true
+      ],
+      "route_exit": 0
+    },
+    {
+      "private_run": ".local/automation/context-statue-normalized-off-20261001",
+      "mission_complete": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "route_exit": 0
+    },
+    {
+      "private_run": ".local/automation/context-statue-normalized-off-repeat-20261001",
+      "mission_complete": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "route_exit": 0
+    }
+  ],
+  "routing": {
+    "snapshots": 14,
+    "x_use_value": 1,
+    "other_tested_inputs_release_and_other_ports_use_value": 0,
+    "actions_and_port_isolation_pass": true,
+    "private_run": ".local/automation/context-x-normalized-routing-20261001"
+  },
+  "limitations": [
+    "Two normalized X interactions succeeded; two current default-off LB comparisons failed despite earlier stock success. Cause unresolved; no reliability or regression-free claim.",
+    "No screenshots, visual correctness, audible audio or FPS acceptance. Null audio, normal clocks, CPU2/mask4, Vulkan3x.",
+    "Full remap, menu behavior, physical controller and other use contexts remain unverified. Keep adapter OFF by default."
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16118784,
+      "sha256": "2eb148d4f0e2c8f723e06babd6584d8b9fe3a4bd3e81bbec7373074d714c09a9"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "ca0b6a57cf6a75ac80b5e43d3d921fca639c312e0fa7e2a4447df38b18a8670c"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "410619240f465809f7c87c0b36d970d2b819d5f790d8e8b813784cfd57852f09"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "eafdb5d8c17ffbd01f814c912544e16bd8a54e47c5422a6a30efa0208bacf1ad"
+    },
+    "moderngekko_mua2_action_bindings_test.exe": {
+      "bytes": 19456,
+      "sha256": "c746b25bf4cf115abfb73ad6f6e35f37bc2b4237719ae259434a7fd06b7889ae"
+    }
+  }
+}

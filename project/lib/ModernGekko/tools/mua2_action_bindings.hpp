@@ -44,4 +44,21 @@ inline RebindResult RebindContextUse(std::span<std::uint8_t> table) {
   use[0x47]=2;
   return RebindResult::Applied;
 }
+// The evaluator sums both digital sources even for a partially held chord.
+// Preserve its active bits, but give use the ordinary digital 0/1 magnitude.
+// Reject unexpected evaluator output without changing any value.
+inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
+                              std::span<std::uint8_t> values) {
+  if (active.size()!=20 || values.size()!=124*4) return false;
+  const auto bits=ReadBE(active,0);
+  const bool use=(bits & (1u<<21))!=0, grab=(bits & (1u<<11))!=0;
+  const auto value=ReadBE(values,21*4);
+  if (use!=grab || (use ? value!=0x40000000 :
+      (value!=0 && value!=0x3f800000))) return false;
+  const std::uint32_t normalized=use ? 0x3f800000 : 0;
+  for (unsigned i=0;i<4;++i)
+    values[21*4+i]=std::uint8_t(normalized>>(24-8*i));
+  return true;
+}
+
 }

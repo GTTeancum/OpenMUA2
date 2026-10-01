@@ -90,3 +90,8 @@ statue interaction testing fails for experimental X while stock LB succeeds.
 Do not enable by default or call step 2 complete from action bits alone.
 See CONTEXT-X-EXPERIMENT.json
 in evidence/windows-20260930.
+
+Post-evaluator normalization now passes two X statue interactions and the
+14-snapshot value/routing probe. Two default-off LB comparisons failed; their
+cause remains unresolved. Keep the experiment off and the full remap open.
+See evidence/windows-20260930/CONTEXT-X-NORMALIZED.json.

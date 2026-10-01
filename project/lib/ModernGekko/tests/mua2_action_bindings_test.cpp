@@ -3,7 +3,7 @@
 #include <iostream>
 using namespace moderngekko::controls;
 using Table = std::array<std::uint8_t, DescriptorTableSize>;
-void put(Table& b, std::size_t p, std::uint32_t v) {
+void put(std::span<std::uint8_t> b, std::size_t p, std::uint32_t v) {
   for(int i=0;i<4;++i) b[p+i]=std::uint8_t(v>>(24-i*8));
 }
 Table stock() {
@@ -34,5 +34,27 @@ int main() {
     if(RebindContextUse(bad)!=RebindResult::Rejected || bad!=copy) return 5;
   }
   if(RebindContextUse(std::span(b).first(b.size()-1))!=RebindResult::Rejected) return 6;
+  std::array<std::uint8_t,20> active{};
+  std::array<std::uint8_t,124*4> values{};
+  for (auto held : {false,true}) {
+    for (auto partial : {false,true}) {
+      values.fill(0xa5);
+      put(active,0,held ? (1u<<11)|(1u<<21) : 0);
+      put(values,21*4,held ? 0x40000000 : partial ? 0x3f800000 : 0);
+      auto original=values;
+      if (!NormalizeChordUse(active,values) ||
+          ReadBE(values,21*4)!=(held ? 0x3f800000u : 0u)) return 7;
+      for (std::size_t j=0;j<values.size();++j)
+        if ((j<21*4 || j>=22*4) && values[j]!=original[j]) return 8;
+    }
+  }
+  for (auto invalid : {0x7fc00000u,0x40400000u,0xbf800000u}) {
+    put(values,21*4,invalid);auto original=values;
+    if (NormalizeChordUse(active,values) || values!=original) return 9;
+  }
+  put(active,0,1u<<21);put(values,21*4,0x40000000);auto original=values;
+  if (NormalizeChordUse(active,values) || values!=original) return 10;
+  if (NormalizeChordUse(std::span(active).first(19),values) ||
+      NormalizeChordUse(active,std::span(values).first(values.size()-1))) return 11;
   std::cout << "Transactional action binding checks passed\n";
 }

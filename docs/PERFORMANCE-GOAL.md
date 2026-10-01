@@ -1,5 +1,25 @@
 # OpenMUA2 sustained combat performance goal
 
+## Experimental X value normalization - 2026-10-01
+
+The guarded adapter now runs after evaluation and preserves the original active
+bits while converting the accepted use chord to digital 1 and inactive partial
+chords to 0. It remains opt-in and OFF by default. Unexpected output is rejected.
+Windows build passed, 42/42 tests in 6.47s, no compiler/linker warnings or errors;
+existing CMake warnings remain. No changes to the single-core rendering preset.
+
+Two normalized X plaza runs completed the statue interaction. A 14-snapshot
+probe confirmed X use value 1, zero on partial/released inputs and other ports,
+with expected action routing. However, two current default-off LB comparisons
+failed despite earlier stock success. This unresolved comparison prevents a
+reliability/regression-free claim. Do not enable by default or call the full
+Xbox remap complete. Default profiles remain v4; LT fusion target is unchanged.
+
+No screenshots, host input, visual/audio acceptance or new FPS sweep. Null audio
+was used. Details and binary hashes: evidence/windows-20260930/CONTEXT-X-NORMALIZED.json.
+Audio, remaining controls and the sustained performance goal remain unfinished.
+
+
 ## Contextual X behavioral failure - 2026-10-01
 
 The same statue-use-ready plaza state now has a guarded, read-only mission
