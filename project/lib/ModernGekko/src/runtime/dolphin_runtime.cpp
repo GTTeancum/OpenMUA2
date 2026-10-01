@@ -6,6 +6,7 @@
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_interaction_context.hpp"
+#include "mua2_fusion_buttons.hpp"
 #include "Common/HookableEvent.h"
 #include "Common/IOFile.h"
 #include "Common/StringUtil.h"
@@ -67,6 +68,40 @@ namespace {
 static_assert(sizeof(ModernGekkoModuleDesc) == sizeof(StaticRecompModuleDesc));
 static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
               offsetof(StaticRecompModuleDesc, chunk_hashes));
+bool s_fusion_buttons_enabled = false;
+
+void ObserveFusionCandidate(const Core::CPUThreadGuard& guard, u32 entry,
+                            std::string_view digest, unsigned owner_register,
+                            unsigned input_register)
+{
+  if (!s_fusion_buttons_enabled) return;
+  auto& system = guard.GetSystem();
+  auto& memory = system.GetMemory();
+  const auto* code = memory.GetPointerForRange(entry, 256);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 256)) != digest)
+    return;
+  const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto* bytes = memory.GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  auto& state = system.GetPPCState();
+  const auto candidate = moderngekko::controls::FusionCandidate(
+      read, state.gpr[owner_register], state.gpr[input_register]);
+  if (candidate)
+    state.gpr[3] = *candidate; // Original handle/type/eligibility processing follows.
+}
+
+void ObserveFusionScreenCandidate(const Core::CPUThreadGuard& guard)
+{
+  ObserveFusionCandidate(guard, 0x81068a60,
+      "EDF55656FC8E4DEBCD9A0D75777E5D415A73D05C", 24, 26);
+}
+void ObserveFusionWorldCandidate(const Core::CPUThreadGuard& guard)
+{
+  ObserveFusionCandidate(guard, 0x810692c4,
+      "74486FDF3DF1008C2A24A01D741F43DC4D9EAB06", 27, 28);
+}
+
 // Experimental context-use rebind: observes the original evaluator, preserving
 // its instructions, action thresholds, per-player queues and timing. Runs after
 // evaluation so the experimental chord can retain digital use magnitude.
@@ -126,6 +161,28 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     const auto* bytes = memory.GetPointerForRange(address, size);
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
+  if (s_fusion_buttons_enabled &&
+      moderngekko::controls::ReadBE(std::span<const u8>(values, value_bytes), 14 * 4) == 0x3f800000)
+  {
+    bool request_context = false;
+    const auto globals = read(0x80816a20, 24);
+    if (globals.size() == 24 && moderngekko::controls::ReadBE(globals, 0) == 1)
+    {
+      const u32 owner = moderngekko::controls::ReadBE(globals, 16);
+      if (!(owner & 3) && ((owner >= 0x80000000 && owner <= 0x817ff5c8) ||
+                          (owner >= 0x90000000 && owner <= 0x93fff5c8)))
+      {
+        const auto actor = read(owner, 0xa38);
+        request_context = actor.size() == 0xa38 &&
+            moderngekko::controls::ReadBE(actor, 0x9c) == 0x8052a748 &&
+            !(actor[0x4d0] & 0x80) && moderngekko::controls::ReadBE(actor, 0x45c) ==
+                (object - first_input) / input_stride;
+      }
+    }
+    moderngekko::controls::ConsumeFusionMarkers(
+        std::span<u8>(active, 20), std::span<const u8>(values, value_bytes), request_context);
+    return;
+  }
   const bool context = moderngekko::controls::HasCoopInteraction(
       read, (object - first_input) / input_stride);
   moderngekko::controls::ApplyInteractionButtons(
@@ -1340,7 +1397,11 @@ RuntimeRunResult Runtime::Run() {
                          "Dolphin could not boot sys/main.dol"}};
   }
   m_impl->booted = true;
-  if (const char* enabled = std::getenv("OPENMUA2_CONTEXT_X"); enabled && std::string_view(enabled) == "1") {
+  s_fusion_buttons_enabled = false;
+  const char* fusion_buttons = std::getenv("OPENMUA2_FUSION_BUTTONS");
+  const bool want_fusion_buttons = fusion_buttons && std::string_view(fusion_buttons) == "1";
+  if (const char* enabled = std::getenv("OPENMUA2_CONTEXT_X");
+      (enabled && std::string_view(enabled) == "1") || want_fusion_buttons) {
     std::ifstream input(m_impl->metadata.main_dol, std::ios::binary);
     const std::vector<char> bytes{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
     if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
@@ -1348,6 +1409,13 @@ RuntimeRunResult Runtime::Run() {
       const Core::CPUThreadGuard guard(Core::System::GetInstance());
       const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
+      if (installed && want_fusion_buttons) {
+        const bool screen = HLE::SetExternalStartObserver(guard, 0x81068a60, ObserveFusionScreenCandidate);
+        const bool world = HLE::SetExternalStartObserver(guard, 0x810692c4, ObserveFusionWorldCandidate);
+        s_fusion_buttons_enabled = screen && world;
+        std::fprintf(stderr, "[openmua2] experimental fusion-button observers %s\n",
+                     s_fusion_buttons_enabled ? "installed" : "rejected");
+      }
     } else {
       std::fprintf(stderr, "[openmua2] experimental X-use rejected: executable identity mismatch\n");
     }

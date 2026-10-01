@@ -27,13 +27,9 @@ namespace HLE
 static std::map<u32, u32> s_hooked_addresses;
 
 // clang-format off
-static HookFunction s_external_observer = nullptr;
-static u32 s_external_address = 0;
-static void ObserveExternal(const Core::CPUThreadGuard& guard)
-{
-  if (s_external_observer)
-    s_external_observer(guard);
-}
+static std::map<u32, HookFunction> s_external_observers;
+// Execute dispatches this reserved hook by the actual instruction address.
+static void ObserveExternal(const Core::CPUThreadGuard&) {}
 constexpr std::array<Hook, 24> os_patches{{
     // Placeholder, os_patches[0] is the "non-existent function" index
     {"FAKE_TO_SKIP_0",               HLE_Misc::UnimplementedFunction,       HookType::Replace, HookFlag::Generic},
@@ -160,11 +156,10 @@ void PatchFunctions(Core::System& system)
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer)
 {
-  if (!observer || !address || (address & 3) || s_external_observer ||
-      s_hooked_addresses.contains(address))
+  if (!observer || !address || (address & 3) || s_external_observers.size() >= 8 ||
+      s_hooked_addresses.contains(address) || s_external_observers.contains(address))
     return false;
-  s_external_observer = observer;
-  s_external_address = address;
+  s_external_observers.emplace(address, observer);
   Patch(guard.GetSystem(), address, "RuntimeExternalObserver");
   return true;
 }
@@ -172,21 +167,20 @@ bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
 void Clear()
 {
   s_hooked_addresses.clear();
-  s_external_observer = nullptr;
-  s_external_address = 0;
+  s_external_observers.clear();
 }
 
 void Reload(Core::System& system)
 {
-  const auto observer = s_external_observer;
-  const u32 address = s_external_address;
+  const auto observers = s_external_observers;
   Clear();
   PatchFixedFunctions(system);
   PatchFunctions(system);
-  if (observer)
+  if (!observers.empty())
   {
     const Core::CPUThreadGuard guard(system);
-    SetExternalStartObserver(guard, address, observer);
+    for (const auto& [address, observer] : observers)
+      SetExternalStartObserver(guard, address, observer);
   }
 }
 
@@ -195,7 +189,16 @@ void Execute(const Core::CPUThreadGuard& guard, u32 current_pc, u32 hook_index)
   hook_index &= 0xFFFFF;
   if (hook_index > 0 && hook_index < os_patches.size())
   {
-    os_patches[hook_index].function(guard);
+    if (os_patches[hook_index].function == ObserveExternal)
+    {
+      const auto it = s_external_observers.find(current_pc);
+      if (it != s_external_observers.end())
+        it->second(guard);
+    }
+    else
+    {
+      os_patches[hook_index].function(guard);
+    }
   }
   else
   {

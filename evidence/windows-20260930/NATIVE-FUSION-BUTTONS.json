@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-01",
+  "scope": "Opt-in native roster-based fusion selection; not full controller migration or performance acceptance",
+  "base_commit": "5108c2a3cc1a34243beb0ed495e08ec36d446d2e",
+  "implementation": [
+    "OPENMUA2_FUSION_BUTTONS=1 installs guarded observers at two native picker boundaries plus the existing input observer. All remain OFF by default.",
+    "Title identity and live code digests are checked; selection resolves ordered live roster handles with native types, controller ownership and input-object identity.",
+    "The selected actor replaces only the picker candidate. Original instructions continue, including native actor eligibility, resource and fusion/revival processing.",
+    "A/B/X/Y request ordered roster slots0/1/2/3. Self and other human actors are rejected. No cached host selection survives save reload.",
+    "Input marker and power/navigation action bits are consumed while LT requests selection; current scalar samples remain available to the picker.",
+    "Runtime start-observer registration now supports up to8 unique addresses, dispatched by actual PC and retained across reload."
+  ],
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "passed": 44,
+    "failed": 0,
+    "test_seconds": 7.76,
+    "private_log": ".local/logs/fusion-buttons-signed-build.log",
+    "compiler_linker_warnings_errors": 0,
+    "existing_cmake_warnings_remain": true
+  },
+  "test_fixture": {
+    "path": "project/lib/ModernGekko/tests/data/mua1_fusion_experimental.ini",
+    "sha256": "50316992f694dc46d84dc8b3a0492c770d36912411bdd09b18384be7b9baf354",
+    "matches_successful_run_bindings": true,
+    "description": "Process-local test device; this is not the default profile. Manual right-stick aiming still confirms the existing tutorial dialog, then partner selection uses LT+face with no pointer offset."
+  },
+  "live_runs": [
+    {
+      "private_run": ".local/automation/fusion-buttons-a-20261001",
+      "button": "A",
+      "selected_roster_slot_zero_based": 0,
+      "self_selection_rejected": false,
+      "native_phase_samples": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "snapshots": 8,
+      "only_injected_port_responded": true,
+      "markers_and_power_actions_consumed": true,
+      "release_clear": true,
+      "exit_code": 0,
+      "result_sha256": "1897df6e5f384ce0d5f46e92d7157ee36419211db2e68f7da2938827397b2d56",
+      "state_sha256": "c356dd8aadd7888f71e6a4f497088660abdd1b45bb2765fa9ff12d5f2ff73557",
+      "runner_sha256": "a7345071b8cb14fbb0e9bdcef10110a72789af3db952d93e79906e52b0a50790"
+    },
+    {
+      "private_run": ".local/automation/fusion-buttons-b-ready-20261001",
+      "button": "B",
+      "selected_roster_slot_zero_based": 1,
+      "self_selection_rejected": false,
+      "native_phase_samples": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        4,
+        0
+      ],
+      "snapshots": 8,
+      "only_injected_port_responded": true,
+      "markers_and_power_actions_consumed": true,
+      "release_clear": true,
+      "exit_code": 0,
+      "result_sha256": "1904aaec738f6c348290d9516607c6e49c4c8b1ff9d50dc854daf967633f7c0e",
+      "state_sha256": "c356dd8aadd7888f71e6a4f497088660abdd1b45bb2765fa9ff12d5f2ff73557",
+      "runner_sha256": "a7345071b8cb14fbb0e9bdcef10110a72789af3db952d93e79906e52b0a50790"
+    },
+    {
+      "private_run": ".local/automation/fusion-buttons-y-20261001",
+      "button": "Y",
+      "selected_roster_slot_zero_based": 3,
+      "self_selection_rejected": false,
+      "native_phase_samples": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        0
+      ],
+      "snapshots": 8,
+      "only_injected_port_responded": true,
+      "markers_and_power_actions_consumed": true,
+      "release_clear": true,
+      "exit_code": 0,
+      "result_sha256": "b501f84f426bcdb6d4179b8e8a0fa7cb982eb3b94f47215f3c3ff08d1434c94c",
+      "state_sha256": "c356dd8aadd7888f71e6a4f497088660abdd1b45bb2765fa9ff12d5f2ff73557",
+      "runner_sha256": "a7345071b8cb14fbb0e9bdcef10110a72789af3db952d93e79906e52b0a50790"
+    },
+    {
+      "private_run": ".local/automation/fusion-buttons-self_x-20261001",
+      "button": "X",
+      "selected_roster_slot_zero_based": null,
+      "self_selection_rejected": true,
+      "native_phase_samples": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "snapshots": 8,
+      "only_injected_port_responded": true,
+      "markers_and_power_actions_consumed": true,
+      "release_clear": true,
+      "exit_code": 0,
+      "result_sha256": "a0c4d8edde76df5735e679153b4c86daf2f90c8bf95a20852cfc85ace3746094",
+      "state_sha256": "c356dd8aadd7888f71e6a4f497088660abdd1b45bb2765fa9ff12d5f2ff73557",
+      "runner_sha256": "a7345071b8cb14fbb0e9bdcef10110a72789af3db952d93e79906e52b0a50790"
+    }
+  ],
+  "statue_regression": {
+    "private_run": ".local/automation/fusion-hooks-statue-regression-20261001",
+    "fusion_button_flag": false,
+    "mission_flag_values": [
+      1,
+      1,
+      1,
+      3,
+      3
+    ],
+    "exit_code": 0
+  },
+  "failures_preserved": [
+    "Initial live B attempt suppressed tutorial confirmation because the LT marker was present during manual aim. No partner selected. Original run remains private under fusion-buttons-b-20261001. Corrected the disposable profile to keep manual confirmation separate.",
+    "Read-only caller profiling changed the reference route result and collected no requested entry samples; it is not selection/FPS acceptance. Actual resident-block records located the native picker path.",
+    "Initial implementation treated inactive signed direction -1 as invalid. Inspected real scalar data, corrected the selector and added signed-direction tests before successful gameplay probes."
+  ],
+  "constraints": {
+    "single_logical_processor": 2,
+    "affinity_mask": 4,
+    "normal_clocks": true,
+    "graphics": "Vulkan3x EFB",
+    "audio": "Null",
+    "screenshots": false,
+    "host_input": false
+  },
+  "limitations": [
+    "Three distinct native partner selections and return to idle are numeric behavioral evidence, not inspected animations/effects or audible output.",
+    "Self-selection rejected in the prepared team. Other team orders, dead/absent heroes, revival and multiplayer remain unverified.",
+    "Release-to-cancel and modal/menu behavior are unfinished; the full MUA1-style layout and exact profile migration remain pending.",
+    "The experimental flag requires the matching marker profile. Default v4/custom profiles are not automatically migrated.",
+    "No new FPS or audio-quality claim. First successful B run overlapped final build linking, so it is not performance evidence."
+  ],
+  "binaries": {
+    "moderngekko-run.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "bytes": 16130048,
+      "sha256": "a7345071b8cb14fbb0e9bdcef10110a72789af3db952d93e79906e52b0a50790"
+    },
+    "moderngekko-port.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "a9c4e258106e0ebcbc9be0f7de44410b79728c779ac2bd910d545c0a041eef0d"
+    },
+    "ModernGekko.exe": {
+      "path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "bytes": 12204544,
+      "sha256": "37a8e2f83f2fff5258a9852b841ad34553dd849800ec5131beda5e937c9242ea"
+    },
+    "moderngekko_mua2_fusion_buttons_test.exe": {
+      "path": ".local/build/windows-x64/runtime/moderngekko_mua2_fusion_buttons_test.exe",
+      "bytes": 29184,
+      "sha256": "7413e3ca03bec7d20aaae3e5198911e39b5cac392b2d267f5667357443d6b86e"
+    }
+  }
+}

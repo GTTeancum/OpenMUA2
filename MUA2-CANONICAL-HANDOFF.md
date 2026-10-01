@@ -1,5 +1,33 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Experimental native fusion partner selection - 2026-10-01
+
+OPENMUA2_FUSION_BUTTONS=1 now substitutes a validated roster actor at the native
+picker boundary, preserving the game's subsequent eligibility/resource processing.
+It requires the matching experimental marker profile; it is OFF by default and
+must not be treated as a completed v4/custom-profile migration. A/B/X/Y address
+ordered roster slots 0/1/2/3; self and other human-controlled actors are rejected.
+No host selection cache is retained. Title/code, input ownership and live full
+entity handles are checked. Runtime start hooks now support multiple addresses.
+
+Windows build passed: 44/44 tests, 7.76s, no compiler/linker warnings or errors;
+existing CMake warnings remain. In the prepared plaza team, LT+A/B/Y selected
+three distinct expected teammates and returned to idle. LT+X (self) selected no
+partner. All four runs passed marker/power suppression, release and port-isolation
+checks. The existing X/A/B statue interaction still completed its mission flag.
+
+The first B attempt failed because its profile suppressed tutorial confirmation.
+The corrected test fixture keeps manual aiming/confirmation separate from native
+partner selection. Fixture: project/lib/ModernGekko/tests/data/mua1_fusion_experimental.ini.
+This is a process-local test-device profile, not the user's installed layout.
+
+Release-to-cancel, revival, other teams, multiplayer, menu polish and default
+profile migration remain open. Numeric selection/state evidence does not verify
+animations, effects or audible output. One logical CPU, normal clocks, Vulkan3x,
+Null audio; no screenshots, host input or new FPS claim. Evidence and binary
+hashes: evidence/windows-20260930/NATIVE-FUSION-BUTTONS.json.
+
+
 ## RT/LT and direct-selection research - 2026-10-01
 
 A disposable profile routes RT+face to all four powers. The corrected 15-snapshot

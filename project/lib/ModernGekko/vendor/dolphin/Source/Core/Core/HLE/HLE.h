@@ -57,7 +57,7 @@ struct TryReplaceFunctionResult
 void PatchFixedFunctions(Core::System& system);
 void PatchFunctions(Core::System& system);
 void Clear();
-// One runtime-owned observer, called before the original instruction. Caller
+// Up to eight runtime-owned observers, called before original instructions. Caller
 // must hold the CPU thread guard; Clear removes it at title shutdown.
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer);
