@@ -1,5 +1,38 @@
 # OpenMUA2 sustained combat performance goal
 
+## Read-only plaza CPU correlation - 2026-10-01
+
+Three additional plaza runs used a target-process-only, read-only CPU sampler
+at nominal 20ms intervals, with full runtime profiling OFF. All routes and
+samplers exited 0, with 15 guarded entity probes each. No screenshots or host
+input. Existing single-CPU, normal-clock, Vulkan 3x / 1080p preset retained;
+muted Cubeb, experimental formatter/identity cache ON and reserve 524288.
+
+| Run | New FPS | P99 ms | Worst ms | >50ms frames | Typical CPU fraction |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 29.9702 | 35.985 | 53.825 | 2 | 69% |
+| 2 | 29.9704 | 35.297 | 51.531 | 1 | 70% |
+| 3 | 29.9705 | 34.969 | 58.329 | 1 | 68% |
+
+CPU fractions bracket approximately one-second frame windows and include all
+threads on the one assigned logical CPU. Windows accounting is quantized;
+time not executing can mean deliberate waits or descheduling. The earlier
+18/24 FPS episodes did not recur, so their cause remains unresolved. Do not
+dismiss those failures or claim these diagnostics as qualifying acceptance.
+
+No source change or performance gain. Reused the prior restored runner
+(77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb);
+its prior Windows build passed 39/39 native tests. No redundant rebuild.
+Evidence: evidence/windows-20260930/PLAZA-PROCESS-CPU-CORRELATION.json.
+
+Next investigate a bounded first-use compilation budget, with cold instructions
+executed accurately until compilation can resume. Before implementation, account
+for cycles, timing redispatch, exceptions, memory-base updates, hooks, stop state
+and cache resets; exclude debugging and static fallback. SingleStep() cannot be
+used because it overwrites timing-slice state. No tiering code is implemented or
+validated at this checkpoint. Goal UNMET; audio and visual limits remain.
+
+
 ## Register lookahead experiment rejected; pacing failures retained - 2026-10-01
 
 Tested sharing the JIT register allocator's forward-use scan while preserving its

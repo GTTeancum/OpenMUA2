@@ -1,0 +1,360 @@
+{
+  "schema": 1,
+  "scope": "Plaza only; full JIT, process affinity mask 4 (logical CPU 2), Vulkan 3x EFB / 1920x1080 preset, normal clocks. Muted Cubeb processing, formatter ON, identity cache ON, reserve 524288. Runtime profiling OFF; audio profiling and guarded entity/timing probes ON. Read-only external sampler queries only the specifically launched game PID. No screenshots or host input.",
+  "method": "GetProcessTimes and QueryProcessCycleTime at nominal 20ms intervals, timestamped by QPC-backed Python perf_counter_ns. Confirmed samples cover the native steady-clock frame interval. Approximately one-second frame windows are bracketed by CPU samples. CPU accounting is quantized; windows include intentional waits and host descheduling. Cycle counts are not converted to elapsed time.",
+  "runs": [
+    {
+      "run": 1,
+      "private_directory": ".local/automation/plaza-cpu-sampled-1-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "sampler_exit_code": 0,
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb",
+      "entity_probes": 15,
+      "positive_hero_health_counts": [
+        4
+      ],
+      "positive_identified_opponent_health_counts": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "correlation": {
+        "scope": "Read-only 20ms process CPU samples bracket ~1s frame windows. Windows CPU times are quantized. CPU fraction includes all game threads pinned to one CPU; missing CPU time does not distinguish intentional waits from host descheduling. Sampled cycles are not converted to elapsed time. No visual or audible correctness proof.",
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14619,
+          "last_frame": 16116,
+          "emulated_ticks": 36413477100,
+          "intervals": 1497,
+          "seconds": 49.9496903,
+          "average_fps": 29.970155790935905,
+          "frame_ms": {
+            "median": 33.3668999999972,
+            "p95": 34.151399999998944,
+            "p99": 35.9847000000002,
+            "max": 53.82530000000063
+          },
+          "one_percent_low_fps": 24.488908320383665,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 834,
+          "frames_over_50ms": 2,
+          "longest_consecutive_over_50ms_seconds": 0.05382530000000063,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 49.94990000000001,
+          "emulation_speed_percent": 100.00041982242281,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1497
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.00023333333053210392,
+            "p99": 2.6180333333335333,
+            "min": -11.78836666666684,
+            "max": 20.45863333333396
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "cpu_samples": 3510,
+        "slow_windows": [
+          {
+            "start_frame": 14801,
+            "end_frame": 14829,
+            "start_seconds": 6.0728291,
+            "fps": 28.85940419760034,
+            "bracket_wall_ms": 986.6239,
+            "process_cpu_ms": 812.5,
+            "cpu_fraction": 0.8235154246719545,
+            "cycles": 2873681439
+          },
+          {
+            "start_frame": 14920,
+            "end_frame": 14949,
+            "start_seconds": 10.0437248,
+            "fps": 29.363386590753876,
+            "bracket_wall_ms": 1006.1918,
+            "process_cpu_ms": 750.0,
+            "cpu_fraction": 0.7453847268483007,
+            "cycles": 2926579044
+          },
+          {
+            "start_frame": 15722,
+            "end_frame": 15751,
+            "start_seconds": 36.8030989,
+            "fps": 29.69902901584894,
+            "bracket_wall_ms": 1002.2906,
+            "process_cpu_ms": 671.875,
+            "cpu_fraction": 0.6703395202948127,
+            "cycles": 2337670278
+          },
+          {
+            "start_frame": 14639,
+            "end_frame": 14668,
+            "start_seconds": 0.6678471,
+            "fps": 29.733352321667297,
+            "bracket_wall_ms": 987.2289,
+            "process_cpu_ms": 781.25,
+            "cpu_fraction": 0.791356492906559,
+            "cycles": 2945734467
+          },
+          {
+            "start_frame": 14836,
+            "end_frame": 14865,
+            "start_seconds": 7.2405984,
+            "fps": 29.78083258376347,
+            "bracket_wall_ms": 985.2131,
+            "process_cpu_ms": 750.0,
+            "cpu_fraction": 0.7612566255970409,
+            "cycles": 2963299111
+          }
+        ],
+        "steady_cpu_fraction_median": 0.6865081168827067,
+        "window_cpu_fraction_median": 0.6911393364225853
+      }
+    },
+    {
+      "run": 2,
+      "private_directory": ".local/automation/plaza-cpu-sampled-2-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "sampler_exit_code": 0,
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb",
+      "entity_probes": 15,
+      "positive_hero_health_counts": [
+        4
+      ],
+      "positive_identified_opponent_health_counts": [
+        6,
+        7
+      ],
+      "correlation": {
+        "scope": "Read-only 20ms process CPU samples bracket ~1s frame windows. Windows CPU times are quantized. CPU fraction includes all game threads pinned to one CPU; missing CPU time does not distinguish intentional waits from host descheduling. Sampled cycles are not converted to elapsed time. No visual or audible correctness proof.",
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14619,
+          "last_frame": 16097,
+          "emulated_ticks": 35951315400,
+          "intervals": 1478,
+          "seconds": 49.3153956,
+          "average_fps": 29.97035676217915,
+          "frame_ms": {
+            "median": 33.36560000000155,
+            "p95": 34.16490000000039,
+            "p99": 35.29739999999926,
+            "max": 51.53059999999954
+          },
+          "one_percent_low_fps": 25.166184902000545,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 799,
+          "frames_over_50ms": 1,
+          "longest_consecutive_over_50ms_seconds": 0.05153059999999954,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 49.31593333333334,
+          "emulation_speed_percent": 100.00109039647111,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1478
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0010666666651198975,
+            "p99": 1.9307333333325878,
+            "min": -11.785766666666655,
+            "max": 18.163933333332867
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "cpu_samples": 3463,
+        "slow_windows": [
+          {
+            "start_frame": 15143,
+            "end_frame": 15172,
+            "start_seconds": 17.4838609,
+            "fps": 29.411400791998314,
+            "bracket_wall_ms": 1007.1831,
+            "process_cpu_ms": 703.125,
+            "cpu_fraction": 0.6981104031630396,
+            "cycles": 2807058948
+          },
+          {
+            "start_frame": 15367,
+            "end_frame": 15396,
+            "start_seconds": 24.9597128,
+            "fps": 29.591863910895427,
+            "bracket_wall_ms": 985.2111,
+            "process_cpu_ms": 734.375,
+            "cpu_fraction": 0.7453986257361493,
+            "cycles": 2684759754
+          },
+          {
+            "start_frame": 14796,
+            "end_frame": 14825,
+            "start_seconds": 5.9060229,
+            "fps": 29.686275441138054,
+            "bracket_wall_ms": 986.1097,
+            "process_cpu_ms": 718.75,
+            "cpu_fraction": 0.728874282445452,
+            "cycles": 2832000202
+          },
+          {
+            "start_frame": 14753,
+            "end_frame": 14782,
+            "start_seconds": 4.4722802,
+            "fps": 29.718613915648735,
+            "bracket_wall_ms": 988.5529,
+            "process_cpu_ms": 734.375,
+            "cpu_fraction": 0.7428788080030921,
+            "cycles": 2701202746
+          },
+          {
+            "start_frame": 15823,
+            "end_frame": 15852,
+            "start_seconds": 40.1729375,
+            "fps": 29.7572994655589,
+            "bracket_wall_ms": 1002.2019,
+            "process_cpu_ms": 609.375,
+            "cpu_fraction": 0.6080361651679167,
+            "cycles": 2525420357
+          }
+        ],
+        "steady_cpu_fraction_median": 0.7017703026078458,
+        "window_cpu_fraction_median": 0.7019333656698767
+      }
+    },
+    {
+      "run": 3,
+      "private_directory": ".local/automation/plaza-cpu-sampled-3-20261001",
+      "exit_code": 0,
+      "route_completed": true,
+      "sampler_exit_code": 0,
+      "runner_sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb",
+      "entity_probes": 15,
+      "positive_hero_health_counts": [
+        4
+      ],
+      "positive_identified_opponent_health_counts": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "correlation": {
+        "scope": "Read-only 20ms process CPU samples bracket ~1s frame windows. Windows CPU times are quantized. CPU fraction includes all game threads pinned to one CPU; missing CPU time does not distinguish intentional waits from host descheduling. Sampled cycles are not converted to elapsed time. No visual or audible correctness proof.",
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14619,
+          "last_frame": 16098,
+          "emulated_ticks": 35975639700,
+          "intervals": 1479,
+          "seconds": 49.3485387,
+          "average_fps": 29.970492317739087,
+          "frame_ms": {
+            "median": 33.37150000000122,
+            "p95": 34.149300000002825,
+            "p99": 34.96909999999964,
+            "max": 58.329399999999865
+          },
+          "one_percent_low_fps": 25.06996609704913,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 826,
+          "frames_over_50ms": 1,
+          "longest_consecutive_over_50ms_seconds": 0.058329399999999865,
+          "warmup_seconds": 2,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 49.34930000000001,
+          "emulation_speed_percent": 100.00154270018943,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1479
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0048333333345501606,
+            "p99": 1.6024333333329728,
+            "min": -14.237766666666554,
+            "max": 24.962733333333194
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "cpu_samples": 3475,
+        "slow_windows": [
+          {
+            "start_frame": 14856,
+            "end_frame": 14885,
+            "start_seconds": 7.9082891,
+            "fps": 29.08264998298665,
+            "bracket_wall_ms": 1027.3925,
+            "process_cpu_ms": 859.375,
+            "cpu_fraction": 0.8364622089415682,
+            "cycles": 3112433012
+          },
+          {
+            "start_frame": 14797,
+            "end_frame": 14826,
+            "start_seconds": 5.9395309,
+            "fps": 29.470514445429956,
+            "bracket_wall_ms": 1008.5953,
+            "process_cpu_ms": 781.25,
+            "cpu_fraction": 0.7745921481093557,
+            "cycles": 2880082588
+          },
+          {
+            "start_frame": 15150,
+            "end_frame": 15179,
+            "start_seconds": 17.7191971,
+            "fps": 29.58270835611542,
+            "bracket_wall_ms": 1007.3713,
+            "process_cpu_ms": 687.5,
+            "cpu_fraction": 0.682469313946109,
+            "cycles": 2785331156
+          },
+          {
+            "start_frame": 14637,
+            "end_frame": 14666,
+            "start_seconds": 0.6002954,
+            "fps": 29.71316041981622,
+            "bracket_wall_ms": 1007.2664,
+            "process_cpu_ms": 703.125,
+            "cpu_fraction": 0.6980526700781442,
+            "cycles": 3011710679
+          },
+          {
+            "start_frame": 14746,
+            "end_frame": 14775,
+            "start_seconds": 4.2377222,
+            "fps": 29.87587706303233,
+            "bracket_wall_ms": 992.4229,
+            "process_cpu_ms": 750.0,
+            "cpu_fraction": 0.7557262130891982,
+            "cycles": 2720800817
+          }
+        ],
+        "steady_cpu_fraction_median": 0.6841652069445098,
+        "window_cpu_fraction_median": 0.684470546293571
+      }
+    }
+  ],
+  "decision": "The earlier 18/24 FPS episodes did not recur. These samples neither diagnose those failures nor justify dismissing them. Typical process CPU fraction was about 68-70% of one CPU; brief stalls remain. No source optimization or new performance gain. Not qualifying acceptance runs.",
+  "build": "Unchanged restored Windows runtime from prior checkpoint: SHA256 77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb; prior supported build passed 39/39 native tests in 7.18s. No rebuild/test-suite rerun for read-only diagnostics.",
+  "next_experiment": "Investigate a bounded first-use compilation budget with an accurate interpreter cold-code path. Before implementation, preserve cycle accounting, timing redispatch, exceptions, memory-base changes, hooks, stop handling and cache resets. Keep debugging and static fallback excluded. Do not use Interpreter::SingleStep(), which overwrites timing-slice state. This is a proposed experiment, not an implemented or validated optimization.",
+  "goal": "UNMET; pacing, sustained-combat acceptance, audible crackling and visual correctness remain unresolved."
+}
