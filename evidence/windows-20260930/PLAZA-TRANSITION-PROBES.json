@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Private, read-only dialog transition probes during plaza route diagnostics. Not FPS acceptance or proof of continuous combat.",
+  "configuration": {
+    "one_logical_cpu": 2,
+    "cpu": "JIT",
+    "graphics": "Vulkan",
+    "efb_scale": 3,
+    "resolution_preset": "1920x1080",
+    "audio": "Cubeb, muted; numeric profiling only",
+    "simple_format": "on (experiment)",
+    "screenshots": false,
+    "desktop_input": false,
+    "game_memory_writes": false
+  },
+  "runs": [
+    {
+      "private_run": "plaza-transition-guard-20261001",
+      "command_delivery": "sequential",
+      "runtime_exit_code": 0,
+      "harness_elapsed_seconds": 234.625,
+      "runner_sha256": "c5961c5d32ebeb99be9492bea5ea621757af405e0da0c754cfa0e2f4377c1311",
+      "commanded_guest_seconds": 180.19,
+      "probe_count": 41,
+      "observed_guest_seconds_between_probes": 212.29582980521263,
+      "failure_retry_detections": 0,
+      "unique_dialog_slot_hashes": 1,
+      "private_probe_report_sha256": "500717b589bb79441f5324e3da14c3942a24952e4660c1b7410a9dfc2562c5a3",
+      "largest_guest_presentation_gap_ms": 33.36666666666667,
+      "largest_host_presentation_gap_ms": 83.1185,
+      "guest_presentation_gaps_over_100ms": 0,
+      "scope": "Probes and command-delivery waits perturb execution. Diagnostic timings only; no performance gain claimed."
+    },
+    {
+      "private_run": "plaza-transition-batches-20261001",
+      "command_delivery": "queued in batches ending at each probe",
+      "runtime_exit_code": 0,
+      "harness_elapsed_seconds": 415.780999999959,
+      "runner_sha256": "c5961c5d32ebeb99be9492bea5ea621757af405e0da0c754cfa0e2f4377c1311",
+      "commanded_guest_seconds": 380.94,
+      "probe_count": 86,
+      "observed_guest_seconds_between_probes": 394.3876169725652,
+      "failure_retry_detections": 0,
+      "unique_dialog_slot_hashes": 1,
+      "private_probe_report_sha256": "831c5f9671fe03b9202e261b4ca6aa2e87196af8941d430ee03ca8136809b8c9",
+      "largest_guest_presentation_gap_ms": 33.36666666666667,
+      "largest_host_presentation_gap_ms": 86.2682,
+      "guest_presentation_gaps_over_100ms": 0,
+      "scope": "Probes and command-delivery waits perturb execution. Diagnostic timings only; no performance gain claimed."
+    }
+  ],
+  "guard_fixture_checks": [
+    {
+      "fixture": "start",
+      "expected_abort": false,
+      "observed_abort": false
+    },
+    {
+      "fixture": "short",
+      "expected_abort": false,
+      "observed_abort": false
+    },
+    {
+      "fixture": "end",
+      "expected_abort": true,
+      "observed_abort": true
+    },
+    {
+      "fixture": "truncated",
+      "rejected": true
+    }
+  ],
+  "conclusion": "The failure/retry signature did not reproduce in either diagnostic. The prior 1.234567s guest presentation gap also did not reproduce within these sampled intervals. Do not attribute the prior gap to game-over or claim it fixed.",
+  "limitations": [
+    "This guard recognizes one historically populated dialog option group; its absence cannot prove live enemies, hero health, active combat or lack of other transitions.",
+    "Neither live run triggered the guard: stopping on a real transition remains unexercised. Positive rejection is proven only by the known end-state fixture.",
+    "The batched run is shorter than the original endurance run and both input timelines differ.",
+    "No screenshots, fresh visual validation or audible-quality verification. Original endurance failure and pacing evidence remain unresolved."
+  ],
+  "next_action": "Expand read-only validation to actual combat activity/health, then return to measured CPU/JIT stall optimization. Do not repeat a full endurance acceptance run until combat continuity can be established."
+}

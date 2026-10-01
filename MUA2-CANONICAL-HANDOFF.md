@@ -1,5 +1,31 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Read-only plaza transition probes - 2026-10-01
+
+Ran two private diagnostics with the existing runner, one logical CPU2, full JIT,
+Vulkan3x/1920x1080 preset, normal clocks, muted Cubeb and formatter experiment ON.
+No screenshots, host input or game-memory writes. The existing native read-memory
+command samples the previously identified dialog slot; private guards reject its
+failure/retry option group before publishing further input. Offline fixtures
+accept baseline/short state, reject the known long-endpoint failure signature,
+and reject a truncated probe (four checks). Live transition abort is unexercised.
+
+Sequential run: exit0, 41 probes over212.296 observed guest seconds (180.190s
+commanded). Batched run: exit0, 86 probes over394.388 observed guest seconds
+(380.940s commanded). Both keep the baseline slot hash throughout. Neither
+reproduces the prior retry signature or1.234567s guest presentation gap. Largest
+guest interval33.367ms; host gaps still reach83.119/86.268ms respectively. These
+are intrusive diagnostics, not acceptance or a performance improvement. Command
+delivery differs from the original endurance run; no prior failure is dismissed.
+
+The guard detects one failure signature, not enemy activity, health or every
+transition. Establish actual combat continuity before another endurance acceptance
+attempt, then return to measured CPU/JIT stall optimization. No fresh visual or
+audible verification. No native/tooling source change or rebuild; prior build and
+tests retain their recorded scope. Proprietary probe files/helpers remain private.
+Evidence: evidence/windows-20260930/PLAZA-TRANSITION-PROBES.json. Goal UNMET.
+
+
 ## Offline plaza state audit - 2026-10-01
 
 Investigated existing baseline, short CPU2 endpoint and long endurance endpoint
