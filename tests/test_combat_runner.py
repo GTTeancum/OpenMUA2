@@ -230,6 +230,30 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                 self.assertEqual(raised.exception.code, 2)
                 copy.assert_not_called()
 
+class SequenceReceiptTest(unittest.TestCase):
+    def test_fixed_deadlines_accept_late_callbacks_without_accumulating_drift(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            commands = [{'command': 'xbox_time', 'milliseconds': 10, 'path': str(i)} for i in range(2)]
+            def write(i, **changes):
+                fields = dict(start_ticks=1000 + i*10000 + (5 if i == 0 else 7), end_ticks=11000+i*10000+7,
+                              duration_ticks=10000, ticks_per_second=1000000, cycles_late=7,
+                              completed=1, release=1, scheduled_start_ticks=1000+i*10000,
+                              scheduled_end_ticks=11000+i*10000)
+                fields.update(changes)
+                (root / str(i)).write_text('\n'.join(f'{k}={v}' for k,v in fields.items()))
+            write(0); write(1)
+            mod.validate_timed_inputs(root, commands, 1000)
+            with self.assertRaises(RuntimeError): mod.validate_timed_inputs(root, commands, 1001)
+            for changes in ({'scheduled_start_ticks': 11001}, {'scheduled_end_ticks': 21001},
+                            {'start_ticks': 10999}, {'start_ticks': 12001}, {'start_ticks': 11008},
+                            {'scheduled_start_ticks': 'invalid'}, {'completed': 0},
+                            {'cycles_late': 1001}, {'end_ticks': 21006}):
+                write(1, **changes)
+                with self.subTest(changes=changes), self.assertRaises(RuntimeError):
+                    mod.validate_timed_inputs(root, commands)
+
+
 class ProcessorLaunchTest(unittest.TestCase):
     def api(self):
         api = mock.Mock()

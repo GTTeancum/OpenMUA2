@@ -287,6 +287,42 @@ int main()
     }
     if (automation::ParseCommandFile(commands / "xbox.txt", &command, &error)) return 33;
   }
+
+  const auto sequence = root / "sequence";
+  std::filesystem::create_directory(sequence);
+  const auto put = [&](const char* name, const char* body) {
+    std::ofstream output(sequence / name); output << body;
+  };
+  std::vector<automation::Command> movie;
+  put("01.txt", "command=check_memory\naddress=0x80000000\ndata=0000000d\n");
+  put("02.txt", "command=xbox_time\nport=2\nmilliseconds=250\npath=../out/hold.txt\na=1\n");
+  put("03.txt", "command=read_memory\naddress=0x80000000\nsize=4\npath=../out/probe.bin\n");
+  put("04.txt", "command=read_timing\npath=../out/timing.txt\n");
+  if (!automation::LoadXboxSequence(sequence, &movie, &error) || movie.size() != 4 ||
+      movie[0].type != automation::CommandType::CheckMemory || movie[0].data.back() != 13 ||
+      !movie[1].path.is_absolute()) return 40;
+  for (const char* invalid : {
+      "command=write_memory\naddress=0x80000000\ndata=00\n",
+      "command=screenshot\npath=../out/shot.png\n",
+      "command=load_state\npath=../out/state.sav\n",
+      "command=xbox_time\nport=0\nmilliseconds=1\npath=../out/different-port.txt\n",
+      "command=xbox_time\nport=2\nmilliseconds=600000\npath=../out/too-long.txt\n",
+      "command=read_timing\npath=../out/hold.txt\n",
+      "command=read_timing\npath=04.txt\n",
+      "command=xbox_sequence\npath=nested\n"}) {
+    put("04.txt", invalid);
+    if (automation::LoadXboxSequence(sequence, &movie, &error)) return 41;
+  }
+  put("04.txt", "command=xbox_sequence\npath=sequence\nstart_ticks=373000000000\n");
+  if (!automation::ParseCommandFile(sequence / "04.txt", &command, &error) ||
+      command.type != automation::CommandType::XboxSequence || command.start_ticks != 373000000000ULL)
+    return 42;
+  for (const char* invalid : {"-1", "18446744073709551616", "1garbage", ""}) {
+    std::ofstream output(sequence / "04.txt");
+    output << "command=xbox_sequence\npath=sequence\nstart_ticks=" << invalid << '\n';
+    output.close();
+    if (automation::ParseCommandFile(sequence / "04.txt", &command, &error)) return 43;
+  }
   std::error_code ec;
   std::filesystem::remove_all(root, ec);
   return 0;

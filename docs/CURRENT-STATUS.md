@@ -1,5 +1,60 @@
 # Current status — GitHub main
 
+## Guest-clock plaza sequence and matched-state repeats - 2026-10-01
+
+Added a preloaded process-local xbox_sequence command and benchmark option
+--guest-sequence-start. Timed inputs, read-only snapshots and byte guards run
+on one absolute guest-time schedule; snapshots/receipts flush afterward. No
+host input, screenshots, guest memory writes, clock changes or default runtime
+setting changes. Guard mismatch cancels remaining sequence input and releases
+its synthetic controller. See docs/TESTING-GUEST-SEQUENCES.md.
+
+Prior receipt inspection found 3.174-4.276 seconds of inter-hold gaps in roughly
+50-second routes, with individual gaps up to 419.835ms. New sequences executed
+106 holds over 47.46 guest seconds with ZERO gaps. All six used the same start
+tick; maximum boundary lateness was 69 guest ticks. Every run's 15 entity-pool
+snapshots matched the first control byte-for-byte. All four heroes remained
+alive and 5-7 identified opponents had positive health at all sampled boundaries.
+Each run recorded 22 hero health decreases, 27 same-slot opponent health decreases
+and 56 hero position changes. Slot reuse remains a caveat for damage inference.
+
+Budget ON means the existing experimental 4000us soft JIT budget. Order below
+is actual execution order; the last pair is reversed. Primary statistics use
+identical guest frames after TWO GUEST SECONDS of warmup, not two wall seconds.
+
+| Run | New FPS | P99 ms | Worst ms | >50ms frames |
+| --- | --- | --- | --- | --- |
+| off1 | 29.837607 | 36.0059 | 212.9583 | 4 |
+| on1 | 29.970241 | 35.2895 | 42.8217 | 0 |
+| off2 | 29.969997 | 35.1034 | 55.8543 | 1 |
+| on2 | 29.970141 | 35.0907 | 41.3686 | 0 |
+| on3 | 29.472984 | 54.9239 | 104.3845 | 26 |
+| off3 | 29.783237 | 48.4563 | 81.2486 | 9 |
+
+Full-route on3 was worse: 190.1731ms maximum and 36 frames over 50ms. Full-route
+off3 had 11 over50ms; other maxima/counts were unchanged by warmup. All six routes
+and native processes exited successfully, but pacing failures remain failures.
+The intentional wrong-guard test failed the harness as expected, cancelled the
+later input and stopped the native process cleanly. No probe/state assets in Git.
+
+Supported Windows build passed 40/40 native tests; expanded sequence cases also
+passed in the final 4.83s native suite. Python: 157 passed, one skipped, 19.444s.
+Existing CMake warnings only; no compiler/linker warnings/errors found. Runner:
+16092160 bytes, SHA256 3d549b1e8a8393710ed43e91415d29fed66d1d847596919d7aaf60d1ea63248f.
+All six produced-binary hashes, full/primary timing and failures are recorded in
+evidence/windows-20260930/PLAZA-GUEST-SEQUENCE.json. Preserved user static edits.
+
+Single CPU2/mask4, full JIT, Vulkan3x/1080p preset, normal clocks, muted Cubeb
+processing, experimental formatter/identity cache ON, reserve524288. Runtime
+profiling OFF. No screenshots or audible/visual correctness claim. Goal UNMET;
+this is not three qualifying repeats or ten-minute continuous combat acceptance.
+Keep the JIT budget default-OFF. Matching sampled state and input deadlines now
+support more controlled investigation, but do not prove all CPU/render behavior.
+Next correlate intermittent stalls with target-process CPU measurements and
+separate runtime-span diagnostics; profiling itself changes budget decisions.
+Continue mixed JIT/interpreter correctness work before promoting experiments.
+
+
 ## Default-off soft JIT compilation budget prototype - 2026-10-01
 
 Added OPENMUA2_JIT_BUDGET_US (decimal 250-16000 microseconds; unset/0/invalid is

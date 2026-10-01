@@ -19,6 +19,8 @@ enum class CommandType
   PadFrames,
   XboxFrames,
   XboxTime,
+  XboxSequence,
+  CheckMemory,
   ClearPad,
   Pause,
   Resume,
@@ -51,6 +53,7 @@ struct Command
   std::uint32_t size = 0;
   std::uint32_t frames = 0;
   std::uint32_t milliseconds = 0;
+  std::uint64_t start_ticks = 0;
   // pad_frames may retain a chord across captures and following commands.
   bool release_pad = true;
   std::vector<std::uint8_t> data;
@@ -90,5 +93,7 @@ std::filesystem::path ResolveControlPath(const std::filesystem::path& automation
 std::vector<std::filesystem::path>
 ListCommandFiles(const std::filesystem::path& commands_directory);
 bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::string* error);
+bool LoadXboxSequence(const std::filesystem::path& directory,
+                      std::vector<Command>* commands, std::string* error);
 std::string FormatStatus(const Status& status);
 }  // namespace moderngekko::automation

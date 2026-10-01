@@ -50,6 +50,8 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <limits>
 #include <fstream>
 #include <fmt/format.h>
 #include <mutex>
@@ -176,6 +178,26 @@ struct TimedXboxHold
   s64 cycles_late = 0;
 };
 
+struct XboxSequenceStep
+{
+  automation::Command command;
+  std::vector<u8> snapshot;
+  u64 start = 0, end = 0, scheduled_start = 0, scheduled_end = 0, idle_ticks = 0;
+  bool visited = false, completed = false;
+};
+
+struct XboxSequenceRun
+{
+  std::vector<XboxSequenceStep> steps;
+  std::shared_ptr<automation::XboxTestDevice> device;
+  std::atomic<bool> complete{false};
+  std::size_t next = 0;
+  std::optional<std::size_t> active_hold;
+  u64 deadline = 0;
+  u32 frequency = 0;
+  const char* error = nullptr;
+};
+
 struct RuntimeAutomationState
 {
   mutable std::mutex mutex;
@@ -188,6 +210,8 @@ struct RuntimeAutomationState
   // Accessed only while holding the CPU guard or from the CPU event callback.
   CoreTiming::EventType* xbox_hold_event = nullptr;
   std::shared_ptr<TimedXboxHold> xbox_hold;
+  CoreTiming::EventType* xbox_sequence_event = nullptr;
+  std::shared_ptr<XboxSequenceRun> xbox_sequence;
 };
 
 void EnsureAutomationDirectories(const std::filesystem::path& root)
@@ -467,6 +491,146 @@ std::optional<RuntimeError> ApplyTimedXboxHold(
   return {};
 }
 
+// Runs exclusively on the guest CPU scheduler. No file I/O, probe allocation, host
+// polling or guest memory writes occur between sequence steps.
+void AdvanceXboxSequence(RuntimeAutomationState& state, Core::System& system)
+{
+  const auto run = state.xbox_sequence;
+  if (!run) return;
+  auto& timing = system.GetCoreTiming();
+  const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+  if (run->active_hold) {
+    auto& previous = run->steps[*run->active_hold];
+    previous.end = timing.GetTicks();
+    previous.completed = true;
+    if (previous.command.release_pad) run->device->values = {};
+    run->active_hold.reset();
+  }
+  while (run->next < run->steps.size()) {
+    auto& step = run->steps[run->next++];
+    const auto& command = step.command;
+    step.visited = true;
+    step.start = timing.GetTicks();
+    step.scheduled_start = run->deadline;
+    if (command.type == automation::CommandType::XboxTime) {
+      run->device->values = command.xbox;
+      run->active_hold = run->next - 1;
+      run->deadline += u64{run->frequency} * command.milliseconds / 1000;
+      step.scheduled_end = run->deadline;
+      // Anchor every boundary to the original guest clock. Never accumulate
+      // callback lateness or host receipt-writing delays into the input movie.
+      if (run->deadline <= timing.GetTicks()) {
+        run->error = "sequence missed an entire input interval";
+        break;
+      }
+      timing.ScheduleEvent(static_cast<s64>(run->deadline - timing.GetTicks()), state.xbox_sequence_event);
+      return;
+    }
+    if (command.type == automation::CommandType::ReadTiming) {
+      step.idle_ticks = timing.GetIdleTicks();
+    } else {
+      const u8* source = system.GetMemory().GetPointerForRange(command.address, command.size);
+      if (!source) { run->error = "sequence memory range is not readable"; break; }
+      if (command.type == automation::CommandType::CheckMemory) {
+        if (std::memcmp(source, command.data.data(), command.size) != 0) {
+          run->error = "sequence memory guard mismatch; remaining input cancelled";
+          break;
+        }
+      } else {
+        std::memcpy(step.snapshot.data(), source, command.size);
+      }
+    }
+    step.end = step.start;
+    step.completed = true;
+  }
+  // Always release on completion/failure, even if the last hold requested
+  // retention. A sequence cannot leave synthetic input active after it ends.
+  run->device->values = {};
+  run->complete.store(true, std::memory_order_release);
+}
+
+std::optional<RuntimeError> ApplyXboxSequence(
+    RuntimeAutomationState& state, const std::shared_ptr<automation::XboxTestDevice>& device,
+    const automation::Command& command, const std::vector<automation::Command>& commands,
+    std::stop_token stop_token)
+{
+  auto run = std::make_shared<XboxSequenceRun>();
+  run->device = device;
+  run->steps.reserve(commands.size());
+  for (const auto& item : commands) {
+    XboxSequenceStep step;
+    step.command = item;
+    if (item.type == automation::CommandType::ReadMemory) step.snapshot.resize(item.size);
+    run->steps.push_back(std::move(step));
+  }
+  auto& system = Core::System::GetInstance();
+  auto& timing = system.GetCoreTiming();
+  {
+    const Core::CPUThreadGuard guard(system);
+    run->frequency = system.GetSystemTimers().GetTicksPerSecond();
+    const u64 now = timing.GetTicks();
+    run->deadline = command.start_ticks ? command.start_ticks : now;
+    if (run->deadline < now || run->deadline - now > u64{run->frequency} * 60)
+      return RuntimeError{RuntimeErrorCode::InvalidState, "sequence start must be now or within the next 60 guest seconds"};
+    if (run->deadline > std::numeric_limits<u64>::max() - u64{run->frequency} * 600)
+      return RuntimeError{RuntimeErrorCode::InvalidState, "sequence guest tick overflow"};
+    if (!state.xbox_sequence_event)
+      state.xbox_sequence_event = timing.RegisterEvent("OpenMUA2XboxSequence",
+        [&state](Core::System& callback_system, u64, s64) { AdvanceXboxSequence(state, callback_system); });
+    state.xbox_sequence = run;
+    {
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      for (const auto& item : commands)
+        if (item.type == automation::CommandType::XboxTime) {
+          ciface::Touch::UnregisterWiiInputOverrider(item.pad.port);
+          break;
+        }
+      device->values = {};
+    }
+    timing.ScheduleEvent(static_cast<s64>(run->deadline - now), state.xbox_sequence_event);
+  }
+  while (!run->complete.load(std::memory_order_acquire) && !stop_token.stop_requested())
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  {
+    const Core::CPUThreadGuard guard(system);
+    timing.RemoveEvent(state.xbox_sequence_event);
+    state.xbox_sequence.reset();
+    if (!run->complete.load(std::memory_order_acquire)) run->error = "sequence interrupted";
+    const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+    device->values = {};
+  }
+  // All observations and receipts are buffered until input execution finishes.
+  for (const auto& step : run->steps) {
+    if (!step.visited || step.command.path.empty()) continue;
+    std::error_code ec;
+    std::filesystem::create_directories(step.command.path.parent_path(), ec);
+    if (ec) return RuntimeError{RuntimeErrorCode::InitializationFailed, "could not create sequence output directory"};
+    std::ofstream output(step.command.path, std::ios::binary);
+    switch (step.command.type) {
+    case automation::CommandType::ReadMemory:
+      if (step.completed) output.write(reinterpret_cast<const char*>(step.snapshot.data()), step.snapshot.size());
+      break;
+    case automation::CommandType::ReadTiming:
+      output << "ticks=" << step.start << "\nidle_ticks=" << step.idle_ticks << '\n';
+      break;
+    case automation::CommandType::XboxTime:
+      output << "start_ticks=" << step.start << "\nend_ticks=" << step.end
+             << "\nduration_ticks=" << u64{run->frequency} * step.command.milliseconds / 1000
+             << "\nticks_per_second=" << run->frequency
+             << "\ncycles_late=" << (step.completed ? static_cast<s64>(step.end - step.scheduled_end) : 0)
+             << "\ncompleted=" << step.completed << "\nrelease=" << step.command.release_pad
+             << "\nscheduled_start_ticks=" << step.scheduled_start
+             << "\nscheduled_end_ticks=" << step.scheduled_end << '\n';
+      break;
+    default: break;
+    }
+    output.close();
+    if (!output) return RuntimeError{RuntimeErrorCode::InitializationFailed, "could not write sequence output"};
+  }
+  if (run->error) return RuntimeError{RuntimeErrorCode::InvalidState, run->error};
+  return {};
+}
+
 std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
                                                    RuntimeAutomationState& state,
                                                    const automation::Command& command,
@@ -475,12 +639,21 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   auto& system = Core::System::GetInstance();
   switch (command.type)
   {
+  case automation::CommandType::XboxSequence:
   case automation::CommandType::XboxFrames:
   case automation::CommandType::XboxTime:
   {
     if (Core::GetState(system) != Core::State::Running)
       return RuntimeError{RuntimeErrorCode::InvalidState, "Xbox input requires a running core"};
-    const int port = command.pad.port;
+    std::vector<automation::Command> sequence;
+    int port = command.pad.port;
+    if (command.type == automation::CommandType::XboxSequence) {
+      std::string error;
+      if (!automation::LoadXboxSequence(command.path, &sequence, &error))
+        return RuntimeError{RuntimeErrorCode::InvalidState, error};
+      for (const auto& item : sequence)
+        if (item.type == automation::CommandType::XboxTime) { port = item.pad.port; break; }
+    }
     auto& device = state.xbox_devices[port];
     if (!device) {
       device = std::make_shared<automation::XboxTestDevice>();
@@ -495,6 +668,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
       controller->UpdateReferences(g_controller_interface);
       // Only this process-local synthetic device is mapped to the tested port.
       Config::SetBase(Config::MAIN_INPUT_BACKGROUND_INPUT, true);
+    }
+    if (command.type == automation::CommandType::XboxSequence) {
+      if (auto error = ApplyXboxSequence(state, device, command, sequence, stop_token)) return error;
+      break;
     }
     if (command.type == automation::CommandType::XboxTime) {
       if (auto error = ApplyTimedXboxHold(state, device, command, stop_token)) return error;
@@ -579,6 +756,14 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     if (auto error = ReadAutomationMemory(command.path, command.address, command.size))
       return error;
     break;
+  case automation::CommandType::CheckMemory:
+  {
+    const Core::CPUThreadGuard guard(system);
+    const u8* source = system.GetMemory().GetPointerForRange(command.address, command.size);
+    if (!source || std::memcmp(source, command.data.data(), command.size) != 0)
+      return RuntimeError{RuntimeErrorCode::InvalidState, "memory guard mismatch"};
+    break;
+  }
   case automation::CommandType::WriteMemory:
     if (auto error = WriteAutomationMemory(command.address, command.data))
       return error;
@@ -608,6 +793,8 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   case automation::CommandType::PadFrames:
   case automation::CommandType::XboxFrames:
   case automation::CommandType::XboxTime:
+  case automation::CommandType::XboxSequence:
+  case automation::CommandType::CheckMemory:
     return true;
   case automation::CommandType::Pad:
   case automation::CommandType::ClearPad:
@@ -1161,6 +1348,8 @@ RuntimeRunResult Runtime::Run() {
     // CoreTiming clears its registered event types between core lifetimes.
     m_impl->automation_state.xbox_hold_event = nullptr;
     m_impl->automation_state.xbox_hold.reset();
+    m_impl->automation_state.xbox_sequence_event = nullptr;
+    m_impl->automation_state.xbox_sequence.reset();
     m_impl->automation_thread =
         std::jthread([this](std::stop_token stop_token) {
           AutomationLoop(*this, *m_impl, std::move(stop_token));

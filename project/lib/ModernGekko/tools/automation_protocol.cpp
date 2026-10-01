@@ -164,6 +164,8 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
   const std::string text = Trim(value);
   if (text == "xbox_frames") return CommandType::XboxFrames;
   if (text == "xbox_time") return CommandType::XboxTime;
+  if (text == "xbox_sequence") return CommandType::XboxSequence;
+  if (text == "check_memory") return CommandType::CheckMemory;
   if (text == "pad")
     return CommandType::Pad;
   if (text == "pad_frames")
@@ -524,6 +526,28 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
     }
     break;
   }
+  case CommandType::XboxSequence:
+  {
+    const auto directory = values.find("path");
+    if (directory == values.end() || Trim(directory->second).empty()) {
+      if (error) *error = "xbox_sequence requires path=<sequence directory>";
+      return false;
+    }
+    parsed.path = Trim(directory->second);
+    for (const auto& [key, value] : values) {
+      if (key == "command" || key == "path") continue;
+      if (key != "start_ticks") {
+        if (error) *error = "unknown xbox_sequence field: " + key;
+        return false;
+      }
+      const auto result = std::from_chars(value.data(), value.data() + value.size(), parsed.start_ticks);
+      if (result.ec != std::errc{} || result.ptr != value.data() + value.size()) {
+        if (error) *error = "start_ticks must be an unsigned decimal guest tick";
+        return false;
+      }
+    }
+    break;
+  }
   case CommandType::Pad:
     if (!ParsePadCommand(values, &parsed, false, error))
       return false;
@@ -571,6 +595,7 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
     if (!ParseReadMemoryCommand(values, &parsed, error))
       return false;
     break;
+  case CommandType::CheckMemory:
   case CommandType::WriteMemory:
     if (!ParseWriteMemoryCommand(values, &parsed, error))
       return false;
@@ -583,6 +608,50 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
   }
 
   *command = std::move(parsed);
+  return true;
+}
+
+bool LoadXboxSequence(const std::filesystem::path& directory,
+                      std::vector<Command>* commands, std::string* error)
+{
+  std::vector<Command> result;
+  std::uint64_t milliseconds = 0, bytes = 0;
+  int port = -1;
+  std::vector<std::filesystem::path> outputs;
+  const auto files = ListCommandFiles(directory);
+  const auto fail = [&](const char* message) { if (error) *error = message; return false; };
+  if (files.empty() || files.size() > 2048) return fail("sequence requires 1..2048 command files");
+  for (const auto& file : files) {
+    Command item;
+    if (!ParseCommandFile(file, &item, error)) return false;
+    switch (item.type) {
+    case CommandType::XboxTime:
+      if (port != -1 && port != item.pad.port) return fail("sequence requires one input port");
+      port = item.pad.port;
+      milliseconds += item.milliseconds;
+      if (milliseconds > 600000) return fail("sequence exceeds ten minutes");
+      break;
+    case CommandType::ReadMemory:
+      bytes += item.size;
+      if (bytes > 64 * 1024 * 1024) return fail("sequence probe buffer exceeds 64 MiB");
+      break;
+    case CommandType::CheckMemory:
+    case CommandType::ReadTiming:
+      break;
+    default: return fail("sequence permits only xbox_time, read_memory, read_timing and check_memory");
+    }
+    if (!item.path.empty()) {
+      item.path = std::filesystem::absolute(ResolveControlPath(directory, item.path)).lexically_normal();
+      if (std::ranges::find(outputs, item.path) != outputs.end()) return fail("duplicate sequence output");
+      for (const auto& source : files)
+        if (item.path == std::filesystem::absolute(source).lexically_normal())
+          return fail("sequence output would overwrite an input command");
+      outputs.push_back(item.path);
+    }
+    result.push_back(std::move(item));
+  }
+  if (port == -1) return fail("sequence requires timed Xbox input");
+  *commands = std::move(result);
   return true;
 }
 

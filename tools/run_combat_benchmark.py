@@ -204,8 +204,10 @@ def validate_formatter(log, mode):
         raise RuntimeError('formatter counters do not reconcile')
 
 
-def validate_timed_inputs(root, commands):
+def validate_timed_inputs(root, commands, sequence_start=None):
     seen = set()
+    previous_sequence_end = None
+    previous_actual_end = None
     for command in commands:
         if command.get('command') != 'xbox_time':
             continue
@@ -220,9 +222,27 @@ def validate_timed_inputs(root, commands):
                                         'ticks_per_second', 'cycles_late', 'completed', 'release'))
         except (OSError, KeyError, ValueError) as exc:
             raise RuntimeError('missing or invalid timed input receipt') from exc
+        try:
+            scheduled_start = int(fields.get('scheduled_start_ticks', start))
+            scheduled_end = int(fields.get('scheduled_end_ticks', start + duration))
+        except ValueError as exc:
+            raise RuntimeError('invalid sequence deadline') from exc
+        sequence = 'scheduled_start_ticks' in fields or 'scheduled_end_ticks' in fields
+        if sequence_start is not None and not sequence:
+            raise RuntimeError('missing sequence deadlines')
+        if sequence and (not {'scheduled_start_ticks', 'scheduled_end_ticks'} <= fields.keys() or
+                         (previous_sequence_end is not None and scheduled_start != previous_sequence_end) or
+                         (previous_actual_end is not None and start != previous_actual_end) or
+                         (previous_sequence_end is None and sequence_start not in (None, 0) and
+                          scheduled_start != sequence_start)):
+            raise RuntimeError('sequence schedule contains a gap or incomplete receipt')
+        if sequence:
+            previous_sequence_end = scheduled_end
+            previous_actual_end = end
         if (completed != 1 or hz <= 0 or start < 0 or duration <= 0 or late < 0 or
+                scheduled_start < 0 or scheduled_end - scheduled_start != duration or end - scheduled_end != late or
+                not 0 <= start - scheduled_start <= hz // 1000 or end <= start or late > hz // 1000 or
                 duration != hz * int(command['milliseconds']) // 1000 or
-                end - start != duration + late or late > hz // 1000 or
                 release != int(command.get('release', 1))):
             raise RuntimeError('timed input incomplete, inconsistent, or more than 1ms late')
 
@@ -261,6 +281,7 @@ def main():
     p.add_argument("--timeout",type=float,default=600)
     p.add_argument("--logical-processor", type=int, help="Windows: select one allowed logical CPU for the whole child game process; restore the harness immediately.")
     p.add_argument("--no-trace",action="store_true")
+    p.add_argument("--guest-sequence-start", type=int, help="Preload timed inputs/read-only probes into one guest-clock sequence; absolute start tick, or 0 for now. No screenshots, saves, writes or frame-based inputs allowed.")
     p.add_argument("--queue-route", action="store_true", help="Publish the whole route before waiting; removes per-action host round trips. Advisory status may lag.")
     p.add_argument("--trace-presentation",action="store_true",help="Diagnostic copy/before/after events; copy counts are not FPS.")
     p.add_argument("--present-queue",action="store_true",help="Experimental half-refresh FIFO presentation; adds latency, logs shortages/overflow.")
@@ -318,6 +339,21 @@ def main():
     route=json.loads(args.route.read_text())
     if args.no_screenshots:
         route["commands"]=[x for x in route["commands"] if x.get("command")!="screenshot"]
+    execution_commands = route["commands"]
+    if args.guest_sequence_start is not None:
+        if args.guest_sequence_start < 0: p.error('--guest-sequence-start must be nonnegative')
+        allowed = {'xbox_time', 'read_memory', 'read_timing', 'check_memory'}
+        if any(item.get('command') not in allowed for item in execution_commands):
+            p.error('guest sequence permits only timed Xbox input and read-only probes/guards')
+        sequence_dir = root / 'sequence-inputs'
+        sequence_dir.mkdir()
+        for number, item in enumerate(execution_commands):
+            item = dict(item)
+            if 'path' in item: item['path'] = str((root / item['path']).resolve())
+            (sequence_dir / f'{number:06d}.txt').write_text(
+                '\n'.join(f'{key}={value}' for key, value in item.items()) + '\n', encoding='utf-8')
+        execution_commands = [{'command': 'xbox_sequence', 'path': str(sequence_dir),
+                               'start_ticks': args.guest_sequence_start}]
     env=os.environ.copy()
     configure_audio_profile(env, args.profile_audio, root)
     configure_audio_capture(env, args.capture_audio, root)
@@ -347,6 +383,8 @@ def main():
     if not args.windowed:cmd.append("--headless")
     metadata={"command":cmd,"cpu":cpu,"runner_sha256":sha(args.runner),"module_sha256":sha(args.module) if cpu == "staticrecomp" else None,"state_sha256":sha(args.state),"route":route,"resolution":args.resolution,"trace":not args.no_trace,"jit_diagnostic":args.jit_diagnostic,"jit_ranges":args.jit_ranges,"profile_dispatch":args.profile_dispatch,"profile_scope":"after restored frame threshold" if args.profile_dispatch else None,"screenshots":not args.no_screenshots,"headless":not args.windowed,"requested_audio_backend":args.audio}
     metadata["queued_route"] = args.queue_route
+    metadata["guest_sequence_start"] = args.guest_sequence_start
+    metadata["execution_commands"] = execution_commands
     metadata["timeline_status_scope"] = "advisory, possibly stale while native queue drains" if args.queue_route else "advisory"
     metadata["presentation_trace"] = args.trace_presentation
     metadata["audio_profile"] = args.profile_audio
@@ -401,11 +439,11 @@ def main():
                 submit({"command":"jit_profile_reset"})
                 submit({"command":"read_timing","path":"jit-profile-start.txt"})
             if args.queue_route:
-                pending = publish_route(root, route["commands"], index)
+                pending = publish_route(root, execution_commands, index)
                 index += len(pending)
                 for name, item in pending: wait_receipt(name, item)
             else:
-                for item in route["commands"]: submit(item)
+                for item in execution_commands: submit(item)
             if args.jit_block_profile:
                 submit({"command":"read_timing","path":"jit-profile-end.txt"})
                 submit({"command":"jit_profile_dump","path":"jit-blocks.tsv"})
@@ -414,7 +452,7 @@ def main():
             child.wait(timeout=30)
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
-            validate_timed_inputs(root, route['commands'])
+            validate_timed_inputs(root, route['commands'], args.guest_sequence_start)
             validate_runtime_settings((root/"runtime.log").read_text(), cpu, args.logical_processor)
             validate_formatter((root/"runtime.log").read_text(), args.simple_format)
             if args.profile_audio:
