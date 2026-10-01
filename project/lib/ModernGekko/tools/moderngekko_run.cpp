@@ -479,7 +479,8 @@ int RunMain(int argc, char **argv) {
       SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
     }
   }
-  if (!netplay_role && !frontend_config.controller.empty()) {
+  if (!netplay_role && (!frontend_config.controller.empty() ||
+      moderngekko::frontend::ControllerConfigExists(config.user_directory))) {
     std::string controller_message;
     if (!moderngekko::frontend::EnsureControllerConfig(
             config.user_directory, frontend_config.controller,

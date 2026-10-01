@@ -1,5 +1,52 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Audio continuity and Xbox profile upgrade - 2026-10-01
+
+Current user priority: audio crackling and Xbox controls/menus. Stop the previous
+FPS hiccup investigation and comparison sweeps. The 30 FPS goal remains unmet.
+
+Continuous DMA/music audio now primes once to half the configured buffer before
+consuming samples. At the default 80ms capacity this adds roughly 40ms of onset
+latency. Short auxiliary sounds do not wait. No clocks/pitch/input timing changed.
+The new offline test disables gap filling and verifies sample-identical output
+with and without a 20ms producer interruption for both 32kHz DMA and 48kHz music.
+Measured synthetic onset: 47.9062ms / 45.3229ms; these are not hardware latencies.
+
+Unmodified generated Xbox v1/v2 profiles now upgrade automatically to v3, keeping
+the selected devices and an exact .pre-v3-*.bak original. Customized profiles are
+preserved. Normal startup checks existing profiles even when config.ini has no
+controller selection. Tests cover old versions, devices and custom preservation;
+the actual runner also upgraded a private v2 copy and retained an exact backup.
+
+One 51.16-guest-second plaza route completed with muted Cubeb processing and
+57.202 seconds of private pre-volume PCM: peak 30846, zero clipped samples.
+However DMA/music still recorded 62/93 empty dequeues; maximum callback gap was
+11.7508ms. This does NOT establish clean sound. Crackling remains unresolved.
+All 15 guarded entity probes decoded; living heroes fell to three, opponents
+with positive health ranged 4-7. Start-to-resume expectations failed.
+
+A short targeted plaza menu check, with four heroes alive, established the
+numeric behavior: active positions/health changed; Start froze them; a second
+Start left them frozen; B restored position/health changes. Use Start to pause
+and B to resume. This is process-local functional evidence, not menu visual QA.
+No screenshots, host input, listening, physical controller or FPS measurement.
+Both native game processes exited 0; no game left running. Whole process on
+CPU2/mask4, Vulkan 3x/1080p preset, normal clocks; experimental formatter, JIT
+budget and backpatch reserve all OFF. Raw game data/probes/audio stay in .local.
+
+Windows Build.cmd --cpu jit --jobs 2 exited 0; 41/41 native tests passed (8.89s).
+Python: 157 passed, one skipped (158 run, 23.205s). Existing CMake deprecation,
+Wayland, object-path and CMP0069/lz4 warnings; no compiler/linker warnings/errors.
+Runner: 16111104 bytes, SHA256
+41944d85527927ffbedf466f755905506e2889b47c67ae2b75be34ff1c270523.
+Other binaries, scoped results and failed checks:
+evidence/windows-20260930/AUDIO-CONTROLS-CONTINUITY.json.
+
+Next work remains audible/device-path crackling diagnosis and remaining Xbox
+contextual-use, direct hero-selection and fusion/revive gaps. Do not resume FPS
+sweeps without new user direction. Preserve user StaticRecomp edits and launcher.
+
+
 ## Guest-clock plaza sequence and matched-state repeats - 2026-10-01
 
 Added a preloaded process-local xbox_sequence command and benchmark option

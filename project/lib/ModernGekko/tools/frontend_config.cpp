@@ -1,4 +1,8 @@
 #include "frontend_config.hpp"
+#include "legacy_xbox_profiles.hpp"
+
+#include <chrono>
+#include <sstream>
 
 #include <algorithm>
 #include <cctype>
@@ -456,6 +460,7 @@ bool GenerateControllerConfig(const fs::path &user_directory,
 #ifndef MODERNGEKKO_GAMECUBE_CONTROLLERS
   output << "[BalanceBoard]\n";
 #endif
+  output.close();
   if (!output) {
     if (message)
       *message = "can't write " + destination.string();
@@ -484,6 +489,57 @@ bool EnsureControllerConfig(const fs::path &user_directory,
                             std::span<const std::string> controllers,
                             std::string *message) {
   if (ControllerConfigExists(user_directory)) {
+#ifndef MODERNGEKKO_GAMECUBE_CONTROLLERS
+    const auto existing = ReadConfiguredControllers(user_directory);
+    const auto destination = ControllerConfigPath(user_directory);
+    std::ifstream input(destination);
+    const std::string original{std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    input.close();
+    const auto normalized = [](const std::string& text) {
+      std::istringstream lines(text);
+      std::string result, line;
+      while (std::getline(lines, line)) {
+        line = Trim(line);
+        if (!line.empty()) result += line + "\n";
+      }
+      return result;
+    };
+    const bool managed_legacy = !existing.empty() &&
+        (normalized(original) == normalized(legacy::Profile(existing, 1)) ||
+         normalized(original) == normalized(legacy::Profile(existing, 2)));
+    if (managed_legacy) {
+      const auto suffix = std::to_string(std::chrono::steady_clock::now().time_since_epoch().count());
+      const auto staging = user_directory / (".controller-upgrade-" + suffix);
+      const fs::path backup = destination.string() + ".pre-v3-" + suffix + ".bak";
+      const auto staged = ControllerConfigPath(staging);
+      const auto cleanup = [&] {
+        std::error_code ignored;
+        fs::remove(staged, ignored);
+        fs::remove(staged.parent_path(), ignored);
+        fs::remove(staging, ignored);
+      };
+      if (!GenerateControllerConfig(staging, existing, message)) { cleanup(); return false; }
+      std::error_code ec;
+      fs::rename(destination, backup, ec);
+      if (ec) {
+        cleanup();
+        if (message) *message = "could not back up old controller profile: " + ec.message();
+        return false;
+      }
+      fs::rename(staged, destination, ec);
+      if (ec) {
+        std::error_code restore_error;
+        fs::rename(backup, destination, restore_error);
+        cleanup();
+        if (message) *message = "could not install updated controller profile: " + ec.message() +
+            (restore_error ? "; original retained at " + backup.string() : "; original restored");
+        return false;
+      }
+      cleanup();
+      if (message) *message = "updated generated Xbox controls to v3; original: " + backup.string();
+      return true;
+    }
+#endif
     if (message)
       *message = "using existing controller profile";
     return true;

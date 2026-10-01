@@ -862,6 +862,27 @@ if(BUILD_TESTING)
             endif()
         endif()
 
+        add_executable(moderngekko_audio_continuity_test tests/audio_continuity_test.cpp)
+        target_include_directories(moderngekko_audio_continuity_test PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+        target_compile_features(moderngekko_audio_continuity_test PRIVATE cxx_std_23)
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            target_link_libraries(moderngekko_audio_continuity_test PRIVATE
+                "$<LINK_LIBRARY:WHOLE_ARCHIVE,moderngekko>" core uicommon)
+        else()
+            target_link_libraries(moderngekko_audio_continuity_test PRIVATE
+                ModernGekko::Runtime core uicommon)
+        endif()
+        if(WIN32)
+            target_compile_definitions(moderngekko_audio_continuity_test PRIVATE
+                WIN32_LEAN_AND_MEAN NOMINMAX)
+            if(MSVC)
+                target_compile_options(moderngekko_audio_continuity_test PRIVATE /Zc:preprocessor)
+            endif()
+        endif()
+
+        add_test(NAME moderngekko.audio_continuity COMMAND moderngekko_audio_continuity_test)
+
         add_executable(moderngekko_xbox_action_profile_test
             tests/xbox_action_profile_test.cpp tools/frontend_config.cpp)
         target_include_directories(moderngekko_xbox_action_profile_test PRIVATE

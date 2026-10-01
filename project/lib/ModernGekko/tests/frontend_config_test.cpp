@@ -1,4 +1,5 @@
 #include "frontend_config.hpp"
+#include "legacy_xbox_profiles.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -139,6 +140,37 @@ int main() {
                                  directory) != "SDL/9/Custom Controller")
     return 12;
 
+
+#ifndef MODERNGEKKO_GAMECUBE_CONTROLLERS
+  const auto config_path = directory / "Config" / CONTROLLER_CONFIG_NAME;
+  const auto read = [](const fs::path& path) {
+    std::ifstream input(path); return std::string(std::istreambuf_iterator<char>(input), {});
+  };
+  for (int version : {1, 2}) {
+    const auto original = moderngekko::frontend::legacy::Profile(netplay_config.controllers, version);
+    { std::ofstream output(config_path); output << original; }
+    // The devices in the old profile win over an unrelated current selection.
+    if (!moderngekko::frontend::EnsureControllerConfig(directory, "SDL/9/Other", &error) ||
+        !read(config_path).contains("# OpenMUA2 Xbox action layout v3") ||
+        moderngekko::frontend::ReadConfiguredControllers(directory) != netplay_config.controllers)
+      return 20;
+    bool backup_found = false;
+    for (const auto& entry : fs::directory_iterator(config_path.parent_path()))
+      if (entry.path().extension() == ".bak" && read(entry.path()) == original) backup_found = true;
+    if (!backup_found) return 21;
+    auto customized = original + "# My personal settings\n";
+    { std::ofstream output(config_path); output << customized; }
+    if (!moderngekko::frontend::EnsureControllerConfig(directory, controller, &error) ||
+        read(config_path) != customized) return 22;
+    customized = original;
+    const auto key = customized.find("Nunchuk/Stick/Dead Zone = 15.0");
+    if (key == std::string::npos) return 23;
+    customized.replace(key, std::string("Nunchuk/Stick/Dead Zone = 15.0").size(), "Nunchuk/Stick/Dead Zone = 22.0");
+    { std::ofstream output(config_path); output << customized; }
+    if (!moderngekko::frontend::EnsureControllerConfig(directory, controller, &error) ||
+        read(config_path) != customized) return 24;
+  }
+#endif
   fs::remove_all(directory);
   return 0;
 }

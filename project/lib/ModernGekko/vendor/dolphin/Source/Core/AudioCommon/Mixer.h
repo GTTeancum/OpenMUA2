@@ -103,8 +103,8 @@ private:
 
   public:
     MixerFifo(Mixer* mixer, u32 sample_rate_divisor,
-              u32 sample_rate_dividend = FIXED_SAMPLE_RATE_DIVIDEND)
-        : m_mixer(mixer), m_input_sample_rate_dividend(sample_rate_dividend),
+              u32 sample_rate_dividend = FIXED_SAMPLE_RATE_DIVIDEND, bool prefill = false)
+        : m_mixer(mixer), m_prefill_pending(prefill), m_input_sample_rate_dividend(sample_rate_dividend),
           m_input_sample_rate_divisor(sample_rate_divisor)
     {
     }
@@ -134,6 +134,8 @@ private:
 
   private:
     Mixer* m_mixer;
+    // Consumer-owned startup reserve for continuous DMA/music streams only.
+    bool m_prefill_pending = false;
 
     // All non-GBA MixerFifo instances use FIXED_SAMPLE_RATE_DIVIDEND.
     u32 m_input_sample_rate_dividend;
@@ -165,8 +167,8 @@ private:
 
   void RefreshConfig();
 
-  MixerFifo m_dma_mixer{this, FIXED_SAMPLE_RATE_DIVIDEND / 32000};
-  MixerFifo m_streaming_mixer{this, FIXED_SAMPLE_RATE_DIVIDEND / 48000};
+  MixerFifo m_dma_mixer{this, FIXED_SAMPLE_RATE_DIVIDEND / 32000, FIXED_SAMPLE_RATE_DIVIDEND, true};
+  MixerFifo m_streaming_mixer{this, FIXED_SAMPLE_RATE_DIVIDEND / 48000, FIXED_SAMPLE_RATE_DIVIDEND, true};
   std::array<MixerFifo, 4> m_wiimote_speaker_mixers{
       MixerFifo{this, FIXED_SAMPLE_RATE_DIVIDEND / 3000},
       MixerFifo{this, FIXED_SAMPLE_RATE_DIVIDEND / 3000},

@@ -566,6 +566,21 @@ bool Mixer::MixerFifo::Dequeue(Granule* granule)
   const std::size_t head = m_queue_head.load(std::memory_order_acquire);
   std::size_t tail = m_queue_tail.load(std::memory_order_acquire);
 
+  // The queue limit alone does not establish a reservoir: starting at the
+  // first granule leaves playback perpetually close to the producer. Reserve
+  // half the configured capacity once before consuming continuous streams.
+  // Short auxiliary sounds do not use this gate. No samples are discarded,
+  // replayed or stretched while priming; the output is silence.
+  if (m_prefill_pending)
+  {
+    if (((head - tail) & GRANULE_QUEUE_MASK) < (granule_queue_size >> 1) + 1)
+    {
+      std::fill(granule->begin(), granule->end(), StereoPair{0.0f, 0.0f});
+      return false;
+    }
+    m_prefill_pending = false;
+  }
+
   // Checks to see if the queue has gotten too long.
   if (granule_queue_size < ((head - tail) & GRANULE_QUEUE_MASK))
   {

@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "priority": "User ended FPS hiccup investigations and selected audio plus Xbox controls/menus. No further FPS sweep in this checkpoint.",
+  "changes": [
+    "Prime continuous DMA/music audio once to half configured queue capacity; auxiliary short sounds unchanged. Default 80ms capacity gives roughly 40ms added onset delay.",
+    "Upgrade only exact unmodified generated Xbox v1/v2 profiles to v3, keeping device selections and an exact original backup. Custom profiles unchanged. Startup checks existing profiles even without controller= in frontend config."
+  ],
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "configuration": "Windows x64 Release, MSVC 19.44, local LTO enabled",
+    "exit_code": 0,
+    "native_tests_passed": 41,
+    "native_tests_seconds": 8.89,
+    "python_tests_run": 158,
+    "python_tests_passed": 157,
+    "python_tests_skipped": 1,
+    "python_tests_seconds": 23.205,
+    "compiler_linker_errors": 0,
+    "compiler_linker_warnings": 0,
+    "cmake_warnings": [
+      "Existing policy/minimum-version deprecations",
+      "Wayland unavailable",
+      "Object path length warnings",
+      "CMP0069: lz4_static INTERPROCEDURAL_OPTIMIZATION ignored"
+    ]
+  },
+  "offline_continuity": {
+    "producer_gap_ms": 20,
+    "gap_filling_disabled": true,
+    "entire_pcm_matches_uninterrupted": true,
+    "dma_32000_onset_ms": 47.9062,
+    "music_48000_onset_ms": 45.3229,
+    "scope": "Synthetic mixer output; not hardware latency or an audible test."
+  },
+  "configuration": {
+    "logical_processor": 2,
+    "affinity_mask": 4,
+    "cpu": "full JIT",
+    "graphics": "Vulkan",
+    "resolution_preset": "1920x1080",
+    "efb_scale": 3,
+    "normal_clocks": true,
+    "formatter": "default/off",
+    "jit_budget_us": 0,
+    "backpatch_reserve": 0,
+    "screenshots": false,
+    "host_input": false,
+    "frame_trace": false
+  },
+  "plaza_audio_and_profile": {
+    "route_exit_code": 0,
+    "entity_probe_count": 15,
+    "heroes_alive_min": 3,
+    "opponents_positive_range": [
+      4,
+      7
+    ],
+    "paused_changes": {
+      "position": 0,
+      "health": 0
+    },
+    "resumed_changes": {
+      "position": 0,
+      "health": 0
+    },
+    "profile_backup_exact": true,
+    "audio": {
+      "0": {
+        "empty_dequeues": 62,
+        "max_callback_gap_ms": 0.0
+      },
+      "1": {
+        "empty_dequeues": 93,
+        "max_callback_gap_ms": 0.0
+      },
+      "11": {
+        "empty_dequeues": 0,
+        "max_callback_gap_ms": 11.7508
+      }
+    },
+    "pcm_duration_seconds": 57.202,
+    "pcm_peak": 30846,
+    "pcm_clipped_samples": 0,
+    "frames_csv_exists": false,
+    "resume_verified": false
+  },
+  "targeted_plaza_menu": {
+    "route_exit_code": 0,
+    "heroes_alive_min": 4,
+    "active_changes": {
+      "position": 10,
+      "health": 2
+    },
+    "paused_changes": {
+      "position": 0,
+      "health": 0
+    },
+    "start_resume_changes": {
+      "position": 0,
+      "health": 0
+    },
+    "b_changes": {
+      "position": 8,
+      "health": 1
+    }
+  },
+  "menu_conclusion": "Start pauses. A second Start does not resume. B resumes: observed entity positions and health change again. No menu visual validation.",
+  "audio_conclusion": "Startup reserve passes the synthetic 20ms continuity test. Plaza still has 62 DMA and 93 streaming empty dequeues. Crackling remains unresolved; no audible or device playback assessment. PCM has no clipped samples, which does not prove clean sound.",
+  "binaries": {
+    "moderngekko-run.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      "bytes": 16111104,
+      "sha256": "41944d85527927ffbedf466f755905506e2889b47c67ae2b75be34ff1c270523"
+    },
+    "moderngekko-port.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "3e37f85373038c399e2b9807743a8b63a7512eadbacc91495f5153b6aebb8d63"
+    },
+    "ModernGekko.exe": {
+      "private_path": ".local/build/windows-x64/runtime/ModernGekko.exe",
+      "bytes": 12204032,
+      "sha256": "9efe52930141493d6bd100a47e054a73a5ad8c7b2d672ad80b9f4478bb0cb111"
+    },
+    "moderngekko-module-info.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "0978f800ce509bf25a5ba91cf404ae85493b4208f14ff9064fbca0ad24064a21"
+    },
+    "dolrecomp.exe": {
+      "private_path": ".local/build/windows-x64/runtime/dolrecomp.exe",
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    },
+    "moderngekko_audio_continuity_test.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_audio_continuity_test.exe",
+      "bytes": 11694592,
+      "sha256": "00e4d48cfc0688098e4677f9c782e3a786831bdff96d72e4ba616b1f51852cc9"
+    },
+    "moderngekko_frontend_config_test.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_frontend_config_test.exe",
+      "bytes": 149504,
+      "sha256": "e7265529f995c8bedd5d3295d85b30643ab346e12946744dccddd3e457613198"
+    },
+    "moderngekko_frontend_config_gamecube_test.exe": {
+      "private_path": ".local/build/windows-x64/runtime/moderngekko_frontend_config_gamecube_test.exe",
+      "bytes": 117760,
+      "sha256": "5f8270e3c0fb4f316f29b982debd5c55085c22f4aef775403c1aae3d21080bfa"
+    }
+  },
+  "limitations": [
+    "No screenshots, visual content/menus/effects validation, or audible listening.",
+    "Only tutorial plaza process-local input tests. Physical controller not operated.",
+    "Long route reached three living heroes at some probes, so it does not satisfy combat acceptance.",
+    "Contextual X use, direct D-pad hero selection and full fusion/revive remain open.",
+    "No FPS measurement or 30 FPS acceptance claim.",
+    "Proprietary states, probes, PCM and game data remain private under .local."
+  ],
+  "validation_notes": [
+    "Initial long-route postconditions expecting four living heroes and Start-to-resume failed; actual failures retained.",
+    "Targeted menu launcher initially rejected Cubeb without windowed/audio profiling before launching; corrected to silent Null backend, then completed."
+  ]
+}
