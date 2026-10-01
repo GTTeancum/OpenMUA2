@@ -860,6 +860,26 @@ if(BUILD_TESTING)
         add_test(NAME moderngekko.nunchuk_input COMMAND moderngekko_nunchuk_input_test)
 
         # Offline diagnostic, deliberately not a timing-based CTest gate.
+        add_executable(moderngekko_controller_binding_probe tools/controller_binding_probe.cpp)
+        target_include_directories(moderngekko_controller_binding_probe PRIVATE
+            "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+        target_compile_features(moderngekko_controller_binding_probe PRIVATE cxx_std_23)
+        if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+            target_link_libraries(moderngekko_controller_binding_probe PRIVATE
+                "$<LINK_LIBRARY:WHOLE_ARCHIVE,moderngekko>" core uicommon)
+        else()
+            target_link_libraries(moderngekko_controller_binding_probe PRIVATE
+                ModernGekko::Runtime core uicommon)
+        endif()
+        if(WIN32)
+            target_compile_definitions(moderngekko_controller_binding_probe PRIVATE
+                WIN32_LEAN_AND_MEAN NOMINMAX)
+            if(MSVC)
+                target_compile_options(moderngekko_controller_binding_probe PRIVATE /Zc:preprocessor)
+            endif()
+        endif()
+
+        # Offline diagnostic, deliberately not a timing-based CTest gate.
         add_executable(moderngekko_audio_mixer_benchmark tools/audio_mixer_benchmark.cpp)
         target_include_directories(moderngekko_audio_mixer_benchmark PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")

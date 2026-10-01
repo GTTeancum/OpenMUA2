@@ -74,6 +74,32 @@ bool s_fusion_buttons_enabled = false;
 bool s_hero_buttons_enabled = false;
 std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 
+// Opt-in, read-only tracing at the menu action consumer (not merely the input
+// producer). Captures the caller and its action set without modifying input.
+void ObserveMenuActionQuery(const Core::CPUThreadGuard& guard)
+{
+  auto& system = guard.GetSystem();
+  const auto& state = system.GetPPCState();
+  const u32 action = state.gpr[4];
+  if (action < 89 || action > 105) return;
+  auto& memory = system.GetMemory();
+  const auto* code = memory.GetPointerForRange(0x801d566c, 64);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 64)) !=
+                   "3869ED9F484640D8E31FD8DAFB1AA0A7AEA7E863") return;
+  const auto* bits = memory.GetPointerForRange(state.gpr[3], 20);
+  if (!bits) return;
+  static std::ofstream trace([] {
+    const char* path = std::getenv("OPENMUA2_MENU_TRACE");
+    return path ? path : "";
+  }());
+  if (!trace) return;
+  const auto data = std::span<const u8>(bits, 20);
+  trace << system.GetCoreTiming().GetTicks() << ',' << state.spr[8] << ','
+        << state.gpr[3] << ',' << action << ','
+        << ((moderngekko::controls::ReadBE(data, 4 * (action / 32)) >> (action % 32)) & 1)
+        << ',' << state.gpr[29] << ',' << state.gpr[30] << ',' << state.gpr[31] << '\n';
+}
+
 void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
 {
   if (!s_hero_buttons_enabled) return;
@@ -214,8 +240,9 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     moderngekko::controls::ConsumeCameraMenuAliases(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
   if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
-    moderngekko::controls::MapPauseBack(
-        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+    moderngekko::controls::MapStartButton(
+        std::span<u8>(active, 20), std::span<u8>(values, value_bytes),
+        moderngekko::controls::IsTitleStartScreen(read));
   if (moderngekko::controls::XboxPortEnabled(s_fusion_ports,object) &&
       moderngekko::controls::ReadBE(std::span<const u8>(values, value_bytes), 14 * 4) == 0x3f800000)
   {
@@ -1474,6 +1501,8 @@ RuntimeRunResult Runtime::Run() {
     if (!input.bad() && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes)) ==
                             "21822B3930C04E47176A977404A719485CD7C492") {
       const Core::CPUThreadGuard guard(Core::System::GetInstance());
+      if (const char* path = std::getenv("OPENMUA2_MENU_TRACE"); path && *path)
+        HLE::SetExternalStartObserver(guard, 0x801d566c, ObserveMenuActionQuery);
       const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
       if (installed) s_control_ports=want_control_ports;

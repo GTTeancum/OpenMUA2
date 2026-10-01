@@ -59,20 +59,20 @@ int main() {
       NormalizeChordUse(active,std::span(values).first(values.size()-1))) return 11;
   active.fill(0); values.fill(0);
   auto idle_active=active; auto idle_values=values;
-  if (MapPauseBack(active,values) || active!=idle_active || values!=idle_values) return 12;
+  if (MapStartButton(active,values,true) || active!=idle_active || values!=idle_values) return 12;
   put(active,4,1u<<7); put(values,39*4,0x3f800000);
   for (unsigned id : {9u,10u,11u,21u,56u,58u,103u,123u}) {
     put(active,id/32*4,ReadBE(active,id/32*4)|(1u<<(id%32)));
     put(values,id*4,0x3f800000);
   }
-  if (!MapPauseBack(active,values) || ReadBE(values,90*4)!=0x3f800000 ||
-      !(ReadBE(active,8)&(1u<<26)) || ReadBE(values,39*4)!=0x3f800000) return 13;
+  if (!MapStartButton(active,values,true) || ReadBE(values,105*4)!=0x3f800000 ||
+      !(ReadBE(active,12)&(1u<<9)) || ReadBE(values,39*4)!=0x3f800000) return 13;
   for (unsigned id : {9u,10u,11u,21u,56u,58u,103u,123u})
     if ((ReadBE(active,id/32*4)&(1u<<(id%32))) || ReadBE(values,id*4)) return 14;
   auto mapped_active=active; auto mapped_values=values;
-  if (!MapPauseBack(active,values) || active!=mapped_active || values!=mapped_values) return 15;
-  if (MapPauseBack(std::span(active).first(19),values) ||
-      MapPauseBack(active,std::span(values).first(495))) return 16;
+  if (!MapStartButton(active,values,true) || active!=mapped_active || values!=mapped_values) return 15;
+  if (MapStartButton(std::span(active).first(19),values,true) ||
+      MapStartButton(active,std::span(values).first(495),true)) return 16;
   for (auto camera_x : {0xbf800000u,0u,0x3f800000u}) {
     active.fill(0xff); values.fill(0xa5);
     put(values,7*4,0x3f800000); put(values,2*4,camera_x);
@@ -110,7 +110,7 @@ int main() {
       ReadBE(values,40*4)!=0x3f800000) return 23;
   for(unsigned id:{7u,39u,99u,103u,104u,122u,123u})
     if(ReadBE(values,id*4)) return 24;
-  if(MapPauseBack(active,values) || ConsumeCameraMenuAliases(active,values)) return 25;
+  if(MapStartButton(active,values,true) || ConsumeCameraMenuAliases(active,values)) return 25;
   if(MapHeroManagement(std::span(active).first(19),values) ||
      MapHeroManagement(active,std::span(values).first(495))) return 26;
   const std::string managed="[Wiimote1]\nDevice = SDL/0/Test\n"+std::string(XboxBodyV5);
@@ -122,5 +122,39 @@ int main() {
   if(ManagedXboxPorts(changed+second)!=2 || ManagedXboxPorts(managed+second)!=3) return 29;
   if(!XboxPortEnabled(2,0x81313274+0xbe00) || XboxPortEnabled(2,0x81313274) ||
      XboxPortEnabled(15,0x81313275) || XboxPortEnabled(15,0x81313274+4*0xbe00)) return 30;
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!MapStartButton(active,values,true) || ReadBE(values,90*4)!=0 ||
+     (ReadBE(active,8)&(1u<<26))) return 31;
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!MapStartButton(active,values,false) || ReadBE(values,90*4)!=0x3f800000 ||
+     ReadBE(values,105*4)!=0 || !(ReadBE(active,8)&(1u<<26))) return 32;
+  // A retained title-screen object must not affect pause/resume. Only the
+  // current, correctly typed menu reached through the verified manager counts.
+  std::array<std::uint8_t,4> global{};
+  std::array<std::uint8_t,25864> manager{};
+  std::array<std::uint8_t,10408> menu{};
+  put(global,0,0x90010000);put(manager,0,0x81198830);
+  put(manager,25860,0x90020000);put(menu,10404,0x8118bae8);
+  bool truncated=false;
+  const auto read=[&](std::uint32_t address,std::size_t size)->std::span<const std::uint8_t> {
+    if(address==0x8081736c && size==global.size()) return global;
+    if(address==0x90010000 && size==manager.size()) return manager;
+    if(address==0x90020000 && size==menu.size())
+      return truncated ? std::span<const std::uint8_t>(menu).first(menu.size()-1) : menu;
+    return {};
+  };
+  if(!IsTitleStartScreen(read)) return 33;
+  truncated=true;if(IsTitleStartScreen(read)) return 34;truncated=false;
+  put(menu,10404,0x81190d98);if(IsTitleStartScreen(read)) return 35;
+  put(menu,10404,0x8118bae8);
+  for(auto pointer:{0u,0x90020001u,0x93fffffcu,0xffffffffu}) {
+    put(manager,25860,pointer);if(IsTitleStartScreen(read)) return 36;
+  }
+  put(manager,25860,0x90020000);put(manager,0,0x81198834);
+  if(IsTitleStartScreen(read)) return 37;
+  put(manager,0,0x81198830);put(global,0,0);
+  if(IsTitleStartScreen(read)) return 38;
   std::cout << "Transactional action binding checks passed\n";
 }

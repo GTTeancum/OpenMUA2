@@ -1,5 +1,48 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Title-screen Start and game-window icon repair - 2026-10-01
+
+Reproduced the title-screen blocker with the previous runner: after leaving the
+attract movie, repeated A/Start presses left the active CMenuStart unchanged.
+Xbox Start emitted Pause39/MenuBack90, but this screen requires MenuExit105.
+The guarded managed-profile adapter now emits that continue action only when
+the verified manager points to the active title-screen object. Other menus retain
+pause/back semantics. Invalid, misaligned, truncated and differently typed menu
+pointers fail closed. Existing executable and profile guards remain intact.
+
+Final normal-boot Vulkan3x/1080p-preset probe exited 0 on one logical CPU2/mask4.
+Start entered the main menu; D-pad and left-stick right/left changed selection
+and returned; A/B traversed Main/Play/Difficulty to profile selection. The native
+continue consumer observed 105, and all 11 release snapshots cleared tested menu
+inputs. Separate private plaza-state tests confirmed Start opens/closes pause,
+then Start opens it again and B closes it. Original horizontal navigation already
+worked; a proposed direction remap was rejected and removed. Unconditional 105
+also failed pause/resume and was rejected. No direction profile change shipped.
+
+Correction to the preceding delay checkpoint: its 48/48 pulses measured native
+input production during startup, not successful main-menu navigation. Unchanged
+resource strings were also insufficient to infer a stuck screen. This checkpoint
+checks the active menu pointer, runtime type, page, selection and action consumer.
+Physical controller bindings resolve and the device is connected, but no physical
+button test was completed. No screenshots, host input, visual-content validation,
+audio-quality validation or combat-FPS acceptance is claimed.
+
+The Windows window class previously requested resource 101 from the Windows system
+module rather than the application. It now loads the packaged OpenMUA2.ico beside
+the extracted runner, with module/application fallbacks. Native 16/32px loads passed;
+taskbar appearance is unverified. The wrapper embeds the icon and verifies it in
+its payload manifest, keeping only OpenMUA2.exe, GameData and saves at the game root.
+The installed EXE is 10,593,792 bytes; 54 save/profile/cache files remained byte-identical.
+
+Supported Windows build: Build.cmd --cpu jit --jobs 2, exit 0; 45/45 tests in 9.49s.
+No compiler/linker warnings/errors in the final build; existing CMake deprecation,
+object-path, policy and unavailable-Wayland warnings remain. Native cold-run logs
+retain 51 WPAD_ERR_INVALID lines and 7 missing-file messages (drivers.ini, x_voice.zsm,
+i109.bik paths). These did not block the tested transitions; they are not dismissed
+as full-game/audio validation. Failed preparations and rejected prototypes remain
+in the local diagnostics; complete scoped evidence and binary hashes:
+evidence/windows-20261001/MENU-START-AND-WINDOW-ICON.json.
+
 ## Menu input delay repair - 2026-10-01
 
 Found two defects in the staged user launch. A zero-byte controller profile was

@@ -61,10 +61,30 @@ inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
   return true;
 }
 
-// Experimental Xbox Start carries native pause and menu-back together. Do not
-// emulate the Wiimote B source: it also means smash/grab/context lift.
-inline bool MapPauseBack(std::span<std::uint8_t> active,
-                         std::span<std::uint8_t> values) {
+// Identify the active title screen, not a retained/closed menu allocation.
+// Caller already guards the exact game executable and evaluator instructions.
+template<typename Reader>
+inline bool IsTitleStartScreen(Reader read) {
+  const auto ram=[&](std::uint32_t address,std::size_t size) {
+    const auto end=std::uint64_t(address)+size;
+    if (!(address&3) && ((address>=0x80000000 && end<=0x81800000) ||
+                        (address>=0x90000000 && end<=0x94000000)))
+      return read(address,size);
+    return std::span<const std::uint8_t>{};
+  };
+  const auto global=ram(0x8081736c,4);
+  if(global.size()!=4) return false;
+  const auto manager=ram(ReadBE(global,0),25864);
+  if(manager.size()!=25864 || ReadBE(manager,0)!=0x81198830) return false;
+  const auto menu=ram(ReadBE(manager,25860),10408);
+  return menu.size()==10408 && ReadBE(menu,10404)==0x8118bae8;
+}
+
+// Start must emit the native continue action on the title screen. Elsewhere
+// retain pause/back so it can close the PDA again. Neither raw Wii source is
+// synthesized: + also switches heroes and B also triggers smash/grab/use.
+inline bool MapStartButton(std::span<std::uint8_t> active,
+                           std::span<std::uint8_t> values, bool title_screen) {
   if (active.size()!=20 || values.size()!=124*4 ||
       !(ReadBE(active,4)&(1u<<7)) || ReadBE(values,39*4)!=0x3f800000)
     return false;
@@ -75,8 +95,9 @@ inline bool MapPauseBack(std::span<std::uint8_t> active,
     put(active,(id/32)*4,ReadBE(active,(id/32)*4)&~(1u<<(id%32)));
     put(values,id*4,0);
   }
-  put(active,8,ReadBE(active,8)|(1u<<26));
-  put(values,90*4,0x3f800000);
+  const unsigned target=title_screen ? 105 : 90;
+  put(active,target/32*4,ReadBE(active,target/32*4)|(1u<<(target%32)));
+  put(values,target*4,0x3f800000);
   return true;
 }
 

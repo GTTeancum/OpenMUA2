@@ -95,6 +95,19 @@ PlatformWin32::~PlatformWin32()
 
 bool PlatformWin32::RegisterRenderWindowClass()
 {
+  // The packaged frontend extracts its artwork beside the runtime, independently
+  // of the working directory. Keep these class icons alive for the process lifetime.
+  const std::wstring icon_path = UTF8ToWString(File::GetExeDirectory() + "/OpenMUA2.ico");
+  const auto load_icon = [&](const int width, const int height) {
+    auto icon = static_cast<HICON>(LoadImageW(nullptr, icon_path.c_str(), IMAGE_ICON, width,
+                                             height, LR_LOADFROMFILE));
+    if (!icon)
+      icon = static_cast<HICON>(LoadImage(GetModuleHandle(nullptr), IDI_ICON1, IMAGE_ICON,
+                                         width, height, LR_SHARED));
+    // A null module means system resources, not our executable's icon IDs.
+    return icon ? icon : LoadIcon(nullptr, IDI_APPLICATION);
+  };
+
   WNDCLASSEX wc = {};
   wc.cbSize = sizeof(WNDCLASSEX);
   wc.style = 0;
@@ -102,12 +115,12 @@ bool PlatformWin32::RegisterRenderWindowClass()
   wc.cbClsExtra = 0;
   wc.cbWndExtra = 0;
   wc.hInstance = GetModuleHandle(nullptr);
-  wc.hIcon = LoadIcon(nullptr, IDI_ICON1);
+  wc.hIcon = load_icon(GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
   wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
   wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
   wc.lpszMenuName = nullptr;
   wc.lpszClassName = WINDOW_CLASS_NAME;
-  wc.hIconSm = LoadIcon(nullptr, IDI_ICON1);
+  wc.hIconSm = load_icon(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
 
   if (!RegisterClassEx(&wc))
   {

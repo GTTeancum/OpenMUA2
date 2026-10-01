@@ -1,0 +1,772 @@
+{
+  "date": "2026-10-01",
+  "base_commit": "d46bdf8be38bc645bc79649c631b68451e8b9644",
+  "problem": "Managed Xbox Start produced Pause39 and MenuBack90; the native title screen requires MenuExit105 to continue. Every mapped face button/Start could leave the title screen active.",
+  "fix": "Select MenuExit105 only when the verified menu manager points to the active CMenuStart object. Preserve Pause39/MenuBack90 elsewhere. Preserve original directional mapping and exact-profile/executable guards.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "configuration": "Windows AMD64 Release, MSVC 19.44.35225.0, full JIT",
+    "tests_passed": 45,
+    "tests_failed": 0,
+    "test_seconds": 9.49,
+    "compiler_linker_warnings": 0,
+    "compiler_linker_errors": 0,
+    "log_sha256": "6807af75554b63657c276e6536b92a0724390fda5e5fe9de0fee25e2757f1f63",
+    "cmake_warnings": [
+      "CMake Deprecation Warning at vendor/dolphin/CMakeLists.txt:6 (cmake_policy):",
+      "CMake Warning at vendor/dolphin/CMakeLists.txt:508 (message):",
+      "CMake Deprecation Warning at vendor/dolphin/Externals/zlib-ng/zlib-ng/CMakeLists.txt:1 (cmake_minimum_required):",
+      "CMake Deprecation Warning at vendor/dolphin/Externals/lz4/lz4/build/cmake/CMakeLists.txt:13 (cmake_minimum_required):",
+      "CMake Warning in vendor/dolphin/Externals/glslang/glslang/glslang/CMakeLists.txt:",
+      "CMake Warning in vendor/dolphin/Externals/glslang/glslang/glslang/CMakeLists.txt:",
+      "CMake Warning in vendor/dolphin/Externals/zstd/zstd/build/cmake/lib/CMakeLists.txt:",
+      "CMake Warning in vendor/dolphin/Externals/zstd/zstd/build/cmake/tests/CMakeLists.txt:",
+      "CMake Warning (dev) at vendor/dolphin/Externals/lz4/lz4/build/cmake/CMakeLists.txt:118 (add_library):",
+      "CMake Warning in vendor/dolphin/Source/Core/Core/CMakeLists.txt:",
+      "CMake Warning in vendor/dolphin/Source/Core/InputCommon/CMakeLists.txt:",
+      "CMake Warning in vendor/dolphin/Source/Core/VideoCommon/CMakeLists.txt:"
+    ]
+  },
+  "binaries": [
+    {
+      "name": "dolrecomp.exe",
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    },
+    {
+      "name": "fixture.mgm.dll",
+      "bytes": 10240,
+      "sha256": "c26ad11bbcd764b04f8ca1152e333a72b515f318adeb5bb26f5f2ea71dc24c97"
+    },
+    {
+      "name": "moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "0d0fb888c38b9d28c4878059b826181319a3d577302cd04940cbe9531ac5acdd"
+    },
+    {
+      "name": "moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "e58ca1eb3e6aebb0f445cc36c9aaa866a6f1ec179ae7c3aec42e96d74d67d2bd"
+    },
+    {
+      "name": "moderngekko-run-lto.exe",
+      "bytes": 16056320,
+      "sha256": "f721e768b2a8541605ab0fb3dd42bca93c220ff2c02e27997f9bd5dc7b1de2dc"
+    },
+    {
+      "name": "moderngekko-run-metadata-pool-rejected.exe",
+      "bytes": 16072704,
+      "sha256": "d1d1689776db7beb64ae20111bcf1014c3640ad38f3c6ae9772f40357b9f9c4e"
+    },
+    {
+      "name": "moderngekko-run-pgo-fast-training.exe",
+      "bytes": 24985600,
+      "sha256": "fd50aa8aa5c307b386ac056f49a6c47a77554f9b8f1d541683f753544abd9671"
+    },
+    {
+      "name": "moderngekko-run-pgo-training.exe",
+      "bytes": 30246912,
+      "sha256": "df30b29b773472dfaf6710c9ed9ef0262790048967cd2c2ca4f815d2552d6ace"
+    },
+    {
+      "name": "moderngekko-run-pre-budget.exe",
+      "bytes": 16070656,
+      "sha256": "77ab0b04c79d5bcc75f11968864b60c15f781ceb4f7a76b89bb3f5dd3ac0b0bb"
+    },
+    {
+      "name": "moderngekko-run-pre-lto.exe",
+      "bytes": 15753216,
+      "sha256": "00a858e5e10167c07682229e7a5de396792faa63b18fd734f47a847dd6d54b82"
+    },
+    {
+      "name": "moderngekko-run-pre-metadata-pool.exe",
+      "bytes": 16062464,
+      "sha256": "afe6a9f41158918b9f2a311342c5651b0264c2b3a51b6e3f7b4093d7741cd9f7"
+    },
+    {
+      "name": "moderngekko-run-pre-pgo.exe",
+      "bytes": 16070656,
+      "sha256": "2f5cdc56e309d8e3514d5697a338654affa2151ed24695b318e9a271fd5bedd0"
+    },
+    {
+      "name": "moderngekko-run-pre-reg-lookahead.exe",
+      "bytes": 16070656,
+      "sha256": "80cde740c3e08f72c36a1f4b46df1e672f0e5102e6388b8d76e8cab253129cb5"
+    },
+    {
+      "name": "moderngekko-run-pre-spill.exe",
+      "bytes": 16064000,
+      "sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d"
+    },
+    {
+      "name": "moderngekko-run-reg-lookahead-rejected.exe",
+      "bytes": 16072192,
+      "sha256": "f8a79fe5979363724fa14b3427cb3b99f9a102f4c934e5088265279781a5860c"
+    },
+    {
+      "name": "moderngekko-run.exe",
+      "bytes": 16151552,
+      "sha256": "0f81535f93ecb681611ec5e1fe99b5a612ee1d4362062b0616d58725fa6d07a9"
+    },
+    {
+      "name": "ModernGekko.exe",
+      "bytes": 12206592,
+      "sha256": "5dbfce946fb2033940c9a3844c7ee95e5831d33bbad7684798c6e37983ed7a14"
+    },
+    {
+      "name": "moderngekko_address_space_test.exe",
+      "bytes": 14848,
+      "sha256": "f3a8988d3b7f49d41b235318b893e915a4729b6d4acf60280ea61550542cd36d"
+    },
+    {
+      "name": "moderngekko_audio_capture_test.exe",
+      "bytes": 26112,
+      "sha256": "899ab1d985d7c9e555517127288b57cfb592785eb61feb2614b00efde7c47cd2"
+    },
+    {
+      "name": "moderngekko_audio_continuity_test.exe",
+      "bytes": 11695104,
+      "sha256": "ba374f07fdfc6d558fd75591f094fae643528502b4d2df52598473acf3f49c14"
+    },
+    {
+      "name": "moderngekko_audio_mixer_benchmark.exe",
+      "bytes": 11697152,
+      "sha256": "77f8ee3606a28cc71f3bfd2917896d510ef32d055e4be56687e8c34226ce1557"
+    },
+    {
+      "name": "moderngekko_audio_system_test.exe",
+      "bytes": 32256,
+      "sha256": "ac132dd12e76895a2f66283c91bb259b1e0be342c5b73a160dcced4edf274ad5"
+    },
+    {
+      "name": "moderngekko_automation_protocol_test.exe",
+      "bytes": 164352,
+      "sha256": "106e9afc49938dfb064fa472f2b41b8b5c4fbed4228ff7c80bb855e9f6ca0cb5"
+    },
+    {
+      "name": "moderngekko_boot_environment_test.exe",
+      "bytes": 52736,
+      "sha256": "00d5381b07f3b7b14d240eb5d820512af8d1be8307b888002166f2d6a3b00a36"
+    },
+    {
+      "name": "moderngekko_cache_affinity_test.exe",
+      "bytes": 22016,
+      "sha256": "966502d75d78ef10d502d80b4e5413ccac0fedcb04d67a768c7d06f958d693cc"
+    },
+    {
+      "name": "moderngekko_controller_binding_probe.exe",
+      "bytes": 12454912,
+      "sha256": "91b591dcf2cd14090d326537e71f820c66a12e88a46542fc7d3e06d74b8d6e39"
+    },
+    {
+      "name": "moderngekko_cpu_abi_conformance_test.exe",
+      "bytes": 10240,
+      "sha256": "e9d786fb01552df110f16c0500aa551bf19e66862e349a3ce72e4a1c51197e5a"
+    },
+    {
+      "name": "moderngekko_cpu_primitives_test.exe",
+      "bytes": 11776,
+      "sha256": "ea9ab68497af9d2cefd449f8cc3e70d669554be9ca6a345de8d187c410506f68"
+    },
+    {
+      "name": "moderngekko_dol_loader_test.exe",
+      "bytes": 58368,
+      "sha256": "9b82c84f7734236959f2342d4a3874f47fd8c768bdfd2433dde1ba3e955bc59e"
+    },
+    {
+      "name": "moderngekko_dol_patch_test.exe",
+      "bytes": 88576,
+      "sha256": "232b8f2134655e3482239ee6e3a70bb443c6b7abce83e5c82607573ed7b0864f"
+    },
+    {
+      "name": "moderngekko_dolphin_shader_test.exe",
+      "bytes": 361472,
+      "sha256": "b3108d931341ebb4b21c22077a4d4c87498379b042f5ce687e3d577cfc690539"
+    },
+    {
+      "name": "moderngekko_frame_timing_test.exe",
+      "bytes": 49152,
+      "sha256": "9030c19486a9209892844a49797a6aab0bbd8e5d62450e2bf437c1179aef9cb2"
+    },
+    {
+      "name": "moderngekko_frontend_config_gamecube_test.exe",
+      "bytes": 124928,
+      "sha256": "96e1e6ee7d69e93eedeff8535d88b188b408c7627ca9d121e1deb0f18e8ba784"
+    },
+    {
+      "name": "moderngekko_frontend_config_test.exe",
+      "bytes": 155648,
+      "sha256": "40e065763cfa9d502d8cc5757e6b689e5071c3f8f177f2ae314ef1f3dc05a783"
+    },
+    {
+      "name": "moderngekko_game_inspect_test.exe",
+      "bytes": 113152,
+      "sha256": "71d0886e73e13690c19332d40d2fb43bc55e178d585677f0a67629e306c5d3e1"
+    },
+    {
+      "name": "moderngekko_gekko_definitions_test.exe",
+      "bytes": 10752,
+      "sha256": "91cc0cb07ba9f12ce1f632f32e26fef262adcb8db871be0cb17426380bd30156"
+    },
+    {
+      "name": "moderngekko_gx_commands_test.exe",
+      "bytes": 55296,
+      "sha256": "c1a447d37655c16107a47771d017b4b91a1a3387d55ddf1f35db1c36e386899d"
+    },
+    {
+      "name": "moderngekko_gx_conformance_test.exe",
+      "bytes": 21504,
+      "sha256": "3572dc5fbc7138fe8ecd563d5692a4ad39cd0d044f48ab348b40811f558a7ba3"
+    },
+    {
+      "name": "moderngekko_gx_pipeline_test.exe",
+      "bytes": 13312,
+      "sha256": "1efda7c0b319724786053928b72fa20e5427de628c67a36d00b815b89962217a"
+    },
+    {
+      "name": "moderngekko_gx_state_test.exe",
+      "bytes": 26624,
+      "sha256": "83388b84bcbc0664533f13f187ff4c5f73ae079670afe90de6cc4b97ed587ad3"
+    },
+    {
+      "name": "moderngekko_gx_texture_test.exe",
+      "bytes": 19968,
+      "sha256": "344f3158f2e739bdd7a19f542fad58a9d625d23b832d1ac6a85213d83d29fedf"
+    },
+    {
+      "name": "moderngekko_gx_vertex_test.exe",
+      "bytes": 26624,
+      "sha256": "f6d04534a7d679c74451f38ada08c69a8e83a69f673eea1f2d1b5376437b46cc"
+    },
+    {
+      "name": "moderngekko_hardware_core_test.exe",
+      "bytes": 27136,
+      "sha256": "50cd1547c147d25994ac5685d76ff778dbaa83138f32e446cde00d2b22d1c158"
+    },
+    {
+      "name": "moderngekko_interpreter_test.exe",
+      "bytes": 18944,
+      "sha256": "874f40b67e3ef79e08dd9e17daa1bbcb3628e9a6532f348509d6f706cc859f6b"
+    },
+    {
+      "name": "moderngekko_io_services_test.exe",
+      "bytes": 29184,
+      "sha256": "bc894cba36e135289d79c4e57d547e4ab69d6279dddeb454d3be7aca1d86dbaf"
+    },
+    {
+      "name": "moderngekko_jit_caller_profile_test.exe",
+      "bytes": 29696,
+      "sha256": "d54fa93e02f8910ffbb0c5c9285624da4cd76b4e1cc07cd8556100be165d9822"
+    },
+    {
+      "name": "moderngekko_jit_compile_budget_test.exe",
+      "bytes": 16384,
+      "sha256": "169cdb3c1ef4b4eb11e2a231d62263240050049b9000275a905662b96df0b4a7"
+    },
+    {
+      "name": "moderngekko_launcher_savestates_test.exe",
+      "bytes": 90112,
+      "sha256": "c6a2c6d0af3712c989856a2f879a2adf44f4fb09963caed3afcefb57048cbf0b"
+    },
+    {
+      "name": "moderngekko_literal_format_test.exe",
+      "bytes": 22528,
+      "sha256": "6976240c84fac106b68b1ec6a2ba016eab2930b6445601733f8a425a5cd3ceff"
+    },
+    {
+      "name": "moderngekko_missing_export_module.dll",
+      "bytes": 9728,
+      "sha256": "93651c10c2ee74bd6ce0509fed21f927e38cd10ff73bf7be12fd8c33ca8e66db"
+    },
+    {
+      "name": "moderngekko_mod_loader_test.exe",
+      "bytes": 116736,
+      "sha256": "73afdd61827974a83b99d2c3e5efd81718c278329af88acd9c20322d80c9908e"
+    },
+    {
+      "name": "moderngekko_module_abi_test.exe",
+      "bytes": 13312,
+      "sha256": "2764c046ba1ebdb761b2c5c5c4a34361361232c682d55f512eac88ac75906172"
+    },
+    {
+      "name": "moderngekko_module_loader_test.exe",
+      "bytes": 17920,
+      "sha256": "02dfd3d29ef163bc4e516eeca60d63ed17756ddcc5e4dc57e661a61b2b24108e"
+    },
+    {
+      "name": "moderngekko_mua2_action_bindings_test.exe",
+      "bytes": 69632,
+      "sha256": "432ee216f35f98b83549a94825e98f98e0ab46f5b91900c60acfde2a599e09e4"
+    },
+    {
+      "name": "moderngekko_mua2_fusion_buttons_test.exe",
+      "bytes": 29184,
+      "sha256": "6ecaad691df7e595fed6c19428cc4e2fbf069a79cf1c4fa40536d32a1445c623"
+    },
+    {
+      "name": "moderngekko_mua2_hero_buttons_test.exe",
+      "bytes": 31232,
+      "sha256": "7b9a8c7593c47096f825555fde6b08131540463d71cacbdc5438786172449dc6"
+    },
+    {
+      "name": "moderngekko_mua2_interaction_context_test.exe",
+      "bytes": 30720,
+      "sha256": "486276ccf13347e1da2fc58f24fa0f9a4c9686bcf577d06c0503da9072e91d8e"
+    },
+    {
+      "name": "moderngekko_netplay_protocol_test.exe",
+      "bytes": 12484096,
+      "sha256": "df82dd99b223a8b5da82dbba76fb84b2218b40a86c599667a368fa6607ff9897"
+    },
+    {
+      "name": "moderngekko_nunchuk_input_test.exe",
+      "bytes": 12147200,
+      "sha256": "8f79927a46bd1f5b50868c9bfb3495c6c04fc442952931a5903d4ae6f7713077"
+    },
+    {
+      "name": "moderngekko_pgo_support_test.exe",
+      "bytes": 143360,
+      "sha256": "10bd0f1bcbbf72e657a71ac4b3c6fe1033c00aabf34aeedd5f1e28157a50d9a6"
+    },
+    {
+      "name": "moderngekko_port_command_line_test.exe",
+      "bytes": 63488,
+      "sha256": "1a8122d524e1e1f4edbb89957ae05dc855c42cda4ba175c34524f70aad74a0cf"
+    },
+    {
+      "name": "moderngekko_presentation_queue_test.exe",
+      "bytes": 16896,
+      "sha256": "f26b47f50d986d2668f984dca95060e090acf41f61e6255eb614d2d9708f8de1"
+    },
+    {
+      "name": "moderngekko_runtime_test.exe",
+      "bytes": 59904,
+      "sha256": "ec1a709149c3530566fb36d722791bdcfd41062a926882ea751dac6b06c0e724"
+    },
+    {
+      "name": "moderngekko_runtime_test_module.dll",
+      "bytes": 10240,
+      "sha256": "8fa90cd4a3746e459ac82b0e779c3e2b7218247fb503677092d287222bf67ed1"
+    },
+    {
+      "name": "moderngekko_sharded_pointer_map_test.exe",
+      "bytes": 33792,
+      "sha256": "be00905430c6a2444f13f3fd081dd9d2e74b48ddf3649bc1cc592e8e57acb90f"
+    },
+    {
+      "name": "moderngekko_simple_format_test.exe",
+      "bytes": 152064,
+      "sha256": "e3937302cb863508bf13b59b418e51c9e9ea69c92d927dd8e3306250d6395340"
+    },
+    {
+      "name": "moderngekko_test_module.dll",
+      "bytes": 9728,
+      "sha256": "c0ffbc49afa2cbb55a1ddabbbe80bece7fe36d857cc5d75526899c30b0436861"
+    },
+    {
+      "name": "moderngekko_xbox_action_profile_test.exe",
+      "bytes": 296960,
+      "sha256": "923415aa5dab4fddd1e7d9067a164d81d96de4ee34cc026429e3a43c8856bcc3"
+    }
+  ],
+  "baseline_title": [
+    {
+      "step": "before-90000000",
+      "menu": "movie"
+    },
+    {
+      "step": "0-a-90000000",
+      "menu": "start"
+    },
+    {
+      "step": "1-start-90000000",
+      "menu": "start"
+    },
+    {
+      "step": "2-a-90000000",
+      "menu": "start"
+    },
+    {
+      "step": "3-start-90000000",
+      "menu": "start"
+    }
+  ],
+  "baseline_navigation": [
+    {
+      "step": "before-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option01_text"
+        }
+      ]
+    },
+    {
+      "step": "0-dpad_right-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option03_text"
+        }
+      ]
+    },
+    {
+      "step": "1-dpad_left-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option01_text"
+        }
+      ]
+    },
+    {
+      "step": "2-left_right-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option03_text"
+        }
+      ]
+    },
+    {
+      "step": "3-left_left-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option01_text"
+        }
+      ]
+    },
+    {
+      "step": "4-a-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 1,
+          "page_name": "play",
+          "focus": "option05_text"
+        }
+      ]
+    },
+    {
+      "step": "5-b-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 0,
+          "page_name": "main",
+          "focus": "option01_text"
+        }
+      ]
+    },
+    {
+      "step": "6-a-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 1,
+          "page_name": "play",
+          "focus": "option05_text"
+        }
+      ]
+    },
+    {
+      "step": "7-a-90000000",
+      "menus": [
+        {
+          "type": "CMenuMain",
+          "address": "0x90076aa8",
+          "name": "cw_main",
+          "page": 3,
+          "page_name": "diff",
+          "focus": "option11_text"
+        }
+      ]
+    },
+    {
+      "step": "8-a-90000000",
+      "menus": [
+        {
+          "type": "CMenuChooseProfileIngame",
+          "address": "0x90076aa8",
+          "name": "cw_hero_profile_2player_ps2",
+          "page": 255,
+          "page_name": "",
+          "focus": ""
+        }
+      ]
+    }
+  ],
+  "final_cold_boot": {
+    "exit_code": 0,
+    "settings": "Normal boot without savestate, JIT, one logical CPU2/mask4, Vulkan3x at 1080p preset, Cubeb; cloned installed save/profile directory. Input simulated only inside the targeted process.",
+    "checks": [
+      {
+        "step": "0-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuStart",
+        "name": "start",
+        "page": 255,
+        "focus": "0x0"
+      },
+      {
+        "step": "1-start-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "2-dpad_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558"
+      },
+      {
+        "step": "3-dpad_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "4-left_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558"
+      },
+      {
+        "step": "5-left_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "6-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "7-b-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "8-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "9-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 3,
+        "focus": "0x90041418"
+      },
+      {
+        "step": "10-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuChooseProfileIngame",
+        "name": "cw_hero_profile_2player_ps2",
+        "page": 255,
+        "focus": "0x0"
+      }
+    ],
+    "title_continue_consumer_events": 1,
+    "release_checks": [
+      {
+        "file": "input-0.bin",
+        "held": []
+      },
+      {
+        "file": "input-1.bin",
+        "held": []
+      },
+      {
+        "file": "input-10.bin",
+        "held": []
+      },
+      {
+        "file": "input-2.bin",
+        "held": []
+      },
+      {
+        "file": "input-3.bin",
+        "held": []
+      },
+      {
+        "file": "input-4.bin",
+        "held": []
+      },
+      {
+        "file": "input-5.bin",
+        "held": []
+      },
+      {
+        "file": "input-6.bin",
+        "held": []
+      },
+      {
+        "file": "input-7.bin",
+        "held": []
+      },
+      {
+        "file": "input-8.bin",
+        "held": []
+      },
+      {
+        "file": "input-9.bin",
+        "held": []
+      }
+    ],
+    "input_trace_sha256": "d49966c36ee2cb9778ae3dce63a810d58ff70d2911554a07718fbd61eca2b64c",
+    "consumer_trace_sha256": "60a0fde28a9a39fc3237f98d8522a0600288d902d55c2e9bd16e4bb6e0a00c9b",
+    "runtime_warnings": {
+      "WPAD_ERR_INVALID": 51,
+      "missing_file_messages": [
+        "DVDOpen(): file 'drivers.ini' was not found under /.",
+        "DVDOpen(): file './drivers.ini' was not found under /.",
+        "DVDOpen(): file './drivers.ini' was not found under /.",
+        "DVDOpen(): file 'sounds/eng/x/_/x_voice.zsm' was not found under /.",
+        "DVDOpen(): file 'sounds/eng/x/_/x_voice.zsm' was not found under /.",
+        "DVDOpen(): file 'movies/ntsc/eng/i/1/i109.bik' was not found under /.",
+        "DVDOpen(): file 'movies/pal/eng/i/1/i109.bik' was not found under /."
+      ]
+    }
+  },
+  "pause_regression": {
+    "exit_code": 0,
+    "settings": "Same final binary, private plaza savestate, Null graphics/audio, CPU2/mask4; five seconds between actions so native menu readiness is respected.",
+    "checks": [
+      {
+        "step": "before",
+        "active_menu": "0x0",
+        "name": null
+      },
+      {
+        "step": "0-start",
+        "active_menu": "0x90076aa8",
+        "name": "cw_pda"
+      },
+      {
+        "step": "1-start",
+        "active_menu": "0x0",
+        "name": null
+      },
+      {
+        "step": "2-start",
+        "active_menu": "0x90076aa8",
+        "name": "cw_pda"
+      },
+      {
+        "step": "3-b",
+        "active_menu": "0x0",
+        "name": null
+      }
+    ]
+  },
+  "hardware_probe": {
+    "device": "SDL/0/Xbox One Controller",
+    "connected": true,
+    "input_gate": true,
+    "bindings_resolved": true,
+    "button_presses_tested": false,
+    "note": "Read-only input probe used a disposable profile copy; UICommon may rewrite that copy on shutdown."
+  },
+  "window_icon": {
+    "icon_sha256": "fc4a7e2336b82f8ce9cee239aff934bea931187b23ddb32454e1f89fd9ceb862",
+    "native_load_image": [
+      {
+        "requested": 16,
+        "width": 16,
+        "height": 16,
+        "bits": 32
+      },
+      {
+        "requested": 32,
+        "width": 32,
+        "height": 32,
+        "bits": 32
+      }
+    ],
+    "visual_taskbar_check": false
+  },
+  "package": {
+    "path": "C:/Games/MUA2/OpenMUA2.exe",
+    "bytes": 10593792,
+    "sha256": "064450579b64d038a81a2da58932fd1ec18e6bbd0adf92fba12eef27f238ba9b",
+    "runner_sha256": "0f81535f93ecb681611ec5e1fe99b5a612ee1d4362062b0616d58725fa6d07a9",
+    "cache_id": "7e59800afbd79fcf7b39a71d64334f003a70173c18677d71213ec70c4ec7577b",
+    "root_entries": [
+      "OpenMUA2.exe",
+      "GameData",
+      "saves"
+    ],
+    "manifest_verification": "passed",
+    "save_profile_cache_files_unchanged": 54,
+    "previous_exe_archived": true
+  },
+  "rejected_or_failed_checks": [
+    "Earlier 48/48 action-producer pulses occurred during startup, not a verified main-menu navigation flow.",
+    "Static/stale menu resource strings do not establish the active screen; final checks use the active-menu pointer and typed menu state.",
+    "MotionPlus-off experiment did not fix title progression. Original controller probe reported Nunchuk type1.",
+    "Remapping action names directly to direction names failed return navigation and was discarded; original D-pad/stick horizontal navigation passed.",
+    "Unconditional MenuExit105 failed Start-to-resume and was discarded in favor of active-title-only mapping.",
+    "One diagnostic build failed LNK1104 because its output runner was in use; copied runtimes avoid the lock.",
+    "One initial diagnostic command timed out; its invocation used relative paths.",
+    "A final-binary cold probe overlapping linking timed out before first frame; a later cold repeat after build completion passed.",
+    "A final-binary pause probe failed to open its published command file; failure was retained and a new isolated retry passed."
+  ],
+  "limits": [
+    "No host OS input, UI automation, screenshots, or capture app used.",
+    "Physical controller button-to-game/display behavior remains unverified; the user declined the interactive logging test.",
+    "No visual-content or taskbar-appearance verification. Native icon resource loading and package integrity passed.",
+    "No audio-quality or combat-FPS claim. Existing native missing-file and WPAD warnings remain recorded.",
+    "No proprietary data, dumps, savestates, or generated game translations are included in this checkpoint."
+  ]
+}

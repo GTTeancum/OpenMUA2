@@ -2348,7 +2348,7 @@ v1-v4 profiles upgrade with backups on launch. Customized profiles are preserved
 | RT + A/B/X/Y | Four power slots |
 | D-pad Up/Right/Down/Left | Direct roster slots 1/2/3/4; menu navigation |
 | LT + A/B/X/Y | Fusion partner roster slots 1/2/3/4; self rejected |
-| Start/Menu | Pause / resume |
+| Start/Menu | Continue from title screen; pause / resume during play |
 | Back/View | Hero Management; menu readiness/return timing remains under validation |
 | A repeatedly, then B, in the tested statue interaction | Shake, then lift |
 
