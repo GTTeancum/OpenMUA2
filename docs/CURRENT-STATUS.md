@@ -1,5 +1,58 @@
 # Current status — GitHub main
 
+## Plaza timing repeats and hitch attribution - 2026-10-01
+
+Current runner 2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d,
+JIT, whole-process mask1, Vulkan 3x EFB, normal clocks/speed, Cubeb muted,
+formatter experiment ON (normal launch default OFF), no screenshots. Same
+xbox-timed-hero-combat route and statue-target private state; two-second warmup,
+last input endpoint before save. These are short diagnostic repeats, not passes.
+
+| Run | Seconds | New FPS | P99 ms | Worst ms | Frames >50ms | Lowest rolling second |
+| --- | --- | --- | --- | --- | --- | --- |
+| Timing 1 | 46.621 | 29.987 | 48.517 | 101.724 | 11 | 27 |
+| Timing 2 | 46.683 | 29.968 | 47.470 | 94.454 | 11 | 28 |
+| Timing 3 | 46.847 | 29.970 | 46.411 | 72.992 | 11 | 28 |
+| Runtime spans | 46.649 | 29.990 | 50.143 | 83.185 | 14 | 28 |
+
+All four command runs exit0; guest speed 100.00-100.07%. The profiled worst
+frame includes 49.624ms JIT compilation, 32.620ms emission, 11.325ms finalization
+(nested, do not sum), and 0.0037ms GPU fence wait. Across the window 14,295 JIT
+compilations cost 591.331ms elapsed. Other 60-61ms frames had zero/negligible
+compilation; there are multiple causes. CPU counters remain quantized and
+cannot prove frequency or scheduling causes. Next investigate first-use compile
+bursts and non-compilation stalls separately in the plaza. Do not precompile
+arbitrary blocks if that changes guest architectural state or cache semantics.
+
+No source/binary changes or rebuild this checkpoint. Prior supported Windows
+build 39/39 native, tooling 141 passed/1 skip still applies. No fresh visual or
+audible verification; numeric audio counts are recorded, not proof of clean sound.
+No further screenshots after user instruction. Earlier street exploration is
+retained privately; its paused harness timed out at 600s (child 0/harness 1).
+Goal unmet: frame pacing and ten-minute plaza combat remain outstanding.
+Evidence: evidence/windows-20260930/PLAZA-ONLY-BASELINE.json.
+
+
+## Primary benchmark scope - user direction, 2026-10-01
+
+Use the tutorial plaza only for performance and bottleneck testing. The user
+identifies it as representative of the game's maximum simultaneous enemy load,
+including effects, sounds and animations. Keep the statue intact in the dense
+combat baseline so its scripted completion does not remove the repeated spawns.
+Later streets are not required benchmark work. Three repeat runs and ten minutes
+of plaza combat with varied movement, heroes, attacks and effects remain required;
+the nominal-30 cadence and correctness requirements are unchanged.
+
+The user has requested no more screenshots. Disable capture commands for all
+future runs (--no-screenshots); use frame timing, CPU/JIT and audio telemetry.
+Previously inspected native evidence remains scoped to those earlier runs.
+Do not imply fresh visual verification from telemetry. The latest visual plaza
+run completed before this instruction, but its ten captures were not inspected;
+no new visual-correctness claim is made from it. Audible playback remains
+unverified. These user instructions supersede earlier route-expansion and new
+screenshot requirements in this document.
+
+
 ## Xbox Safeguard gestures and route validation - 2026-10-01
 
 Generated Xbox profile v3 adds Back/View + right-stick sideways for shake and
