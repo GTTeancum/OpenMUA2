@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Bounded process-local input-routing validation in tutorial plaza. No control implementation changed.",
+  "route_exit_code": 0,
+  "native_exit_code": 0,
+  "requested_guest_seconds": 5.6,
+  "snapshots": 14,
+  "object_guards_per_snapshot": 12,
+  "mapping": {
+    "A": [
+      "light attack"
+    ],
+    "X": [
+      "grab"
+    ],
+    "LB": [
+      "block",
+      "contextual action"
+    ],
+    "RT": [
+      "next hero"
+    ],
+    "LT": [
+      "previous hero"
+    ],
+    "D-pad Up": [
+      "power 4"
+    ]
+  },
+  "tested_actions_clear_on_release": true,
+  "only_injected_port_object_responds": true,
+  "interpretation": "Verified active-action bits, not merely summed floating-point binding values. Several actions can have partial nonzero binding values without activating.",
+  "configuration": {
+    "cpu": "JIT",
+    "whole_process_logical_cpu": 2,
+    "affinity_mask": 4,
+    "graphics": "Vulkan",
+    "efb_scale": 3,
+    "resolution_preset": "1920x1080",
+    "normal_clocks": true,
+    "audio": "Null/silent",
+    "screenshots": false,
+    "frame_trace": false,
+    "host_input": false,
+    "guest_memory_writes": false,
+    "formatter": "default/off"
+  },
+  "runner_sha256": "c879d5f99cc0c817be224067013caebd027fc64f2f2e878d206108f253805084",
+  "source_build_checkpoint": "df47dfab7a7b0f8c3b85cb934a77a74cf671955e",
+  "prior_build": "Windows build passed 41/41 native tests; no new source/build change for this probe.",
+  "failures_retained": [
+    "Initial guard run cancelled remaining input because a saved pointer reference proved transient; native process exited 0, harness failed.",
+    "Pointer-only guest sequence was rejected because it lacked a timed input step. Corrected with a 10ms neutral hold."
+  ],
+  "guard_correction": "Live reads confirmed object/vtable; removed transient saved pointer guard and guarded all four objects with vtable and first two descriptor IDs/names before every snapshot.",
+  "limits": [
+    "Physical gamepad, animations, contextual-use result and actual selected-hero changes not visually verified.",
+    "Silent short probe; no audio or FPS acceptance claim.",
+    "Direct hero-slot selection and contextual X remain unimplemented.",
+    "Only first controller port exercised; other input objects stayed neutral for tested actions.",
+    "Raw saved-state/module research and snapshots remain private under .local."
+  ]
+}

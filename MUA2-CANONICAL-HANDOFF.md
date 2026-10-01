@@ -1,5 +1,33 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Live Xbox action routing probe - 2026-10-01
+
+A bounded tutorial-plaza probe confirmed the input layer's active-action bits:
+A -> light attack; X -> grab; LB -> block AND contextual action; RT -> next hero;
+LT -> previous hero; D-pad Up -> power 4. Only the object corresponding to
+injected controller port 0 responded. Tested actions cleared on every release.
+Partial nonzero binding sums are not activated actions; the active bitset was
+checked separately. This confirms routing, not animations or selected heroes.
+
+Four input objects were found in the existing save and checked in execution.
+The first probe cancelled on a transient saved pointer guard. A read-only
+follow-up confirmed object/vtable addresses but disproved that pointer's
+stability. The successful route guarded each object's vtable and first two
+descriptor IDs/names before every snapshot: 14 snapshots, 12 guards each,
+5.6 guest seconds. An intermediate pointer-only guest sequence was rejected
+because timed input was required; corrected with a brief neutral hold.
+
+No mapping/source changes or rebuild. Used the df47dfab Windows binary (41/41
+native tests at that build). Successful harness/native exits 0. CPU2/mask4,
+normal clocks, Vulkan3x, default formatter, silent Null audio, no screenshots,
+host input, guest writes, frame trace or FPS acceptance. Raw research and probes
+remain private. Evidence: evidence/windows-20260930/XBOX-LIVE-ACTION-ROUTING.json.
+
+Contextual X and direct hero-slot selection remain open. The next implementation
+must integrate with per-player game actions/context rather than assume a raw
+D-pad remap selects a hero. No claim that the full performance goal is complete.
+
+
 ## Xbox rumble and persisted profile migration - 2026-10-01
 
 Fixed a concrete output mismatch: generated profiles used Wiimote-only Motor,
