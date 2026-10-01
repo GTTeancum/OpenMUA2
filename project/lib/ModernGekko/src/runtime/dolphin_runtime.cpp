@@ -180,6 +180,21 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     return;
   auto* active = memory.GetPointerForRange(active_address, 20);
   auto* values = memory.GetPointerForRange(values_address, value_bytes);
+  // Opt-in chronological samples avoid mistaking a later cleared action mask
+  // for an input that never reached the game. Only the guarded title observer
+  // writes this diagnostic; it never changes guest input or timing.
+  static std::ofstream input_timing([] {
+    const char* path = std::getenv("OPENMUA2_INPUT_TIMING");
+    return path ? path : "";
+  }());
+  if (input_timing && active && values) {
+    const auto a = std::span<const u8>(active, 20);
+    input_timing << system.GetCoreTiming().GetTicks() << ','
+        << Common::RuntimeTiming::Now() << ',' << object;
+    for (std::size_t i = 0; i < 5; ++i)
+      input_timing << ',' << moderngekko::controls::ReadBE(a, i * 4);
+    input_timing << '\n';
+  }
   if (!active || !values ||
       !moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
                                                std::span<u8>(values, value_bytes)))

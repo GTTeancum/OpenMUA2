@@ -338,7 +338,14 @@ ReadConfiguredControllers(const fs::path &user_directory) {
 
 bool ControllerConfigExists(const fs::path &user_directory) {
   std::error_code ec;
-  return fs::is_regular_file(ControllerConfigPath(user_directory), ec);
+  const auto path = ControllerConfigPath(user_directory);
+  if (!fs::is_regular_file(path, ec)) return false;
+  std::ifstream input(path);
+  // Preserve unreadable/nonempty custom files. An empty file left by shutdown
+  // has no bindings and must not prevent first-run gamepad discovery.
+  if (!input) return true;
+  input >> std::ws;
+  return !input.eof();
 }
 
 bool GenerateControllerConfig(const fs::path &user_directory,

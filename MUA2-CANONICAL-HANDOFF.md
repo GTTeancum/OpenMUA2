@@ -1,5 +1,47 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Menu input delay repair - 2026-10-01
+
+Found two defects in the staged user launch. A zero-byte controller profile was
+mistaken for configured controls, suppressing discovery and leaving fallback
+bindings. ControllerConfigExists now treats empty/whitespace-only files as
+unconfigured while preserving nonempty/custom or unreadable files. The new
+regression returned 26 before the fix; both controller-family tests now pass.
+A real boot from an empty profile generated the connected Xbox v5 profile.
+
+The title also retained simulated optical-disc seek timing while reading local
+extracted files. RMSE52's shipped game settings now enable FastDiscSpeed, using
+the existing buffered-transfer path and asynchronous completions. Guest/VI/CPU
+clocks, single-CPU execution, resolution and graphics quality are unchanged.
+
+Windowed, process-local 50 ms navigation pulses exposed the delay: 13/16 registered,
+with five input-evaluation gaps over 100 ms and a 382.346 ms maximum during navigation.
+With fast-disc loading, two explicit-setting repeats plus a fresh shipped-default
+run registered 48/48. Per-run maximum evaluation gaps: 33.424/33.424/33.452 ms; action
+acceptance 13.638-43.600 ms after scheduled input; every release cleared within 50 ms
+of its scheduled release. No desktop input or screenshots were used. The runs
+started normally in isolated copied save profiles, used CPU 2/mask 4 and Vulkan 3x
+at the 1080p preset, and used silent audio. These measure game-side input handling,
+not physical-controller-to-display latency or visual menu selection correctness.
+
+The roughly 3.16 s startup transition gap remains and was retained in the traces;
+its guest clock advances normally. It is distinct from the navigation read
+stalls fixed here. A shader-worker-count experiment did not help and was rejected.
+Earlier post-press snapshots could miss already-cleared actions; the new opt-in
+OPENMUA2_INPUT_TIMING trace records chronological guarded native action evaluations
+(guest ticks, host steady-clock nanoseconds, input-object address, five mask words).
+It is disabled in normal launches. Initial invalid release_pad probe was retained
+as failed; corrected probes use release=1 and release on the guest clock.
+
+Supported Windows build: Build.cmd --cpu jit --jobs 2, exit 0, 45/45 tests in 9.32 s.
+No compiler/linker warnings or errors; existing CMake warnings remain. Evidence,
+runner hash and per-press results: evidence/windows-20261001/MENU-INPUT-DELAY.json.
+The local user package uses OpenMUA2.exe with embedded runtime, alongside GameData
+and saves; logs/cache remain under LocalAppData. Source and game data stay separate.
+This checkpoint does not claim audio quality, combat FPS or full performance-goal
+acceptance. The physical/visual acceptance gaps in the previous checkpoint remain.
+
+
 ## Three candidate repeats and acceptance audit - 2026-10-01
 
 Three short repeats completed on the same Windows runner as the ten-minute

@@ -180,6 +180,15 @@ int main() {
   }
   }
 #endif
+  // A shutdown-created empty profile must not suppress first-run discovery.
+  // Existing nonempty/custom profiles above must still remain untouched.
+  for (const auto empty : {"", " \t\r\n"}) {
+    { std::ofstream out(directory / "Config" / CONTROLLER_CONFIG_NAME); out << empty; }
+    if (moderngekko::frontend::ControllerConfigExists(directory)) return 26;
+    if (!moderngekko::frontend::EnsureControllerConfig(directory, controller, &error) ||
+        moderngekko::frontend::ReadConfiguredController(directory) != controller)
+      return 27;
+  }
   fs::remove_all(directory);
   return 0;
 }

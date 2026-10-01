@@ -1,0 +1,469 @@
+{
+  "date": "2026-10-01",
+  "problem": "Optical seek timing stalls title input evaluation; empty controller profiles also suppress discovery.",
+  "fix": "Title-specific FastDiscSpeed=True; whitespace-only files are unconfigured, nonempty custom profiles preserved.",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 45,
+    "tests_failed": 0,
+    "test_seconds": 9.32,
+    "compiler_linker_errors": 0,
+    "compiler_linker_warnings": 0,
+    "existing_cmake_warnings": "minimum-version deprecations, CMP0080, unavailable Wayland and long object paths; see full build log",
+    "runner_size": 16148992,
+    "runner_sha256": "441afdd6a450ee2c4a550665eb1aca461230042c681724f60e587f71b12e7fe6"
+  },
+  "empty_profile_regression": {
+    "old_exit_code": 26,
+    "new_test_passed": true,
+    "real_boot_recovered_connected_gamepad": true
+  },
+  "runs": {
+    "matrix": {
+      "probes": [
+        {
+          "probe": "matrix-0-dpad_up",
+          "observed": true,
+          "latency_ms": 17.644064,
+          "release_ms_after_scheduled_release": 34.343092
+        },
+        {
+          "probe": "matrix-1-dpad_down",
+          "observed": true,
+          "latency_ms": 19.388798,
+          "release_ms_after_scheduled_release": 36.127407
+        },
+        {
+          "probe": "matrix-2-dpad_left",
+          "observed": true,
+          "latency_ms": 21.168373,
+          "release_ms_after_scheduled_release": 37.91523
+        },
+        {
+          "probe": "matrix-3-dpad_right",
+          "observed": true,
+          "latency_ms": 22.915154,
+          "release_ms_after_scheduled_release": 39.684144
+        },
+        {
+          "probe": "matrix-4-left_up",
+          "observed": true,
+          "latency_ms": 24.711392,
+          "release_ms_after_scheduled_release": 41.43666
+        },
+        {
+          "probe": "matrix-5-left_down",
+          "observed": true,
+          "latency_ms": 29.564598,
+          "release_ms_after_scheduled_release": 12.947783
+        },
+        {
+          "probe": "matrix-6-left_left",
+          "observed": true,
+          "latency_ms": 38.920455,
+          "release_ms_after_scheduled_release": 22.27445
+        },
+        {
+          "probe": "matrix-7-left_right",
+          "observed": true,
+          "latency_ms": 35.315261,
+          "release_ms_after_scheduled_release": 18.678929
+        },
+        {
+          "probe": "matrix-8-dpad_up",
+          "observed": true,
+          "latency_ms": 37.091058,
+          "release_ms_after_scheduled_release": 20.453461
+        },
+        {
+          "probe": "matrix-9-dpad_down",
+          "observed": true,
+          "latency_ms": 34.07225,
+          "release_ms_after_scheduled_release": 17.440864
+        },
+        {
+          "probe": "matrix-10-dpad_left",
+          "observed": true,
+          "latency_ms": 35.274981,
+          "release_ms_after_scheduled_release": 18.674749
+        },
+        {
+          "probe": "matrix-11-dpad_right",
+          "observed": false,
+          "latency_ms": null,
+          "release_ms_after_scheduled_release": null
+        },
+        {
+          "probe": "matrix-12-left_up",
+          "observed": false,
+          "latency_ms": null,
+          "release_ms_after_scheduled_release": null
+        },
+        {
+          "probe": "matrix-13-left_down",
+          "observed": false,
+          "latency_ms": null,
+          "release_ms_after_scheduled_release": null
+        },
+        {
+          "probe": "matrix-14-left_left",
+          "observed": true,
+          "latency_ms": 42.366719,
+          "release_ms_after_scheduled_release": 25.757953
+        },
+        {
+          "probe": "matrix-15-left_right",
+          "observed": true,
+          "latency_ms": 38.796579,
+          "release_ms_after_scheduled_release": 22.145535
+        }
+      ],
+      "observed": 13,
+      "total": 16,
+      "navigation_max_poll_gap_ms": 382.3460301783265,
+      "navigation_poll_gaps_over100ms": 5,
+      "latency_range_ms": [
+        17.644064,
+        42.366719
+      ],
+      "input_trace_sha256": "bf17063bf156806fd8270b4afb293658b190a78cd54fbb1af389d44b29246f2d"
+    },
+    "fastdisc": {
+      "probes": [
+        {
+          "probe": "matrix-0-dpad_up",
+          "observed": true,
+          "latency_ms": 42.869347,
+          "release_ms_after_scheduled_release": 26.254003
+        },
+        {
+          "probe": "matrix-1-dpad_down",
+          "observed": true,
+          "latency_ms": 21.930542,
+          "release_ms_after_scheduled_release": 38.671152
+        },
+        {
+          "probe": "matrix-2-dpad_left",
+          "observed": true,
+          "latency_ms": 41.062704,
+          "release_ms_after_scheduled_release": 24.424272
+        },
+        {
+          "probe": "matrix-3-dpad_right",
+          "observed": true,
+          "latency_ms": 25.488497,
+          "release_ms_after_scheduled_release": 42.190336
+        },
+        {
+          "probe": "matrix-4-left_up",
+          "observed": true,
+          "latency_ms": 27.23939,
+          "release_ms_after_scheduled_release": 43.971222
+        },
+        {
+          "probe": "matrix-5-left_down",
+          "observed": true,
+          "latency_ms": 34.345273,
+          "release_ms_after_scheduled_release": 17.6979
+        },
+        {
+          "probe": "matrix-6-left_left",
+          "observed": true,
+          "latency_ms": 18.769904,
+          "release_ms_after_scheduled_release": 35.487176
+        },
+        {
+          "probe": "matrix-7-left_right",
+          "observed": true,
+          "latency_ms": 36.521152,
+          "release_ms_after_scheduled_release": 19.890775
+        },
+        {
+          "probe": "matrix-8-dpad_up",
+          "observed": true,
+          "latency_ms": 43.599871,
+          "release_ms_after_scheduled_release": 26.968982
+        },
+        {
+          "probe": "matrix-9-dpad_down",
+          "observed": true,
+          "latency_ms": 17.382392,
+          "release_ms_after_scheduled_release": 34.124391
+        },
+        {
+          "probe": "matrix-10-dpad_left",
+          "observed": true,
+          "latency_ms": 24.452973,
+          "release_ms_after_scheduled_release": 41.166477
+        },
+        {
+          "probe": "matrix-11-dpad_right",
+          "observed": true,
+          "latency_ms": 26.194815,
+          "release_ms_after_scheduled_release": 42.943257
+        },
+        {
+          "probe": "matrix-12-left_up",
+          "observed": true,
+          "latency_ms": 34.088693,
+          "release_ms_after_scheduled_release": 17.441316
+        },
+        {
+          "probe": "matrix-13-left_down",
+          "observed": true,
+          "latency_ms": 40.397348,
+          "release_ms_after_scheduled_release": 23.765261
+        },
+        {
+          "probe": "matrix-14-left_left",
+          "observed": true,
+          "latency_ms": 19.487214,
+          "release_ms_after_scheduled_release": 36.217266
+        },
+        {
+          "probe": "matrix-15-left_right",
+          "observed": true,
+          "latency_ms": 26.574898,
+          "release_ms_after_scheduled_release": 43.315211
+        }
+      ],
+      "observed": 16,
+      "total": 16,
+      "navigation_max_poll_gap_ms": 33.42420576131687,
+      "navigation_poll_gaps_over100ms": 0,
+      "latency_range_ms": [
+        17.382392,
+        43.599871
+      ],
+      "input_trace_sha256": "164a7e50931df476b5c7ffe8d994846f61e14c3149cba4ee26bd20e1f994c5c3"
+    },
+    "fastdisc-repeat": {
+      "probes": [
+        {
+          "probe": "matrix-0-dpad_up",
+          "observed": true,
+          "latency_ms": 36.168451,
+          "release_ms_after_scheduled_release": 19.530588
+        },
+        {
+          "probe": "matrix-1-dpad_down",
+          "observed": true,
+          "latency_ms": 43.284893,
+          "release_ms_after_scheduled_release": 26.667243
+        },
+        {
+          "probe": "matrix-2-dpad_left",
+          "observed": true,
+          "latency_ms": 17.390468,
+          "release_ms_after_scheduled_release": 34.125605
+        },
+        {
+          "probe": "matrix-3-dpad_right",
+          "observed": true,
+          "latency_ms": 24.093457,
+          "release_ms_after_scheduled_release": 40.824631
+        },
+        {
+          "probe": "matrix-4-left_up",
+          "observed": true,
+          "latency_ms": 25.870966,
+          "release_ms_after_scheduled_release": 42.611669
+        },
+        {
+          "probe": "matrix-5-left_down",
+          "observed": true,
+          "latency_ms": 34.080446,
+          "release_ms_after_scheduled_release": 17.459412
+        },
+        {
+          "probe": "matrix-6-left_left",
+          "observed": true,
+          "latency_ms": 40.096432,
+          "release_ms_after_scheduled_release": 23.444693
+        },
+        {
+          "probe": "matrix-7-left_right",
+          "observed": true,
+          "latency_ms": 19.151305,
+          "release_ms_after_scheduled_release": 35.872267
+        },
+        {
+          "probe": "matrix-8-dpad_up",
+          "observed": true,
+          "latency_ms": 26.251678,
+          "release_ms_after_scheduled_release": 42.984757
+        },
+        {
+          "probe": "matrix-9-dpad_down",
+          "observed": true,
+          "latency_ms": 38.669473,
+          "release_ms_after_scheduled_release": 22.068897
+        },
+        {
+          "probe": "matrix-10-dpad_left",
+          "observed": true,
+          "latency_ms": 23.075344,
+          "release_ms_after_scheduled_release": 39.837619
+        },
+        {
+          "probe": "matrix-11-dpad_right",
+          "observed": true,
+          "latency_ms": 40.849812,
+          "release_ms_after_scheduled_release": 24.206361
+        },
+        {
+          "probe": "matrix-12-left_up",
+          "observed": true,
+          "latency_ms": 42.624198,
+          "release_ms_after_scheduled_release": 25.997033
+        },
+        {
+          "probe": "matrix-13-left_down",
+          "observed": true,
+          "latency_ms": 21.679267,
+          "release_ms_after_scheduled_release": 38.407739
+        },
+        {
+          "probe": "matrix-14-left_left",
+          "observed": true,
+          "latency_ms": 28.810043,
+          "release_ms_after_scheduled_release": 12.135966
+        },
+        {
+          "probe": "matrix-15-left_right",
+          "observed": true,
+          "latency_ms": 41.226565,
+          "release_ms_after_scheduled_release": 24.591062
+        }
+      ],
+      "observed": 16,
+      "total": 16,
+      "navigation_max_poll_gap_ms": 33.42399451303155,
+      "navigation_poll_gaps_over100ms": 0,
+      "latency_range_ms": [
+        17.390468,
+        43.284893
+      ],
+      "input_trace_sha256": "3db0bd7e615998c50651076b2cacc7095ca19c824ae38fcba0d85ac444bd46e5"
+    },
+    "shipped-default": {
+      "probes": [
+        {
+          "probe": "matrix-0-dpad_up",
+          "observed": true,
+          "latency_ms": 18.291294,
+          "release_ms_after_scheduled_release": 34.977669
+        },
+        {
+          "probe": "matrix-1-dpad_down",
+          "observed": true,
+          "latency_ms": 25.362417,
+          "release_ms_after_scheduled_release": 42.096295
+        },
+        {
+          "probe": "matrix-2-dpad_left",
+          "observed": true,
+          "latency_ms": 21.801813,
+          "release_ms_after_scheduled_release": 38.536324
+        },
+        {
+          "probe": "matrix-3-dpad_right",
+          "observed": true,
+          "latency_ms": 24.333727,
+          "release_ms_after_scheduled_release": 41.053837
+        },
+        {
+          "probe": "matrix-4-left_up",
+          "observed": true,
+          "latency_ms": 25.340471,
+          "release_ms_after_scheduled_release": 42.06283
+        },
+        {
+          "probe": "matrix-5-left_down",
+          "observed": true,
+          "latency_ms": 27.109288,
+          "release_ms_after_scheduled_release": 43.826892
+        },
+        {
+          "probe": "matrix-6-left_left",
+          "observed": true,
+          "latency_ms": 34.198885,
+          "release_ms_after_scheduled_release": 17.582907
+        },
+        {
+          "probe": "matrix-7-left_right",
+          "observed": true,
+          "latency_ms": 41.289616,
+          "release_ms_after_scheduled_release": 24.651981
+        },
+        {
+          "probe": "matrix-8-dpad_up",
+          "observed": true,
+          "latency_ms": 25.678449,
+          "release_ms_after_scheduled_release": 42.427823
+        },
+        {
+          "probe": "matrix-9-dpad_down",
+          "observed": true,
+          "latency_ms": 17.399073,
+          "release_ms_after_scheduled_release": 34.121973
+        },
+        {
+          "probe": "matrix-10-dpad_left",
+          "observed": true,
+          "latency_ms": 29.209184,
+          "release_ms_after_scheduled_release": 12.57437
+        },
+        {
+          "probe": "matrix-11-dpad_right",
+          "observed": true,
+          "latency_ms": 13.638457,
+          "release_ms_after_scheduled_release": 30.367091
+        },
+        {
+          "probe": "matrix-12-left_up",
+          "observed": true,
+          "latency_ms": 17.405967,
+          "release_ms_after_scheduled_release": 34.156372
+        },
+        {
+          "probe": "matrix-13-left_down",
+          "observed": true,
+          "latency_ms": 27.810771,
+          "release_ms_after_scheduled_release": 11.197007
+        },
+        {
+          "probe": "matrix-14-left_left",
+          "observed": true,
+          "latency_ms": 29.635605,
+          "release_ms_after_scheduled_release": 12.961385
+        },
+        {
+          "probe": "matrix-15-left_right",
+          "observed": true,
+          "latency_ms": 36.681209,
+          "release_ms_after_scheduled_release": 20.059608
+        }
+      ],
+      "observed": 16,
+      "total": 16,
+      "navigation_max_poll_gap_ms": 33.45165294924554,
+      "navigation_poll_gaps_over100ms": 0,
+      "latency_range_ms": [
+        13.638457,
+        41.289616
+      ],
+      "input_trace_sha256": "bdfe0dc15f33b2dbd9f505a52131cff8652282058e641496df494644c00231ff"
+    }
+  },
+  "settings": "Full JIT; CPU2 mask4 for entire process; Vulkan 3x EFB, 1920x1080 preset; normal guest/VI/CPU clocks; windowed; silent audio. Fresh cloned profile per run; normal boot, no savestate.",
+  "trace": "OPENMUA2_INPUT_TIMING records guarded native action evaluations: guest ticks, host steady-clock ns, input-object address, five action-mask words. Default off. Pulses release on the guest clock after50ms. Navigation interval includes100ms margins; raw traces retain all startup/transitions.",
+  "limits": [
+    "Game-side action acceptance/release, not physical-controller-to-display latency or visual menu selection acceptance.",
+    "No screenshots or host input. Audio quality and combat FPS not tested.",
+    "Three-second startup transition/input-evaluation gap remains; not a CPU freeze. This fix removes navigation read stalls, not authored transition waits.",
+    "Prior shader-worker experiment did not improve behavior and was not installed.",
+    "Initial probe failed on invalid release_pad key; corrected release key. All failures retained locally."
+  ]
+}
