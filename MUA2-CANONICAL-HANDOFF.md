@@ -1,5 +1,25 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Contextual X behavioral failure - 2026-10-01
+
+The same statue-use-ready plaza state now has a guarded, read-only mission
+completion check. Stock LB completes the interaction; experimental X does not.
+Adding the original block input to X also fails. The adapter remains OFF by
+default. Passing active-action bits did not establish working contextual use.
+
+Four bounded routes completed with exit 0 using the existing 36c73706 binary:
+stock LB, experimental X, experimental LB negative control, and X plus block.
+Only stock LB set the script completion flag. These are behavioral results from
+mission state, not visual verification. Null audio, one logical CPU, normal
+clocks, Vulkan 3x; no screenshots, host input or new FPS sweep. No rebuild was
+needed for this evidence/documentation checkpoint. Existing 42/42 build tests
+remain scoped to the previous build. Audio and full Xbox remapping remain open.
+
+The next control fix must resolve native context/consumption behavior; neither
+simultaneous grab/use nor binding-value magnitude is yet proven as the cause.
+Evidence: evidence/windows-20260930/CONTEXT-X-EXPERIMENT.json.
+
+
 ## Live Xbox action routing probe - 2026-10-01
 
 ## Experimental X-use separation - 2026-10-01

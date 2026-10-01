@@ -85,8 +85,8 @@ the latest concrete user priorities are audio and corrected Xbox controls.
 
 OPENMUA2_CONTEXT_X=1 now guards and rebinds the native use descriptor to the
 grab chord. Two plaza routing probes confirm X grab/use and LB block separation
-when enabled, unchanged v4 when disabled, release and port isolation. This may
-allow normal game context handling without replacing the input queue. Actual
-interaction completion/priority remains to be tested; do not enable by default
-or call step 2 complete from action bits alone. See CONTEXT-X-EXPERIMENT.json
+when enabled, unchanged v4 when disabled, release and port isolation. Actual
+statue interaction testing fails for experimental X while stock LB succeeds.
+Do not enable by default or call step 2 complete from action bits alone.
+See CONTEXT-X-EXPERIMENT.json
 in evidence/windows-20260930.

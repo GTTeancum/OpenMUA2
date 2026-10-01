@@ -100,5 +100,69 @@
   "private_runs": [
     ".local\\automation\\context-x-routing2-20261001",
     ".local\\automation\\context-x-default-20261001"
-  ]
+  ],
+  "interaction_validation": {
+    "result": "FAIL: experimental X does not complete statue interaction; stock LB does",
+    "method": "Read-only guarded mission completion flag, checked against mission script and known completed state. No visual claim.",
+    "runs": [
+      {
+        "private_run": ".local/automation/context-statue-baseline-20261001",
+        "case": "baseline",
+        "harness_exit_code": 0,
+        "route_completed": true,
+        "completion_flag_set": [
+          false,
+          false,
+          false,
+          true,
+          true
+        ],
+        "result_sha256": "e7f370bf01d9cb49b54ce6bb4ca55d4cf28987cceccf6b7154c3633a38d2335b"
+      },
+      {
+        "private_run": ".local/automation/context-statue-x-20261001",
+        "case": "x",
+        "harness_exit_code": 0,
+        "route_completed": true,
+        "completion_flag_set": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "result_sha256": "98156301a7403d04356981e257d656a8e87da78097f5de726fe3ac6b609f0d29"
+      },
+      {
+        "private_run": ".local/automation/context-statue-lb-negative-20261001",
+        "case": "lb-negative",
+        "harness_exit_code": 0,
+        "route_completed": true,
+        "completion_flag_set": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "result_sha256": "9bc412c6dd75c3ac31fe3d700199cddfb247d9e8fc7f40cdbef0966a2b5b68ca"
+      },
+      {
+        "private_run": ".local/automation/context-statue-x-z-20261001",
+        "case": "x-z",
+        "harness_exit_code": 0,
+        "route_completed": true,
+        "completion_flag_set": [
+          false,
+          false,
+          false,
+          false,
+          false
+        ],
+        "result_sha256": "8bc2fd78fe64458562940c1582e3e4bff0bc8383bdfc6bfa2ea0100c345612ea"
+      }
+    ],
+    "diagnostic": "Adding original block input to X also failed; cause unresolved. Simultaneous grab/use and summed binding values remain hypotheses.",
+    "decision": "Keep adapter disabled by default; step 2 incomplete."
+  }
 }
