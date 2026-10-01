@@ -2,6 +2,40 @@
 
 September 29, 2026. This file tracks the current reconstructed source on `main`; the older LOCAL01 recovery boundary is no longer an accurate description of the checked-in implementation.
 
+## Audio buffer diagnostic, normal settings unchanged - 2026-10-01
+
+Compared isolated copied profiles with Core.AudioBufferSize 160/80/160ms, in
+that order. Existing mixer default is 80ms; Cubeb requests max(512 frames,
+device minimum latency). This does not establish actual device output latency.
+The mixer can replay older granules when starved, so fewer empty dequeues alone
+does not prove clean playback. Increasing the queue may add audio latency.
+
+Same verified Windows runner, JIT, one logical CPU, Vulkan 3x EFB, normal speed,
+formatter experiment ON (normal launch default OFF), Cubeb muted; frame/audio
+telemetry without detailed runtime profiling or screenshots. Same extended
+hero route; two-second warmup and endpoint before state save:
+
+| Queue limit ms | Measured s | FPS | Worst frame ms | Lowest rolling second | DMA/stream empties |
+| --- | --- | --- | --- | --- | --- |
+| 160 first | 46.6464 | 29.9702 | 62.3037 | 28 | 0/0 |
+| 80 control | 46.9289 | 29.9176 | 114.7865 | 25 | 9/8 |
+| 160 repeat | 46.7130 | 29.9702 | 84.9601 | 28 | 0/1 |
+
+Empty counts cover 45/46/46 complete interior seconds respectively. All runs
+exit0. Control also suffered worse frame stalls, so this is not a clean causal
+comparison or a demonstrated frame-rate gain. 160ms did not eliminate starvation.
+Normal launch stays 80ms; retain candidate only in private test profiles. Audio
+still needs real playback verification; no new visual verification occurred.
+A post-run read-only check found Balanced power plan; the reported 3801MHz WMI
+snapshot cannot prove runtime frequency or throttling. No system setting changed.
+
+No source/binary change or rebuild; existing Windows validation remains 39/39
+native tests and 141 tooling passed/one skipped. User static edits/assets/saves
+preserved. Numeric evidence: evidence/windows-20260930/AUDIO-BUFFER-EXPERIMENT.json.
+Next broaden the combat route and correlate audio starvation with stalls across
+varied gameplay, rather than treating short saved-state runs as acceptance.
+Three qualifying repeats and ten-minute varied combat remain required. Goal unmet.
+
 ## Frame-boundary CPU counters and repeated hitch diagnostics - 2026-10-01
 
 Added opt-in callback-thread/process cumulative CPU time, thread cycles and

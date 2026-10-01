@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "source_checkpoint": "a03875e01b612c42d8b410dcb1811d4116ffa830",
+  "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+  "change": "Private copied test profiles only: Core.AudioBufferSize80 versus160. No source or normal launch configuration change.",
+  "execution_order": [
+    "audio-buffer-160-trial1-20261001",
+    "audio-buffer-80-trial2-20261001",
+    "audio-buffer-160-trial3-20261001"
+  ],
+  "conditions": "Extended hero route; JIT; one CPU mask1; Vulkan3x EFB; normal guest speed; experimental formatterON(defaultOFF); Cubeb muted; frame/audio telemetry; no detailed runtime profiler/screenshots; two-second warmup, last hold endpoint before save.",
+  "runs": {
+    "audio-buffer-160-trial1-20261001": {
+      "exit_code": 0,
+      "completed": true,
+      "timing": {
+        "average_fps": 29.970151272859333,
+        "frame_ms": {
+          "median": 33.354249999998586,
+          "p95": 36.20420000000024,
+          "p99": 42.35919999999993,
+          "max": 62.303699999999296
+        },
+        "frames_over_50ms": 5,
+        "rolling_1s_fps_min": 28,
+        "emulation_speed_percent": 100.00040474710732
+      },
+      "seconds": 46.6464112,
+      "audio_seconds": 45,
+      "dma_empty": 0,
+      "stream_empty": 0,
+      "max_callback_gap_ms": 11.2167,
+      "empty_buckets": [],
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "audio_buffer_size_ms": 160,
+      "config_sha256": "13d7e7c2c32c0d56491cb9c3f9b7f2e02fee27e4b96e5c2a21cfc0a51c6b1b4d",
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    },
+    "audio-buffer-160-trial3-20261001": {
+      "exit_code": 0,
+      "completed": true,
+      "timing": {
+        "average_fps": 29.970214188258183,
+        "frame_ms": {
+          "median": 33.35329999999992,
+          "p95": 35.835300000002235,
+          "p99": 43.109000000001174,
+          "max": 84.96009999999998
+        },
+        "frames_over_50ms": 8,
+        "rolling_1s_fps_min": 28,
+        "emulation_speed_percent": 100.00061467482148
+      },
+      "seconds": 46.7130462,
+      "audio_seconds": 46,
+      "dma_empty": 0,
+      "stream_empty": 1,
+      "max_callback_gap_ms": 13.2418,
+      "empty_buckets": [
+        {
+          "second": 9,
+          "channel": 1,
+          "empty_dequeues": 1,
+          "produced_frames": 48048
+        }
+      ],
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "audio_buffer_size_ms": 160,
+      "config_sha256": "13d7e7c2c32c0d56491cb9c3f9b7f2e02fee27e4b96e5c2a21cfc0a51c6b1b4d",
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    },
+    "audio-buffer-80-trial2-20261001": {
+      "exit_code": 0,
+      "completed": true,
+      "timing": {
+        "average_fps": 29.917617493228143,
+        "frame_ms": {
+          "median": 33.35444999999959,
+          "p95": 36.49330000000006,
+          "p99": 50.83360000000425,
+          "max": 114.78649999999391
+        },
+        "frames_over_50ms": 15,
+        "rolling_1s_fps_min": 25,
+        "emulation_speed_percent": 99.8251170357379
+      },
+      "seconds": 46.9288706,
+      "audio_seconds": 46,
+      "dma_empty": 9,
+      "stream_empty": 8,
+      "max_callback_gap_ms": 13.0269,
+      "empty_buckets": [
+        {
+          "second": 9,
+          "channel": 0,
+          "empty_dequeues": 1,
+          "produced_frames": 30920
+        },
+        {
+          "second": 14,
+          "channel": 0,
+          "empty_dequeues": 1,
+          "produced_frames": 32352
+        },
+        {
+          "second": 14,
+          "channel": 1,
+          "empty_dequeues": 1,
+          "produced_frames": 48384
+        },
+        {
+          "second": 17,
+          "channel": 1,
+          "empty_dequeues": 1,
+          "produced_frames": 47880
+        },
+        {
+          "second": 25,
+          "channel": 0,
+          "empty_dequeues": 2,
+          "produced_frames": 30120
+        },
+        {
+          "second": 25,
+          "channel": 1,
+          "empty_dequeues": 2,
+          "produced_frames": 45192
+        },
+        {
+          "second": 47,
+          "channel": 0,
+          "empty_dequeues": 4,
+          "produced_frames": 30568
+        },
+        {
+          "second": 47,
+          "channel": 1,
+          "empty_dequeues": 3,
+          "produced_frames": 45864
+        },
+        {
+          "second": 48,
+          "channel": 0,
+          "empty_dequeues": 1,
+          "produced_frames": 31984
+        },
+        {
+          "second": 48,
+          "channel": 1,
+          "empty_dequeues": 1,
+          "produced_frames": 48048
+        }
+      ],
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "audio_buffer_size_ms": 80,
+      "config_sha256": "6758c0b8ffbf701082c47648582559f9a98009899433120de5faa5a20c76fce2",
+      "runtime_header": [
+        "Host CPU affinity: logical_processors=1 mask=0x1",
+        "CPU backend: JIT",
+        "Effective video: dual_core=0 sync_gpu=0 gpu_determinism=auto immediate_xfb=0 skip_duplicate_xfb=1 vsync=0 efb_scale=3 msaa=1 smooth_early=0 rush=0 emulation_speed=1.000000 cpu_overclock_enabled=0 cpu_overclock=1.000000 vi_overclock_enabled=0 vi_overclock=1.000000"
+      ]
+    }
+  },
+  "source_findings": [
+    "Mixer Core.AudioBufferSize default80ms; Cubeb requests max(512 frames, device minimum latency). Requested latency does not establish actual device latency.",
+    "Mixer queue overflow/recovery positions playhead roughly half a configured queue behind producer; AudioFillGaps defaulttrue can replay old granules on starvation.",
+    "Larger queue is a buffering tradeoff, not a fix for CPU/rendering stalls; fewer empty dequeues alone does not prove audible correctness."
+  ],
+  "interpretation": "160ms runs recorded0/0 and0/1 DMA/stream empties versus9/8 in80ms control. Control also had larger frame stalls. Non-deterministic workload/host variation prevents a clean causal gain claim. Keep160ms private, normal80ms unchanged.",
+  "host_read_only_after_runs": {
+    "power_plan": "Balanced",
+    "WMI_CurrentClockSpeed_MHz": 3801,
+    "WMI_MaxClockSpeed_MHz": 3801,
+    "scope": "Post-run WMI snapshot does not establish dynamic clocks or throttling during combat. No power/system settings changed."
+  },
+  "validation": "Same previously verified Windows runner;39/39 native and141 tooling passed/1 skipped. No rebuild required for private config experiment. All3 runtime trials exit0.",
+  "limits": [
+    "No new visual capture or audible/device verification; sound crackling remains unresolved.",
+    "Not qualifying repeats; ten-minute varied combat and sustained frame pacing remain outstanding. Goal active/unmet.",
+    "Proprietary assets, configuration, captures, saves and logs remain private; numeric evidence only in Git."
+  ]
+}
