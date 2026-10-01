@@ -106,7 +106,7 @@
     }
   },
   "menu_conclusion": "Start pauses. A second Start does not resume. B resumes: observed entity positions and health change again. No menu visual validation.",
-  "audio_conclusion": "Startup reserve passes the synthetic 20ms continuity test. Plaza still has 62 DMA and 93 streaming empty dequeues. Crackling remains unresolved; no audible or device playback assessment. PCM has no clipped samples, which does not prove clean sound.",
+  "audio_conclusion": "Startup reserve passes the synthetic 20ms continuity test. Main channels had zero empty dequeues in seconds 0-52, one each in second 53, then 61 DMA / 92 music in final bucket 57. Final burst retained; shutdown cause unproven. Counts are granule reads, not audible dropout counts. Crackling remains unverified; no listening or device playback assessment.",
   "binaries": {
     "moderngekko-run.exe": {
       "private_path": ".local/build/windows-x64/runtime/moderngekko-run.exe",
@@ -160,5 +160,62 @@
   "validation_notes": [
     "Initial long-route postconditions expecting four living heroes and Start-to-resume failed; actual failures retained.",
     "Targeted menu launcher initially rejected Cubeb without windowed/audio profiling before launching; corrected to silent Null backend, then completed."
-  ]
+  ],
+  "audio_bucket_analysis": {
+    "schema": 1,
+    "scope": "Mixer empty-read counters; not audible dropouts, combat boundaries or device playback.",
+    "covered_buckets": 58,
+    "initial_complete_buckets_without_main_empty_reads": 53,
+    "final_bucket_second": 57,
+    "overflow_bucket_present": false,
+    "channels": {
+      "dma": {
+        "total_empty_dequeues": 62,
+        "before_final_bucket_empty_dequeues": 1,
+        "final_bucket_empty_dequeues": 61,
+        "nonzero_buckets": [
+          {
+            "second": 53,
+            "empty_dequeues": 1
+          },
+          {
+            "second": 57,
+            "empty_dequeues": 61
+          }
+        ]
+      },
+      "music": {
+        "total_empty_dequeues": 93,
+        "before_final_bucket_empty_dequeues": 1,
+        "final_bucket_empty_dequeues": 92,
+        "nonzero_buckets": [
+          {
+            "second": 53,
+            "empty_dequeues": 1
+          },
+          {
+            "second": 57,
+            "empty_dequeues": 92
+          }
+        ]
+      }
+    },
+    "max_callback_gap_ms": 11.7508,
+    "limitations": [
+      "Final bucket is retained, not discarded or classified as shutdown.",
+      "One empty dequeue is a granule read, not one audible dropout.",
+      "Zero empty reads do not establish clean audio, speed, visuals or combat coverage.",
+      "Bucket 1200, if present, combines all later observations."
+    ]
+  },
+  "audio_profile_sha256": "2b0be0597c4f08c3414f9a62bcb5890c80c2151a5d032b11702920e54c5357db",
+  "followup_tooling_tests": {
+    "run": 165,
+    "passed": 164,
+    "skipped": 1,
+    "seconds": 22.662,
+    "new_audio_analysis_tests": 7,
+    "runtime_rebuilt": false,
+    "runner_hash_reverified_unchanged": true
+  }
 }

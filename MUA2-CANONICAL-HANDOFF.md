@@ -1,5 +1,30 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Audio counter interpretation correction - 2026-10-01
+
+Read-only analysis of the last plaza profile shows NO main-channel empty reads
+in complete seconds 0-52. DMA and music each have one empty read in second 53.
+The other 61 DMA / 92 music reads occur in final bucket 57. Prior totals were
+correct, but must not be presented as that many combat dropouts. Each count is
+a granule read, not an audible event. The final burst remains in the evidence;
+its coincidence with the end does not prove shutdown caused it. Guest probes
+lack host timestamps, so precise combat/menu/stop attribution remains unknown.
+
+Added tools/analyze_audio_profile.py to retain total and final-bucket counts
+separately, with explicit coverage checks. Missing/duplicate rows and mixed
+clock origins fail rather than silently becoming zero underruns. It neither
+measures FPS nor establishes audible quality. Existing PCM and profile remain
+private; the aggregate and profile hash are in AUDIO-CONTROLS-CONTINUITY.json.
+
+Python regression suite: 164 passed, one skipped (165 run, 22.662s), including
+seven new audio analysis tests.
+
+No runtime source change, rebuild, game launch, capture or FPS sweep in this
+checkpoint. The prior runner hash remains verified unchanged. Audio listening,
+device-path behavior and remaining Xbox control gaps are still open; the full
+performance goal remains unmet. Continue audio/controls, per user direction.
+
+
 ## Audio continuity and Xbox profile upgrade - 2026-10-01
 
 Current user priority: audio crackling and Xbox controls/menus. Stop the previous
