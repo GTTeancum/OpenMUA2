@@ -1,0 +1,575 @@
+{
+  "schema": 1,
+  "scope": "Plaza only, single logical CPU2/mask4, full JIT, Vulkan3x/1920x1080 preset, normal clocks, muted Cubeb, formatter ON, identity cache ON and reserve524288. No screenshots or host input. Continued-combat measurements include diagnostic memory/timing reads and runtime spans; not acceptance evidence.",
+  "continued_run": {
+    "private_run": ".local/automation/plaza-three-phase-entities-20261001",
+    "runtime_and_harness_exit_code": 0,
+    "route_completed": true,
+    "entity_probes": 45,
+    "generation": 13,
+    "phases": [
+      {
+        "phase": 1,
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 14564,
+          "last_frame": 16125,
+          "emulated_ticks": 37970232300,
+          "intervals": 1561,
+          "seconds": 51.9859357,
+          "average_fps": 30.027352186333736,
+          "frame_ms": {
+            "median": 33.36389999999767,
+            "p95": 34.13409999999928,
+            "p99": 39.14890000000004,
+            "max": 53.08579999999807
+          },
+          "one_percent_low_fps": 22.146153261623358,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 860,
+          "frames_over_50ms": 3,
+          "longest_consecutive_over_50ms_seconds": 0.05308579999999807,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 52.08536666666667,
+          "emulation_speed_percent": 100.19126512840023,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1561
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0027666666689990516,
+            "p99": 5.782233333333372,
+            "min": -14.728466666666677,
+            "max": 19.719133333331403
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "compile": {
+          "calls": 22441,
+          "union_ms": 636.0779,
+          "max_span_ms": 0.9864,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "jit_emit": {
+          "calls": 22441,
+          "union_ms": 401.0772,
+          "max_span_ms": 0.5939,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "worst_frames": [
+          {
+            "frame": 15351,
+            "host_ms": 53.0858,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 8.2508,
+            "cpu_thread_unclassified_ms": 44.835,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0044,
+              "jit_compile": 25.154,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 0.1295,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 17.5911,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.0,
+              "jit_finalize": 4.372,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 2.3069,
+              "shader_compile": 0.0,
+              "jit_links": 0.2681,
+              "throttle": 8.2464,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.1056
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 62500000,
+              "process_cpu_ns": 62500000,
+              "thread_cycles": 166516501
+            }
+          },
+          {
+            "frame": 14604,
+            "host_ms": 52.8594,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 10.114,
+            "cpu_thread_unclassified_ms": 42.7454,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0059,
+              "jit_compile": 22.4033,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 0.1084,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 15.8157,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.1181,
+              "jit_finalize": 3.6826,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 2.162,
+              "shader_compile": 0.0,
+              "jit_links": 0.0,
+              "throttle": 10.1081,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.1211
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 31250000,
+              "process_cpu_ns": 31250000,
+              "thread_cycles": 164571064
+            }
+          }
+        ],
+        "entity_probes": 15,
+        "positive_hero_health_counts": [
+          4
+        ],
+        "positive_identified_opponent_health_counts": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      {
+        "phase": 2,
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 16128,
+          "last_frame": 17677,
+          "emulated_ticks": 37678340700,
+          "intervals": 1549,
+          "seconds": 51.6853953,
+          "average_fps": 29.969781424889284,
+          "frame_ms": {
+            "median": 33.36519999999865,
+            "p95": 33.94880000000455,
+            "p99": 34.57970000000188,
+            "max": 35.848800000000125
+          },
+          "one_percent_low_fps": 28.625402790725836,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30,
+          "frames_over_33_334ms": 911,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 51.68496666666667,
+          "emulation_speed_percent": 99.99917068771391,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1549
+          },
+          "host_minus_guest_interval_ms": {
+            "median": -0.0014666666680179796,
+            "p99": 1.213033333335209,
+            "min": -2.817266666668497,
+            "max": 2.4821333333334556
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "compile": {
+          "calls": 675,
+          "union_ms": 27.0086,
+          "max_span_ms": 0.3301,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "jit_emit": {
+          "calls": 675,
+          "union_ms": 17.6283,
+          "max_span_ms": 0.3055,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "worst_frames": [
+          {
+            "frame": 16727,
+            "host_ms": 35.8488,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 16.8182,
+            "cpu_thread_unclassified_ms": 19.0306,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0021,
+              "jit_compile": 0.0,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 2.24,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.0,
+              "jit_finalize": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 0.0,
+              "shader_compile": 0.0,
+              "jit_links": 0.0,
+              "throttle": 16.8161,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.0608
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 46875000,
+              "process_cpu_ns": 46875000,
+              "thread_cycles": 79249431
+            }
+          },
+          {
+            "frame": 16889,
+            "host_ms": 35.1927,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 14.8903,
+            "cpu_thread_unclassified_ms": 20.3024,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0025,
+              "jit_compile": 0.0,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 2.2312,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.0,
+              "jit_finalize": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 0.0,
+              "shader_compile": 0.0,
+              "jit_links": 0.0,
+              "throttle": 14.8878,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.0739
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 46875000,
+              "process_cpu_ns": 46875000,
+              "thread_cycles": 82783362
+            }
+          }
+        ],
+        "entity_probes": 15,
+        "positive_hero_health_counts": [
+          4
+        ],
+        "positive_identified_opponent_health_counts": [
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "phase": 3,
+        "timing": {
+          "scope": "new-frame callback timing, not display scanout or correctness proof",
+          "first_frame": 17680,
+          "last_frame": 19224,
+          "emulated_ticks": 37556719200,
+          "intervals": 1544,
+          "seconds": 51.5183418,
+          "average_fps": 29.969908697643678,
+          "frame_ms": {
+            "median": 33.367249999999515,
+            "p95": 33.95560000000053,
+            "p99": 34.5247999999998,
+            "max": 38.49089999999933
+          },
+          "one_percent_low_fps": 28.433813989187147,
+          "rolling_1s_fps_min": 29,
+          "rolling_1s_fps_median": 30.0,
+          "frames_over_33_334ms": 883,
+          "frames_over_50ms": 0,
+          "longest_consecutive_over_50ms_seconds": 0.0,
+          "warmup_seconds": 0,
+          "dropped_samples": 0,
+          "guest_ticks_per_second": 729000000,
+          "emulated_seconds": 51.51813333333334,
+          "emulation_speed_percent": 99.99959535447108,
+          "guest_frame_ms": {
+            "median": 33.36666666666667,
+            "p99": 33.36666666666667,
+            "max": 33.36666666666667
+          },
+          "guest_interval_counts_ms": {
+            "33.367": 1544
+          },
+          "host_minus_guest_interval_ms": {
+            "median": 0.0005833333328458812,
+            "p99": 1.1581333333331307,
+            "min": -5.188266666665068,
+            "max": 5.124233333332659
+          },
+          "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+        },
+        "compile": {
+          "calls": 1775,
+          "union_ms": 49.9852,
+          "max_span_ms": 0.3621,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "jit_emit": {
+          "calls": 1775,
+          "union_ms": 32.3884,
+          "max_span_ms": 0.3228,
+          "threads": [
+            15372275046085326779
+          ]
+        },
+        "worst_frames": [
+          {
+            "frame": 19221,
+            "host_ms": 38.4909,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 12.4671,
+            "cpu_thread_unclassified_ms": 26.0238,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0052,
+              "jit_compile": 0.0,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 0.2277,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.0,
+              "jit_finalize": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 0.0,
+              "shader_compile": 0.0,
+              "jit_links": 0.0,
+              "throttle": 12.4619,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.0274
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 15625000,
+              "process_cpu_ns": 15625000,
+              "thread_cycles": 55655823
+            }
+          },
+          {
+            "frame": 18295,
+            "host_ms": 36.5477,
+            "guest_ms": 33.36666666666667,
+            "cpu_thread_wait_union_ms": 16.5064,
+            "cpu_thread_unclassified_ms": 20.0413,
+            "cpu_thread_coverage_ms": {
+              "gpu_present": 0.0,
+              "jit_entry_map": 0.0,
+              "gpu_fence": 0.0033,
+              "jit_compile": 0.0,
+              "gpu_worker": 0.0,
+              "gpu_decode_slow": 2.0363,
+              "jit_instruction": 0.0,
+              "jit_backpatch": 0.0,
+              "jit_emit": 0.0,
+              "pipeline_compile": 0.0,
+              "jit_ranges": 0.0,
+              "jit_finalize": 0.0,
+              "gpu_pacing": 0.0,
+              "gpu_submit": 0.0,
+              "jit_analyze": 0.0,
+              "shader_compile": 0.0,
+              "jit_links": 0.0,
+              "throttle": 16.5031,
+              "jit_backpatch_rehash": 0.0,
+              "present": 0.1125
+            },
+            "frame_cpu_counters": {
+              "thread_cpu_ns": 15625000,
+              "process_cpu_ns": 15625000,
+              "thread_cycles": 82562992
+            }
+          }
+        ],
+        "entity_probes": 15,
+        "positive_hero_health_counts": [
+          3,
+          4
+        ],
+        "positive_identified_opponent_health_counts": [
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "interpretation": "Later phases compiled much less and had no >50ms frames, but opponent counts also fell. Do not attribute the entire timing difference to a warm JIT cache or claim equivalent maximum enemy load. Each phase is one continued process, not three independent qualifying repeats. First phase slightly catches up to guest time at its boundary."
+  },
+  "pgo_trials": [
+    {
+      "variant": "path",
+      "flags": "/LTCG /GENPROFILE:EXACT,PGD=...",
+      "build_exit_code": 0,
+      "native_tests_passed": 39,
+      "native_test_seconds": 7.79,
+      "private_run": ".local/automation/plaza-host-pgo-training1-20261001",
+      "runner_sha256": "df30b29b773472dfaf6710c9ed9ef0262790048967cd2c2ca4f815d2552d6ace",
+      "harness_exit_code": 1,
+      "runtime_exit_code": 1,
+      "route_completed": false,
+      "error": "TimeoutError: benchmark deadline",
+      "elapsed_seconds": 320.14100000000326,
+      "last_status_frame_count": 0,
+      "completed_entity_probes": 0,
+      "database_bytes": 83030016,
+      "collected_pgc_files": 0,
+      "second_training_run": "not started after first failed",
+      "interpretation": "A database from linking is not usable combat training. No USEPROFILE optimized candidate was built."
+    },
+    {
+      "variant": "fast",
+      "flags": "/LTCG /FASTGENPROFILE:EXACT,COUNTER64,PGD=...",
+      "build_exit_code": 0,
+      "native_tests_passed": 39,
+      "native_test_seconds": 4.92,
+      "private_run": ".local/automation/plaza-host-pgo-fast-training1-20261001",
+      "runner_sha256": "fd50aa8aa5c307b386ac056f49a6c47a77554f9b8f1d541683f753544abd9671",
+      "harness_exit_code": 1,
+      "runtime_exit_code": 1,
+      "route_completed": false,
+      "error": "TimeoutError: benchmark deadline",
+      "elapsed_seconds": 200.14100000000326,
+      "last_status_frame_count": 0,
+      "completed_entity_probes": 0,
+      "database_bytes": 76353536,
+      "collected_pgc_files": 0,
+      "second_training_run": "not started after first failed",
+      "interpretation": "A database from linking is not usable combat training. No USEPROFILE optimized candidate was built."
+    }
+  ],
+  "pgo_sources": [
+    "https://learn.microsoft.com/en-us/cpp/build/reference/genprofile-fastgenprofile-generate-profiling-instrumented-build?view=msvc-170",
+    "https://learn.microsoft.com/en-us/cpp/build/reference/useprofile?view=msvc-170"
+  ],
+  "decision": "Reject host PGO experiment. Both instrumented runners failed to reach usable gameplay before their deadlines; cause unproven. Experimental CMake hook/options, tests and documentation moved to a private rejected-experiment folder. Tracked CMakeLists restored to HEAD. No PGO feature or optimization is shipped.",
+  "restoration": {
+    "command": "Build.cmd --cpu jit --jobs 2 after removing experimental CMake cache entries",
+    "build_exit_code": 0,
+    "native_passed": 39,
+    "native_failed": 0,
+    "native_seconds": 6.91,
+    "python_run": 157,
+    "python_passed": 156,
+    "python_skipped": 1,
+    "python_seconds": 19.624,
+    "local_lto": true,
+    "warnings": "Existing CMake deprecation, unavailable Wayland, object-path-length and lz4 IPO warnings; no compiler/linker warnings/errors found.",
+    "pgo_flags_and_pgort_dependency": "verified absent",
+    "private_run": ".local/automation/plaza-host-pgo-restored-20261001",
+    "runtime_exit_code": 0,
+    "harness_exit_code": 0,
+    "route_completed": true,
+    "elapsed_seconds": 71.85899999999674,
+    "entity_probes": 15,
+    "positive_hero_health_counts": [
+      4
+    ],
+    "positive_identified_opponent_health_counts": [
+      6,
+      7,
+      8
+    ],
+    "timing": {
+      "scope": "new-frame callback timing, not display scanout or correctness proof",
+      "first_frame": 14619,
+      "last_frame": 16112,
+      "emulated_ticks": 36316179900,
+      "intervals": 1493,
+      "seconds": 49.8166841,
+      "average_fps": 29.969879107228653,
+      "frame_ms": {
+        "median": 33.367599999998276,
+        "p95": 34.124599999998395,
+        "p99": 34.99630000000309,
+        "max": 53.1612999999993
+      },
+      "one_percent_low_fps": 25.20472114672698,
+      "rolling_1s_fps_min": 29,
+      "rolling_1s_fps_median": 30,
+      "frames_over_33_334ms": 816,
+      "frames_over_50ms": 1,
+      "longest_consecutive_over_50ms_seconds": 0.0531612999999993,
+      "warmup_seconds": 2,
+      "dropped_samples": 0,
+      "guest_ticks_per_second": 729000000,
+      "emulated_seconds": 49.816433333333336,
+      "emulation_speed_percent": 99.99949662111962,
+      "guest_frame_ms": {
+        "median": 33.36666666666667,
+        "p99": 33.36666666666667,
+        "max": 33.36666666666667
+      },
+      "guest_interval_counts_ms": {
+        "33.367": 1493
+      },
+      "host_minus_guest_interval_ms": {
+        "median": 0.0009333333316069448,
+        "p99": 1.6296333333364195,
+        "min": -14.686166666666347,
+        "max": 19.79463333333263
+      },
+      "cadence_scope": "Guest timestamps describe VI/presentation cadence; residuals include host scheduling and presentation, not CPU execution time alone."
+    },
+    "timing_scope": "Diagnostic probe run; does not prove a new gain or visual/audible correctness."
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "bytes": 16070656,
+      "sha256": "80cde740c3e08f72c36a1f4b46df1e672f0e5102e6388b8d76e8cab253129cb5"
+    },
+    "moderngekko-port.exe": {
+      "bytes": 243712,
+      "sha256": "45c05c81254d160f603e00f07514363745d0118819861abf1c9274db4fccebb9"
+    },
+    "ModernGekko.exe": {
+      "bytes": 12204032,
+      "sha256": "d7e4211dfd4ce7680315afb4f9ab981aaf7db866add42e1a6ed6b6e0ab259cad"
+    },
+    "moderngekko-module-info.exe": {
+      "bytes": 29184,
+      "sha256": "d1bf66874641d891257f8826751b605031878c4ccd77e3c3cf3a4dadf9b22af7"
+    },
+    "dolrecomp.exe": {
+      "bytes": 212992,
+      "sha256": "8aa0011925baa7a3e83ba819ccaadbc301cf79df5a9dacb53233e98cbdb18ecb"
+    }
+  },
+  "private_experimental_checks": "Four CMake configuration tests passed after correcting FILEPATH normalization and the synthetic WIN32 override; the experiment-stage suite ran161 tests/160passed/1skip in20.075s. These optional experiment files are no longer in tracked source.",
+  "goal": "UNMET. Initial compilation stalls, qualifying repeats, ten-minute combat and audio/visual limitations remain. The successful restoration is not an FPS improvement."
+}

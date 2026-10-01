@@ -1,5 +1,50 @@
 # Current status — GitHub main
 
+## Continued plaza combat and rejected host PGO - 2026-10-01
+
+Three successive plaza passes in one process completed with 45 entity probes,
+matching generation 13. No screenshots or host input. CPU 2 / mask 4, full JIT,
+Vulkan 3x / 1920x1080 preset, normal clocks, muted Cubeb, formatter/identity cache ON,
+reserve 524288. Runtime profiling and memory/timing probes make these diagnostics,
+not three independent qualifying repeats.
+
+| Pass | New FPS | P99 ms | Worst ms | >50ms | JIT compile ms | Observed living opponents |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 30.0274 | 39.149 | 53.086 | 3 | 636.078 | 4-7 |
+| 2 | 29.9698 | 34.580 | 35.849 | 0 | 27.009 | 3-5 |
+| 3 | 29.9699 | 34.525 | 38.491 | 0 | 49.985 | 1-4 |
+
+Each pass covered about 52 seconds. Initial worst frame included 25.154 ms of JIT
+compilation. Later passes were steadier, but enemy counts also fell: do not call
+this an equivalent maximum-load comparison or attribute all improvement to
+warm code. The first boundary includes slight catch-up (100.191% guest speed);
+subsequent passes were approximately 100%. Zero dropped frame samples.
+
+Tested MSVC host PGO via the existing Windows build path: /GENPROFILE:EXACT
+and /FASTGENPROFILE:EXACT,COUNTER64, each with /LTCG and private databases.
+Both builds passed 39 native tests (7.79s/4.92s), but both training attempts timed
+out before usable gameplay: zero observed frames/probes, no collected .pgc,
+failed route and runtime/harness exit 1. Elapsed 320.141s / 200.141s include shutdown
+allowance. Second planned training runs did not start. No optimized USEPROFILE
+candidate was built. Cause unproven; reject this experiment instead of shipping it.
+Experimental source/options/tests/docs were preserved privately and removed from
+the checkout; tracked CMakeLists is restored. No profiler installation or global
+environment changes. Private profiles and game data remain outside Git.
+
+Restored normal supported Windows JIT build passed: 39/39 native tests (6.91s),
+Python 156 passed / 1 skipped (157 tests, 19.624s). Existing CMake warnings only;
+no compiler/linker warnings/errors. PGO flags and profiler DLL dependency absent.
+A fresh restored-runner plaza run exited 0 and completed 15 guarded probes with
+four positive-health heroes and 6-8 identified positive-health opponents. Its
+probe-instrumented timing was 29.9699 FPS, P99 34.996 ms, max 53.161 ms, one >50 ms frame;
+this verifies recovery and supplies diagnostic timing, not a new FPS gain.
+Runner SHA256 80cde740c3e08f72c36a1f4b46df1e672f0e5102e6388b8d76e8cab253129cb5.
+Five binary hashes, failures and numeric phase evidence are recorded in
+evidence/windows-20260930/PLAZA-CONTINUED-COMBAT-PGO-REJECTED.json.
+Goal UNMET. First-use compilation spikes remain; sustained combat, qualifying
+repeats and audio/visual limits are not resolved by this checkpoint.
+
+
 ## Read-only plaza entity observations - 2026-10-01
 
 Added tools/analyze_entity_probe.py and seven synthetic regression cases. This
