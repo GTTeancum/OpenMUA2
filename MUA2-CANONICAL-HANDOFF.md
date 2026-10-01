@@ -1,5 +1,52 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Processor placement and long-run diagnostic - 2026-10-01
+
+Added --logical-processor N to tools/run_combat_benchmark.py (Windows, current
+processor group). The child inherits exactly one allowed logical CPU; the harness
+is immediately restored. The runner still pins/verifies its own process, and the
+benchmark now checks the requested mask, not only its bit count. No global policy,
+unrelated process, native source/binary or normal launcher default changed.
+Seven new tests cover setup/launch/restore failures, cleanup, allowed masks and
+runtime confirmation. Tooling: 149 run, 148 passed, 1 skipped (19.762s). New option
+also passed a real CPU2 plaza run. Prior native Windows build 39/39 still applies;
+runner remains c5961c5d32ebeb99be9492bea5ea621757af405e0da0c754cfa0e2f4377c1311.
+
+All runs: whole game process on one logical CPU, JIT, Vulkan3x, normal speed/clocks,
+Cubeb muted, formatter experiment ON, indirect hints OFF, no screenshots. CPU
+numbers below are logical processor indices, not claims about physical topology.
+
+| Run | CPU | P99 ms | Worst ms | Frames >50ms | New FPS |
+| --- | --- | --- | --- | --- | --- |
+| Preliminary (harness also pinned) | 2 | 36.053 | 57.195 | 3 | 29.9702 |
+| Restored-harness run | 2 | 37.519 | 49.970 | 0 | 29.9702 |
+| Comparison | 4 | 36.858 | 57.384 | 2 | 29.9701 |
+| Control | 0 | 45.292 | 61.772 | 6 | 29.9704 |
+| Repeat 2 | 2 | 35.363 | 60.374 | 1 | 29.9698 |
+| New CLI option validation | 2 | 36.471 | 60.152 | 1 | 29.9702 |
+
+CPU2 improves the observed tail consistently enough for further diagnostics;
+it is not proven universally preferable. Normal launcher stays unchanged.
+
+A longer CPU2 run repeated the existing plaza input cycle14 times, omitting the
+initial approach after cycle1; 1,458 timed holds / 628.69 commanded guest seconds.
+Runtime/harness exit0. Measured after two seconds: 643.055s, 29.8948 new FPS,
+P99 34.270ms, 17 frames >50ms, maximum1,220.296ms, lowest rolling second0;
+no samples dropped. At138.405s a 1,220.296ms host gap coincides with1,234.567ms
+guest presentation gap. At349.960s a151.890ms host gap has normal33.367ms guest
+cadence. Preserve both; do not discard unverified transitions as loading.
+Minutes2,4,5,7-11 have no >50ms intervals; that is NOT proof of continued combat.
+Hero health, enemy activity and scene state were not observed. The long run is
+NOT ten-minute combat acceptance and no clean-audio claim is made.
+
+Next investigate the guest-side gap/possible transition and establish non-visual
+activity validation before interpreting stable late cadence as combat. Keep CPU2
+as an explicit diagnostic option, plaza only, no screenshots. Goal UNMET: verified
+continuous combat, frame pacing and audible quality remain outstanding.
+Evidence: evidence/windows-20260930/PLAZA-PROCESSOR-ENDURANCE.json.
+
+
+
 ## Guarded direct-call experiment: mixed pacing results - 2026-10-01
 
 Added default-off OPENMUA2_INDIRECT_HINTS=origin:target1,target2,target3 for an

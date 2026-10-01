@@ -10,6 +10,64 @@ import subprocess
 import time
 
 
+class _WindowsAffinity:
+    def __init__(self):
+        if os.name != "nt":
+            raise OSError("Explicit logical processor selection requires Windows")
+        import ctypes
+        from ctypes import wintypes
+        self.ctypes = ctypes
+        self.api = ctypes.WinDLL("kernel32", use_last_error=True)
+        self.api.GetCurrentProcess.restype = wintypes.HANDLE
+        self.api.GetProcessAffinityMask.argtypes = [wintypes.HANDLE,
+            ctypes.POINTER(ctypes.c_size_t), ctypes.POINTER(ctypes.c_size_t)]
+        self.api.GetProcessAffinityMask.restype = wintypes.BOOL
+        self.api.SetProcessAffinityMask.argtypes = [wintypes.HANDLE, ctypes.c_size_t]
+        self.api.SetProcessAffinityMask.restype = wintypes.BOOL
+        self.handle = self.api.GetCurrentProcess()
+
+    def get_mask(self):
+        allowed, system = self.ctypes.c_size_t(), self.ctypes.c_size_t()
+        if not self.api.GetProcessAffinityMask(self.handle, self.ctypes.byref(allowed),
+                                               self.ctypes.byref(system)):
+            raise self.ctypes.WinError(self.ctypes.get_last_error())
+        return allowed.value
+
+    def set_mask(self, mask):
+        if not self.api.SetProcessAffinityMask(self.handle, mask):
+            raise self.ctypes.WinError(self.ctypes.get_last_error())
+
+
+def launch_on_processor(command, processor=None, *, affinity=None, **kwargs):
+    """Child inherits one CPU at creation; immediately restore this harness.
+
+    The runner independently pins/verifies all its threads at startup. No global
+    policy or unrelated process changes. Restore failure terminates the child.
+    """
+    if processor is None:
+        return subprocess.Popen(command, **kwargs)
+    if type(processor) is not int or not 0 <= processor < 64:
+        raise ValueError("logical processor must be an integer from 0 through 63")
+    affinity = affinity if affinity is not None else _WindowsAffinity()
+    original = affinity.get_mask()
+    selected = 1 << processor
+    if original & selected != selected:
+        raise ValueError("requested logical processor is outside the allowed mask")
+    affinity.set_mask(selected)
+    child = None
+    try:
+        child = subprocess.Popen(command, **kwargs)
+    finally:
+        try:
+            affinity.set_mask(original)
+        except Exception:
+            if child is not None:
+                child.terminate()
+                child.wait(timeout=10)
+            raise
+    return child
+
+
 def sha(path):
     with path.open("rb") as f:
         return hashlib.file_digest(f,"sha256").hexdigest()
@@ -169,7 +227,7 @@ def validate_timed_inputs(root, commands):
             raise RuntimeError('timed input incomplete, inconsistent, or more than 1ms late')
 
 
-def validate_runtime_settings(log, cpu):
+def validate_runtime_settings(log, cpu, logical_processor=None):
     import re
     expected_cpu = "CPU backend: " + ("JIT" if cpu == "jit" else "StaticRecomp")
     if expected_cpu not in log.splitlines():
@@ -184,6 +242,8 @@ def validate_runtime_settings(log, cpu):
         match = re.fullmatch(r"Host CPU affinity: logical_processors=1 mask=0x([0-9a-fA-F]+)", line)
         if not match or int(match[1], 16).bit_count() != 1:
             raise RuntimeError("runtime is not restricted to one host logical processor")
+        if logical_processor is not None and int(match[1], 16) != 1 << logical_processor:
+            raise RuntimeError("runtime did not confirm the requested logical processor")
 
 
 def main():
@@ -199,6 +259,7 @@ def main():
     p.add_argument("--capture-audio",action="store_true",help="Private pre-volume stereo PCM tail (60s); requires --profile-audio and Cubeb. Not device playback.")
     p.add_argument("--resolution",default="1920x1080")
     p.add_argument("--timeout",type=float,default=600)
+    p.add_argument("--logical-processor", type=int, help="Windows: select one allowed logical CPU for the whole child game process; restore the harness immediately.")
     p.add_argument("--no-trace",action="store_true")
     p.add_argument("--queue-route", action="store_true", help="Publish the whole route before waiting; removes per-action host round trips. Advisory status may lag.")
     p.add_argument("--trace-presentation",action="store_true",help="Diagnostic copy/before/after events; copy counts are not FPS.")
@@ -212,6 +273,8 @@ def main():
     p.add_argument("--jit-ranges",help="Diagnostic: comma-separated hexadecimal start-end ranges use JIT within the native core.")
     p.add_argument('--jit-emission-address', type=lambda value: int(value, 0), help='Slow instruction timing (>100us) for one JIT block, or 0xffffffff for all; requires --profile-runtime.')
     args=p.parse_args()
+    if args.logical_processor is not None and not 0 <= args.logical_processor < 64:
+        p.error("--logical-processor must be between 0 and 63")
     if args.jit_emission_address is not None and (not args.profile_runtime or not 0 < args.jit_emission_address <= 0xffffffff):
         p.error('--jit-emission-address requires --profile-runtime and a nonzero 32-bit address')
     if args.capture_audio and (not args.profile_audio or args.audio != 'Cubeb'):
@@ -294,13 +357,14 @@ def main():
     metadata["jit_block_profile"] = args.jit_block_profile
     metadata["jit_profile_callers"] = args.jit_profile_callers
     metadata["single_core_required"] = True
+    metadata["requested_logical_processor"] = args.logical_processor
     metadata["host_logical_processors_required"] = 1
     metadata["simple_format"] = args.simple_format or "off"
     metadata["jit_block_profile_scope"] = "resident blocks after restored frame threshold; intrusive, invalidated blocks excluded" if args.jit_block_profile else None
     (root/"run.json").write_text(json.dumps(metadata,indent=2))
     started=time.monotonic(); index=0; timeline=[]
     with (root/"runtime.log").open("w") as log:
-        child=subprocess.Popen(cmd,stdout=log,stderr=subprocess.STDOUT,env=env,creationflags=subprocess.CREATE_NO_WINDOW if os.name=="nt" else 0)
+        child=launch_on_processor(cmd,args.logical_processor,stdout=log,stderr=subprocess.STDOUT,env=env,creationflags=subprocess.CREATE_NO_WINDOW if os.name=="nt" else 0)
         (root/"pid.txt").write_text(str(child.pid))
         def check():
             if child.poll() is not None:raise RuntimeError(f"runtime exited {child.returncode}")
@@ -351,7 +415,7 @@ def main():
             if child.returncode:raise RuntimeError(f"runtime exited {child.returncode}")
             validate_command_receipts(root,index)
             validate_timed_inputs(root, route['commands'])
-            validate_runtime_settings((root/"runtime.log").read_text(), cpu)
+            validate_runtime_settings((root/"runtime.log").read_text(), cpu, args.logical_processor)
             validate_formatter((root/"runtime.log").read_text(), args.simple_format)
             if args.profile_audio:
                 validate_audio_profile(root, (root/"runtime.log").read_text())

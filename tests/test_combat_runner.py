@@ -230,4 +230,71 @@ class DiagnosticArgumentsTest(unittest.TestCase):
                 self.assertEqual(raised.exception.code, 2)
                 copy.assert_not_called()
 
+class ProcessorLaunchTest(unittest.TestCase):
+    def api(self):
+        api = mock.Mock()
+        api.get_mask.return_value = 0xffff
+        return api
+
+    def test_default_does_not_change_affinity(self):
+        api = self.api()
+        with mock.patch.object(mod.subprocess, "Popen") as popen:
+            self.assertIs(mod.launch_on_processor(["runner"], affinity=api), popen.return_value)
+        api.get_mask.assert_not_called()
+        api.set_mask.assert_not_called()
+
+    def test_child_inherits_selected_mask_then_parent_restored(self):
+        api = self.api()
+        child = mock.Mock()
+        def launch(command, **kwargs):
+            self.assertEqual(api.set_mask.call_args_list, [mock.call(4)])
+            self.assertEqual(kwargs, {"creationflags": 123})
+            return child
+        with mock.patch.object(mod.subprocess, "Popen", side_effect=launch):
+            self.assertIs(mod.launch_on_processor(["runner"], 2, affinity=api,
+                                                 creationflags=123), child)
+        self.assertEqual(api.set_mask.call_args_list, [mock.call(4), mock.call(0xffff)])
+        child.terminate.assert_not_called()
+
+    def test_failed_launch_still_restores_parent(self):
+        api = self.api()
+        with mock.patch.object(mod.subprocess, "Popen", side_effect=OSError("launch failed")):
+            with self.assertRaisesRegex(OSError, "launch failed"):
+                mod.launch_on_processor(["runner"], 2, affinity=api)
+        self.assertEqual(api.set_mask.call_args_list, [mock.call(4), mock.call(0xffff)])
+
+    def test_failed_restore_stops_child(self):
+        api = self.api()
+        api.set_mask.side_effect = [None, OSError("restore failed")]
+        with mock.patch.object(mod.subprocess, "Popen") as popen:
+            with self.assertRaisesRegex(OSError, "restore failed"):
+                mod.launch_on_processor(["runner"], 2, affinity=api)
+            popen.return_value.terminate.assert_called_once_with()
+            popen.return_value.wait.assert_called_once_with(timeout=10)
+
+    def test_invalid_or_disallowed_processor_never_launches(self):
+        for index in (-1, 64, True, "2", 16):
+            api = self.api()
+            with self.subTest(index=index), mock.patch.object(mod.subprocess, "Popen") as popen:
+                with self.assertRaises(ValueError):
+                    mod.launch_on_processor(["runner"], index, affinity=api)
+                popen.assert_not_called()
+                api.set_mask.assert_not_called()
+
+    def test_failed_affinity_setup_never_launches(self):
+        api = self.api()
+        api.set_mask.side_effect = OSError("selection failed")
+        with mock.patch.object(mod.subprocess, "Popen") as popen:
+            with self.assertRaisesRegex(OSError, "selection failed"):
+                mod.launch_on_processor(["runner"], 2, affinity=api)
+            popen.assert_not_called()
+
+    def test_runtime_must_confirm_selected_processor(self):
+        log = ("CPU backend: JIT\nEffective video: dual_core=0 sync_gpu=0\n"
+               "Host CPU affinity: logical_processors=1 mask=0x4\n")
+        mod.validate_runtime_settings(log, "jit", 2)
+        with self.assertRaisesRegex(RuntimeError, "requested logical processor"):
+            mod.validate_runtime_settings(log, "jit", 0)
+
+
 if __name__ == '__main__':unittest.main()
