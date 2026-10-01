@@ -2,6 +2,16 @@
 
 ## Live Xbox action routing probe - 2026-10-01
 
+## Corrected control target - 2026-10-01
+
+The user rejected v4's routing as the desired layout and specified MUA1 Xbox 360
+as the template. RT must modify powers, D-pad must select heroes directly, X must
+handle contextual use/grab, and LB must block/dodge independently. The proposed
+MUA2 extension is LT fusion/partner selection, including fallen-hero revival.
+The current binary remains v4; no completed-remap claim. Implementation and
+validation requirements are in docs/MUA1-XBOX-CONTROL-PLAN.md. Audio/controls
+remain the priority; no renewed FPS sweep. No runtime change or rebuild here.
+
 ## Hero ownership research - 2026-10-01
 
 A bounded plaza route used eight RT presses and nine identity-guarded entity
@@ -2010,3 +2020,12 @@ and full fusion/revive behavior. Historical target sources:
 printed pages 4–5, and [PS2 review](https://www.cheatcc.com/articles/marvel-ultimate-alliance-2-review-for-playstation-2-ps2-psx2/).
 The current port uses B for back/resume. Audible quality remains unverified;
 no physical controller or menu visuals were assessed in the latest checks.
+
+## Corrected target quick reference (not implemented)
+
+MUA1 Xbox 360 is now the required template: A light, B heavy/charge, X use/grab,
+Y jump, LB block/dodge, RT + face buttons powers, D-pad direct hero selection.
+LT fusion/partner selection is the proposed MUA2 addition. The v4 table above
+records current behavior only and is not the desired finished layout.
+See [implementation plan](MUA1-XBOX-CONTROL-PLAN.md) for context, menu, revival
+and validation requirements.

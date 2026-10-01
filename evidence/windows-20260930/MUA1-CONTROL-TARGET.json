@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-01",
+  "scope": "User-directed control requirement correction and implementation plan only",
+  "target": "Marvel Ultimate Alliance 1 Xbox 360",
+  "plan": "docs/MUA1-XBOX-CONTROL-PLAN.md",
+  "runtime_changed": false,
+  "build_run": false,
+  "game_run": false,
+  "implemented_profile": "v4 (does not satisfy corrected target)",
+  "remaining": [
+    "Per-player context and ownership integration",
+    "Separate contextual use from block",
+    "Direct hero selection",
+    "RT powers and LT fusion extension",
+    "Menus and profile migration",
+    "Behavioral validation"
+  ],
+  "performance_goal_complete": false
+}

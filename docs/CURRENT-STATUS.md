@@ -2,6 +2,16 @@
 
 ## Live Xbox action routing probe - 2026-10-01
 
+## Corrected control target - 2026-10-01
+
+The user rejected v4's routing as the desired layout and specified MUA1 Xbox 360
+as the template. RT must modify powers, D-pad must select heroes directly, X must
+handle contextual use/grab, and LB must block/dodge independently. The proposed
+MUA2 extension is LT fusion/partner selection, including fallen-hero revival.
+The current binary remains v4; no completed-remap claim. Implementation and
+validation requirements are in docs/MUA1-XBOX-CONTROL-PLAN.md. Audio/controls
+remain the priority; no renewed FPS sweep. No runtime change or rebuild here.
+
 ## Hero ownership research - 2026-10-01
 
 A bounded plaza route used eight RT presses and nine identity-guarded entity
