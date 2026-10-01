@@ -63,7 +63,7 @@ int main(int argc, char** argv) {
       "D-Pad/Left", "D-Pad/Right", "Nunchuk/Buttons/C", "Nunchuk/Buttons/Z",
       "Nunchuk/Stick/Up", "Nunchuk/Stick/Down", "Nunchuk/Stick/Left", "Nunchuk/Stick/Right",
       "Nunchuk/Shake/X", "Nunchuk/Shake/Y", "Nunchuk/Shake/Z", "Shake/X", "Shake/Y",
-      "Shake/Z", "Tilt/Left", "Tilt/Right", "IR/Up", "IR/Down", "IR/Left", "IR/Right"}) {
+      "Shake/Z", "Swing/Up", "Swing/Down", "Tilt/Left", "Tilt/Right", "IR/Up", "IR/Down", "IR/Left", "IR/Right"}) {
     std::string value;
     if (!section->Get(key, &value)) return 3;
     auto parsed = ep::ParseExpression(value);
@@ -114,8 +114,13 @@ int main(int argc, char** argv) {
       !test({"Left X-"}, {"Nunchuk/Stick/Left"}) ||
       !test({"Right X+"}, {"Buttons/1", "Tilt/Right"}) ||
       !test({"Right X-"}, {"Buttons/1", "Tilt/Left"}) ||
-      !test({"Back", "Right X+"}, {"Buttons/1", "Tilt/Right"}) ||
-      !test({"Back", "Right Y+"}, {}) ||
+      !test({"Back"}, {}) ||
+      !test({"Back", "Right X+"}, {"Shake/X"}) ||
+      !test({"Back", "Right X-"}, {"Shake/X"}) ||
+      !test({"Back", "Right Y+"}, {"Swing/Up"}) ||
+      !test({"Back", "Right Y-"}, {"Swing/Down"}) ||
+      !test({"Back", "Shoulder L", "Shoulder R", "Right Y+"},
+            {"Nunchuk/Buttons/Z", "IR/Up"}) ||
       !test({"Shoulder L", "Shoulder R", "Right X-"},
             {"Nunchuk/Buttons/Z", "IR/Left"}) ||
       !test({}, {})) return 5;

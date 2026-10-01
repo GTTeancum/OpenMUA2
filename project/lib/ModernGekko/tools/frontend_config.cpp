@@ -412,10 +412,10 @@ bool GenerateControllerConfig(const fs::path &user_directory,
           manual_aim + ") | (" + std::string(preset) + " & !" + manual_aim + "))\n";
     };
     output << "Device = " << controllers[i] << '\n'
-           << "# OpenMUA2 Xbox action layout v2\n"
+           << "# OpenMUA2 Xbox action layout v3\n"
               "Buttons/A = ((!`Shoulder R`) & (`Button A` | `Button X`)) | hold(`Shoulder L` & `Shoulder R` & (`Button A` | `Button B` | `Button X` | `Button Y`), 0.12)\n"
               "Buttons/B = ((!`Shoulder R`) & (`Button B` | `Button X`))\n"
-              "Buttons/1 = (!(`Shoulder L` & `Shoulder R`)) & ((`Right X+` > 0.2) | (`Right X-` > 0.2))\n"
+              "Buttons/1 = !`Back` & (!(`Shoulder L` & `Shoulder R`)) & ((`Right X+` > 0.2) | (`Right X-` > 0.2))\n"
               "Buttons/2 = Start\n"
               "Buttons/- = `Trigger L` > 0.5\n"
               "Buttons/+ = `Trigger R` > 0.5\n"
@@ -429,10 +429,12 @@ bool GenerateControllerConfig(const fs::path &user_directory,
            << "IR/Left = " << fusion_axis("`Right X-`", "0.62 * (`Button A` | `Button X`)")
            << "IR/Right = " << fusion_axis("`Right X+`", "0.62 * (`Button B` | `Button Y`)")
            << "IR/Hide = !(`Shoulder L` & `Shoulder R`)\n"
-              "Tilt/Left = `Right X-` & !(`Shoulder L` & `Shoulder R`)\n"
-              "Tilt/Right = `Right X+` & !(`Shoulder L` & `Shoulder R`)\n"
+              "Tilt/Left = !`Back` & `Right X-` & !(`Shoulder L` & `Shoulder R`)\n"
+              "Tilt/Right = !`Back` & `Right X+` & !(`Shoulder L` & `Shoulder R`)\n"
               "Tilt/Dead Zone = 20.0\n"
-              "Shake/X = \n"
+              "Shake/X = `Back` & !(`Shoulder L` & `Shoulder R`) & (`Right X+` | `Right X-`)\n"
+              "Swing/Up = `Back` & !(`Shoulder L` & `Shoulder R`) & `Right Y+`\n"
+              "Swing/Down = `Back` & !(`Shoulder L` & `Shoulder R`) & `Right Y-`\n"
               "Shake/Y = \n"
               "Shake/Z = \n"
               "Rumble/Motor = Motor\n"

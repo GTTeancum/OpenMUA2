@@ -1,5 +1,44 @@
 # Current status — GitHub main
 
+## Xbox Safeguard gestures and route validation - 2026-10-01
+
+Generated Xbox profile v3 adds Back/View + right-stick sideways for shake and
+Back/View + right-stick up/down for swing. Camera rotation is suppressed while
+Back/View is held; LB+RB fusion aiming suppresses these gestures. Existing user
+profiles remain preserved. Real expression-parser tests cover these mappings
+and separation from camera/fusion controls. Downward swing is not game-verified.
+
+Healthy Iron Man reached the statue prompt by flying onto its pedestal. LB
+starts the interaction. The complete generated-v3 route toppled the statue in
+two runs, with native captures showing both prompts, the fallen statue, and
+Fury's completion response. All six captures were inspected sequentially.
+Use sideways input until the upward prompt, then promptly move the stick up.
+The route uses 1500ms sideways and 800ms upward; 500ms sideways was too short,
+while 2500ms followed by upward failed. A neutral delay and repeated upward
+pulses after the long shake also failed. Midpoint restore tests alone were
+insufficient; the final route completes without a midpoint reload.
+
+Build.cmd --cpu jit --jobs 2 passed, 39/39 native tests (7.06s). Tooling:
+141 passed, one skipped (59.553s). First build ran the old Xbox expectation
+and failed 1/39; corrected final rebuild passed. Existing CMake warnings:
+deprecation, missing Wayland, long object paths, lz4 CMP0069 IPO policy.
+No compiler/linker error in final build. Produced moderngekko-run.exe,
+ModernGekko.exe, moderngekko-port.exe and moderngekko-module-info.exe;
+sizes and SHA-256 hashes are in the evidence JSON. Local build uses LTO ON.
+
+The earlier paused exploration hit its 900s harness watchdog; child exit0,
+harness exit1, and its incomplete route remains failed. Private screenshots,
+saves and extracted mission data stay outside Git. No host input/capture used.
+These are interaction diagnostics: JIT, one logical CPU, Vulkan 3x EFB, normal
+speed, formatter experiment ON (normal default OFF), Cubeb muted. Audio was
+not heard; screenshots do not prove continuous animation or FPS acceptance.
+Three qualifying repeats and ten-minute varied combat remain outstanding.
+Next extend combat beyond the statue using the verified endpoint in private
+.local/automation/safeguard-v3-repeat-20261001/statue-completed.sav.
+Goal unmet. Evidence: evidence/windows-20260930/XBOX-SAFEGUARD-VALIDATION.json.
+Route: tools/routes/xbox-statue-safeguard.json.
+
+
 ## Combat-route interaction investigation - 2026-10-01
 
 Three private route probes completed with exit0; all ten native screenshots

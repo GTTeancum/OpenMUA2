@@ -1,0 +1,228 @@
+{
+  "scope": "Xbox Safeguard input validation, not FPS acceptance",
+  "runs": [
+    {
+      "private_run": ".local/automation/safeguard-horizontal-retry-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 25.07799999997951,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "visual_outcome": "Reached upward prompt only",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "00-horizontal.png",
+          "sha256": "78978106da6e0ffdd8471764e40ac16f34397d51a1607e3e38ea957f71a15757"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-lift-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 27.64100000000326,
+      "runner_sha256": "72db27298a579b7d65beca9d3ce159fbed468c4cf1c001c0a324c18897b5b4eb",
+      "visual_outcome": "Statue toppled after loading midpoint",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "00-lift.png",
+          "sha256": "fd0116bd1ad1cb38d25f31109476080c5cc9fe89caf2366db4b3ccf7962ddece"
+        },
+        {
+          "name": "01-result.png",
+          "sha256": "70feb1e7af8896eeed9033acfa9a107a06f61e6d3c2728d1138679393adfdcb0"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-generated-v3-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 32.70300000003772,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Failed: returned to horizontal prompt",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "2fe90692add3a00c3eacf1e7abd373bd96f2111c444ff07a27d1935f32dde30c"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "705a2171f7bd11a7d3d2a4e2ea04622b5dcfdb487746ff78a2d77d7b8324b813"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "22703308e26e393940af8419597743028e4264c00dcd357cc074ac5cdcf153cc"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-generated-v3-settle-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 31.48499999998603,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Failed: returned to horizontal prompt",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "16f2c36b1b5b8a884f8afaa3a2954fc841a8197e82b937680558e2594a915646"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "9d204edc827fa23b829d78d2264f8d69727b85aa3e516b24839a123003aad9bb"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "dcc0c48b81694b7258ba1d7745a5d379a1bba0592870119e39e0ee8b30edc888"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-v3-lift-isolate-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 26.89000000001397,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Statue toppled after loading midpoint",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "00-lift.png",
+          "sha256": "9bdf5223ac4ec54eeaf296a05c85ed27b2f579a83e54842e8b775f30f1dbfb6b"
+        },
+        {
+          "name": "01-result.png",
+          "sha256": "005412cd94ecc22906686b7b8f5dd62ec878fcd14bc5338112f9543898a99696"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-v3-pulses-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 34.375,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Failed: returned to horizontal prompt",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "9e5dfb0256ebd0e2ebeb0b7a1c3b8e13558239f8892ae732ddf4f6134fa3de30"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "17e0c4a696e4276f897af9abeaa61bbe3d5a4e89b263061d6d196d028f9a42e3"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "260573ecdb20cf535fd2dea4718ea036d30b14ff1ea14dbc09f600e861a1ed02"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-v3-short-shake-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 28.92200000002049,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Failed: never reached upward prompt",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "8befe371d651aab1c1811e52e8bf418a3483ee82902e3aa3ed67ec816b474fbd"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "ee58bd2bc178f109fb037bf46bd14e01a4a90f765e75f0e15c531af6fc339500"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "fa6becf38f5efb9366be1a0f87528d2438a75eadeb78210a101964eb7c18c85a"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-v3-medium-shake-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 30.18699999997625,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Statue toppled in full sequence",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "8b4eee604a5034bdc1d1b433cb860ebb40208e60136b3534d532e5f985a90d5f"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "02c790e7d007e1bd1395f7b9fd761871554441e8db2e815df89409abc9877229"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "9c1c7c38014880c26ccade3c06bb2db2efbb751d2971f6660b0c47cab4b32e9b"
+        }
+      ]
+    },
+    {
+      "private_run": ".local/automation/safeguard-v3-repeat-20261001",
+      "exit_code": 0,
+      "route_commands_completed": true,
+      "elapsed_seconds": 29.5,
+      "runner_sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d",
+      "visual_outcome": "Statue toppled in full sequence repeat",
+      "captures_reviewed_sequentially": [
+        {
+          "name": "02-gesture.png",
+          "sha256": "3d15922bec74574dd16fad29cbfe9abb88a82a29b2a9f314cb9384ee3d80ca94"
+        },
+        {
+          "name": "03-lift-prompt.png",
+          "sha256": "150ee093282c586490738ffcf1e5cc4c3dc627edddf8d8adc4e2aa480a2005e0"
+        },
+        {
+          "name": "05-toppled.png",
+          "sha256": "6b420f559dfe2b6b24bf65da67a6fd157504b92fcead77b9deb8dd0ce752681a"
+        }
+      ]
+    }
+  ],
+  "configuration": "JIT, whole-process one logical CPU, Vulkan 3x EFB, normal speed, formatter experiment ON (default OFF), Cubeb muted in private profile",
+  "audio_audibly_verified": false,
+  "continuous_visual_validation": false,
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "native_tests_passed": 39,
+    "native_tests_total": 39,
+    "tooling_passed": 141,
+    "tooling_skipped": 1,
+    "first_attempt": "38/39; stale old Xbox expectation; corrected final rebuild passes",
+    "warnings": [
+      "CMake deprecation",
+      "Wayland unavailable",
+      "long object paths",
+      "lz4 CMP0069 IPO policy"
+    ]
+  },
+  "binaries": [
+    {
+      "name": "moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "b4f1cba54fd556efcbcaf5c491bd0d49c1cf3e9be31e5d8dd047fc1ea0ef07a0"
+    },
+    {
+      "name": "moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "e2f672089eb9ff0639db69024eff9649803874a32b9d8af3e9f48d22b9789c4c"
+    },
+    {
+      "name": "moderngekko-run.exe",
+      "bytes": 16064000,
+      "sha256": "2824e94c0a9b4bd9c0c18110eccaf272e5f06f5c14b10534eff6ce9d48f0367d"
+    },
+    {
+      "name": "ModernGekko.exe",
+      "bytes": 12199424,
+      "sha256": "917c7bbaab0c5612786324027d63f0f88750cbbc069205ef95dbfe85afe1fe95"
+    }
+  ],
+  "goal_complete": false
+}

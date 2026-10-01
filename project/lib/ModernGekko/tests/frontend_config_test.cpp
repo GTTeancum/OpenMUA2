@@ -99,7 +99,7 @@ int main() {
     return 5;
   }
 #else
-  if (!generated.contains("# OpenMUA2 Xbox action layout v2\n") ||
+  if (!generated.contains("# OpenMUA2 Xbox action layout v3\n") ||
       !generated.contains("Buttons/2 = Start\n") ||
       !generated.contains("Buttons/Home = \n") ||
       !generated.contains("Extension = Nunchuk\n") ||

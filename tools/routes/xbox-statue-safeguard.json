@@ -1,0 +1,76 @@
+{
+  "restored_frame_min": 15000,
+  "commands": [
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 300,
+      "path": "holds/001.txt",
+      "lb": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 600,
+      "path": "holds/002.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/02-gesture.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 1500,
+      "path": "holds/003.txt",
+      "back": 1,
+      "right_right": 1
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/03-lift-prompt.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 800,
+      "path": "holds/004.txt",
+      "back": 1,
+      "right_up": 1
+    },
+    {
+      "command": "xbox_time",
+      "port": 0,
+      "milliseconds": 3500,
+      "path": "holds/005.txt"
+    },
+    {
+      "command": "screenshot",
+      "path": "shots/05-toppled.png"
+    },
+    {
+      "command": "xbox_frames",
+      "port": 0,
+      "frames": 5
+    },
+    {
+      "command": "save_state",
+      "path": "statue-completed.sav"
+    }
+  ]
+}
