@@ -1,0 +1,268 @@
+{
+  "checkpoint": "2026-10-01 XInput failed-poll release",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 1",
+    "exit": 0,
+    "tests_passed": 46,
+    "test_seconds": 12.38,
+    "initial_attempt": {
+      "command": "Build.cmd --cpu jit --jobs 2",
+      "exit": 1,
+      "phase": "linking",
+      "diagnostic": "No linker error recorded; unexplained termination retained as failure"
+    },
+    "compiler_linker_warnings_errors": 0,
+    "existing_cmake_warnings": [
+      "policy/deprecation",
+      "optional Wayland dependencies",
+      "object-path length"
+    ]
+  },
+  "runner_sha256": "0d356dd77d36211c2c8268abdf65dbfc9adb6e8d0a18169e1a1482ba4b94953c",
+  "stage": {
+    "exe_sha256": "3d04700ff311c71d9b04aed6716c07171f0dabe7f443a258acea6aef6df30307",
+    "exe_bytes": 10597376,
+    "existing_save_files_unchanged": 55,
+    "root_items": [
+      "GameData",
+      "saves",
+      "OpenMUA2.exe"
+    ],
+    "verification": "PASS",
+    "game_launched": false
+  },
+  "menu": {
+    "passed": true,
+    "idle_before_input_seconds": 90,
+    "native_idle_setting": 0,
+    "connection_samples": 132,
+    "all_connected": true,
+    "menu_steps": [
+      {
+        "step": "0-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuStart",
+        "name": "start",
+        "page": 255,
+        "focus": "0x0"
+      },
+      {
+        "step": "1-start-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "2-dpad_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558"
+      },
+      {
+        "step": "3-dpad_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "4-left_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558"
+      },
+      {
+        "step": "5-left_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "6-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "7-b-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "step": "8-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "9-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 3,
+        "focus": "0x90041418"
+      },
+      {
+        "step": "10-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuChooseProfileIngame",
+        "name": "cw_hero_profile_2player_ps2",
+        "page": 255,
+        "focus": "0x0"
+      }
+    ]
+  },
+  "pause": [
+    {
+      "step": "before",
+      "active_menu": "0x0",
+      "name": null
+    },
+    {
+      "step": "0-start",
+      "active_menu": "0x90076aa8",
+      "name": "cw_pda"
+    },
+    {
+      "step": "1-start",
+      "active_menu": "0x0",
+      "name": null
+    },
+    {
+      "step": "2-start",
+      "active_menu": "0x90076aa8",
+      "name": "cw_pda"
+    },
+    {
+      "step": "3-b",
+      "active_menu": "0x0",
+      "name": null
+    }
+  ],
+  "release": [
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-0",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-1",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-10",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-2",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-3",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-4",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-5",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-6",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-7",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-8",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "main-menu-reconnect-build",
+      "step": "neutral-9",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "menu-state-reconnect",
+      "step": "neutral-0",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "menu-state-reconnect",
+      "step": "neutral-1",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "menu-state-reconnect",
+      "step": "neutral-2",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    },
+    {
+      "run": "menu-state-reconnect",
+      "step": "neutral-3",
+      "neutral_samples": 3,
+      "native_actions_cleared": true
+    }
+  ],
+  "scope": {
+    "single_cpu": 2,
+    "graphics": "Null",
+    "audio": "Null",
+    "injected_input": "process-local only; headless",
+    "physical_xinput": "not connected at read-only capability check",
+    "visual_audio_fps_acceptance": false,
+    "four_minute_idle": "Prior c05c1a1b native timeout setter and >600-second evidence unchanged; not rerun for this poll-state-only change",
+    "remaining": [
+      "Physical menu navigation and unplug/replug acceptance",
+      "Late connection and possible XInput slot changes",
+      "Full physical gameplay map, fusion cancel/revive and pointer interactions"
+    ]
+  },
+  "cleanup": {
+    "sd_image_removed": false,
+    "reason": "Automatic approval review blocked deletion of the newly generated diagnostic WiiSD.raw (128 MiB)"
+  }
+}

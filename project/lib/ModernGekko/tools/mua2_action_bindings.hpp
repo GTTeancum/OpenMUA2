@@ -61,10 +61,12 @@ inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
   return true;
 }
 
-// Identify the active title screen, not a retained/closed menu allocation.
+// Identify menus where Start means continue/accept, not cancel. Use the active
+// menu, never a retained/closed allocation: title, profile-name keyboard, and
+// the joined-player profile screen whose Ready prompt starts the game.
 // Caller already guards the exact game executable and evaluator instructions.
 template<typename Reader>
-inline bool IsTitleStartScreen(Reader read) {
+inline bool IsStartAcceptScreen(Reader read) {
   const auto ram=[&](std::uint32_t address,std::size_t size) {
     const auto end=std::uint64_t(address)+size;
     if (!(address&3) && ((address>=0x80000000 && end<=0x81800000) ||
@@ -77,14 +79,16 @@ inline bool IsTitleStartScreen(Reader read) {
   const auto manager=ram(ReadBE(global,0),25864);
   if(manager.size()!=25864 || ReadBE(manager,0)!=0x81198830) return false;
   const auto menu=ram(ReadBE(manager,25860),10408);
-  return menu.size()==10408 && ReadBE(menu,10404)==0x8118bae8;
+  if (menu.size()!=10408) return false;
+  const auto type=ReadBE(menu,10404);
+  return type==0x8118bae8 || type==0x811942f0 || type==0x8118f008;
 }
 
-// Start must emit the native continue action on the title screen. Elsewhere
+// Start emits native continue/accept on the title and profile screens. Elsewhere
 // retain pause/back so it can close the PDA again. Neither raw Wii source is
 // synthesized: + also switches heroes and B also triggers smash/grab/use.
 inline bool MapStartButton(std::span<std::uint8_t> active,
-                           std::span<std::uint8_t> values, bool title_screen) {
+                           std::span<std::uint8_t> values, bool accept_screen) {
   if (active.size()!=20 || values.size()!=124*4 ||
       !(ReadBE(active,4)&(1u<<7)) || ReadBE(values,39*4)!=0x3f800000)
     return false;
@@ -95,7 +99,7 @@ inline bool MapStartButton(std::span<std::uint8_t> active,
     put(active,(id/32)*4,ReadBE(active,(id/32)*4)&~(1u<<(id%32)));
     put(values,id*4,0);
   }
-  const unsigned target=title_screen ? 105 : 90;
+  const unsigned target=accept_screen ? 105 : 90;
   put(active,target/32*4,ReadBE(active,target/32*4)|(1u<<(target%32)));
   put(values,target*4,0x3f800000);
   return true;

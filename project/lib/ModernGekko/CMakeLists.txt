@@ -859,6 +859,16 @@ if(BUILD_TESTING)
         endif()
         add_test(NAME moderngekko.nunchuk_input COMMAND moderngekko_nunchuk_input_test)
 
+        if(WIN32)
+            add_executable(moderngekko_xinput_poll_test tests/xinput_poll_test.cpp)
+            target_include_directories(moderngekko_xinput_poll_test PRIVATE
+                "${CMAKE_CURRENT_SOURCE_DIR}/vendor/dolphin/Source/Core")
+            target_compile_features(moderngekko_xinput_poll_test PRIVATE cxx_std_17)
+            target_compile_definitions(moderngekko_xinput_poll_test PRIVATE
+                WIN32_LEAN_AND_MEAN NOMINMAX)
+            add_test(NAME moderngekko.xinput_poll COMMAND moderngekko_xinput_poll_test)
+        endif()
+
         # Offline diagnostic, deliberately not a timing-based CTest gate.
         add_executable(moderngekko_controller_binding_probe tools/controller_binding_probe.cpp)
         target_include_directories(moderngekko_controller_binding_probe PRIVATE

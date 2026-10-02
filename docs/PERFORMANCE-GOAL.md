@@ -2357,7 +2357,7 @@ v1-v4 profiles upgrade with backups on launch. Customized profiles are preserved
 | RT + A/B/X/Y | Four power slots |
 | D-pad Up/Right/Down/Left | Direct roster slots 1/2/3/4; menu navigation |
 | LT + A/B/X/Y | Fusion partner roster slots 1/2/3/4; self rejected |
-| Start/Menu | Continue from title screen; pause / resume during play |
+| Start/Menu | Continue from title; accept profile name; start from Ready; pause / resume during play |
 | Back/View | Hero Management; menu readiness/return timing remains under validation |
 | A repeatedly, then B, in the tested statue interaction | Shake, then lift |
 
@@ -2367,3 +2367,15 @@ audio, cancellation/revival, vertical camera and other pointer interactions rema
 unverified. Five single-core plaza probes and 45/45 Windows tests support this
 integration; they do not satisfy the sustained FPS/visual/audio goal. See
 [evidence](../evidence/windows-20260930/XBOX-V5-MIGRATION.json).
+
+Latest controls checkpoint: menu navigation and Start/B pause transitions passed
+headless native-state checks; 15 release windows cleared. The installed package
+uses Windows XInput and clears input after failed polls. Physical menu/reconnect,
+full gameplay-map and visual/audio acceptance remain unverified. The button table
+above is unchanged. See evidence/windows-20261001/XINPUT-POLL-RELEASE.json.
+
+Native screenshot checkpoint: title/main-menu navigation, profile creation, Ready
+and opening cinematic transitions were visually checked; Start and B both resume
+from plaza pause. Start now accepts the profile name and starts from Ready. Final
+build: 46/46 tests. Physical controller, full gameplay-map, audio and FPS acceptance
+remain open. See evidence/windows-20261001/VISUAL-MENU-CONTROLS.json.

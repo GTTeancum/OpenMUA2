@@ -145,16 +145,32 @@ int main() {
       return truncated ? std::span<const std::uint8_t>(menu).first(menu.size()-1) : menu;
     return {};
   };
-  if(!IsTitleStartScreen(read)) return 33;
-  truncated=true;if(IsTitleStartScreen(read)) return 34;truncated=false;
-  put(menu,10404,0x81190d98);if(IsTitleStartScreen(read)) return 35;
+  if(!IsStartAcceptScreen(read)) return 33;
+  // Profile-name keyboard must accept via Start, not run MenuBack and discard
+  // the typed name. Other menus keep their existing pause/back semantics.
+  put(menu,10404,0x811942f0);
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!IsStartAcceptScreen(read) ||
+     !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
+     ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 39;
+  // CMenuChooseProfileIngame: Start at Ready must start the game, not unready.
+  put(menu,10404,0x8118f008);
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!IsStartAcceptScreen(read) ||
+     !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
+     ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 40;
+  put(menu,10404,0x8118bae8);
+  truncated=true;if(IsStartAcceptScreen(read)) return 34;truncated=false;
+  put(menu,10404,0x81190d98);if(IsStartAcceptScreen(read)) return 35;
   put(menu,10404,0x8118bae8);
   for(auto pointer:{0u,0x90020001u,0x93fffffcu,0xffffffffu}) {
-    put(manager,25860,pointer);if(IsTitleStartScreen(read)) return 36;
+    put(manager,25860,pointer);if(IsStartAcceptScreen(read)) return 36;
   }
   put(manager,25860,0x90020000);put(manager,0,0x81198834);
-  if(IsTitleStartScreen(read)) return 37;
+  if(IsStartAcceptScreen(read)) return 37;
   put(manager,0,0x81198830);put(global,0,0);
-  if(IsTitleStartScreen(read)) return 38;
+  if(IsStartAcceptScreen(read)) return 38;
   std::cout << "Transactional action binding checks passed\n";
 }

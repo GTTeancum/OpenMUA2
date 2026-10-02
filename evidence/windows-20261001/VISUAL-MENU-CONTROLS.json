@@ -1,0 +1,135 @@
+{
+  "checkpoint": "Native screenshot controls and ImGui headless repair",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 46,
+    "tests_failed": 0,
+    "test_seconds": 7.81,
+    "runner_sha256": "f4a2f36d1875fad21ebf1b476a2517960f725016da5e7b6e598a5a44ba727f30"
+  },
+  "installed": {
+    "exe_sha256": "3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375",
+    "exe_bytes": 10596864,
+    "existing_save_files_unchanged": 55,
+    "root_items": [
+      "GameData",
+      "saves",
+      "OpenMUA2.exe"
+    ],
+    "verification": "PASS",
+    "game_launched": false
+  },
+  "visual_review": {
+    "capture": "Native offscreen Vulkan screenshots; no desktop capture or host input",
+    "settings": "One logical CPU2, normal clocks, 3x rendering, Null audio",
+    "scope": "Selected transitions inspected individually. No full-frame animation review, physical controller, audio, or FPS acceptance.",
+    "captures": [
+      {
+        "file": "main-menu.png",
+        "sha256": "f6a4b1222b04480dc7f2bc01efeda2fa12898536029bb2c3e029a0a67738c797",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Start opens main menu; Play selected.",
+        "visually_inspected": true
+      },
+      {
+        "file": "menu-navigation.png",
+        "sha256": "1107b0131549d2cbf7ba798f0d510ce42b318ff724021a43b6a443227e5f415e",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "D-pad right selects Options.",
+        "visually_inspected": true
+      },
+      {
+        "file": "profile-name-accept.png",
+        "sha256": "8df0097625a20e32ba64f97299cabd498b12430f922747c16554ddd78d258532",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Start opens profile-name confirmation after entering A.",
+        "visually_inspected": true
+      },
+      {
+        "file": "profile-created.png",
+        "sha256": "aeb622a7b39c802e165e6e7fba56c7731d300c771bec38e655f2c6890e77bba0",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Profile A, chosen icon and Autospend Off shown for confirmation.",
+        "visually_inspected": true
+      },
+      {
+        "file": "start-game-accepted.png",
+        "sha256": "4b62c12f4799fc396c804212fa6587b8c14740c6613d5bcbf5caa584395b14e7",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Start advances Ready to AI Autospend selection.",
+        "visually_inspected": true
+      },
+      {
+        "file": "opening-cinematic.png",
+        "sha256": "93073dde8ae6be41c0e71269867f6bbe4c8f6080caeb8c09da7ecf06dbc01fb5",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "A confirms AI setting and opening Doomstadt cinematic renders.",
+        "visually_inspected": true
+      },
+      {
+        "file": "plaza-paused.png",
+        "sha256": "71bbf8fbc3ee2d33dcdb865de63ce4a432b23a5ee1309e42fbcace059f462196",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Start opens pause/PDA in plaza.",
+        "visually_inspected": true
+      },
+      {
+        "file": "plaza-resumed.png",
+        "sha256": "963719cf445948f4171d599a16da1e430e090988a779a92abc7409e2ef2b2565",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "Start returns to rendered plaza.",
+        "visually_inspected": true
+      },
+      {
+        "file": "plaza-resumed-with-B.png",
+        "sha256": "f2882c621a44e1317182e7fe8fae502a0cb39702c5801d9a35891e17d60399c9",
+        "dimensions": [
+          2501,
+          1410
+        ],
+        "observation": "B returns to rendered plaza after reopening pause.",
+        "visually_inspected": true
+      }
+    ]
+  },
+  "failures_reproduced": [
+    "Headless shader progress ImGui assertion",
+    "Start canceled profile name",
+    "Start backed out of joined-player Ready"
+  ],
+  "fixes": [
+    "Skip headless progress UI only",
+    "Map Start to native accept for active CMenuProfileName and CMenuChooseProfileIngame"
+  ],
+  "limits": [
+    "Cold menu sequence preceded the final two context fixes; targeted state reruns verified those fixes",
+    "Physical controller not validated",
+    "Null audio; no audio or FPS acceptance",
+    "Selected screenshots, not all animation frames"
+  ]
+}

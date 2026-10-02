@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "InputCommon/ControllerInterface/XInput/XInput.h"
+#include "InputCommon/ControllerInterface/XInput/PollState.h"
 
 #ifndef XINPUT_GAMEPAD_GUIDE
 #define XINPUT_GAMEPAD_GUIDE 0x0400
@@ -270,10 +271,18 @@ std::string Device::GetSource() const
 
 Core::DeviceRemoval Device::UpdateInput()
 {
-  PXInputGetState(m_index, &m_state_in);
+  if (!PollState(m_index, m_state_in, PXInputGetState))
+  {
+    m_battery_level = 0;
+    // Retain the slot so a subsequent successful poll can recover even when a
+    // wireless reconnect produces no new HID device-arrival notification.
+    return Core::DeviceRemoval::Keep;
+  }
 
   XINPUT_BATTERY_INFORMATION battery_info = {};
-  if (SUCCEEDED(PXInputGetBatteryInformation(m_index, BATTERY_DEVTYPE_GAMEPAD, &battery_info)))
+  m_battery_level = 0;
+  if (PXInputGetBatteryInformation(m_index, BATTERY_DEVTYPE_GAMEPAD, &battery_info) ==
+      ERROR_SUCCESS)
   {
     switch (battery_info.BatteryType)
     {

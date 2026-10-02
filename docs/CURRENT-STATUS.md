@@ -1,5 +1,86 @@
 # Current status — GitHub main
 
+## Native screenshot controls checkpoint - 2026-10-01
+
+The user's ImGui GetIO assertion was reproduced by the headless Vulkan diagnostic:
+shader compilation progress attempted to access an absent OnScreenUI context.
+The headless path now waits for compilation without drawing that progress UI.
+Subsequent native screenshot runs exited 0 without that assertion.
+
+Visual testing found two further Start-button errors: the profile-name keyboard
+canceled the typed name, and the joined-player Ready screen backed out of Ready.
+Start now emits continue/accept for those exact active menu types, preserving
+pause/back elsewhere. Pointer bounds, manager type and game-code guards remain.
+Regression cases cover both new contexts and the existing pause/back path.
+
+Build.cmd --cpu jit --jobs 2 completed successfully: 46/46 Windows CTests,
+7.81 seconds. No compiler/linker warnings or errors were emitted. Existing
+CMake warnings remain: deprecated policies/minimum versions, missing Wayland,
+object-path limits and LZ4 policy configuration. Output includes moderngekko-run.exe,
+ModernGekko.exe, moderngekko-port.exe and diagnostic/test executables.
+
+Native 2501x1410 captures were inspected individually for cold title/main-menu
+navigation, A/B progression, profile naming/icon/autospend, player join/Ready,
+Start Game and the opening Doomstadt cinematic. Fix-specific reruns loaded the
+captured keyboard/Ready states; this is not a single uninterrupted cold-start
+retest of the final binary. A final retained-plaza run visually verified
+Start pause, Start resume, Start pause and B resume, with the scene and HUD
+rendering after both returns. The initial failed screenshot run and both
+pre-fix Start failures remain recorded as failures.
+
+Tests used process-local input, one logical CPU2, normal clocks, Vulkan 3x and
+Null audio. No desktop capture/control or host input was used. Selected captures
+verify menu states and scene content, not every animation frame, audio, physical
+XInput hardware or sustained combat FPS. The controls goal remains active.
+
+Installed C:\Games\MUA2\OpenMUA2.exe SHA256:
+3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375
+(10,596,864 bytes). Embedded payload verification passed before and after staging;
+all 55 existing save files remained byte-identical. Root is EXE, GameData,
+saves. No visible user game was launched. Prior installed EXE retained as rollback.
+Source evidence: evidence/windows-20261001/VISUAL-MENU-CONTROLS.json. Native captures
+and private game state remain outside Git. Disk check: repo 31.10 GiB, D free
+109.06 GiB. Earlier automatic review blocked disposable-file deletion; no bypass.
+
+## XInput failed-poll release checkpoint - 2026-10-01
+
+XInput reads previously ignored their return code, allowing a disconnected pad's
+last buttons, triggers or sticks to remain active. Failed reads now clear the
+complete input packet; a later successful read on that slot restores input.
+Battery queries now compare the Win32 result to ERROR_SUCCESS instead of using
+HRESULT success semantics. This does not solve or claim verification of slot
+changes or late wireless discovery.
+
+Windows Build.cmd --cpu jit --jobs 1 exited 0: 46/46 tests in 12.38 seconds.
+The new process-local polling regression covers held controls, an untouched output
+buffer on disconnect, repeated failure, reconnection, partial failed packets and
+release. The initial jobs-2 build stopped during linking with exit 1 and no linker
+error in its log; it is not counted as a pass. No compiler/linker diagnostics in
+the successful build; existing CMake warnings remain.
+
+Headless single-CPU2 tests of the resulting runner passed cold title/main-menu
+navigation through Play/Difficulty/profile selection and a retained plaza-state
+Start/Start/Start/B pause sequence. All 15 sampled neutral windows cleared native
+action bits. Menu native link stayed connected in all 132 samples. These tests
+used Null graphics/audio and process-local input; they overlapped build linking
+and establish no FPS, visible behavior, audible quality or physical acceptance.
+The earlier native idle-timeout fix and its >600-second evidence remain unchanged.
+Windows reported no connected XInput pad during this checkpoint.
+
+Installed C:\Games\MUA2\OpenMUA2.exe: SHA256
+3d04700ff311c71d9b04aed6716c07171f0dabe7f443a258acea6aef6df30307,
+10,597,376 bytes. Embedded payload verification passed; all 55 existing save files
+were unchanged. Root remains EXE, GameData, saves. No user game was launched.
+Physical menu/reconnection and full gameplay-map acceptance remain outstanding;
+the controls goal stays active. Evidence: evidence/windows-20261001/XINPUT-POLL-RELEASE.json.
+
+The requested disk-hygiene rule is now in AGENTS.md. Backup temporary files use
+the destination volume; its prior workspace regression run passed 46 tests with
+one skip (47 discovered). This run omitted unnecessary new save-state copies.
+Automatic review blocked deletion of one disposable 128 MiB test SD image; it
+remains in the external diagnostic scratch folder, not source control.
+
+
 ## XInput connection and native idle-timeout repair - 2026-10-01
 
 The previous short menu tests missed a real disconnect: the unmodified runner

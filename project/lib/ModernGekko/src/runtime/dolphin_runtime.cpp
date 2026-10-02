@@ -264,7 +264,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
   if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::MapStartButton(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes),
-        moderngekko::controls::IsTitleStartScreen(read));
+        moderngekko::controls::IsStartAcceptScreen(read));
   if (moderngekko::controls::XboxPortEnabled(s_fusion_ports,object) &&
       moderngekko::controls::ReadBE(std::span<const u8>(values, value_bytes), 14 * 4) == 0x3f800000)
   {

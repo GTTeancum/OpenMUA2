@@ -171,6 +171,11 @@ void ShaderCache::WaitForAsyncCompiler()
   bool running = true;
 
   constexpr auto update_ui_progress = [](size_t completed, size_t total) {
+    // Offscreen rendering has no OnScreenUI/ImGui context. Shader compilation
+    // still needs to finish, but there is no progress window to draw into.
+    if (g_gfx->IsHeadless())
+      return;
+
     const float center_x = ImGui::GetIO().DisplaySize.x * 0.5f;
     const float center_y = ImGui::GetIO().DisplaySize.y * 0.5f;
     const float scale = ImGui::GetIO().DisplayFramebufferScale.x;
