@@ -2359,7 +2359,7 @@ v1-v4 profiles upgrade with backups on launch. Customized profiles are preserved
 | LT + A/B/X/Y | Fusion partner roster slots 1/2/3/4; self rejected |
 | Start/Menu | Continue from title; accept profile name; start from Ready; pause / resume during play |
 | Back/View | Hero Management; menu readiness/return timing remains under validation |
-| A repeatedly, then B, in the tested statue interaction | Shake, then lift |
+| Repeated X presses | Required QTE replacement: direct progress through completion; development pending, not installed |
 
 Game UI prompts have not been replaced. The native hero menu test required waiting
 before A then B returned to gameplay; early inputs failed. Visual/physical controller,
@@ -2390,3 +2390,10 @@ Combat follow-up: A light attack now has native-action and visible-strike eviden
 with Iron Man. LB guard/release is visible. X completed grab remains unverified
 despite native grab/use action delivery. Physical controls and remaining gameplay
 acceptance stay open. See VISUAL-COMBAT-FOLLOWUP.json.
+
+Mash-X correction (2026-10-02): this replaces the entire motion interaction.
+There is no shake/lift emulation, no separate B stage, and holding X does not
+repeatedly count. The press-counting core passes its focused Windows test but
+is not integrated or installed. The old A/B adapter remains in the installed
+build pending replacement. User feedback confirms smooth play, clear sound and
+working ordinary controls; it does not establish complete controls acceptance.

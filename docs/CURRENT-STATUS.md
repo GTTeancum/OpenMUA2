@@ -1,5 +1,43 @@
 # Current status — GitHub main
 
+## Direct mash-X QTE work in progress - 2026-10-02
+
+The user reports smooth gameplay, high FPS, clear audio and working controls,
+with motion QTEs still unusable. This is qualitative physical playtest feedback,
+not a measured sustained combat benchmark or full reconnect acceptance.
+
+Required behavior: repeated X presses directly advance and complete the QTE.
+Holding X must not count repeatedly. No shake/lift translation and no separate
+B step. The experimental X-to-shake change was reverted and never installed.
+The current runtime still contains the previous A/B gesture adapter; replacing
+that adapter is outstanding. Do not reintroduce it as the mash-X implementation.
+
+A standalone ButtonQte gameplay state now counts press edges, guards ownership,
+preserves progress across input suspension, resets for a new interaction, and
+emits completion once. Windows MSVC focused build and CTest passed: 1/1,
+0.03 seconds test time / 0.53 seconds total. It is NOT connected to the live game.
+The test quota of twelve is a fixture value, not an installed gameplay setting.
+No new game-side completion, animation, audio or FPS validation is claimed.
+
+Next: connect direct progress to cooperative interaction animation and its
+completion/cleanup callbacks, remove gesture routing for this interaction,
+then validate release/hold, cancellation, load/reconnect and mission progression.
+Local analysis identified the cooperative stage/animation/completion functions;
+no extracted instructions or generated game code are included in this checkpoint.
+
+Xbox glyph work is also incomplete. The read-only inspect_button_glyphs.py tool
+parsed 15 local Wii/360/Xbox font tables and inventoried the ten supplied Xbox
+PNG atlases. Coordinates and images remain private. No textures were replaced;
+atlas placement and texture decoding still need verification.
+
+Installed C:\Games\MUA2\OpenMUA2.exe remains unchanged, SHA-256
+3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375.
+The rejected candidate EXE was deleted (10,596,864 bytes reclaimed), and the
+packaging workspace runner was restored from the installed payload. The main
+local build runner still contains the rejected experiment until rebuilt; do not
+package it. No new screenshots, desktop input, save changes or live runs occurred
+at this checkpoint. The controls goal remains active.
+
 ## Combat visual follow-up - 2026-10-01
 
 The unchanged installed payload was tested further in the retained plaza state.

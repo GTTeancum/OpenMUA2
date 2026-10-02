@@ -1,0 +1,23 @@
+{
+  "status": "work in progress; not integrated or installed",
+  "requirement": "Repeated X presses directly advance and complete the QTE; holding does not count; no motion synthesis or separate B stage",
+  "windows_test": {
+    "name": "moderngekko.button_qte",
+    "passed": 1,
+    "failed": 0,
+    "test_seconds": 0.03,
+    "total_seconds": 0.53,
+    "scope": "standalone gameplay state only",
+    "compiler_linker_errors": 0,
+    "configure_warnings": "existing CMake compatibility, dependencies and object-path warnings"
+  },
+  "glyph_inventory": {
+    "font_tables": 15,
+    "xbox_png_atlases": 10,
+    "textures_replaced": 0
+  },
+  "installed_exe_sha256": "3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375",
+  "live_validation": false,
+  "screenshots_taken": 0,
+  "rejected_candidate_deleted_bytes": 10596864
+}
