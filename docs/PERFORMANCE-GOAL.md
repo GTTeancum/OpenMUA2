@@ -2385,3 +2385,8 @@ profile/Ready/cinematic flow passed native visual review. Plaza D-pad selection,
 Y jump, B shield attack and left-stick movement were visible; A attack remains
 visually unconfirmed. Physical controller/reconnect, full combat mapping and
 audio/FPS remain open. See INSTALLED-COLD-IDLE-VISUAL.json in the evidence folder.
+
+Combat follow-up: A light attack now has native-action and visible-strike evidence
+with Iron Man. LB guard/release is visible. X completed grab remains unverified
+despite native grab/use action delivery. Physical controls and remaining gameplay
+acceptance stay open. See VISUAL-COMBAT-FOLLOWUP.json.

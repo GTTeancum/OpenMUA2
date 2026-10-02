@@ -1,5 +1,23 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Combat visual follow-up - 2026-10-01
+
+The unchanged installed payload was tested further in the retained plaza state.
+A emits native light-attack action 9; selecting Iron Man near a living Doombot
+produced visible strikes. Teammate attacks prevent attributing damage amounts.
+LB visibly holds a shield guard and returns to normal stance after release.
+X emits grab/context-use actions 11/21, but two nearby-enemy attempts did not
+conclusively establish a completed grab. That acceptance remains open.
+
+All 31 captures across three follow-up runs were inspected individually; all six
+sampled neutral windows cleared, and all three processes exited 0. These are
+contained headless tests, not physical XInput acceptance. Physical reconnect,
+full gameplay mappings, powers/fusion/revival, audio and FPS remain unverified.
+No source or installed binary changed and no rebuild was necessary. Evidence:
+evidence/windows-20261001/VISUAL-COMBAT-FOLLOWUP.json. Diagnostic profile reused;
+no new save clone. Actual game saves remain separate. C/D free space at this
+checkpoint exceeded 225/109 GiB; prior cleanup rejection remains unresolved.
+
 ## Installed cold-start and plaza visual verification - 2026-10-01
 
 The final installed payload from source 857985af was cold-booted without a

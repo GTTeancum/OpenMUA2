@@ -1,0 +1,240 @@
+{
+  "installed_exe_sha256": "3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375",
+  "previous_guard_review": {
+    "timestamp": "2026-10-02T02:51:53.392215+00:00",
+    "installed_exe_sha256": "3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375",
+    "exit_code": 0,
+    "physical_poll_results": [
+      1167,
+      1167,
+      1167,
+      1167
+    ],
+    "physical_acceptance": false,
+    "release_windows": [
+      {
+        "file": "neutral-a.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "file": "neutral-lb.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "file": "neutral-x.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      }
+    ],
+    "captures": [
+      {
+        "name": "00-plaza.png",
+        "sha256": "0c594cc2f13c6cd763328ec38b913df48523a377fda5ee6ab7197c75a1149752",
+        "inspected": true
+      },
+      {
+        "name": "a-0.png",
+        "sha256": "6818b748e5841a733837376d25eaa8e8a80ce5cdb2947a34545a60f2122da440",
+        "inspected": true
+      },
+      {
+        "name": "a-1.png",
+        "sha256": "3ebcaae6b96f3f6f07cf030fd9825c6b75e31e116b9a33d0e26d9eb4b5de16d1",
+        "inspected": true
+      },
+      {
+        "name": "a-2.png",
+        "sha256": "1b3d31a348b4969bb42a829c1a397545a85ad3867788d80d07d8e158e6af161e",
+        "inspected": true
+      },
+      {
+        "name": "a-3.png",
+        "sha256": "07dc230e001c564ad326f4bfd832d7e43793dbee70057118a79dc85b1a4f1282",
+        "inspected": true
+      },
+      {
+        "name": "a-released.png",
+        "sha256": "a021d9d359691c02bb2a78b2d44e343fd1c7625fdb709b0bc215352ef7c17008",
+        "inspected": true
+      },
+      {
+        "name": "x-0.png",
+        "sha256": "54fb88d49140a53a47e77437d507f9846bb108951539bdce37c2a5a22563bc91",
+        "inspected": true
+      },
+      {
+        "name": "x-1.png",
+        "sha256": "95c443befda4f82696d710e6bfbe02fe919ed92b95e3958033fcf27ad310f4d2",
+        "inspected": true
+      },
+      {
+        "name": "x-2.png",
+        "sha256": "6ab0dc2463f9e7bc44ffd3aafca548c1e5caba47031b2fae7d1a175b1513c965",
+        "inspected": true
+      },
+      {
+        "name": "x-3.png",
+        "sha256": "9f52f3aaa76211372f7c335955c1bfd0407d9202be7dd024e423fe83bc688132",
+        "inspected": true
+      },
+      {
+        "name": "x-released.png",
+        "sha256": "0f1dcdb6c6eeb3c0e8428b4e16b55c3ce190355b0dbc5957164c615520ca43fb",
+        "inspected": true
+      },
+      {
+        "name": "lb-0.png",
+        "sha256": "1a5987a51e89b21f5ab2bb3c451e4e34eeaceb52cd9b3dbb61733808b0504fc4",
+        "inspected": true
+      },
+      {
+        "name": "lb-1.png",
+        "sha256": "3c8d9fde4459850ebd85d420eb6ffc71a60e5cf9b8fa2fe66e64e87ed5be27ad",
+        "inspected": true
+      },
+      {
+        "name": "lb-2.png",
+        "sha256": "47c91c5aa933fbd4888e32cfe1e36de6ee64e6b6a253f5d3cf623e41feca78b5",
+        "inspected": true
+      },
+      {
+        "name": "lb-3.png",
+        "sha256": "c6d41c495ae0aa71fa51ecabb963df2d9efc0218e235648bf37eb101c6b90a93",
+        "inspected": true
+      },
+      {
+        "name": "lb-released.png",
+        "sha256": "3b2962e87e7624d8e4a818e705eeeee36d189f328f665c7896a9b8ff3fa97e5e",
+        "inspected": true
+      }
+    ],
+    "observations": {
+      "a": "Brief shield/arm pose change; light attack not conclusively distinguished from combat reactions",
+      "x": "No visible grab; no clearly grabbable living target within reach. Inconclusive",
+      "lb": "Shield guard pose held across four captures; normal stance and portrait return after release"
+    },
+    "configuration": "Headless installed payload, retained plaza state, process-local input, CPU2, Vulkan3x, Null audio; no host input",
+    "next_action": "Use an appropriate living nearby target for grab and confirm attack semantics using native action traces plus visible target reaction; physical controller/reconnect acceptance remains pending"
+  },
+  "tests": [
+    {
+      "name": "installed-near-enemy",
+      "exit_code": 0,
+      "release_windows": [
+        {
+          "receipt": "neutral-a.txt",
+          "samples": 3,
+          "cleared": true
+        },
+        {
+          "receipt": "neutral-x.txt",
+          "samples": 3,
+          "cleared": true
+        }
+      ],
+      "captures": [
+        {
+          "file": "00-plaza.png",
+          "sha256": "4a8c3efad00b114f5cd72cb126c5e9949a74d5ad11f90d3e1adc82d941ed8fdd",
+          "inspected": true
+        },
+        {
+          "file": "a-0.png",
+          "sha256": "06ec27cdaebe9fd3ee91f31b0ad3521ef6a1a9ed2114c7482c082fe2bfc6600b",
+          "inspected": true
+        },
+        {
+          "file": "a-1.png",
+          "sha256": "9e5ea3df9f76be2584b1ab81411d822e8a052169a73a0fcde20ab2e24890b33d",
+          "inspected": true
+        },
+        {
+          "file": "a-2.png",
+          "sha256": "49b8c78bb95216149c796251aa5391ea482aa1194c17c13396c8c8bd639e7510",
+          "inspected": true
+        },
+        {
+          "file": "a-released.png",
+          "sha256": "d00603c40b5f8ccc5132790cbac0f1dee78ddd38cdf89469da6e2e02e313bddc",
+          "inspected": true
+        },
+        {
+          "file": "x-0.png",
+          "sha256": "7e36a0e9ea16adcbd38c982d4b4e4f6eeadcf437e27c7c1c73967cd62e14c287",
+          "inspected": true
+        },
+        {
+          "file": "x-1.png",
+          "sha256": "d6cb8131bc581c85651e67671f0a39ce3de485649340f51f1be93f3db0d399fd",
+          "inspected": true
+        },
+        {
+          "file": "x-2.png",
+          "sha256": "594af293857305957a39c5f4500635880774ab2e1c76d6515f7b0d01e1fe244e",
+          "inspected": true
+        },
+        {
+          "file": "x-released.png",
+          "sha256": "775fef01d981f17170b53795d52b6a9e0bf88359e62d35a02aec565f7230ab9e",
+          "inspected": true
+        }
+      ]
+    },
+    {
+      "name": "installed-early-grab",
+      "exit_code": 0,
+      "release_windows": [
+        {
+          "receipt": "neutral-x.txt",
+          "samples": 3,
+          "cleared": true
+        }
+      ],
+      "captures": [
+        {
+          "file": "00-plaza.png",
+          "sha256": "e7fa59962b3741f502b6ef6ae928fd837f11f2d1cbfe6e047b94f239dc3592fa",
+          "inspected": true
+        },
+        {
+          "file": "x-0.png",
+          "sha256": "e33f84044593586c983fb46e2267375596cdfead5acf1c0481bdc5d74d2fdb4d",
+          "inspected": true
+        },
+        {
+          "file": "x-1.png",
+          "sha256": "197c14bf826e034372e6911911fbbf68fdedc2b1efae4c8227c5017066bd47a4",
+          "inspected": true
+        },
+        {
+          "file": "x-2.png",
+          "sha256": "8f42e0a3c8fdf18123e282e00c37b6bbc090967340cc7a3ed08b06579c828a42",
+          "inspected": true
+        },
+        {
+          "file": "x-3.png",
+          "sha256": "210fd0c63e734989ca4f11f1049effc3503d3a8f94489f7430268705dff197b2",
+          "inspected": true
+        },
+        {
+          "file": "x-released.png",
+          "sha256": "daa2724132d29d13def04cde537ef9e86a5883154058c656c11b4e7bdeed1e47",
+          "inspected": true
+        }
+      ]
+    }
+  ],
+  "results": {
+    "A": "Native action 9 active; Iron Man striking a nearby Doombot visibly confirmed. Damage attribution is confounded by teammates.",
+    "X": "Native actions 11 and 21 active. Both nearby-enemy attempts remain visually inconclusive for a completed grab.",
+    "LB": "Shield guard held across four captures and normal stance returned on release."
+  },
+  "limits": [
+    "All input is process-local synthetic input in a headless game",
+    "Same installed payload, CPU2, Vulkan3x, normal clocks, Null audio",
+    "No physical XInput/reconnect, audio or FPS acceptance",
+    "Full powers/fusion/revival/context-use acceptance remains open"
+  ]
+}
