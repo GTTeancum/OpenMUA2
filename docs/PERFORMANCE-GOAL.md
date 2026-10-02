@@ -2,6 +2,15 @@
 
 ## Three candidate repeats and acceptance audit - 2026-10-01
 
+## Controller-readiness repair - 2026-10-01
+
+The managed Xbox path now uses Windows XInput and disables the verified native
+four-minute remote idle timeout through its original setter. Ten minutes of
+connected XInput polling and a headless menu flow after 270 seconds neutral
+passed. This is controller-readiness evidence, not combat FPS, visual or audio
+acceptance; the performance goal remains active. Full physical on-screen mapping
+is still unverified. See evidence/windows-20261001/XINPUT-IDLE-DISCONNECT.json.
+
 Three short repeats completed on the same Windows runner as the ten-minute
 plaza diagnostic, with the formatter explicitly ON. All exited0 and measured
 1422 new-frame intervals without dropped samples or warmup trimming. Averages:

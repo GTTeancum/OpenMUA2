@@ -5,6 +5,8 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
+#include <fstream>
 #include <memory>
 #include <string>
 
@@ -26,6 +28,8 @@
 #include "Core/Wii/SysConf.h"
 #include "Core/System.h"
 #include "InputCommon/ControllerInterface/ControllerInterface.h"
+#include "InputCommon/InputConfig.h"
+#include "InputCommon/ControllerEmu/ControllerEmu.h"
 
 namespace IOS::HLE
 {
@@ -321,6 +325,23 @@ void BluetoothEmuDevice::Update()
             PanicAlertFmtT("Received invalid Wii Remote data from Netplay.");
         }
       }
+    }
+
+    // Opt-in connection trace; never changes hardware or controller state.
+    static const char* trace_path = std::getenv("OPENMUA2_CONNECTION_TRACE");
+    static std::ofstream trace(trace_path ? trace_path : "");
+    static u64 trace_ticks = 0;
+    if (trace && now - trace_ticks >= GetSystem().GetSystemTimers().GetTicksPerSecond())
+    {
+      trace_ticks = now;
+      const auto lock = ControllerEmu::EmulatedController::GetStateLock();
+      auto* pad = Wiimote::GetConfig()->GetController(0);
+      trace << now << ',' << m_wiimotes[0]->IsConnected() << ','
+            << static_cast<int>(next_call[0]) << ',' << wiimote_states[0].buttons.hex << ','
+            << pad->IsDefaultDeviceConnected() << ',' << ControlReference::GetInputGate() << ','
+            << pad->GetDefaultDevice().ToString() << ','
+            << pad->groups[0]->controls[0]->control_ref->BoundCount() << ','
+            << pad->groups[0]->controls[0]->control_ref->State() << std::endl;
     }
 
     auto& movie = Core::System::GetInstance().GetMovie();

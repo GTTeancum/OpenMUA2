@@ -1,5 +1,47 @@
 # Current status — GitHub main
 
+## XInput connection and native idle-timeout repair - 2026-10-01
+
+The previous short menu tests missed a real disconnect: the unmodified runner
+lost its native Player 1 link at 242.64 guest seconds with the host SDL controller
+still connected, 14 bindings resolved and the input gate enabled. Native logs
+recorded HCI_CMD_DISCONNECT. The game configures a four-minute remote idle timeout.
+The exact-executable/managed-profile adapter now passes zero to the verified
+native timeout setter. The original routine performs the update; no direct SDA
+write, instruction patch, clock change or synthetic keepalive is shipped.
+
+An intermittent SDL binding loss was also observed while Windows XInput still
+reported the controller. Its SDL root cause remains unproven. The launcher now
+selects the connected Windows XInput gamepad for unmodified Xbox v5 profiles.
+Only the player-one Device entry changes, with the old file backed up. Custom
+profiles and other ports are preserved. Reproducible launcher source, packaging
+instructions and nine passing profile regression checks are in
+tools/windows-launcher; provide the user icon separately when packaging.
+
+Final validation: 600.59 guest seconds with the real XInput backend, all 599
+samples connected/bound, with physical button changes observed. No input was
+injected in that run. The separate process-local menu test waited 270 seconds
+neutral, read native timeout zero, then verified Start to Main, D-pad/stick
+right-left selection changes and A/B through Play/Difficulty/profile selection.
+All 310 connection samples stayed connected; that menu run exited 0.
+Both completed runs used Null graphics/audio and one logical CPU2. A preliminary
+Vulkan/Cubeb diagnostic was stopped because its visible simulated-input window
+confused the user; their physical presses could not control that window. It is
+not counted as physical on-screen or visual/audio validation. Further diagnostic
+input runs must stay headless so they cannot be mistaken for the user game.
+
+Supported build: Build.cmd --cpu jit --jobs 2, exit 0; 45/45 tests in 16.69 seconds.
+No final compiler/linker warnings/errors; existing CMake warnings remain. The
+installed C:\Games\MUA2\OpenMUA2.exe is 10,597,376 bytes. Of 54 existing files
+under saves, 53 stayed byte-identical and only WiimoteNew.ini's Device entry
+changed. Root layout remains OpenMUA2.exe, GameData and saves. Package payload
+hash verification passed. Earlier candidate and preparation failures are retained
+in the scoped evidence, not presented as successful runs.
+
+No screenshots, host input, full physical control-map validation, gameplay/FPS,
+visual-content or audio-quality acceptance is claimed. The performance goal stays
+active. Evidence: evidence/windows-20261001/XINPUT-IDLE-DISCONNECT.json.
+
 ## Title-screen Start and game-window icon repair - 2026-10-01
 
 Reproduced the title-screen blocker with the previous runner: after leaving the

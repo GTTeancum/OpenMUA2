@@ -158,6 +158,28 @@ void ObserveFusionWorldCandidate(const Core::CPUThreadGuard& guard)
       "74486FDF3DF1008C2A24A01D741F43DC4D9EAB06", 27, 28);
 }
 
+// The game repeatedly configures a four-minute Wii Remote idle timeout.
+// Managed Xbox profiles use a persistent virtual remote. Ask the original
+// setter to disable its idle timeout, preserving its critical section and
+// all explicit disconnect/reconnect handling. Never write a guessed SDA slot.
+void ObserveMua2AutoSleep(const Core::CPUThreadGuard& guard)
+{
+  if (!s_control_ports) return;
+  auto& system = guard.GetSystem();
+  auto& state = system.GetPPCState();
+  if (state.gpr[3] == 0) return;
+  const auto* code = system.GetMemory().GetPointerForRange(0x80403ae4, 52);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 52)) !=
+                   "25A770A100B607D837FD07079F46956A62D7BB38") return;
+  state.gpr[3] = 0;
+  static bool reported = false;
+  if (!reported)
+  {
+    reported = true;
+    std::fprintf(stderr, "[openmua2] managed Xbox: disabled native remote idle timeout\n");
+  }
+}
+
 // Experimental context-use rebind: observes the original evaluator, preserving
 // its instructions, action thresholds, per-player queues and timing. Runs after
 // evaluation so the experimental chord can retain digital use magnitude.
@@ -1505,7 +1527,12 @@ RuntimeRunResult Runtime::Run() {
         HLE::SetExternalStartObserver(guard, 0x801d566c, ObserveMenuActionQuery);
       const bool installed = HLE::SetExternalStartObserver(guard, 0x810f8544, ObserveMua2InputBindings);
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
-      if (installed) s_control_ports=want_control_ports;
+      if (installed) {
+        s_control_ports=want_control_ports;
+        const bool idle_installed = HLE::SetExternalStartObserver(guard, 0x80403ae4, ObserveMua2AutoSleep);
+        std::fprintf(stderr, "[openmua2] managed Xbox idle-timeout observer %s\n",
+                     idle_installed ? "installed" : "rejected");
+      }
       if (installed && want_hero_ports) {
         s_hero_buttons_enabled = HLE::SetExternalStartObserver(guard, 0x80052fac, ObserveHeroCandidate);
         if (s_hero_buttons_enabled) s_hero_ports=want_hero_ports;

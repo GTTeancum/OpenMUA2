@@ -1,0 +1,236 @@
+{
+  "checkpoint": "Windows XInput backend and native idle disconnect repair",
+  "date": "2026-10-01",
+  "base_commit": "cc7fb6e2a5c0e59603f0ca6c103ab5322c1869bd",
+  "problem": "Original native controller timeout disconnected Player 1 despite a connected host controller. Short menu tests missed this. An intermittent SDL binding loss was also observed; its root cause is not proven.",
+  "baseline": {
+    "rows": 478,
+    "transitions": [
+      {
+        "ticks": 729000045,
+        "guest_seconds": 1.000000061728395,
+        "link": "1",
+        "next_call": "2",
+        "buttons": "0",
+        "hardware_connected": "1",
+        "gate": "1",
+        "device": "SDL/0/Xbox One Controller",
+        "bound_count": "14"
+      },
+      {
+        "ticks": 176886504003,
+        "guest_seconds": 242.6426666707819,
+        "link": "0",
+        "next_call": "0",
+        "buttons": "0",
+        "hardware_connected": "1",
+        "gate": "1",
+        "device": "SDL/0/Xbox One Controller",
+        "bound_count": "14"
+      }
+    ],
+    "last": [
+      "349389288068",
+      "0",
+      "1",
+      "0",
+      "1",
+      "1",
+      "SDL/0/Xbox One Controller",
+      "14",
+      "0"
+    ],
+    "no_injected_input": true
+  },
+  "fix": {
+    "native_setter": "0x80403ae4",
+    "setter_sha1": "25a770a100b607d837fd07079f46956a62d7bb38",
+    "policy": "For the verified executable and exact managed Xbox profile, pass zero to the original native idle-timeout setter. Preserve the original critical section and explicit disconnect handling. No direct memory write or instruction patch.",
+    "windows_backend": "Migrate only the managed player-one Device entry to a currently connected XInput gamepad. Preserve custom bindings and other ports; keep a profile backup.",
+    "diagnostic": "Opt-in OPENMUA2_CONNECTION_TRACE records native link, host binding, input gate and native button data once per guest second."
+  },
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 45,
+    "tests_failed": 0,
+    "test_seconds": 16.69,
+    "compiler_linker_errors": 0,
+    "compiler_linker_warnings": 0,
+    "configuration_warnings": "Existing CMake deprecation/policy/object-path warnings and unavailable Wayland remain."
+  },
+  "runtime": {
+    "runner_sha256": "699e533bd9492d1d790acc69921151b34642946af955d9081ea458feade34682",
+    "runner_bytes": 16152576,
+    "cpu": "JIT, normal clocks, one logical CPU2/mask4"
+  },
+  "hardware_backend": {
+    "passed": true,
+    "guest_seconds": 600.594666691358,
+    "samples": 599,
+    "link_drops": 0,
+    "hardware_binding_losses": 0,
+    "device": "XInput/0/Gamepad",
+    "injected_input": false,
+    "physical_button_states_seen": [
+      0,
+      4,
+      256,
+      768,
+      1024,
+      2048,
+      2816,
+      3072,
+      4096,
+      4352,
+      6148,
+      6152,
+      6154
+    ],
+    "physical_mapping_actions_not_validated": true,
+    "termination": "Diagnostic terminated intentionally after reaching 600 guest seconds",
+    "sampling": "One connection snapshot per guest second; zero observed lost-link or lost-binding samples."
+  },
+  "neutral_menu_regression": {
+    "passed": true,
+    "idle_before_input_seconds": 270,
+    "native_idle_setting": 0,
+    "connection_samples": 310,
+    "all_connected": true,
+    "menu_steps": [
+      {
+        "step": "0-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuStart",
+        "name": "start",
+        "page": 255,
+        "focus": "0x0"
+      },
+      {
+        "step": "1-start-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "2-dpad_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900409d8"
+      },
+      {
+        "step": "3-dpad_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "4-left_right-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900409d8"
+      },
+      {
+        "step": "5-left_left-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "6-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x90041938"
+      },
+      {
+        "step": "7-b-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x900404b8"
+      },
+      {
+        "step": "8-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x90041938"
+      },
+      {
+        "step": "9-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuMain",
+        "name": "cw_main",
+        "page": 3,
+        "focus": "0x90042898"
+      },
+      {
+        "step": "10-a-90000000",
+        "active_menu": "0x90076aa8",
+        "type": "CMenuChooseProfileIngame",
+        "name": "cw_hero_profile_2player_ps2",
+        "page": 255,
+        "focus": "0x0"
+      }
+    ]
+  },
+  "launcher_tests": {
+    "pure_profile_checks": 9,
+    "result": "PASS",
+    "additional_windows_checks": "Managed migration, empty profile creation and custom-profile preservation passed using the actual connected XInput device."
+  },
+  "installation": {
+    "exe_sha256": "1da6c7299f0753172ca1d66e70ef72b8f48bfa36bb140d3cc1fad5a6ff88c2ce",
+    "exe_bytes": 10597376,
+    "existing_files_checked": 54,
+    "unchanged_existing_files": 53,
+    "changed_file": "C:\\Games\\MUA2\\saves\\Config\\WiimoteNew.ini",
+    "change": "Only managed Device entry migrated from SDL/0/Xbox One Controller to XInput/0/Gamepad",
+    "root_items": [
+      "GameData",
+      "saves",
+      "OpenMUA2.exe"
+    ]
+  },
+  "package_verification": "Installed package passed all payload hashes and child runner --help; affinity mask4 and C:/Games/MUA2/saves confirmed.",
+  "runtime_warnings": {
+    "connection-hardware-setter": {
+      "WPAD_ERR_INVALID_count": 245,
+      "HCI_CMD_DISCONNECT_count": 0,
+      "HCI_command_logging_enabled": true
+    },
+    "main-menu-controller-setter-headless": {
+      "WPAD_ERR_INVALID_count": 48,
+      "HCI_CMD_DISCONNECT_count": null,
+      "HCI_command_logging_enabled": false
+    }
+  },
+  "rejected_or_interrupted": [
+    "Two direct-memory timer candidates were superseded by interception of the original setter after repeated resets were observed; neither was installed.",
+    "One configure attempt overlapped the prior build and failed Ninja recompaction with permission denied; a subsequent serialized supported build passed.",
+    "One test started before its copied runner was available and failed with WinError 2.",
+    "A Vulkan/Cubeb neutral-input run kept the link through more than 300 guest seconds but was stopped when its visible diagnostic window confused the user. Its simulated controller intentionally excluded physical input. The complete menu regression was rerun headlessly.",
+    "The first profile migration test exposed mixed-newline changes; the final implementation preserves other lines and passed the regression."
+  ],
+  "limits": [
+    "Headless native menu state and controller polling were verified; full physical on-screen control mapping is still unverified.",
+    "No screenshot or host input was used.",
+    "The completed 600-second hardware test and completed menu regression used Null video/audio. The interrupted Vulkan/Cubeb run does not establish visual/audio correctness.",
+    "No combat FPS, visual-content or audio-quality acceptance is claimed. The broader performance goal remains active.",
+    "Prior StaticRecomp changes and Build-With-Log.cmd remain uncommitted and untouched."
+  ]
+}
