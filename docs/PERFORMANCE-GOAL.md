@@ -2379,3 +2379,9 @@ and opening cinematic transitions were visually checked; Start and B both resume
 from plaza pause. Start now accepts the profile name and starts from Ready. Final
 build: 46/46 tests. Physical controller, full gameplay-map, audio and FPS acceptance
 remain open. See evidence/windows-20261001/VISUAL-MENU-CONTROLS.json.
+
+Installed-payload follow-up: cold startup plus 300-second menu idle and full
+profile/Ready/cinematic flow passed native visual review. Plaza D-pad selection,
+Y jump, B shield attack and left-stick movement were visible; A attack remains
+visually unconfirmed. Physical controller/reconnect, full combat mapping and
+audio/FPS remain open. See INSTALLED-COLD-IDLE-VISUAL.json in the evidence folder.

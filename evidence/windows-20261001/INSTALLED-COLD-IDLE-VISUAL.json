@@ -1,0 +1,447 @@
+{
+  "source_commit": "857985af94f9c3c1853a9a5573776d63ff20b254",
+  "installed_exe_sha256": "3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375",
+  "cold_start": {
+    "exit_code": 0,
+    "cold_start": true,
+    "load_state_used": false,
+    "installed_payload": true,
+    "idle_seconds": 300,
+    "connection_samples": 476,
+    "all_native_connected": true,
+    "native_idle_setting": 0,
+    "guest_end_seconds": 477.2666666707819,
+    "captures": [
+      {
+        "file": "00-title.png",
+        "sha256": "9f26ae0f260435c290480e2d9323d5a46af4ca2422cd5f856baa1f504ce66891",
+        "inspected": true
+      },
+      {
+        "file": "01-main.png",
+        "sha256": "c00334514091d269b809e30d4903fc6c9286d944ac257bd34a48abd970d86e78",
+        "inspected": true
+      },
+      {
+        "file": "02-after-idle.png",
+        "sha256": "479c64fdcbd09b903cbbf7aa7c7b756d04cf6924e22057bfb93c91159490cf61",
+        "inspected": true
+      },
+      {
+        "file": "03-options.png",
+        "sha256": "c68f1fbd78d501f1ee282148344ef1b9634eb45f09dd546ae0813297b48d1160",
+        "inspected": true
+      },
+      {
+        "file": "04-play.png",
+        "sha256": "83713715f0363b4c020e10951cd0d38672363083a73a4ea08913ca4fe9552638",
+        "inspected": true
+      },
+      {
+        "file": "05-story.png",
+        "sha256": "efdbd4ac3031e9024e0ee3749012abd6d8a424a59964f46ec305ea82a47794fc",
+        "inspected": true
+      },
+      {
+        "file": "06-back.png",
+        "sha256": "f8758cb7928065e3b6bfbab86ea799a45c579b2281087550ca2c2256c6032172",
+        "inspected": true
+      },
+      {
+        "file": "07-story-again.png",
+        "sha256": "ce3491932622013139f25ea820c69ed78a2901a5c41f14143aec42330e41b724",
+        "inspected": true
+      },
+      {
+        "file": "08-difficulty.png",
+        "sha256": "9bc0d367ae0b4fba3bcf2d55c0ca9870a52201c7e3b877b42ea3088c52104865",
+        "inspected": true
+      },
+      {
+        "file": "09-profile-prompt.png",
+        "sha256": "88830f51db25e7fafe02736e66ed35aa0ce5d0f32b667b584d02b3aebbccbcff",
+        "inspected": true
+      },
+      {
+        "file": "10-yes.png",
+        "sha256": "b3308f2acc235005e3625d800374984cc902311ff18a6fa40553296c688b42f9",
+        "inspected": true
+      },
+      {
+        "file": "11-manage-profiles.png",
+        "sha256": "0f9827446ed60851195b30dee0ccb191f645da1c5171f756a0312f8313add714",
+        "inspected": true
+      },
+      {
+        "file": "12-name-keyboard.png",
+        "sha256": "245279a9b58e621a3d0f70a085d1d44cadc33d233085e6a9c0a9d34645cd725b",
+        "inspected": true
+      },
+      {
+        "file": "13-name-A.png",
+        "sha256": "6f97eb39f6c0ee82ae37d914d8e7b85fc52c8812c8dff7ef4b52b7d484d394cd",
+        "inspected": true
+      },
+      {
+        "file": "14-accept-name.png",
+        "sha256": "83cc47c32fcb3378582dcd4c0dfa5309beb63d6901b29b1cf82f27ffb7ca2ee1",
+        "inspected": true
+      },
+      {
+        "file": "15-name-yes.png",
+        "sha256": "f142e7b5e655ac49d1a6a908b24ac81c32fe415947178d06479164ddd8e9e09f",
+        "inspected": true
+      },
+      {
+        "file": "16-icon.png",
+        "sha256": "8b6d4d3ff2357bcea8493d9a7e80c22677e29485c72b59d313481607f0ccac29",
+        "inspected": true
+      },
+      {
+        "file": "17-autospend.png",
+        "sha256": "3abb62562aaa7f38143680ca0f0eec0f6c8d2200687e0e3b77b72c66b6a1ff71",
+        "inspected": true
+      },
+      {
+        "file": "18-summary.png",
+        "sha256": "aeb622a7b39c802e165e6e7fba56c7731d300c771bec38e655f2c6890e77bba0",
+        "inspected": true
+      },
+      {
+        "file": "19-created.png",
+        "sha256": "6dfab0b4753883a43a192bf2ae0218739c03417e91cc3aca0524b52162d5afb9",
+        "inspected": true
+      },
+      {
+        "file": "20-join-screen.png",
+        "sha256": "7c45043207216be3c84857e94e0eb5e4e7a63df1307b35606a4e19d6b7ac1e0b",
+        "inspected": true
+      },
+      {
+        "file": "21-joined.png",
+        "sha256": "f61f697ddfd820e9dfa46646e0420b9676827c9e4a1200a2059841b507f1253b",
+        "inspected": true
+      },
+      {
+        "file": "22-selected.png",
+        "sha256": "f890533b8ab8f36f6f94aa93373ed32a5f52f29745c067b16b1197cf9f363a2d",
+        "inspected": true
+      },
+      {
+        "file": "23-ready.png",
+        "sha256": "3981b5da03580509627e6567198ac62a545e63b56d8f7bc895d4cc3624a83578",
+        "inspected": true
+      },
+      {
+        "file": "24-start-game.png",
+        "sha256": "35164470e4974bd6bd7d893f958d11d015772c3350d43460464982a10bd9efc2",
+        "inspected": true
+      },
+      {
+        "file": "25-cinematic.png",
+        "sha256": "dbc4f5fb024450dc55059c83d1f276140f491ef773b909246c88599d863ea44d",
+        "inspected": true
+      }
+    ],
+    "release_windows": [
+      {
+        "step": "00-title-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "01-main-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "02-after-idle-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "03-options-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "04-play-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "05-story-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "06-back-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "07-story-again-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "08-difficulty-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "09-profile-prompt-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "10-yes-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "11-manage-profiles-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "12-name-keyboard-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "13-name-A-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "14-accept-name-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "15-name-yes-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "16-icon-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "17-autospend-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "18-summary-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "19-created-neutral.txt",
+        "samples": 2,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "20-join-screen-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "21-joined-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "22-selected-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "23-ready-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "24-start-game-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "step": "25-cinematic-neutral.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      }
+    ],
+    "visual_result": "All 26 captures inspected sequentially: title, main menu, idle, navigation/back, difficulty, name/icon/autospend profile creation, join/Ready, Start Game, opening Doomstadt cinematic",
+    "physical_xinput_results": [
+      1167,
+      1167,
+      1167,
+      1167
+    ],
+    "physical_acceptance": false,
+    "audio": "Null",
+    "fps_claim": false
+  },
+  "plaza": {
+    "exit_code": 0,
+    "installed_payload": true,
+    "load_state_used": true,
+    "captures": [
+      {
+        "file": "00-plaza.png",
+        "sha256": "0c594cc2f13c6cd763328ec38b913df48523a377fda5ee6ab7197c75a1149752",
+        "inspected": true
+      },
+      {
+        "file": "01-dpad_right-held.png",
+        "sha256": "95c0c7188346f87ba57d09254e04eaf723c11a60345deb229b7fd98c3780f5e2",
+        "inspected": true
+      },
+      {
+        "file": "01-dpad_right.png",
+        "sha256": "902bffaf4a4ce97379f5abf0dc9c89958e9a8c4c65cdee12a17a61945f79834d",
+        "inspected": true
+      },
+      {
+        "file": "02-dpad_down-held.png",
+        "sha256": "53527b92b5e54bb4d66496e6bea49e331fb84686d246f1597b10046f5bace3bf",
+        "inspected": true
+      },
+      {
+        "file": "02-dpad_down.png",
+        "sha256": "944a8115c183e3cb30fac3ffa5aa2d4a1092141b2804776375e5b02847300a07",
+        "inspected": true
+      },
+      {
+        "file": "03-dpad_left-held.png",
+        "sha256": "f46152b67689358d23107e09f56dc7473fc4f00420ce417714169c174b7114b2",
+        "inspected": true
+      },
+      {
+        "file": "03-dpad_left.png",
+        "sha256": "eb123ad3e2e506aaa6f4ff2d22a2931e2bea22eb9ff1e823ee56b3cc819a9bf3",
+        "inspected": true
+      },
+      {
+        "file": "04-dpad_up-held.png",
+        "sha256": "a9b34834837ee622e99449802d8502508cb645c8cd35adb79c58e75169c1867b",
+        "inspected": true
+      },
+      {
+        "file": "04-dpad_up.png",
+        "sha256": "5aab3ae9b4f65d71d0ebccb4ed2ca32c092570447fb89291705f79423188ab2e",
+        "inspected": true
+      },
+      {
+        "file": "05-y-held.png",
+        "sha256": "37a72f79503c870120d734697e3b273609d0c73ad87eaa9ae3036f19f9f046f3",
+        "inspected": true
+      },
+      {
+        "file": "05-y.png",
+        "sha256": "c0241cf539750f2a2423cf7d746b6e8b9c88f75768e2fcd3e51ae5fc5b78c15e",
+        "inspected": true
+      },
+      {
+        "file": "06-a-held.png",
+        "sha256": "42c81fa1e4cc50c1e552cb2cc9d2e4f96690ff9ac4913a87d01dd09584fe6971",
+        "inspected": true
+      },
+      {
+        "file": "06-a.png",
+        "sha256": "339ccf8bedbc1de42735e4af5538ced4857c23ba2f530000352ebd9dc4cdc780",
+        "inspected": true
+      },
+      {
+        "file": "07-b-held.png",
+        "sha256": "f21537229c7045734b30f6866a8c96b6bf72665057bc05b373a72a73f7060274",
+        "inspected": true
+      },
+      {
+        "file": "07-b.png",
+        "sha256": "2111e27bdc3059cf836a81ba2364dc16460a49d9f7f0f279742d34564794790d",
+        "inspected": true
+      },
+      {
+        "file": "08-left_up-held.png",
+        "sha256": "fa80cd5ab5d00217ad798ecb051f3557ffd1a4d15e3f91242c4b17b3117e70ab",
+        "inspected": true
+      },
+      {
+        "file": "08-left_up.png",
+        "sha256": "a16eac76a40e014d4bc75eb5e55b8d715bb01fd05367414ddd76453a4cbf3083",
+        "inspected": true
+      }
+    ],
+    "release_windows": [
+      {
+        "receipt": "neutral-0.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-1.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-2.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-3.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-4.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-5.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-6.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      },
+      {
+        "receipt": "neutral-7.txt",
+        "samples": 3,
+        "all_actions_cleared": true
+      }
+    ],
+    "visual_results": {
+      "dpad_right": "Iron Man selected",
+      "dpad_down": "Spider-Man selected",
+      "dpad_left": "Wolverine selected",
+      "dpad_up": "Captain America selected",
+      "y": "Captain America airborne then grounded after release",
+      "a": "Light attack not identifiable in selected frames; visual acceptance remains open",
+      "b": "Captain America shield raised with attack effect then returns to stance",
+      "left_up": "Captain America changes facing and position; returns to stance after release"
+    }
+  },
+  "limitations": [
+    "Process-local synthetic input; physical XInput acceptance and reconnect unresolved",
+    "Selected screenshots do not validate every animation frame",
+    "Null audio: no audio acceptance",
+    "No FPS claim",
+    "Full combat mapping, fusion/revival and pointer interactions remain open"
+  ],
+  "configuration": {
+    "cpu": "single logical CPU 2",
+    "graphics": "Vulkan 3x",
+    "audio": "Null",
+    "headless": true,
+    "host_input": false
+  }
+}

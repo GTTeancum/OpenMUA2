@@ -1,5 +1,27 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Installed cold-start and plaza visual verification - 2026-10-01
+
+The final installed payload from source 857985af was cold-booted without a
+savestate, idled in the main menu for 300 guest seconds, and progressed through
+navigation/back, difficulty, complete profile creation, join/Ready and Start Game
+to the opening Doomstadt cinematic. All 26 native captures were inspected in
+order. All 476 native connection samples remained connected, and sampled action
+bits cleared in all 26 neutral windows. No disconnect overlay appeared.
+
+A separate retained plaza-state test inspected all 17 captures in order. D-pad
+Right/Down/Left/Up selected Iron Man/Spider-Man/Wolverine/Captain America; Y showed
+jump/landing, B a shield attack, and left stick movement. A's attack was not
+identifiable in these selected frames and remains visually unconfirmed. All
+eight sampled neutral windows cleared. Both installed-payload runs exited 0.
+
+These are headless, process-local tests on logical CPU2, Vulkan 3x, normal clocks,
+and Null audio. Physical XInput acceptance/reconnect, the full gameplay mapping,
+audio and FPS remain unresolved. Latest physical poll returned 1167 for all four
+slots. Actual saves were not opened; the second run reused the diagnostic profile.
+No new build was needed; the installed package and 46/46 regression result remain
+unchanged. Evidence: evidence/windows-20261001/INSTALLED-COLD-IDLE-VISUAL.json.
+
 ## Native screenshot controls checkpoint - 2026-10-01
 
 The user's ImGui GetIO assertion was reproduced by the headless Vulkan diagnostic:
