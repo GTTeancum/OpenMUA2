@@ -1,4 +1,4 @@
-#include "moderngekko/game/button_qte.hpp"
+#include "moderngekko/gameplay/button_qte.hpp"
 #include <iostream>
 
 using moderngekko::game::ButtonQte;

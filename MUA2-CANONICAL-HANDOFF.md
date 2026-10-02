@@ -15,7 +15,7 @@ that adapter is outstanding. Do not reintroduce it as the mash-X implementation.
 A standalone ButtonQte gameplay state now counts press edges, guards ownership,
 preserves progress across input suspension, resets for a new interaction, and
 emits completion once. Windows MSVC focused build and CTest passed: 1/1,
-0.03 seconds test time / 0.53 seconds total. It is NOT connected to the live game.
+0.04 seconds test time / 0.32 seconds total. It is NOT connected to the live game.
 The test quota of twelve is a fixture value, not an installed gameplay setting.
 No new game-side completion, animation, audio or FPS validation is claimed.
 

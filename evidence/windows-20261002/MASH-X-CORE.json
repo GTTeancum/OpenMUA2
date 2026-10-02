@@ -5,8 +5,8 @@
     "name": "moderngekko.button_qte",
     "passed": 1,
     "failed": 0,
-    "test_seconds": 0.03,
-    "total_seconds": 0.53,
+    "test_seconds": 0.04,
+    "total_seconds": 0.32,
     "scope": "standalone gameplay state only",
     "compiler_linker_errors": 0,
     "configure_warnings": "existing CMake compatibility, dependencies and object-path warnings"
