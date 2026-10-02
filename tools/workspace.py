@@ -314,8 +314,9 @@ def backup(root: Path, destination: str | None = None) -> Path:
     if out.exists():
         raise ValueError('Backup destination already exists; choose a new filename.')
     out.parent.mkdir(parents=True, exist_ok=True)
-    local = within(root, '.local'); local.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='backup-', dir=local) as temp:
+    # Keep the history bundle on the destination volume, especially when the
+    # source/build drive is low on space and the backup targets another drive.
+    with tempfile.TemporaryDirectory(prefix='OpenMUA2-backup-', dir=out.parent) as temp:
         temp = Path(temp)
         bundle = temp / 'history.bundle'
         git(root, 'bundle', 'create', str(bundle), '--all', capture=False)

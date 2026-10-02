@@ -13,3 +13,12 @@ Before editing, inspect `git status`; do not reset, clean, overwrite or discard 
 Do not disable runtime fallback/hash protection or alter timing just to reach a later screen. The missing MEM2/loop/FMA/REL fixes require implementation and regression tests before live Wii shadow verification is safe. Preserve failures as failures; tests are scoped, not full-game guarantees. Update `docs/CURRENT-STATUS.md` and add new evidence for each checkpoint, then take a local source snapshot and backup before handing off.
 
 `FILE-MANIFEST.json` records the delivered baseline, not current editable source. Intentional edits make `verify` report differences. Do not regenerate the manifest just to hide unreviewed changes. A verified source backup has its own independent worktree manifest.
+
+## Mandatory disk hygiene
+
+- Check repository size and free disk space before large builds, diagnostic batches and backups, and clean up at every completed checkpoint. Do not let old experiments accumulate between turns.
+- Keep the current supported build, one useful rollback baseline, compact test results/logs and the specific states needed to reproduce unresolved issues. Remove superseded build intermediates, duplicate test-profile disk images, obsolete generated translations and redundant runtime copies after checking that no active process needs them. Historical receipts remain historical evidence, not proof that a pruned binary is still present.
+- Retain only the two newest verified routine source/history backups. Verify a replacement before pruning older backups; retain any explicitly designated recovery archive. Put backup temporary files on the destination drive, not an almost-full source drive.
+- Never delete the original WBFS, authoritative extracted game data, actual user saves, uncommitted source, pinned dependencies or active-process files. Do not blanket-delete `.local` or run `git clean`. Preserve unique diagnostic data until its purpose and replacement are established; deduplicate verified identical copies first.
+- Before deletion, inspect candidates and resolve every absolute path inside the intended artifact directory. Record what was removed, bytes reclaimed and remaining repository size. Keep compact failure evidence even when large failed-run artifacts are pruned.
+- If free space falls below 20 GiB, stop creating large artifacts and clean obsolete data first. Cleanup is part of the authorized development workflow, not an optional follow-up for the user.
