@@ -7,6 +7,7 @@ int main() {
     if (!ok) { std::cerr << message << '\n'; ++failures; }
   };
   check(XboxActionPrompt("Action") == XboxPrompt::X, "Context use must show X, not chord's first button");
+  check(XboxActionPrompt("ACTION") == XboxPrompt::X, "Native statue interaction uses uppercase ACTION");
   check(XboxActionPrompt("USEGRABICON") == XboxPrompt::X, "Legacy use token must agree");
   check(XboxActionPrompt("MenuAccept") == XboxPrompt::A, "Menu accept");
   check(XboxActionPrompt("BACKBUTTON") == XboxPrompt::B, "Menu back must not show View");

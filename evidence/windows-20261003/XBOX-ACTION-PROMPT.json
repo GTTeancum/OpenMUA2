@@ -1,0 +1,35 @@
+{
+  "scope": "opt-in Xbox prompt correction; not installed",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 48,
+    "tests_failed": 0,
+    "test_seconds": 17.46,
+    "warnings": "Existing vendored CMake warnings; no compiler/linker errors"
+  },
+  "runner_sha256": "948344cb0b41517665144fa0afde5ffc8a698d38bbc62c67b26f770bf0d31b36",
+  "runner_size": 16161792,
+  "native_validation": {
+    "exit_code": 0,
+    "rows": [
+      "81313274,ACTION,2,6",
+      "81313274,MENU_BACK,3,3",
+      "81313274,MenuAccept,2,2"
+    ],
+    "trigger": "Original statue-use fixture; mission trigger enabled in diagnostic memory so the actual contextual prompt could appear. X then entered the QTE.",
+    "before_fix": "Native uppercase ACTION returned A (2); initial helper covered only mixed-case Action.",
+    "after_fix": "ACTION returns Xbox X slot6; MenuAccept remains2 and MENU_BACK remains3.",
+    "limits": "Seeded process-local test with stock installed font assets; paired Xbox font candidates separately decoded and inspected. No live visual, physical-controller, audio or FPS acceptance. Vulkan3x, normal clocks, CPU2 only, headless Null audio; functional test overlapped linker tail."
+  },
+  "failed_fixture": "Changing two unrelated native prompt literals did not make the UI request Action; fixture assertion failed after process exit0. It does not count as validation.",
+  "cleanup": {
+    "Removed": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\direct-qte-probe\\assetsfb-qte-x-tip.wad",
+    "Bytes": 281821811,
+    "VerifiedInstalledSha256": "F4307EBB9ECC7F9D995C88BF4FC87B1DDCBFE5509866D617FB2B4F05BC28EC45",
+    "OriginalGameDataPreserved": true
+  },
+  "installed_exe_sha256": "a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a",
+  "installation_changed": false,
+  "remaining": "Full Xbox UI conversion, supported paired asset/runtime installation, other QTE variants and physical/visual acceptance remain open."
+}

@@ -341,3 +341,23 @@ recompiler edits remain preserved and included in this local build. Evidence:
 evidence/windows-20261003/XBOX-PROMPT-DEVELOPMENT.json. Removed 272,241 bytes of
 verified duplicate candidate fonts; previously rejected deletions were not retried.
 Continue the full controls/QTE/UI goal; this checkpoint does not satisfy it.
+
+## Native contextual Xbox X prompt correction - 2026-10-03
+
+A seeded statue approach exposed the actual uppercase ACTION token (action 21).
+The first opt-in prompt mapping missed that alias and still returned A. The
+mapping and regression now include ACTION. A repeated headless native run exited 0
+and traced ACTION:2->6 (Xbox X), MenuAccept:2->2 and MENU_BACK:3->3; X entered the
+QTE. The mission trigger was enabled only in diagnostic memory. An earlier
+attempt changing unrelated prompt literals did not exercise Action and remains
+a failed fixture, not acceptance.
+
+The corrected Windows build passed 48/48 tests in 17.46 seconds, exit 0. Existing
+vendored CMake warnings remain; no compiler/linker errors. This remains opt-in
+and uninstalled: fonts are separately inspected private candidates. No in-game
+visual, physical-controller, audio or FPS acceptance. Full UI/QTE scope remains
+open. Evidence: evidence/windows-20261003/XBOX-ACTION-PROMPT.json.
+
+Removed the redundant private QTE WAD only after matching its SHA256 to the
+installed copy; reclaimed 281,821,811 bytes. Original data and installed WAD/saves
+are preserved. Previously rejected cleanup targets were not retried.

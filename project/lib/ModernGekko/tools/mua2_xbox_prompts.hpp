@@ -11,7 +11,7 @@ enum class XboxPrompt : std::uint8_t { Start = 1, A = 2, B = 3, Y = 4, LB = 5, X
 inline std::optional<XboxPrompt> XboxActionPrompt(std::string_view token) {
   // Prefer action semantics: the original grab/use descriptors are chords,
   // while the managed Xbox layout exposes one contextual X button.
-  if (token == "Grab" || token == "Action" || token == "GRAB" ||
+  if (token == "Grab" || token == "Action" || token == "ACTION" || token == "GRAB" ||
       token == "USEGRABICON") return XboxPrompt::X;
   if (token == "Attack" || token == "ATTACK" || token == "LIGHTATTACKICON" ||
       token == "MenuAccept" || token == "MENU_ACCEPT" || token == "ABUTTON")
