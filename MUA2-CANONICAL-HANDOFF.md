@@ -1,5 +1,42 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Installed Xbox Options descriptions - 2026-10-03
+
+The installed root executable and GameData now include ten corrected Options
+control descriptions: A light attack, B heavy attack, RT+face powers, LT+face
+fusion, Y jump, LB block, X grab/use, Start pause, D-pad hero selection and right
+stick camera. The compiler rewrites only the ten selected descriptions in each
+of three guarded string tables, reusing their allocations without changing size.
+The launcher v3 manifest now checks ten archive members, including these tables.
+
+The Windows C# launcher compiled successfully with no reported warnings/errors.
+Four Options-table tests, five tutorial tests, nine launcher gate checks and nine
+profile checks passed. The unchanged C++ runner was not rebuilt; its prior 48/48
+result remains scoped to the preceding build. Actual package checksums passed;
+the new launcher accepts its matching assets and rejects the previous UI set.
+
+A cold headless run reached the native options_rev menu and its real descriptions
+requested all ten expected Xbox glyph tokens, without memory text substitutions.
+B returned to the main menu and the process exited 0. This proves native loading
+and formatter behavior, not final appearance or physical-controller acceptance.
+Single logical CPU 2, Vulkan 3x, normal clocks, Null audio; no FPS/audio claim.
+The Wii controller diagram/static labels, gesture help, other QTE variants and
+remaining menu actions are still open. MENU_OK still resolves to native icon 8
+and needs a semantic audit. The full controls/UI goal remains active.
+
+Installed EXE SHA256:
+031934aa8187c7c4f87597b03f5d3e36005e8244961ce1aa25e357f6e58d02fd
+Installed WAD SHA256:
+e90498f4aa3d9a91598ea7b135150dcf14ed34a9111ad4d9c2a58e802be81092
+All 55 real save/profile files are unchanged. The previous supported UI pair is
+preserved as rollback; original extracted assets remain unchanged. Root contents
+remain OpenMUA2.exe, GameData and saves. Evidence:
+evidence/windows-20261003/XBOX-OPTIONS-HELP.json.
+
+Duplicate candidate cleanup was rejected by automatic approval policy; no files
+were deleted. Do not retry the targets recorded in the evidence receipt.
+
+
 ## Installed common and auxiliary Xbox UI - 2026-10-03
 
 The root C:\Games\MUA2\OpenMUA2.exe now packages the matched Xbox UI resolver.

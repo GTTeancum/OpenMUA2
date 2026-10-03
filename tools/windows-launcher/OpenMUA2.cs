@@ -17,10 +17,11 @@ internal static class OpenMUA2
     static string Quote(string path) { return "\"" + path + "\""; }
     static void VerifyXboxUiAssets(string wad, TextReader manifest)
     {
-        if (manifest.ReadLine() != "OpenMUA2-Xbox-UI-v2")
+        if (manifest.ReadLine() != "OpenMUA2-Xbox-UI-v3")
             throw new InvalidDataException("Unsupported Xbox UI asset version.");
         var required = new HashSet<string>(StringComparer.Ordinal) {
             "data/vv_tips.engb", "data/vv_tips.itab", "data/vv_tips.xmlb",
+            "data/strings.engb", "data/strings.itab", "data/strings.xmlb",
             "packages/generated/maps/package/permanent.fb",
             "packages/generated/maps/package/permanent_rev.fb",
             "textures/fonts/rev_med_eng.igb", "textures/fonts/rev_med_ws_eng.igb"

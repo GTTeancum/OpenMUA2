@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compile supplied Xbox X artwork into a PRIVATE candidate QTE HUD archive.
 
-This changes seven motion-prompt cells and the safeguard instruction. It
+This changes seven motion-prompt cells and the safeguard instruction. Xbox UI
+mode also converts menu fonts, twelve tutorials and ten Options descriptions. It
 neither installs the archive nor claims complete Xbox UI conversion. Input game
 archives and supplied images are never modified. Keep all outputs outside Git.
 Requires the existing Pillow installation; nothing is downloaded.
@@ -145,7 +146,7 @@ def main():
     ap.add_argument('--glyph-png', type=Path, required=True)
     ap.add_argument('--output-wad', type=Path, required=True)
     ap.add_argument('--xbox-ui', action='store_true',
-                    help='Also compile common Xbox menu fonts and 12 tutorial instructions; requires matching runtime')
+                    help='Also compile Xbox fonts, 12 tutorials and 10 Options descriptions; requires matching runtime')
     args = ap.parse_args()
     output = args.output_wad.resolve()
     ui_manifest = output.with_suffix('.xbox-ui.manifest')
@@ -164,8 +165,12 @@ def main():
             tip_patcher = patch_safeguard_tip
             if args.xbox_ui:
                 from xbox_tutorials import patch_tutorials
+                from xbox_options_help import patch_options_help
                 from build_xbox_menu_fonts import HASHES, TABLE_HASHES, patch_font, read_font
                 tip_patcher = patch_tutorials
+                for extension in ('engb', 'itab', 'xmlb'):
+                    name = 'data/strings.' + extension
+                    replacements[name] = patch_options_help(source.read(name))
                 for suffix in HASHES:
                     name = f'textures/fonts/rev_med{suffix}_eng.igb'
                     table = source.read(f'ui/fonts/rev_med{suffix}.xmlb')
@@ -204,13 +209,14 @@ def main():
                 Path(temporary).unlink(missing_ok=True)
     if args.xbox_ui:
         with ui_manifest.open('x', encoding='ascii', newline='\n') as manifest:
-            manifest.write('OpenMUA2-Xbox-UI-v2\n')
+            manifest.write('OpenMUA2-Xbox-UI-v3\n')
             for name, payload in sorted(replacements.items()):
                 manifest.write(hashlib.sha256(payload).hexdigest() + '\t' + name + '\n')
     print(json.dumps({'status': 'candidate only; not installed', 'output': str(output),
                       'replaced_motion_cells': len(MOTION_CELLS),
                       'xbox_menu_fonts': 2 if args.xbox_ui else 0,
                       'tutorial_instructions': 12 if args.xbox_ui else 1,
+                      'options_control_descriptions': 10 if args.xbox_ui else 0,
                       'unchanged_archive_members': len(infos) - len(replacements),
                       'scope': 'Common Xbox UI candidate; matching runtime required; other Wii prompts remain'
                                if args.xbox_ui else 'QTE motion artwork and safeguard instruction; other Wii prompts remain'}, indent=2))

@@ -8,10 +8,11 @@ $dll = Join-Path $testRoot 'UiTests.dll'
 if ($LASTEXITCODE -ne 0) { throw 'Xbox UI test compilation failed' }
 $type = [Reflection.Assembly]::LoadFile($dll).GetType('OpenMUA2')
 $method = $type.GetMethod('VerifyXboxUiAssets', [Reflection.BindingFlags]'Static,NonPublic')
-$names = @('data/vv_tips.engb','data/vv_tips.itab','data/vv_tips.xmlb',
+$names = @('data/strings.engb','data/strings.itab','data/strings.xmlb',
+    'data/vv_tips.engb','data/vv_tips.itab','data/vv_tips.xmlb',
     'packages/generated/maps/package/permanent.fb','packages/generated/maps/package/permanent_rev.fb',
     'textures/fonts/rev_med_eng.igb','textures/fonts/rev_med_ws_eng.igb')
-$lines = @('OpenMUA2-Xbox-UI-v2')
+$lines = @('OpenMUA2-Xbox-UI-v3')
 foreach ($name in $names) {
     $sha = [Security.Cryptography.SHA256]::Create()
     try { $hash = [BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($name))).Replace('-','').ToLowerInvariant() }
@@ -51,7 +52,7 @@ Check $valid $manifest $true
 Check (Write-Fixture 'changed') $manifest $false
 Check (Write-Fixture 'missing') $manifest $false
 Check (Write-Fixture 'duplicate') $manifest $false
-Check $valid ($manifest.Replace('UI-v2','UI-v1')) $false
+Check $valid ($manifest.Replace('UI-v3','UI-v2')) $false
 Check $valid (($lines[0..6]) -join "`n") $false
 Check $valid ($manifest + "`n" + $lines[1]) $false
 Check $valid ($manifest.Replace('data/vv_tips.engb','../unknown')) $false

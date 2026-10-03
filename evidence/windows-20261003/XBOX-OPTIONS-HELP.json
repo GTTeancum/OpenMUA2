@@ -1,0 +1,167 @@
+{
+  "installed_exe_sha256": "031934aa8187c7c4f87597b03f5d3e36005e8244961ce1aa25e357f6e58d02fd",
+  "installed_wad_sha256": "e90498f4aa3d9a91598ea7b135150dcf14ed34a9111ad4d9c2a58e802be81092",
+  "rollback_hashes": {
+    "OpenMUA2.exe": "36cfa89bf54d9b6f2666a8b3ff3497d9355834cbdfb63d75c04a745bbe1c256b",
+    "assetsfb.wad": "fc2710eb8df0a028b36e127ff93a049c302a21bb5f75aeea2a46201af923561b"
+  },
+  "unchanged_save_files": 55,
+  "root_entries": [
+    "GameData",
+    "OpenMUA2.exe",
+    "saves"
+  ],
+  "status": "installed; Options text converted; diagram and remaining UI incomplete",
+  "launcher_build": {
+    "exit_code": 0,
+    "warnings": [],
+    "errors": []
+  },
+  "runtime": "Unchanged packaged C++ runner; prior 48/48 build remains historical validation, not rerun for this asset/launcher change.",
+  "tests": {
+    "options_tables": 4,
+    "tutorials": 5,
+    "launcher_ui_gate": 9,
+    "profile_migration": 9
+  },
+  "native": {
+    "exit_code": 0,
+    "scope": "cold boot with candidate assets and packaged runner; headless internal input; no visual/physical/audio acceptance",
+    "menu_model": [
+      {
+        "label": "title",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x8118bae8",
+        "name": "start",
+        "page": 255,
+        "focus": "0x0"
+      },
+      {
+        "label": "main",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038",
+        "focus_name": "option01_text"
+      },
+      {
+        "label": "options-focus",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558",
+        "focus_name": "option03_text"
+      },
+      {
+        "label": "options",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81192198",
+        "name": "options_rev",
+        "page": 0,
+        "focus": "0x900484d8",
+        "focus_name": "label_effects_volume"
+      }
+    ]
+  },
+  "prompt_validation": {
+    "assertions_passed": true,
+    "observed_required_prompts": [
+      [
+        "Block",
+        "5",
+        "5"
+      ],
+      [
+        "Pause",
+        "1",
+        "1"
+      ],
+      [
+        "XA",
+        "255",
+        "2"
+      ],
+      [
+        "XB",
+        "255",
+        "3"
+      ],
+      [
+        "XD",
+        "255",
+        "6"
+      ],
+      [
+        "XLT",
+        "255",
+        "15"
+      ],
+      [
+        "XR",
+        "255",
+        "19"
+      ],
+      [
+        "XRT",
+        "255",
+        "16"
+      ],
+      [
+        "XX",
+        "255",
+        "24"
+      ],
+      [
+        "XY",
+        "255",
+        "4"
+      ]
+    ],
+    "scope": "Cold native Options load with converted descriptions; no memory substitutions; not visual or physical acceptance"
+  },
+  "package_verified": true,
+  "installed_ui_pair_verified": true,
+  "failures": [
+    "Initial PowerShell test invocation rejected by local script policy; repeated successfully with process-only ExecutionPolicy Bypass.",
+    "Initial reflection harness used a PSObject wrapper instead of ProcessStartInfo; corrected typed construction passed."
+  ],
+  "limits": [
+    "No visible or physical-controller acceptance.",
+    "Wii Options diagram and static button labels remain to convert.",
+    "Gesture help, other motion QTEs and unsupported menu actions remain open.",
+    "MENU_OK token observed resolving to native icon 8; semantic mapping still requires investigation.",
+    "No FPS/audio assessment; headless test used Null audio."
+  ],
+  "changed_archive_members": [
+    "data/strings.engb",
+    "data/strings.itab",
+    "data/strings.xmlb",
+    "data/vv_tips.engb",
+    "data/vv_tips.itab",
+    "data/vv_tips.xmlb",
+    "packages/generated/maps/package/permanent.fb",
+    "packages/generated/maps/package/permanent_rev.fb",
+    "textures/fonts/rev_med_eng.igb",
+    "textures/fonts/rev_med_ws_eng.igb"
+  ],
+  "unchanged_archive_members": 1038,
+  "original_wad_sha256": "b0933be3d33e7ad4082da39d4e86cbe6ab3dfb1cfc2b87406c6d6caf6b22bfe9",
+  "cleanup": {
+    "status": "attempt rejected by automatic approval policy; no paths deleted; do not retry these targets",
+    "bytes_reclaimed": 0,
+    "blocked_targets": [
+      "work/xbox-options-help/game",
+      "work/xbox-options-help/assetsfb.wad",
+      "work/xbox-options-help/OpenMUA2.exe",
+      "work/xbox-ui-release/OpenMUA2.exe",
+      "C:/Users/smmel/AppData/Local/Temp/OpenMUA2-package-4556abe5d593409a89fc7fc5be0b750c"
+    ],
+    "original_assets_and_saves_preserved": true
+  }
+}
