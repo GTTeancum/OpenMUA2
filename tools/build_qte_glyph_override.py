@@ -127,7 +127,7 @@ def patch_safeguard_tip(data):
     return bytes(result)
 
 
-def patch_tip_package(data):
+def patch_tip_package(data, patcher=patch_safeguard_tip):
     for name in (b'data/vv_tips.engb\0', b'data/vv_tips.itab\0'):
         if data.count(name) != 1:
             raise ValueError('Missing or ambiguous packaged tips')
@@ -136,7 +136,7 @@ def patch_tip_package(data):
         start = entry + 196
         if start + size > len(data):
             raise ValueError('Truncated packaged tips')
-        data = data[:start] + patch_safeguard_tip(data[start:start + size]) + data[start + size:]
+        data = data[:start] + patcher(data[start:start + size]) + data[start + size:]
     return data
 
 def main():
@@ -144,6 +144,8 @@ def main():
     ap.add_argument('--source-wad', type=Path, required=True)
     ap.add_argument('--glyph-png', type=Path, required=True)
     ap.add_argument('--output-wad', type=Path, required=True)
+    ap.add_argument('--xbox-ui', action='store_true',
+                    help='Also compile common Xbox menu fonts and 12 tutorial instructions; requires matching runtime')
     args = ap.parse_args()
     output = args.output_wad.resolve()
     if output in (args.source_wad.resolve(), args.glyph_png.resolve()) or output.exists():
@@ -156,10 +158,21 @@ def main():
             if len({i.filename for i in infos}) != len(infos):
                 raise ValueError('Duplicate WAD entries')
             replacements = {PACKAGE: patch_package(source.read(PACKAGE), image)}
+            tip_patcher = patch_safeguard_tip
+            if args.xbox_ui:
+                from xbox_tutorials import patch_tutorials
+                from build_xbox_menu_fonts import HASHES, TABLE_HASHES, patch_font, read_font
+                tip_patcher = patch_tutorials
+                for suffix in HASHES:
+                    name = f'textures/fonts/rev_med{suffix}_eng.igb'
+                    table = source.read(f'ui/fonts/rev_med{suffix}.xmlb')
+                    if hashlib.sha256(table).hexdigest() != TABLE_HASHES[suffix]:
+                        raise ValueError('Unknown font coordinate table')
+                    replacements[name], _ = patch_font(source.read(name), read_font(table), image, suffix)
             for name in ('data/vv_tips.engb', 'data/vv_tips.itab', 'data/vv_tips.xmlb'):
-                replacements[name] = patch_safeguard_tip(source.read(name))
+                replacements[name] = tip_patcher(source.read(name))
             tips_package = 'packages/generated/maps/package/permanent.fb'
-            replacements[tips_package] = patch_tip_package(source.read(tips_package))
+            replacements[tips_package] = patch_tip_package(source.read(tips_package), tip_patcher)
             handle, temporary = tempfile.mkstemp(prefix='qte-glyph-', suffix='.wad.tmp', dir=output.parent)
             os.close(handle)
             try:
@@ -188,8 +201,11 @@ def main():
                 Path(temporary).unlink(missing_ok=True)
     print(json.dumps({'status': 'candidate only; not installed', 'output': str(output),
                       'replaced_motion_cells': len(MOTION_CELLS),
+                      'xbox_menu_fonts': 2 if args.xbox_ui else 0,
+                      'tutorial_instructions': 12 if args.xbox_ui else 1,
                       'unchanged_archive_members': len(infos) - len(replacements),
-                      'scope': 'QTE motion artwork and safeguard instruction; other Wii prompts remain'}, indent=2))
+                      'scope': 'Common Xbox UI candidate; matching runtime required; other Wii prompts remain'
+                               if args.xbox_ui else 'QTE motion artwork and safeguard instruction; other Wii prompts remain'}, indent=2))
 
 
 if __name__ == '__main__':

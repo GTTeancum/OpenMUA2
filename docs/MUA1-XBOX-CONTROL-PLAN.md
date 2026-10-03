@@ -361,3 +361,26 @@ open. Evidence: evidence/windows-20261003/XBOX-ACTION-PROMPT.json.
 Removed the redundant private QTE WAD only after matching its SHA256 to the
 installed copy; reclaimed 281,821,811 bytes. Original data and installed WAD/saves
 are preserved. Previously rejected cleanup targets were not retried.
+
+## Xbox tutorial and combined UI candidate - 2026-10-03
+
+The private --xbox-ui asset compiler now combines the seven QTE X cells, both
+common Xbox menu fonts and twelve updated Rev tutorial instructions. Grab uses
+contextual X; powers describe RT with A/X/B/Y; hero selection uses the D-pad;
+fusion describes LT with a partner face button; horizontal camera control uses
+the right stick. Trigger and face names in the new power/fusion text are literal
+labels pending the remaining auxiliary glyph work.
+
+Five private-data Python regressions pass. All three standalone tip tables and
+both packaged copies retain their original sizes. The compiler separates a
+shared Rev/PSP fusion string into reclaimed string padding without changing the
+PSP entry. Initial shared-string and allocation-overflow checks failed safely;
+the corrected conversion passes. Independent full archive comparison confirms
+exactly seven changed members and 1,041 byte-identical members; archive CRC
+validation passes. Original archive and installed EXE hashes remain unchanged.
+
+This is NOT installed or native/rendered UI acceptance. No C++ changed, so the
+previous 48/48 Windows build remains the latest runtime build. Unverified camera
+reset, quick-assign and throw instructions remain open, as do the full UI/QTE and
+physical-controller acceptance requirements. Evidence:
+evidence/windows-20261003/XBOX-TUTORIAL-CANDIDATE.json.

@@ -1,0 +1,76 @@
+{
+  "status": "private candidate; not installed; no native/rendered UI acceptance",
+  "candidate_sha256": "00b52cf63ef54dc3c9d9a5fe9258d9fa5566d18871556bededd7d5d2a17ace6e",
+  "stock_sha256": "b0933be3d33e7ad4082da39d4e86cbe6ab3dfb1cfc2b87406c6d6caf6b22bfe9",
+  "installed_exe_sha256": "a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a",
+  "changed_members": [
+    {
+      "member": "data/vv_tips.engb",
+      "before_size": 16406,
+      "after_size": 16406,
+      "sha256": "7507f557f34698ada89b41e3fa9ad8057b18bf3019278ce227d5f6aa8fc0813d"
+    },
+    {
+      "member": "data/vv_tips.itab",
+      "before_size": 16405,
+      "after_size": 16405,
+      "sha256": "ed2b94e7b8d2d9d1a86ec01a50505229e8483c769b98ac3d7583c8885c87efa0"
+    },
+    {
+      "member": "data/vv_tips.xmlb",
+      "before_size": 14441,
+      "after_size": 14441,
+      "sha256": "d7e035bf54a8c328bd5162e0f4f52bfcd7c80f16fde0bc3ab7d32d1ff38bb0fa"
+    },
+    {
+      "member": "packages/generated/maps/package/permanent.fb",
+      "before_size": 1292174,
+      "after_size": 1292174,
+      "sha256": "e87f3fcacb746f07b83753eb9bbabd29339b410e738dc716cc569d3a7d9f6406"
+    },
+    {
+      "member": "packages/generated/maps/package/permanent_rev.fb",
+      "before_size": 850490,
+      "after_size": 850490,
+      "sha256": "6f8c97f268775a4df1467294be3556824c5b432e084d04effd2e43a06625e5a3"
+    },
+    {
+      "member": "textures/fonts/rev_med_eng.igb",
+      "before_size": 136119,
+      "after_size": 136119,
+      "sha256": "39c4cb0f43dad3cfbd5779598fcf4de94bdac68b38849290e6947778e7c5fd8d"
+    },
+    {
+      "member": "textures/fonts/rev_med_ws_eng.igb",
+      "before_size": 136122,
+      "after_size": 136122,
+      "sha256": "37ef50fc83ec9e714f6ec0099cd5c8b237315664cc2219e4383428e5cc8ac2c8"
+    }
+  ],
+  "unchanged_members": 1041,
+  "tutorial_ids": [
+    "3",
+    "5",
+    "9",
+    "12",
+    "31",
+    "47",
+    "48",
+    "51",
+    "53",
+    "54",
+    "56",
+    "59"
+  ],
+  "tests": {
+    "command": "python tools/test_xbox_tutorials.py --source-wad .local/game/files/z/assetsfb.wad -v",
+    "passed": 5,
+    "failed": 0
+  },
+  "limits": [
+    "Remaining Wii prompts and unresolved menu operations",
+    "Literal RT/LT and face names in new power/fusion tips; auxiliary glyphs not yet compiled",
+    "No physical controller, rendered UI, audio or FPS validation",
+    "Installed game and saves unchanged"
+  ]
+}
