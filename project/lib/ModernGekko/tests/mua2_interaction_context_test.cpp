@@ -36,6 +36,12 @@ struct Fixture {
 int main() {
   Fixture f;
   if(!f.eligible() || f.eligible(0) || f.eligible(4)) return 1;
+  CoopInteraction resolved;
+  if (!HasCoopInteraction([&](auto a, auto n) { return f.read(a, n); }, 1, &resolved) ||
+      resolved != CoopInteraction{0x90010000, 1, 0x90020000, 2}) return 20;
+  if (HasCoopInteraction([&](auto a, auto n) { return f.read(a, n); }, 4, &resolved) ||
+      resolved != CoopInteraction{}) return 21;
+
   for (auto [address,offset,value] : {
       std::tuple{0x90001000u,0xd74u,0x202u}, // stale handle
       std::tuple{0x90001000u,0xd30u,2u}, // removed target

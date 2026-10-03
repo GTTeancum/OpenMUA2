@@ -7,6 +7,7 @@
 #include "mua2_action_bindings.hpp"
 #include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
+#include "moderngekko/gameplay/button_qte.hpp"
 #include "mua2_fusion_buttons.hpp"
 #include "mua2_hero_buttons.hpp"
 #include "Common/HookableEvent.h"
@@ -180,6 +181,115 @@ void ObserveMua2AutoSleep(const Core::CPUThreadGuard& guard)
   }
 }
 
+// Development-only direct cooperative QTE replacement. No motion action is
+// generated: button edges own progress; the existing animation/event functions
+// consume that progress. Keep opt-in until live completion/cleanup is validated.
+struct DirectQteSession {
+  moderngekko::controls::CoopInteraction context;
+  moderngekko::game::ButtonQte progress;
+  moderngekko::game::ButtonQte::Result result;
+  bool down = false;
+  double duration = 0.0;
+  u64 last_update = 0;
+};
+bool s_direct_qte_enabled = false;
+std::array<DirectQteSession, 4> s_direct_qtes;
+
+void ResetDirectQtes() { s_direct_qtes = {}; }
+
+bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
+                   std::string_view expected) {
+  const auto* code = guard.GetSystem().GetMemory().GetPointerForRange(address, 64);
+  return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 64)) == expected;
+}
+
+DirectQteSession* FindDirectQte(const Core::CPUThreadGuard& guard, u32 target,
+                                u32 actor = 0) {
+  if (!s_direct_qte_enabled) return nullptr;
+  auto& memory = guard.GetSystem().GetMemory();
+  const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto* bytes = memory.GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  for (unsigned port = 0; port < s_direct_qtes.size(); ++port) {
+    auto& session = s_direct_qtes[port];
+    if (!session.context.actor || session.context.target != target ||
+        (actor && session.context.actor != actor)) continue;
+    moderngekko::controls::CoopInteraction live;
+    if (!moderngekko::controls::HasCoopInteraction(read, port, &live) ||
+        live != session.context) { session = {}; continue; }
+    const auto entity = read(target, 0x3b0);
+    if (entity.size() != 0x3b0 ||
+        moderngekko::controls::ReadBE(entity, 0x3ac) != live.actor) return nullptr;
+    const float start = std::bit_cast<float>(moderngekko::controls::ReadBE(entity, 0x384));
+    const float end = std::bit_cast<float>(moderngekko::controls::ReadBE(entity, 0x380));
+    if (!std::isfinite(start) || !std::isfinite(end) || start < 0 ||
+        start >= end || end > 1) return nullptr;
+    return &session;
+  }
+  return nullptr;
+}
+
+void ObserveDirectQteClock(const Core::CPUThreadGuard& guard) {
+  if (!s_direct_qte_enabled || !DirectQteCode(guard, 0x80ed2c48,
+      "ADC2B0FAD37A0D512B5521DBA79E9B0955504CE8")) return;
+  auto& system = guard.GetSystem();
+  auto& state = system.GetPPCState();
+  auto* session = FindDirectQte(guard, state.gpr[22], state.gpr[23]);
+  if (!session) return;
+  const double duration = state.ps[1].PS0AsDouble();
+  if (!std::isfinite(duration) || duration <= 0 || duration > 100000) return;
+  session->duration = duration;
+  const auto ticks = system.GetCoreTiming().GetTicks();
+  const unsigned port = static_cast<unsigned>(session - s_direct_qtes.data());
+  const u64 identity = (u64(session->context.actor_handle) << 32) | session->context.target_handle;
+  // A discontinuity must not convert an old held sample into a new press.
+  if (session->last_update && (ticks < session->last_update ||
+      ticks - session->last_update > system.GetSystemTimers().GetTicksPerSecond() / 10))
+    session->progress.Update(identity, port, session->down, false);
+  session->last_update = ticks;
+  session->result = session->progress.Update(identity, port, session->down, true);
+  if (session->result.advanced)
+    std::fprintf(stderr, "[openmua2] direct QTE target=%08x port=%u presses=%u/%u complete=%u\n",
+        session->context.target_handle, port, session->result.presses,
+        session->result.required, unsigned(session->result.completed_now));
+}
+
+void ObserveDirectQteStage(const Core::CPUThreadGuard& guard) {
+  if (!s_direct_qte_enabled || !DirectQteCode(guard, 0x80ed2e6c,
+      "C57FD5D0C09C4FAA4FCFD52B2C937B47550C79FF")) return;
+  auto& system = guard.GetSystem();
+  const auto& state = system.GetPPCState();
+  auto* session = FindDirectQte(guard, state.gpr[22], state.gpr[23]);
+  if (!session || !session->result.required || session->duration <= 0) return;
+  auto* entity = system.GetMemory().GetPointerForRange(state.gpr[22], 0x3b0);
+  const bool complete = session->result.presses == session->result.required;
+  // Replace the motion-driven stage selection. Stage 2 retains the original
+  // one-shot completion script and animation/participant cleanup path.
+  entity[0x3a4] = entity[0x3a5] = entity[0x3a6] = 0;
+  entity[0x3a7] = complete ? 2 : 1;
+  if (complete) entity[0x375] |= 0x40;
+  else entity[0x375] &= ~0x40;
+}
+
+void ObserveDirectQteAnimation(const Core::CPUThreadGuard& guard) {
+  if (!s_direct_qte_enabled || !DirectQteCode(guard, 0x80ed3480,
+      "9D12689345E251626614B19DA2E4F227BC8EF280")) return;
+  auto& system = guard.GetSystem();
+  auto& state = system.GetPPCState();
+  auto* session = FindDirectQte(guard, state.gpr[24]);
+  if (!session || !session->result.required || session->duration <= 0) return;
+  const auto* entity = system.GetMemory().GetPointerForRange(state.gpr[24], 0x3b0);
+  const auto bytes = std::span<const u8>(entity, 0x3b0);
+  const float start = std::bit_cast<float>(moderngekko::controls::ReadBE(bytes, 0x384));
+  const float end = std::bit_cast<float>(moderngekko::controls::ReadBE(bytes, 0x380));
+  const double fraction = double(session->result.presses) / session->result.required;
+  // Seek participants to button-owned progress and hold between presses.
+  // Completion exits through the original stage-2 animation path instead.
+  state.ps[29].SetPS0(0.0);
+  state.ps[30].SetPS0((start + (end - start) * fraction) * session->duration);
+}
+
 // Experimental context-use rebind: observes the original evaluator, preserving
 // its instructions, action thresholds, per-player queues and timing. Runs after
 // evaluation so the experimental chord can retain digital use magnitude.
@@ -290,11 +400,36 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
   if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::ConsumeHeroMarkers(
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes));
-  const bool context = moderngekko::controls::HasCoopInteraction(
-      read, (object - first_input) / input_stride);
-  moderngekko::controls::ApplyInteractionButtons(
-      context, std::span<const u8>(data + 4, moderngekko::controls::DescriptorTableSize),
-      std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+  const unsigned port = (object - first_input) / input_stride;
+  moderngekko::controls::CoopInteraction live;
+  const bool context = moderngekko::controls::HasCoopInteraction(read, port, &live);
+  if (s_direct_qte_enabled) {
+    auto& session = s_direct_qtes[port];
+    if (!context) { session = {}; return; }
+    const bool down = (moderngekko::controls::ReadBE(std::span<const u8>(active, 20), 0) &
+                       (1u << 11)) != 0;
+    if (session.context != live) {
+      session = {};
+      session.context = live;
+      // Development tuning: twelve separate presses. Holding never repeats.
+      session.progress.Begin((u64(live.actor_handle) << 32) | live.target_handle, port, 12, down);
+      std::fprintf(stderr, "[openmua2] direct QTE begin target=%08x port=%u\n", live.target_handle, port);
+    }
+    session.down = down;
+    for (unsigned action : {11u, 21u, 56u, 58u}) {
+      const unsigned offset = 4 * (action / 32);
+      const u32 bits = moderngekko::controls::ReadBE(std::span<const u8>(active, 20), offset) &
+                       ~(1u << (action % 32));
+      for (unsigned i = 0; i < 4; ++i) {
+        active[offset + i] = u8(bits >> (24 - 8 * i));
+        values[action * 4 + i] = 0;
+      }
+    }
+  } else {
+    moderngekko::controls::ApplyInteractionButtons(
+        context, std::span<const u8>(data + 4, moderngekko::controls::DescriptorTableSize),
+        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+  }
 
 }
 
@@ -972,6 +1107,7 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     State::SaveAs(system, command.path.string());
     break;
   case automation::CommandType::LoadState:
+    ResetDirectQtes();
     State::LoadAs(system, command.path.string());
     break;
   case automation::CommandType::Screenshot:
@@ -1507,6 +1643,8 @@ RuntimeRunResult Runtime::Run() {
   s_fusion_buttons_enabled = false;
   s_hero_buttons_enabled = false;
   s_control_ports=s_hero_ports=s_fusion_ports=0;
+  s_direct_qte_enabled = false;
+  ResetDirectQtes();
   std::ifstream profile(m_impl->config.user_directory / "Config" / "WiimoteNew.ini");
   const std::string profile_text{std::istreambuf_iterator<char>(profile),std::istreambuf_iterator<char>()};
   const auto managed_ports=profile.bad()?0:moderngekko::controls::ManagedXboxPorts(profile_text);
@@ -1532,6 +1670,14 @@ RuntimeRunResult Runtime::Run() {
         const bool idle_installed = HLE::SetExternalStartObserver(guard, 0x80403ae4, ObserveMua2AutoSleep);
         std::fprintf(stderr, "[openmua2] managed Xbox idle-timeout observer %s\n",
                      idle_installed ? "installed" : "rejected");
+      }
+      if (installed && enabled("OPENMUA2_DIRECT_QTE")) {
+        const bool clock = HLE::SetExternalStartObserver(guard, 0x80ed2c48, ObserveDirectQteClock);
+        const bool stage = HLE::SetExternalStartObserver(guard, 0x80ed2e6c, ObserveDirectQteStage);
+        const bool animation = HLE::SetExternalStartObserver(guard, 0x80ed3480, ObserveDirectQteAnimation);
+        s_direct_qte_enabled = clock && stage && animation;
+        std::fprintf(stderr, "[openmua2] development direct button QTE %s\n",
+                     s_direct_qte_enabled ? "installed" : "rejected");
       }
       if (installed && want_hero_ports) {
         s_hero_buttons_enabled = HLE::SetExternalStartObserver(guard, 0x80052fac, ObserveHeroCandidate);

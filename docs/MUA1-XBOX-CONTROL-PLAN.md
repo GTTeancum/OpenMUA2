@@ -294,3 +294,12 @@ Null audio, no screenshots or host input. Numeric native behavior is not visual,
 audible, physical-controller or full menu validation. Dead/co-op cases, default
 migration, camera/menu integration, cancellation, audio and FPS acceptance remain
 open. Evidence/binary hashes: evidence/windows-20260930/DIRECT-HERO-BUTTONS.json.
+
+## Repeated-X QTE replacement - development 2026-10-03
+
+Motion QTEs must use repeated X presses to advance and complete the interaction.
+Holding X counts once; no separate B finish and no button-to-shake translation.
+The opt-in runtime integration builds and passes its focused regressions, but
+actual cooperative completion/cleanup is not yet verified or installed. The
+provisional development quota is twelve presses. Seven main HUD motion icons
+have a private Xbox X candidate; other Wii UI glyphs remain outstanding.

@@ -1,5 +1,38 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Direct repeated-X runtime checkpoint - 2026-10-03
+
+Repeated X presses directly own QTE progress and completion. Holding X does not
+repeat; there is no separate B step. The development runtime now connects the
+ButtonQte state to cooperative animation and stage completion, behind
+OPENMUA2_DIRECT_QTE=1. Exact code hashes, live handles and ownership guard the
+observers. The previous gesture adapter remains only in the default supported
+path until this replacement is validated. Twelve presses is provisional tuning.
+
+Windows Build.cmd --cpu jit --jobs 2 completed successfully: 47/47 tests passed
+in 16.64 seconds. CMake emitted vendored policy, minimum-version, object-path and
+unavailable Wayland warnings; no compiler/linker errors were reported. This build
+includes the unrelated preserved StaticRecomp worktree changes. Exact binary
+hashes and limits: evidence/windows-20261003/DIRECT-QTE-DEVELOPMENT.json.
+
+The headless development runner installed its observers, but the retained plaza
+fixture did not enter the cooperative QTE. The fixture includes diagnostic actor
+placement and is not evidence of normal gameplay progression. Native completion,
+cleanup, cancellation, load/reconnect and all motion-QTE variants remain unproven.
+No screenshots, desktop input, physical-controller acceptance, audio or FPS claims.
+
+The supplied Xbox X artwork can now be compiled into seven motion cells in the
+HUD atlas with tools/build_qte_glyph_override.py. A private candidate WAD passed
+archive round-trip/preservation checks (1047 unrelated members unchanged), and its
+decoded static atlas was inspected. Only the main HUD motion cells are covered;
+other Wii button prompts and gesture menus remain outstanding. Inputs are intact.
+
+Installed C:\Games\MUA2\OpenMUA2.exe remains unchanged (SHA-256
+3fa4ead4e7d7de3963077ea08cd6c94284450fa4f9592ff0bc43ffec8126c375).
+The new local runner is a development build, not an accepted replacement. Do not
+package it as ready based on unit tests. Keep the goal active and verify the
+actual cooperative completion callback before enabling or installing this path.
+
 ## Direct mash-X QTE work in progress - 2026-10-02
 
 The user reports smooth gameplay, high FPS, clear audio and working controls,

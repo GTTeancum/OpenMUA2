@@ -156,7 +156,7 @@ void PatchFunctions(Core::System& system)
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer)
 {
-  if (!observer || !address || (address & 3) || s_external_observers.size() >= 8 ||
+  if (!observer || !address || (address & 3) || s_external_observers.size() >= 12 ||
       s_hooked_addresses.contains(address) || s_external_observers.contains(address))
     return false;
   s_external_observers.emplace(address, observer);

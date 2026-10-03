@@ -5,10 +5,16 @@
 #include <tuple>
 
 namespace moderngekko::controls {
+struct CoopInteraction {
+  std::uint32_t actor = 0, actor_handle = 0, target = 0, target_handle = 0;
+  bool operator==(const CoopInteraction&) const = default;
+};
 // Reads only. The caller must also verify executable/evaluator identity.
 // Reject unknown objects, stale handles, ambiguous ownership and invalid ranges.
 template <typename Reader>
-bool HasCoopInteraction(Reader read, unsigned port) {
+bool HasCoopInteraction(Reader read, unsigned port, CoopInteraction* resolved = nullptr) {
+  if (resolved) *resolved = {};
+  CoopInteraction candidate;
   if (port >= 4) return false;
   const auto ram = [&](std::uint32_t address, std::size_t size) {
     const auto end=std::uint64_t(address)+size;
@@ -73,8 +79,11 @@ bool HasCoopInteraction(Reader read, unsigned port) {
     if (target.size()!=0xa0 || ReadBE(target,0x48)!=target_handle ||
         ReadBE(target,0x9c)!=0x811769e0) continue; // CCoopEntity
     eligible=true;
+    candidate = {address, handle, target_address, target_handle};
   }
-  return owners==1 && eligible;
+  if (owners != 1 || !eligible) return false;
+  if (resolved) *resolved = candidate;
+  return true;
 }
 
 // Convert existing light/heavy actions only within a verified interaction.
