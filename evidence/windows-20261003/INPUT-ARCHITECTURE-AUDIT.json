@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "date": "2026-10-03",
+  "scope": "Read-only input architecture audit; no release acceptance",
+  "original_dol_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+  "original_rel_sha256": "5b739b1046b6987897f078c27f54c214cfe7a1b0381bca0ee29754b57c8a6a7f",
+  "findings": [
+    {
+      "address": "0x80293cf4",
+      "bytes": 164,
+      "sha256": "1a661462f80ad9455ade1a8b7831c1b3ab066321978cda6484fb633c880a0f8a",
+      "finding": "Device enumeration probes four ports; creates devices only for type 0 or 1."
+    },
+    {
+      "address": "0x802930f0",
+      "bytes": 2016,
+      "sha256": "c66b5f90b0bbcd58e317fc6302fbc2955b3f2b6c8473a199ca34434687376a98",
+      "finding": "KPad sample decoder; remote buttons and type-1 extension signals; no alternate gamepad branch in this function."
+    },
+    {
+      "address": "0x80293c00",
+      "bytes": 180,
+      "sha256": "f0e8f5a6be47a14b9f76db432f2a449b04682ea3b509831b21fc9a173a8502b8",
+      "finding": "Manager collects controller samples into per-port lists."
+    },
+    {
+      "address": "0x8024cdf8",
+      "bytes": 256,
+      "sha256": "ad95fe123a71d7eda13aff47e3a4450725ebb137fbe47ce61cd57a8a4d64ca57",
+      "finding": "Tutorial update; readiness later gates A on pointer hit testing."
+    }
+  ],
+  "action_layer": {
+    "count": 124,
+    "evaluator": "0x810f7e80",
+    "post_evaluation": "0x810f8544",
+    "device_vtable": "0x811b4398",
+    "current_bits_offset": "0x5f08",
+    "previous_bits_offset": "0x5f1c",
+    "value_offset": "0xbb20",
+    "note": "Descriptor snapshot came from installed managed controls and includes prior Action rebind. It is not a stock binding dump."
+  },
+  "conclusion": "Reusable logical actions and button-challenge code exist; complete alternate gamepad backend not established. Observed physical device path is KPad-only. Direct input plus replacements for pointer/motion consumers are required.",
+  "not_verified": [
+    "Alternate backend elsewhere in binaries",
+    "Full list of all motion/pointer consumers",
+    "New direct backend implementation",
+    "New installed build",
+    "Physical controller, FPS, or audio acceptance"
+  ],
+  "candidate_status": "Unvalidated tutorial/pointer patches parked outside repo; preexisting default-off wave work restored. Built runner is stale candidate and must not be packaged.",
+  "installed_changed": false
+}

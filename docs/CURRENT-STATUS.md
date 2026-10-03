@@ -1,5 +1,26 @@
 # Current status — GitHub main
 
+## Gamepad architecture correction - 2026-10-03
+
+The pointer prompt exposed a structural issue: managed Xbox v5 still feeds Wii
+buttons/IR/tilt/Nunchuk shake. A complete dormant gamepad backend is NOT verified.
+Code audit traced KPad device enumeration (0x80293cf4), sample decoder
+(0x802930f0), and the 124-action CInput layer (0x810f7e80). The inspected device
+factory accepts only types 0/1; no alternate gamepad branch was found there.
+Reusable actions/button challenges do not establish a complete platform backend.
+
+Follow docs/GAMEPAD-REPLACEMENT-PLAN.md: direct per-port Xbox input into the action
+layer, then replace pointer/motion consumers by interaction family. Do not resume
+screen-specific prompt patches as the architecture. Statue = repeated X;
+fusion = LT plus face-button partner selection, with actual context validation.
+
+Unvalidated readiness/pointer source is parked in workspace work/parked-tutorial-ready.
+Preexisting wave-QTE changes were restored to the worktree; StaticRecomp work is
+preserved. Local built runner is a stale FAILED readiness candidate: rebuild before
+packaging. Installed EXE/GameData/saves unchanged. No new build/test/visual success
+claimed. Evidence: evidence/windows-20261003/INPUT-ARCHITECTURE-AUDIT.json.
+Full goal remains active.
+
 ## Fusion banner candidate rejected — 2026-10-03
 
 The text-based top-banner candidate was WRONG: it replaced the statue co-op
