@@ -1,4 +1,4 @@
-# MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
+# MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
 ## Full gamepad path audit — 2026-10-03
 
@@ -70,7 +70,7 @@ packaging. Installed EXE/GameData/saves unchanged. No new build/test/visual succ
 claimed. Evidence: evidence/windows-20261003/INPUT-ARCHITECTURE-AUDIT.json.
 Full goal remains active.
 
-## Fusion banner candidate rejected â€” 2026-10-03
+## Fusion banner candidate rejected — 2026-10-03
 
 The text-based top-banner candidate was WRONG: it replaced the statue co-op
 QTE glyph when fusion tutorial text was forced into the HUD. The resulting
@@ -2629,7 +2629,7 @@ formatter opt-in ON remain unchanged. Goal active/unmet. Next profile bulk JIT
 finalization and correlate later stalls with CPU service in the same run.
 Evidence: `evidence/windows-20260930/CONTINUOUS-COMBAT-QUEUE.json`.
 
-## JIT backpatch rehash spike reduction â€” 2026-09-30
+## JIT backpatch rehash spike reduction — 2026-09-30
 
 Thread CPU/cycle diagnostics isolated a 54.6 ms emission of only 29 guest
 instructions (181.7 million thread cycles). Slow-instruction tracing located
@@ -2670,7 +2670,7 @@ Next address bulk-compilation bursts and improve the varied-combat route.
 Goal remains active. Evidence and binary hashes:
 evidence/windows-20260930/JIT-BACKPATCH-SHARDING.json.
 
-## Audio capture and JIT compilation stalls â€” 2026-09-30
+## Audio capture and JIT compilation stalls — 2026-09-30
 
 Added explicit --capture-audio with --profile-audio --audio Cubeb: retain at most
 60 seconds of final stereo 16-bit mixer PCM in a preallocated ring, write WAV
@@ -2717,7 +2717,7 @@ Final Windows build exit0, 38/38 runtime tests7.20s. Full tooling suite136 tests
 warnings/errors found; existing configure warnings remain. Exact artifacts,
 failed experiment and measurements: evidence/windows-20260930/AUDIO-JIT-STALLS.json.
 
-## Mixed formatter rewrite experiment â€” 2026-09-30
+## Mixed formatter rewrite experiment — 2026-09-30
 
 A bounded 64-address unsupported-format census found frequent mixed string,
 signed-integer and float calls. The census run counted 399572 unsupported calls,
@@ -2751,7 +2751,7 @@ The first expanded candidate measured 29.9796 FPS at 100.0319% guest speed,
 P99 39.0198 ms, maximum 84.8094 ms and minimum rolling one-second FPS 28.
 All 1230 guest intervals were 33.367 ms. Four host intervals exceeded 50 ms;
 they occurred early (frames 12630,12662,12676,12753) with negligible GPU fence
-wait and 68â€“79 ms unclassified elapsed time. Profile JIT/shader compilation and
+wait and 68–79 ms unclassified elapsed time. Profile JIT/shader compilation and
 other host work next; unclassified time alone does not identify the cause.
 This single headless diagnostic still fails solid-30 delivery. Three native
 endpoint captures were inspected sequentially: actual combat, effects, scenery
@@ -2769,7 +2769,7 @@ Goal active/unmet; sound crackling remains unresolved. All runs remain headless
 Vulkan/Cubeb volume=0, JIT, one logical CPU, 3x EFB and normal clocks. No audible
 quality claim, qualifying repeat or ten-minute combat acceptance is made.
 
-## Formatter caller-state audit and remaining hotspots â€” 2026-09-30
+## Formatter caller-state audit and remaining hotspots — 2026-09-30
 
 Extended the default-off formatter shadow diagnostic to aggregate changed
 register numbers (GPR, both paired-single lanes, and condition-register fields).
@@ -2778,7 +2778,7 @@ replacement behavior and the default-off setting are unchanged.
 
 A headless combat shadow run compared 398399 supported calls, including 150262
 floating calls: zero output/va_list/return/FPSCR mismatches, abandoned or pending
-samples. Original code changed GPR 0 and 3â€“12, floating PS0 registers 0â€“1, and
+samples. Original code changed GPR 0 and 3–12, floating PS0 registers 0–1, and
 CR fields 0, 1, 5. No PS1 changes were observed. Other inspected registers stayed
 unchanged. This strengthens the observed caller-state audit; it is not complete
 architectural equivalence, interrupt timing, alias coverage or whole-game proof.
@@ -2798,7 +2798,7 @@ are heavily perturbed and must not be cited as release FPS.
 
 A separate candidate run without block profiling averaged 29.8246 FPS at
 100.0001% guest speed, P99 51.2428 ms, maximum 84.9062 ms and minimum rolling
-one-second FPS 28 (frames 12620â€“13850). Guest intervals: 1074 at 33.367 ms,
+one-second FPS 28 (frames 12620–13850). Guest intervals: 1074 at 33.367 ms,
 84 at 50.05 ms, 72 at 16.683 ms. It still fails sustained-30 pacing. Runtime/audio
 span profiling remained enabled; this is a diagnostic, not visible acceptance.
 All three native endpoint captures were inspected in order. Heroes, Doombots,
@@ -2813,9 +2813,9 @@ JIT, Vulkan, 3x EFB, one host CPU, normal clocks and muted Cubeb. The user's
 visible-performance and sound failures remain unresolved. Goal active/unmet;
 no manual retest requested and no experimental replacement promoted.
 
-## Headless GPU submission diagnosis â€” 2026-09-30
+## Headless GPU submission diagnosis — 2026-09-30
 
-The user's visible 17â€“18 FPS and poor-audio report still fails acceptance.
+The user's visible 17–18 FPS and poor-audio report still fails acceptance.
 Added opt-in bounded runtime spans (`--profile-runtime`, environment
 `OPENMUA2_RUNTIME_SPANS`) for throttle, GPU pacing, worker, Vulkan fence/submit/
 present and Presenter elapsed time. `tools/analyze_runtime_spans.py` merges
@@ -2831,7 +2831,7 @@ fix to the user's visible playtest or treat old headless stalls as its diagnosis
 
 Matched route/profile diagnostics (one host CPU, JIT, Vulkan, 3x EFB, normal
 clocks, formatter off, Cubeb volume=0) reduced accumulated fence waits from
-5.041 s to 0.00694 s over frames 12620â€“13850. P99 fell from 93.493 to 50.777 ms;
+5.041 s to 0.00694 s over frames 12620–13850. P99 fell from 93.493 to 50.777 ms;
 average FPS rose from 27.669 to 28.581, minimum rolling 1 s FPS from 21 to 24.
 Repeat: 27.679 FPS, P99 51.746 ms, total fence waits 0.00658 s.
 Scene progression differs; these are bounded diagnostics, not a controlled
@@ -2848,14 +2848,14 @@ found. Exact binaries, run hashes, repeat results and limits are recorded in
 Next: profile remaining guest frame-production stalls and the visible rendering
 path without host UI automation; do not request another manual test yet.
 
-## Audio and frame-cadence diagnosis â€” 2026-09-30
+## Audio and frame-cadence diagnosis — 2026-09-30
 
 Added an offline synthetic mixer benchmark and opt-in numeric audio profiling.
 Use --profile-audio --audio Cubeb with tools/run_combat_benchmark.py; explicit
 profiling permits a headless Cubeb diagnostic, while ordinary headless runs
 remain silent. Inherited profiling is cleared for ordinary benchmarks. Counters
 are bounded, written after callbacks stop, and contain no audio samples.
-Channel IDs: 0 DMA, 1 streaming, 2â€“5 remote speakers, 6 portal, 7â€“10 GBA,
+Channel IDs: 0 DMA, 1 streaming, 2–5 remote speakers, 6 portal, 7–10 GBA,
 11 Cubeb callback. Producer counts cover only 0/1; other producer fields are
 unavailable. Final traces include steady-clock anchors for frame correlation.
 
@@ -2872,11 +2872,11 @@ interval was 533.65 ms; without captures it fell to 100.83 ms. Scene progression
 varied, so do not label this a controlled gameplay optimization.
 
 The no-capture run averaged 27.117 FPS at 100.073% guest speed. The last instrumented run
-measured 27.180 FPS over frames 12620â€“13850, P99 93.91 ms, maximum 112.59 ms and
+measured 27.180 FPS over frames 12620–13850, P99 93.91 ms, maximum 112.59 ms and
 minimum rolling 1 s FPS 20. It still fails. Its guest cadence included 237
 50.05-ms intervals among 1,230 intervals. A five-second process sample used
 66.62% of the single allowed CPU; that is limited headless evidence, not proof
-about the visible 17â€“18 FPS manual test. Investigate frame production and waits
+about the visible 17–18 FPS manual test. Investigate frame production and waits
 before investing in small mixer optimizations.
 
 All four initial native captures were inspected sequentially; the last instrumented run's
@@ -2895,12 +2895,12 @@ one-core constraint. Goal remains active/unmet. User testing stays deferred;
 future manual launches start normally. User edits and proprietary assets remain
 preserved outside this checkpoint.
 
-## Xbox controls and failed user playtest â€” 2026-09-30
+## Xbox controls and failed user playtest — 2026-09-30
 
 The physical Xbox One controller was detected, but the first manual launch used
 the old generic mapping and a combat savestate. The user reported wrong controls,
-roughly 17â€“18 FPS and poor audio, and deferred further playtesting. That FPS is
-user-observed, not an instrumented interval. Earlier short 27â€“29 FPS results do
+roughly 17–18 FPS and poor audio, and deferred further playtesting. That FPS is
+user-observed, not an instrumented interval. Earlier short 27–29 FPS results do
 not establish playability. Sustained 30 FPS and acceptable audio remain unmet.
 
 New profiles map actions: A attack/confirm, B heavy/back, X grab, Y jump, LB
@@ -2950,7 +2950,7 @@ costs under the whole-process one-core limit, then close remaining control gaps.
 Private assets, saves, captures and logs stay in .local. User StaticRecomp edits,
 Build-With-Log.cmd and the unfinished static experiment stash remain preserved.
 
-## Whole-process one-core correction â€” 2026-09-30
+## Whole-process one-core correction — 2026-09-30
 
 The user's requirement is to run the entire game on one CPU core. The earlier
 CPUThread=False setting only serialized CPU/GPU runtime work; helper threads
@@ -3002,7 +3002,7 @@ controls remain open. Private assets, outputs, user edits and stash are preserve
 
 Evidence: evidence/windows-20260930/JIT-ONE-HOST-CORE.json.
 
-## Guarded formatter rewrite experiment â€” 2026-09-30
+## Guarded formatter rewrite experiment — 2026-09-30
 
 Single-core CPU/GPU emulation remains enforced. The new default-off
 `--simple-format shadow|on` experiment replaces a narrow game-library formatter
@@ -3029,7 +3029,7 @@ formats and values retain the original path.
 
 Three short runs per mode used the same runner, save, profile and input sequence
 at 1920x1080 preset / 3x EFB, Vulkan/Cubeb, normal clocks and single-core mode.
-Each measures frames 12620â€“12990, 370 newly rendered frame intervals:
+Each measures frames 12620–12990, 370 newly rendered frame intervals:
 
 | Mode / run | Average FPS | P99 ms | Maximum ms | Lowest rolling 1 s FPS |
 | --- | ---: | ---: | ---: | ---: |
@@ -3079,7 +3079,7 @@ Build-With-Log.cmd and the unfinished static experiment stash are preserved.
 
 Evidence: evidence/windows-20260930/JIT-SIMPLE-FORMAT.json.
 
-## Single-core requirement and active JIT callers â€” 2026-09-30
+## Single-core requirement and active JIT callers — 2026-09-30
 
 The user requires single-core execution and intends an eventual original Xbox
 port. CPU/GPU emulation now has a per-run CPUThread=False override, including
@@ -3126,7 +3126,7 @@ Private data/captures remain ignored. User static edits, Build-With-Log.cmd and
 the unfinished static experiment stash are preserved. Goal remains active.
 
 
-## JIT block profile and crowded control comparison â€” 2026-09-30
+## JIT block profile and crowded control comparison — 2026-09-30
 
 Full JIT remains primary; sustained 30 FPS is unmet. Added opt-in
 `--jit-block-profile` to the process-local combat harness, with reset/dump
@@ -3145,7 +3145,7 @@ no original game code/configuration or cycle charges were changed.
 
 Sequential uninstrumented same-runner controls at 1920x1080 preset / 3x EFB,
 Vulkan/Cubeb and normal clocks measured 27.524 FPS single-core and 26.318 FPS
-threaded over frames 12620â€“13690. P99: 50.66 / 52.63 ms; maximum: 83.40 /
+threaded over frames 12620–13690. P99: 50.66 / 52.63 ms; maximum: 83.40 /
 84.41 ms; rolling one-second minimum: 22 FPS both. Input receipt delays can
 change exact guest timing. These one-off results do not establish a gain or
 acceptance; threaded execution and the presentation queue remain unpromoted.
@@ -3174,7 +3174,7 @@ Three-repeat and ten-minute varied combat acceptance remain outstanding.
 Private assets, raw profiles, disassembly and captures remain outside Git.
 User static edits, Build-With-Log.cmd and the static experiment stash are preserved.
 
-## Presentation experiment and native fusion input â€” 2026-09-30
+## Presentation experiment and native fusion input — 2026-09-30
 
 Full JIT remains primary. Goal active/unmet. A clean heavier fight measured
 26.0101 FPS over 41.14 seconds at the same 1920x1080 preset / 3x EFB and
@@ -3224,7 +3224,7 @@ evidence/windows-20260930/JIT-QUEUE-AND-INPUT.json.
 All proprietary data stays private. User static diagnostics and Build-With-Log.cmd
 remain uncommitted; the unfinished static experiment remains stashed.
 
-## JIT pacing diagnostics and profile-directory fix â€” 2026-09-30
+## JIT pacing diagnostics and profile-directory fix — 2026-09-30
 
 The JIT primary path is committed at 0642cd3e. Additional opt-in
 `MODERNGEKKO_PRESENT_TIMES` telemetry records XFB-copy, before-present and
@@ -3273,7 +3273,7 @@ harness exposes buttons/sticks, but not Nunchuk motion. Private route/save:
 All original data, generated output, caches, native captures and raw logs stay
 private. User static diagnostics and Build-With-Log.cmd remain uncommitted.
 
-## JIT primary path built and repeated â€” 2026-09-30
+## JIT primary path built and repeated — 2026-09-30
 
 The user explicitly selected full JIT. Build.cmd and Run.cmd now default to JIT;
 --cpu staticrecomp retains the native path and --native-rel still implies it.
@@ -3314,7 +3314,7 @@ unfinished direct chunk experiment before JIT priority". The user's three static
 diagnostic edits are restored and remain uncommitted; Build-With-Log.cmd retained.
 Evidence: evidence/windows-20260930/JIT-PRIMARY-CHECKPOINT.json.
 
-## Aggregate native execution profile â€” 2026-09-30
+## Aggregate native execution profile — 2026-09-30
 
 The opt-in dispatch profiler now totals every PC before truncating its ranking.
 It records the first/last dispatch timestamp without adding new clock reads.
@@ -3336,7 +3336,7 @@ The 30 FPS goal remains unmet. Next investigate generated-code entry/return
 frequency and helper overhead, not only the external dispatcher. Preserve
 native eligibility/hash checks, exceptions and interrupt/timing boundaries.
 
-## Compiler candidates completed; combat still below target â€” 2026-09-30
+## Compiler candidates completed; combat still below target — 2026-09-30
 
 Both build sessions finished with exit 0. Clang/O2 produced a 170525696-byte
 module, SHA256 47922fb187294b601b2b8667805c42bfda639ecfe9ffc014d36b7d1a0bcb6d51,
@@ -3350,7 +3350,7 @@ bounded validation, not complete floating-point or gameplay equivalence.
 
 At the existing 1920x1080 preset / 3x EFB, sequential same-runner combat tests
 measured baseline 6.1936 FPS, Clang 10.9880 FPS, MSVC c1024 9.4445 FPS over
-frames 11472â€“11625. P99 frame times: 283.17, 167.95, 170.13 ms respectively.
+frames 11472–11625. P99 frame times: 283.17, 167.95, 170.13 ms respectively.
 All routes completed and exited 0 with command receipts validated. Compiler
 load had ended; XEMU was using CPU in the background. These single comparisons
 are diagnostic, not repeated or sustained acceptance. Goal remains unmet.
@@ -3371,7 +3371,7 @@ SMC warnings and CMake deprecation/Wayland/path/unused-variable warnings; no
 compiler error diagnostics. Private assets, generated C, images and raw logs
 remain under .local. Earlier statements below about live builds are historical.
 
-## Idle-cycle hypothesis ruled out for this fight â€” 2026-09-29
+## Idle-cycle hypothesis ruled out for this fight — 2026-09-29
 
 Added read_timing to the process-local automation protocol. It snapshots
 CoreTiming ticks and idle_ticks under a CPU-thread guard, then releases the
@@ -3399,7 +3399,7 @@ only on success. It does not replace the default build receipt. See
 .local/ACTIVE-PERFORMANCE-BUILDS.json for active commands/logs. Neither module
 has a completed audit or performance result yet. Goal remains active and unmet.
 
-## Ob1 build completed; no combat speedup â€” 2026-09-29
+## Ob1 build completed; no combat speedup — 2026-09-29
 
 The long-running session 60093 finished with exit 0. Windows native module:
 .local/build/windows-x64/module-mg01-rel-o2-ob1/gRMSE52_recomp.dll,
@@ -3428,7 +3428,7 @@ log .local/logs/combat-c1024-ob2-build.log. Do not restart a live build.
 Smaller functions may permit stronger optimization but add dispatch boundaries;
 no performance gain is assumed. Goal remains active and unmet.
 
-## Combat-only dispatch profile â€” 2026-09-29
+## Combat-only dispatch profile — 2026-09-29
 
 The earlier per-dispatch profile included boot/restoration. Added optional
 STATICRECOMP_PROFILE_GATE_FILE: native profiling waits for a private marker,
@@ -3458,7 +3458,7 @@ its direct calls would need native eligibility/hash/host-call and REL checks,
 bounded cycle handling and regression coverage before a safe game experiment.
 This is a future design lead, not an implemented optimization.
 
-## Selective JIT profiling checkpoint â€” 2026-09-29
+## Selective JIT profiling checkpoint — 2026-09-29
 
 Added opt-in STATICRECOMP_FALLBACK_USE_JIT=1 for forced fallback ranges.
 Default execution remains unchanged; without the flag (or without a JIT),
@@ -3490,7 +3490,7 @@ a stationary log. New runner SHA256:
 Compare both baseline and Ob1 using this same runner after the build finishes.
 Goal remains active and unmet; production defaults have not been changed.
 
-## Command-publication race fixed; extended combat route â€” 2026-09-29
+## Command-publication race fixed; extended combat route — 2026-09-29
 
 The extended route exposed a Windows sharing failure while renaming a command
 from .txt.tmp to .txt. Root cause: ListCommandFiles consumes every regular
@@ -3529,7 +3529,7 @@ functions with no reported failure. No candidate DLL/audit/FPS result yet.
 Continue the live build, then benchmark with the corrected publisher. Goal
 remains active; no production speedup or sustained-30 claim is made.
 
-## Rebuilt-runtime combat and audio-path checks â€” 2026-09-29
+## Rebuilt-runtime combat and audio-path checks — 2026-09-29
 
 The Ob1 module build is still live in terminal session 60093; it has passed
 chunk0165 and chunk0167 with no reported compile failure. Large generated
@@ -3560,7 +3560,7 @@ baseline Ob0 module. The Ob1 module has not linked/audited or been benchmarked.
 Next: finish the live build, audit, compare baseline/candidate without compiler
 load, and continue toward the unchanged sustained-30 combat goal.
 
-## MSVC helper-inline experiment in progress â€” 2026-09-29
+## MSVC helper-inline experiment in progress — 2026-09-29
 
 The sustained-30 goal remains active. Added opt-in `--module-msvc-inline 1`
 with separate module output and build-receipt metadata; default remains Ob0.
@@ -3593,7 +3593,7 @@ baseline beside the candidate. Another unrelated project was compiling;
 record contention and do not stop it. Inspect native captures before claiming
 correctness. No production speedup, audio pass, or sustained-30 pass is claimed.
 
-## Combat timing and CPU comparison â€” 2026-09-29
+## Combat timing and CPU comparison — 2026-09-29
 
 Goal remains active; no production speedup or sustained-30 pass is claimed.
 Added opt-in bounded unique-frame timing at after_present, independent of the
@@ -3637,7 +3637,7 @@ checkpoint used explicit hashed runner/module paths. Original binaries are
 preserved under .local/perf-baseline-789e77f9. Pre-existing diagnostic edits are
 restored after the telemetry build and remain excluded from tested binaries.
 
-## Active sustained-30-FPS goal â€” 2026-09-29
+## Active sustained-30-FPS goal — 2026-09-29
 
 The user requested major frame-rate improvements and will not accept less than
 solid 30 FPS in combat. The active goal and acceptance criteria are recorded in
@@ -3663,7 +3663,7 @@ Next: replay combat, implement low-overhead unique-frame timing and benchmark
 analysis, establish uninstrumented combat baseline, then profile CPU/GPU and
 short-block/OS scheduling costs. Preserve all timing and verification guards.
 
-## Windows performance checkpoint â€” 2026-09-29
+## Windows performance checkpoint — 2026-09-29
 
 OpenMUA2 was actually run using the audited Windows O2/indexed native DOL+REL
 binaries from the c54bde7 source checkpoint. Native application captures confirmed
@@ -3688,7 +3688,7 @@ player movement and party-following. Combat was not reached or measured.
 - Next performance work: reach an actual enemy encounter, measure a repeatable
   combat interval, then profile CPU/GPU before attributing the low frame rate.
 
-## Windows continuation â€” 2026-09-29
+## Windows continuation — 2026-09-29
 
 - Confirmed `origin` is `https://github.com/GTTeancum/OpenMUA2.git` and pulled
   `main` with `--ff-only` to `5e5ffc8daf84ec10b59637ecebc9d6134af6a15c`.
@@ -3778,30 +3778,30 @@ Native DOL + REL execution is present. SMC/chunk-hash protection remains enabled
 
 Key accepted performance commits:
 
-- `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` â€” `O2 + indexed` default.
-- `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` â€” page-index combined DOL+REL dispatch.
-- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` â€” empty/single-chunk merged-dispatch fast paths.
-- `405b81de4136a7532e966218185a190f6eb9230d` â€” page-local ordinary indexed dispatch.
-- `917a5d893087736a74566dbaf71de5f3989a6d90` â€” cached x86-64-v3 feature detection.
-- `4e677ac8491bc3b5256998ba3688893f61d07695` â€” module-load baseline/v3 chassis binding.
-- `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` â€” reuse module-load v3 choice for indirect dispatch.
-- `2776fa0a3e80136495a32552b9d909e16dcfcd5e` â€” gate host-call probes by cached per-chunk coverage.
-- `af7938bdb63d4530ea43a6ba445800fc4171a153` â€” reuse runtimeâ†’linked PC between eligibility and dispatch.
-- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` â€” same-section linkedâ†’runtime REL hint.
-- `7a9cdc0165257ec19301972785150e4961f7f65e` â€” same-section runtimeâ†’linked continuation hint.
-- `12a75b2db225678368be5e2b6340218ba2aafa2f` â€” skip empty forced-fallback range scans in native eligibility.
-- `5b87d08b8f6e4daff2ca64bab75d67632ec28721` â€” read cached host-call chunk state directly in the burst path.
-- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` â€” chassis-only generated dispatch skips duplicate host-call dispatch.
-- `dc43d362d425134222d00aa02dd4dbec99fcf222` â€” remove redundant explicit module-active check from the native burst back-edge.
-- `20dd90851c3a2625ddb973f8850e2494bb33ca9f` â€” skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
-- `de411096f5986980ac58e1f3a7373d8f5351dc67` â€” reuse generated linked results across eligible native burst continuations.
-- `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` â€” check cheap burst termination conditions before continuation eligibility.
-- `b78431f21625ad61b4f66855f5f94b859f04cf7a` â€” check fallback-slice termination before dispatchability/host-call probes.
-- `7b11a1869c85aec8d5384c7f044779454e37a69f` â€” reuse the proven native-entry exact host-call result in fallback.
+- `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` — `O2 + indexed` default.
+- `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` — page-index combined DOL+REL dispatch.
+- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` — empty/single-chunk merged-dispatch fast paths.
+- `405b81de4136a7532e966218185a190f6eb9230d` — page-local ordinary indexed dispatch.
+- `917a5d893087736a74566dbaf71de5f3989a6d90` — cached x86-64-v3 feature detection.
+- `4e677ac8491bc3b5256998ba3688893f61d07695` — module-load baseline/v3 chassis binding.
+- `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — reuse module-load v3 choice for indirect dispatch.
+- `2776fa0a3e80136495a32552b9d909e16dcfcd5e` — gate host-call probes by cached per-chunk coverage.
+- `af7938bdb63d4530ea43a6ba445800fc4171a153` — reuse runtime→linked PC between eligibility and dispatch.
+- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — same-section linked→runtime REL hint.
+- `7a9cdc0165257ec19301972785150e4961f7f65e` — same-section runtime→linked continuation hint.
+- `12a75b2db225678368be5e2b6340218ba2aafa2f` — skip empty forced-fallback range scans in native eligibility.
+- `5b87d08b8f6e4daff2ca64bab75d67632ec28721` — read cached host-call chunk state directly in the burst path.
+- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — chassis-only generated dispatch skips duplicate host-call dispatch.
+- `dc43d362d425134222d00aa02dd4dbec99fcf222` — remove redundant explicit module-active check from the native burst back-edge.
+- `20dd90851c3a2625ddb973f8850e2494bb33ca9f` — skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
+- `de411096f5986980ac58e1f3a7373d8f5351dc67` — reuse generated linked results across eligible native burst continuations.
+- `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` — check cheap burst termination conditions before continuation eligibility.
+- `b78431f21625ad61b4f66855f5f94b859f04cf7a` — check fallback-slice termination before dispatchability/host-call probes.
+- `7b11a1869c85aec8d5384c7f044779454e37a69f` — reuse the proven native-entry exact host-call result in fallback.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
-## Latest accepted work â€” PR #22
+## Latest accepted work — PR #22
 
 PR #22 `Remove redundant module-active burst check` is **MERGED**.
 
@@ -3824,9 +3824,9 @@ Validation:
 
 Status doc:
 
-- `039782520c25933f7c6653797332bd7e8d0715cd` â€” `Record merged module-active burst cleanup`
+- `039782520c25933f7c6653797332bd7e8d0715cd` — `Record merged module-active burst cleanup`
 
-## Latest accepted work â€” PR #23
+## Latest accepted work — PR #23
 
 PR #23 `Skip empty forced-fallback scan in interpreter path` is **MERGED**.
 
@@ -3848,7 +3848,7 @@ Validation:
 
 Status doc:
 
-- `2de1dee811932d3d010dc606abf02cb7ab749769` â€” `Record merged interpreter fallback fast path`
+- `2de1dee811932d3d010dc606abf02cb7ab749769` — `Record merged interpreter fallback fast path`
 
 ## Historical RMSE52 performance boundary
 
@@ -3866,7 +3866,7 @@ Historical accepted native-REL run, predating recent optimizations:
 
 This proves native REL progression, **not current performance**.
 
-## Latest accepted work â€” PR #24
+## Latest accepted work — PR #24
 
 PR #24 `Reuse generated linked result on burst continuation` is **MERGED**.
 
@@ -3877,8 +3877,8 @@ Merge commit:
 Behavior:
 
 - Preserves the linked PC returned by generated dispatch while keeping `m_guest.pc` in runtime form for host-side semantics.
-- `TranslateRelAddress()` reports the active REL section selected during linkedâ†’runtime translation.
-- `FastDispatchableLinkedAt()` uses a preserved linked result for the next verified chunk lookup when its invariants hold, avoiding the normal runtimeâ†’linked conversion.
+- `TranslateRelAddress()` reports the active REL section selected during linked→runtime translation.
+- `FastDispatchableLinkedAt()` uses a preserved linked result for the next verified chunk lookup when its invariants hold, avoiding the normal runtime→linked conversion.
 - Forced-fallback and exact host-call checks remain on the runtime address.
 - REL chunks must still belong to the resolved active REL section; DOL chunks require the non-REL sentinel.
 - Lockstep-checked blocks and native exception returns disable preserved-result reuse.
@@ -3896,9 +3896,9 @@ Validation:
 
 Status doc:
 
-- `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` â€” `Record merged linked continuation fast path`
+- `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` — `Record merged linked continuation fast path`
 
-## Latest accepted work â€” PR #25
+## Latest accepted work — PR #25
 
 PR #25 `Check cheap burst termination before continuation lookup` is **MERGED**.
 
@@ -3926,9 +3926,9 @@ Validation:
 
 Status doc:
 
-- `3417a27ee6a0d3b032650020724c9758b2191973` â€” `Record merged cheap burst termination gate`
+- `3417a27ee6a0d3b032650020724c9758b2191973` — `Record merged cheap burst termination gate`
 
-## Latest accepted work â€” PR #27
+## Latest accepted work — PR #27
 
 PR #27 `Check fallback termination before dispatch probes` is **MERGED**.
 
@@ -3957,9 +3957,9 @@ Validation:
 
 Status doc:
 
-- `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` â€” `Record merged fallback termination ordering`
+- `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` — `Record merged fallback termination ordering`
 
-## Latest accepted work â€” PR #28
+## Latest accepted work — PR #28
 
 PR #28 `Reuse native entry host-call result` is **MERGED**.
 
@@ -3990,7 +3990,7 @@ Validation:
 
 Status doc:
 
-- `fa6dde0c484903e9e9bfabf024af22f0569991c3` â€” `Record merged native-entry host-call reuse`
+- `fa6dde0c484903e9e9bfabf024af22f0569991c3` — `Record merged native-entry host-call reuse`
 
 ## Historical Linux container blockers
 
@@ -4018,7 +4018,7 @@ Status doc:
 6. Once the optimized module links, run the native audit and require **524/524** chunk-hash PASS.
 7. Gameplay comes only after the optimized module passes audit.
 
-## Previous container update â€” 2026-09-29
+## Previous container update — 2026-09-29
 
 What happened:
 
@@ -4039,8 +4039,8 @@ What happened:
   `ninja: no work to do.`
 - Verified all four dependency records report `(VALID)`.
 - Durable build state advanced:
-  - **48 â†’ 52 total objects**;
-  - **41 â†’ 45 generated chunk objects**.
+  - **48 → 52 total objects**;
+  - **41 → 45 generated chunk objects**.
 - Created and uploaded a new persistent private checkpoint:
   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
 - Archive size: ~47 MB.
