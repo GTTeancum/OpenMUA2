@@ -11,7 +11,13 @@ enum class XboxPrompt : std::uint8_t {
   LT = 15, RT = 16, View = 17, LeftStick = 18, RightStick = 19, X = 24
 };
 
-inline std::optional<XboxPrompt> XboxActionPrompt(std::string_view token) {
+inline std::optional<XboxPrompt> XboxActionPrompt(std::string_view token,
+                                                bool start_accept_screen = false) {
+  // MENU_OK is action 105, not ordinary A/accept. The managed Start adapter
+  // emits it only on the verified title/profile screens. Keep other contexts
+  // unresolved rather than displaying a button that cannot perform the action.
+  if (token == "MENU_OK")
+    return start_accept_screen ? std::optional{XboxPrompt::Start} : std::nullopt;
   // Short, explicit Xbox tokens in the paired private tutorial pack.
   if (token == "XA") return XboxPrompt::A;
   if (token == "XB") return XboxPrompt::B;
@@ -34,9 +40,11 @@ inline std::optional<XboxPrompt> XboxActionPrompt(std::string_view token) {
   if (token == "Smash" || token == "SMASH" || token == "HEAVYATTACKICON" ||
       token == "CHARGEICON" || token == "MenuBack" || token == "MENU_BACK" ||
       token == "BACKBUTTON" || token == "BBUTTON") return XboxPrompt::B;
-  if (token == "Jump" || token == "FlyUp" || token == "CBUTTON") return XboxPrompt::Y;
+  if (token == "Jump" || token == "FlyUp" || token == "CBUTTON" ||
+      token == "MENU_SUBTRACT" || token == "AUTOSPEND") return XboxPrompt::Y;
   if (token == "Block" || token == "BLOCK" || token == "FlyDown" ||
-      token == "MenuViewDetails" || token == "MENU_DETAILS" || token == "ZBUTTON") return XboxPrompt::LB;
+      token == "MenuViewDetails" || token == "MENU_DETAILS" || token == "MENU_OTHER" ||
+      token == "ZBUTTON") return XboxPrompt::LB;
   if (token == "Pause" || token == "PAUSE" || token == "PAUSEBUTTON" ||
       token == "2BUTTON") return XboxPrompt::Start;
   // Do not label unresolved power/fusion/motion instructions as working inputs.

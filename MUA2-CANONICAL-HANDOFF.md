@@ -1,5 +1,41 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Installed contextual Xbox menu prompts - 2026-10-03
+
+Controller pictures/diagrams are excluded from further work at the user's
+request. Continue focusing on Xbox button glyphs and button/action labels.
+
+MENU_OK now shows Xbox Start only on the same verified title/profile menu types
+where the managed Start adapter emits action 105. Other contexts remain
+unresolved; do not relabel them A or Start without fixing/validating their action.
+MENU_OTHER shares action 101/Details and shows LB; MENU_SUBTRACT (106) and
+AUTOSPEND (109) use Y. The latter aliases have regression coverage only.
+
+Windows Build.cmd --cpu jit --jobs 2 exited 0, 48/48 tests passed in 9.25 seconds.
+Existing CMake warnings remain; no compiler/linker errors. The package checksum
+verification exited 0 and the launcher accepts the existing matched v3 UI assets.
+The headless run's first 240-second driver wait timed out while the game stayed
+live. Continuing that same process found an attract movie; Start did not skip it,
+but A did. All 4,080 title MENU_OK calls resolved 8->1 (Xbox Start). Start then
+entered main, A/B opened/closed Story, and D-pad/A/B opened/closed Options.
+The first continuation assertion incorrectly assumed title and is retained as a
+failed observation. Stop was processed and the game exited; its exact exit code
+was not retained after the original driver lost its handle. Navigation assertions
+passed. No screenshots/host input or visible/physical acceptance; no FPS/audio
+claim. CPU2/mask4, Vulkan3x, normal clocks, Null audio. Idle/reconnect not repeated
+for this glyph-only change. Other QTE variants and menu actions remain open.
+
+Installed EXE SHA256:
+e58c99df57926933248da4a37201156066a625249fc5397ba02e70fca99137fb
+Packaged runner SHA256:
+f22b5769645759b7a0966ef570212a8fd7c27aa9b506266b5ac3391c4ad270a6
+Unchanged WAD SHA256:
+e90498f4aa3d9a91598ea7b135150dcf14ed34a9111ad4d9c2a58e802be81092
+All 55 save/profile files unchanged; previous Options release preserved as
+rollback. Automatic approval policy blocked duplicate-build cleanup. Do not
+retry the exact targets listed in evidence/windows-20261003/XBOX-MENU-PROMPTS.json.
+
+
 ## Installed Xbox Options descriptions - 2026-10-03
 
 The installed root executable and GameData now include ten corrected Options

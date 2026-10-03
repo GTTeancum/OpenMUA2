@@ -1,0 +1,168 @@
+{
+  "installed_exe_sha256": "e58c99df57926933248da4a37201156066a625249fc5397ba02e70fca99137fb",
+  "runner_sha256": "f22b5769645759b7a0966ef570212a8fd7c27aa9b506266b5ac3391c4ad270a6",
+  "unchanged_wad_sha256": "e90498f4aa3d9a91598ea7b135150dcf14ed34a9111ad4d9c2a58e802be81092",
+  "rollback_exe_sha256": "031934aa8187c7c4f87597b03f5d3e36005e8244961ce1aa25e357f6e58d02fd",
+  "unchanged_save_files": 55,
+  "root_entries": [
+    "GameData",
+    "OpenMUA2.exe",
+    "saves"
+  ],
+  "status": "Installed contextual Xbox Continue and verified menu aliases; full controls/QTE goal active",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 48,
+    "tests_failed": 0,
+    "test_seconds": 9.25,
+    "compiler_linker_errors": 0,
+    "warnings": "Existing vendored CMake deprecation/policy, missing Wayland and path-length warnings"
+  },
+  "prompt_validation": {
+    "title_MENU_OK": "8->1 (Xbox Start)",
+    "title_prompt_count": 4080,
+    "all_title_prompts_converted": true,
+    "scope": "Same cold-start process continued after driver timeout. A exited attract movie; Start entered main; A/B Story and Options navigation passed. No restart, screenshots or host input.",
+    "failures": [
+      "First 240-second driver observation timed out while process remained live.",
+      "Continuation assumed title but found attract movie; no input sent before assertion.",
+      "Start did not skip attract movie; A did."
+    ]
+  },
+  "native_menu_model": [
+    {
+      "label": "title-after-original-boot-command",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81199420",
+      "name": "movie",
+      "page": 255,
+      "page_count": 0,
+      "focus": "0x0"
+    },
+    {
+      "label": "start-after-attract-movie",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81199420",
+      "name": "movie",
+      "page": 255,
+      "page_count": 0,
+      "focus": "0x0"
+    },
+    {
+      "label": "a-after-attract-movie",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x8118bae8",
+      "name": "start",
+      "page": 255,
+      "page_count": 0,
+      "focus": "0x0"
+    },
+    {
+      "label": "main",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x9003f558",
+      "focus_name": "option01_text",
+      "page_name": "main"
+    },
+    {
+      "label": "story",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 1,
+      "page_count": 4,
+      "focus": "0x900409d8",
+      "focus_name": "option05_text",
+      "page_name": "play"
+    },
+    {
+      "label": "back-main",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x9003f558",
+      "focus_name": "option01_text",
+      "page_name": "main"
+    },
+    {
+      "label": "options-focus",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x9003fa78",
+      "focus_name": "option03_text",
+      "page_name": "main"
+    },
+    {
+      "label": "options",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81192198",
+      "name": "options_rev",
+      "page": 0,
+      "page_count": 0,
+      "focus": "0x900489f8",
+      "focus_name": "label_effects_volume"
+    },
+    {
+      "label": "options-back",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x90054cb8",
+      "focus_name": "option03_text",
+      "page_name": "main"
+    }
+  ],
+  "native_game_exit_code": null,
+  "native_exit_note": "Stop command processed and process confirmed gone. Original driver timed out and lost its exit handle; exact game exit code not retained. Continuation navigation assertions passed.",
+  "package_verification": {
+    "exit_code": 0,
+    "embedded_sha256_passed": true,
+    "installed_assets_accepted": true,
+    "runtime_cache": "0eedb5110b684dc4eb8dd16c5e8c2153089f982b2150b1e52b98343019f945d0"
+  },
+  "mapped_aliases": {
+    "MENU_OK": "Start only on verified title/profile Start-accept screens",
+    "MENU_OTHER": "LB (native action 101)",
+    "MENU_SUBTRACT": "Y (native action 106)",
+    "AUTOSPEND": "Y (native action 109)"
+  },
+  "limits": [
+    "Controller pictures excluded from further work by user; focus is Xbox button glyphs/action labels.",
+    "No screenshots, host input or physical/visible acceptance.",
+    "Other MENU_OK contexts remain unresolved rather than falsely claiming A/Start.",
+    "Alias mappings other than title MENU_OK have regression coverage, not new physical/native menu acceptance.",
+    "Other motion-QTE variants and unsupported menu actions remain open.",
+    "Idle/reconnect were not repeated for this glyph-only runtime change.",
+    "No audio/FPS assessment; headless diagnostic used Null audio and overlapped linker tail."
+  ],
+  "cleanup": {
+    "status": "Automatic approval policy rejected new duplicate artifact cleanup; no deletions; do not retry targets",
+    "blocked_targets": [
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\xbox-menu-prompts\\runtime",
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\xbox-menu-prompts\\OpenMUA2.exe",
+      "C:\\Users\\smmel\\AppData\\Local\\Temp\\OpenMUA2-package-be639f08ba364fc7afc2a33fc5f3c548"
+    ],
+    "bytes_reclaimed": 0
+  }
+}

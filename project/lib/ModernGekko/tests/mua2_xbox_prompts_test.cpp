@@ -10,6 +10,14 @@ int main() {
   check(XboxActionPrompt("ACTION") == XboxPrompt::X, "Native statue interaction uses uppercase ACTION");
   check(XboxActionPrompt("USEGRABICON") == XboxPrompt::X, "Legacy use token must agree");
   check(XboxActionPrompt("MenuAccept") == XboxPrompt::A, "Menu accept");
+  check(XboxActionPrompt("MENU_OK",true) == XboxPrompt::Start, "Title/profile continue uses Start");
+  check(!XboxActionPrompt("MENU_OK") && !XboxActionPrompt("MENU_OK",false),
+        "Other action-105 contexts must not claim a working Start/A binding");
+  check(XboxActionPrompt("MENU_ACCEPT",true) == XboxPrompt::A,
+        "Start-accept context must not change ordinary A prompts");
+  check(XboxActionPrompt("MENU_OTHER") == XboxPrompt::LB, "Other/details share native action 101");
+  check(XboxActionPrompt("MENU_SUBTRACT") == XboxPrompt::Y &&
+        XboxActionPrompt("AUTOSPEND") == XboxPrompt::Y, "Verified C-button menu actions use Y");
   check(XboxActionPrompt("BACKBUTTON") == XboxPrompt::B, "Menu back must not show View");
   check(XboxActionPrompt("PAUSEBUTTON") == XboxPrompt::Start, "Pause must not show Wii 2");
   check(XboxActionPrompt("Block") == XboxPrompt::LB, "Block must not show use X");

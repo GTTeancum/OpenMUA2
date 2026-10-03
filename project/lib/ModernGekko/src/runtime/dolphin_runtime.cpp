@@ -103,7 +103,15 @@ void ObserveXboxPrompt(const Core::CPUThreadGuard& guard) {
     if (*byte<32 || *byte>126 || i==63) return;
     token.push_back(static_cast<char>(*byte));
   }
-  const auto replacement=moderngekko::controls::XboxActionPrompt(token);
+  bool start_accept_screen = false;
+  if (token == "MENU_OK" && moderngekko::controls::XboxPromptPort(s_hero_ports,state.gpr[25])) {
+    const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+      const auto* bytes = memory.GetPointerForRange(address,size);
+      return bytes ? std::span<const u8>(bytes,size) : std::span<const u8>{};
+    };
+    start_accept_screen = moderngekko::controls::IsStartAcceptScreen(read);
+  }
+  const auto replacement=moderngekko::controls::XboxActionPrompt(token,start_accept_screen);
   const auto original=state.gpr[3];
   if (replacement) state.gpr[3]=static_cast<u8>(*replacement);
   static std::ofstream trace([] {
