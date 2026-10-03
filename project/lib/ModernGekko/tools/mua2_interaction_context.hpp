@@ -3,6 +3,7 @@
 #include <bit>
 #include <cmath>
 #include <tuple>
+#include <optional>
 
 namespace moderngekko::controls {
 struct CoopInteraction {
@@ -86,36 +87,21 @@ bool HasCoopInteraction(Reader read, unsigned port, CoopInteraction* resolved = 
   return true;
 }
 
-// Convert existing light/heavy actions only within a verified interaction.
-// Repeated physical presses remain repeated presses; no automatic progress.
-inline bool ApplyInteractionButtons(bool context, std::span<const std::uint8_t> table,
-                                   std::span<std::uint8_t> active,
-                                   std::span<std::uint8_t> values) {
-  if (!context || table.size()!=DescriptorTableSize || active.size()!=20 ||
-      values.size()!=124*4) return false;
-  for (const auto [id,name,selector] : {
-      std::tuple{56u,std::string_view("ShakeGesture"),256u},
-      std::tuple{58u,std::string_view("LiftGesture"),259u}}) {
-    const auto d=table.subspan(id*DescriptorSize,DescriptorSize);
-    if (ReadBE(d,0)!=id || !std::equal(name.begin(),name.end(),d.begin()+4) ||
-        d[4+name.size()]!=0 || ReadBE(d,0x44)!=1 || ReadBE(d,0x48)!=selector ||
-        ReadBE(d,0x4c)!=0 || ReadBE(d,0x50)!=0 || ReadBE(d,0x54)!=0x3e19999a)
-      return false;
+// Sample the managed Xbox X action and consume this interaction's input.
+// No gesture action is synthesized. Unrelated combat/menu actions are preserved.
+inline std::optional<bool> ConsumeButtonQteInput(std::span<std::uint8_t> active,
+                                               std::span<std::uint8_t> values) {
+  if (active.size() != 20 || values.size() != 124 * 4) return std::nullopt;
+  const bool down = (ReadBE(active, 0) & (1u << 11)) != 0;
+  // The evaluator can sum chord sources; the digital action bit owns the edge.
+  for (unsigned id : {11u, 21u, 56u, 58u}) {
+    const unsigned offset = 4 * (id / 32);
+    const auto bits = ReadBE(active, offset) & ~(1u << (id % 32));
+    for (unsigned i = 0; i < 4; ++i) {
+      active[offset + i] = std::uint8_t(bits >> (24 - 8 * i));
+      values[id * 4 + i] = 0;
+    }
   }
-  auto low=ReadBE(active,0), high=ReadBE(active,4);
-  const bool light=(low&(1u<<9))!=0, heavy=(low&(1u<<10))!=0;
-  if ((light && heavy) || (light && ReadBE(values,9*4)!=0x3f800000) ||
-      (heavy && ReadBE(values,10*4)!=0x3f800000)) return false;
-  const auto put=[](std::span<std::uint8_t> b,std::size_t p,std::uint32_t v) {
-    for (unsigned i=0;i<4;++i) b[p+i]=std::uint8_t(v>>(24-8*i));
-  };
-  low&=~((1u<<9)|(1u<<10));
-  high&=~((1u<<(56-32))|(1u<<(58-32)));
-  if (light) high|=1u<<(56-32);
-  if (heavy) high|=1u<<(58-32);
-  put(active,0,low); put(active,4,high);
-  put(values,9*4,0); put(values,10*4,0);
-  put(values,56*4,light?0x3f800000:0); put(values,58*4,heavy?0x3f800000:0);
-  return true;
+  return down;
 }
 }

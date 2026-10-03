@@ -1,0 +1,166 @@
+{
+  "status": "installed statue safeguard repeated-X replacement; broader controls goal remains active",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "passed": 47,
+    "failed": 0,
+    "ctest_seconds": 10.66,
+    "warnings": [
+      "CMake CMP0080 OLD policy deprecation",
+      "CMake minimum-version deprecations in zlib-ng and lz4",
+      "Unavailable Wayland support on Windows",
+      "Vendored object-path length warnings",
+      "CMP0069 unset for lz4_static"
+    ],
+    "compiler_linker_errors": 0,
+    "includes_unrelated_staticrecomp_worktree_edits": true
+  },
+  "installation": {
+    "installed_exe_sha256": "a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a",
+    "installed_wad_sha256": "f4307ebb9ecc7f9d995c88bf4fc87b1ddcbfe5509866d617fb2b4f05bc28ec45",
+    "runner_sha256": "2c825b97cb5b863247bfffb13ec2fa5bb5aeab7597aad8d6b84f764debe7889b",
+    "runtime_cache": "C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\runtime\\d4b5201328dcffc1c91949e79f0989158baeccc110b454387b1e9602c681d903",
+    "original_wad_sha256": "b0933be3d33e7ad4082da39d4e86cbe6ab3dfb1cfc2b87406c6d6caf6b22bfe9",
+    "unchanged_save_profile_files": 55,
+    "root_entries": [
+      "GameData",
+      "OpenMUA2.exe",
+      "saves"
+    ],
+    "rollback_exe": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\direct-qte-probe\\rollback\\OpenMUA2.exe",
+    "original_wad": "D:\\Programming\\GitHub\\OpenMUA2\\.local\\game\\files\\z\\assetsfb.wad"
+  },
+  "native_test": {
+    "reloads": [
+      {
+        "iteration": 1,
+        "progress_after_load": 0,
+        "first_press": 1
+      },
+      {
+        "iteration": 2,
+        "progress_after_load": 0,
+        "first_press": 1
+      },
+      {
+        "iteration": 3,
+        "progress_after_load": 0,
+        "first_press": 1
+      }
+    ],
+    "presses_to_complete": 12,
+    "original_callback_removals": [
+      "COL_safeguardPlug",
+      "COL_killStatue",
+      "trig_Statue_Safeguard",
+      "ss_Courtyard_Bot_CC",
+      "ss_Courtyard_Bot_DD",
+      "ss_Courtyard_Bot_GG",
+      "ss_Courtyard_Bot_EE",
+      "ss_Courtyard_Bot_FF",
+      "ss_Courtyard_Bot_AA",
+      "ss_Courtyard_Bot_BB",
+      "script_LoopStatueHint"
+    ],
+    "target_cleared": true,
+    "movement_after_completion": {
+      "before": [
+        -218.62075805664062,
+        -243.3516845703125,
+        117.7145004272461
+      ],
+      "after": [
+        -258.8664245605469,
+        -175.815673828125,
+        117.7304916381836
+      ],
+      "distance": 78.61823373131283
+    },
+    "experimental_environment_flag": false,
+    "scope": "seeded native statue fixture; process-local input; no visual/audio/physical-controller acceptance"
+  },
+  "lifecycle": {
+    "a_b_do_not_advance": true,
+    "wrong_port_does_not_advance": true,
+    "hold_counts_once": true,
+    "menu_closing_press_does_not_advance": true,
+    "fresh_press_after_resume": true,
+    "state_load_resets_progress": true,
+    "scope": "headless process-local seeded active QTE; not physical reconnect or visible animation validation"
+  },
+  "glyph_archive": {
+    "status": "candidate only; not installed",
+    "output": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\direct-qte-probe\\assetsfb-qte-x-tip.wad",
+    "replaced_motion_cells": 7,
+    "unchanged_archive_members": 1043,
+    "scope": "QTE motion artwork and safeguard instruction; other Wii prompts remain"
+  },
+  "tip_structure": [
+    {
+      "member": "data/vv_tips.engb",
+      "parsed_nodes": 132,
+      "changed_text_nodes": 1
+    },
+    {
+      "member": "data/vv_tips.itab",
+      "parsed_nodes": 132,
+      "changed_text_nodes": 1
+    },
+    {
+      "member": "data/vv_tips.xmlb",
+      "parsed_nodes": 132,
+      "changed_text_nodes": 1
+    }
+  ],
+  "binaries": [
+    {
+      "name": "moderngekko-run.exe",
+      "bytes": 16159232,
+      "sha256": "2c825b97cb5b863247bfffb13ec2fa5bb5aeab7597aad8d6b84f764debe7889b"
+    },
+    {
+      "name": "ModernGekko.exe",
+      "bytes": 12206592,
+      "sha256": "f50998bcd52e6d4a0e2e12db78a1caa58f66878db1368de2e8f923fe9f5a29e1"
+    },
+    {
+      "name": "moderngekko-port.exe",
+      "bytes": 243712,
+      "sha256": "b332dd99a72d8e84b1ed35094f3401ea873854f6c94a625be931f5a1f0e04040"
+    },
+    {
+      "name": "moderngekko-module-info.exe",
+      "bytes": 29184,
+      "sha256": "51ae8ed51802efb9449e833dd70b8ae47e911ad29fd079bcd72dfcb6d12806d4"
+    },
+    {
+      "name": "moderngekko_button_qte_test.exe",
+      "bytes": 13824,
+      "sha256": "6fd95c41578073b0c2bd871b579dfac5ec781c5df0358acfad4e6e9f79f173e2"
+    },
+    {
+      "name": "moderngekko_mua2_interaction_context_test.exe",
+      "bytes": 34304,
+      "sha256": "d315421c167001df9d7b8867090f45d87fdbd58fbfa28ef40a7207779a2d682b"
+    }
+  ],
+  "limitations": [
+    "Activation fixture enabled the mission-gated trigger and used diagnostic actor placement; this is not normal-route mission validation.",
+    "Only the statue generic_sequence QTE was run; map inventory found 25 generic_sequence, two electro_sequence and two unspecified cooperative definitions.",
+    "Other motion interactions, multiplayer variants, full Xbox glyph conversion and physical reconnect remain outstanding.",
+    "No screenshots, host input, new visual acceptance, audio or FPS measurement.",
+    "Artificial zero-health mutation did not clear the actor target within one second; native death/cancellation remains unverified."
+  ],
+  "diagnostic_failures": [
+    "An over-strict X magnitude check prevented progress; removed and live completion passed.",
+    "Asynchronous state-load acknowledgment erased a pending timed-input event; acknowledgment now waits for CPU-thread load completion, three consecutive reloads passed.",
+    "One read-only command file could not be opened transiently; repeat read and complete test passed."
+  ],
+  "installed_exe_bytes": 10599936,
+  "cleanup": {
+    "reclaimed_bytes": 281821751,
+    "blocked": "Automatic approval review rejected recursive deletion of new temporary packaging folders and superseded test state: blocked by policy. No bypass or retry.",
+    "retained_bytes_in_blocked_candidates": 98830257
+  }
+}

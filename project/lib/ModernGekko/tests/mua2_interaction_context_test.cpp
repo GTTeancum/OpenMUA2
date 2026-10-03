@@ -59,24 +59,31 @@ int main() {
   put(duplicate.memory[0x90040000],0x48,3);
   auto& m=duplicate.memory[0x90001000];put(m,0xd30,14);put(m,16,0x90040000);put(m,0xd78,3);
   if(duplicate.eligible()) return 3;
-  std::array<std::uint8_t,DescriptorTableSize> table{};
-  for(auto [id,name,selector]:{std::tuple{56u,"ShakeGesture",256u},std::tuple{58u,"LiftGesture",259u}}) {
-    const auto p=id*DescriptorSize;put(table,p,id);std::copy_n(name,std::string_view(name).size(),table.begin()+p+4);
-    put(table,p+0x44,1);put(table,p+0x48,selector);put(table,p+0x54,0x3e19999a);
+  for (unsigned input : {0u, 9u, 10u, 11u}) {
+    std::array<std::uint8_t,20> active{};
+    std::array<std::uint8_t,496> values{};
+    if (input) { put(active,0,1u<<input); put(values,input*4,0x3f800000); }
+    put(active,4,(1u<<24)|(1u<<26)); // Existing motion bits must be removed.
+    put(values,56*4,0x3f800000); put(values,58*4,0x3f800000);
+    auto down=ConsumeButtonQteInput(active,values);
+    if (!down || *down!=(input==11)) return 4;
+    if (ReadBE(active,4) || ReadBE(values,56*4) || ReadBE(values,58*4)) return 5;
+    if (ReadBE(active,0)!=(input && input!=11 ? 1u<<input : 0)) return 6;
+    if (ReadBE(values,11*4)) return 7;
+    if (input==9 || input==10)
+      if (ReadBE(values,input*4)!=0x3f800000) return 8;
   }
-  for(unsigned input:{0u,9u,10u,11u}) {
-    std::array<std::uint8_t,20> active{};std::array<std::uint8_t,496> values{};
-    put(active,0,input?1u<<input:0);if(input) put(values,input*4,0x3f800000);
-    auto a=active;auto v=values;
-    if(ApplyInteractionButtons(false,table,active,values) || active!=a || values!=v) return 4;
-    if(!ApplyInteractionButtons(true,table,active,values)) return 5;
-    const auto expected=input==9?1u<<24:input==10?1u<<26:0;
-    if(ReadBE(active,4)!=expected || ReadBE(active,0)!=(input==11?1u<<11:0)) return 6;
-    if(ReadBE(values,56*4)!=(input==9?0x3f800000u:0u) ||
-       ReadBE(values,58*4)!=(input==10?0x3f800000u:0u)) return 7;
-  }
-  std::array<std::uint8_t,20> active{};std::array<std::uint8_t,496> values{};
-  put(active,0,(1u<<9)|(1u<<10));auto before=active;
-  if(ApplyInteractionButtons(true,table,active,values) || active!=before) return 8;
-  std::cout<<"Interaction context, ownership, stale-handle and button checks passed\n";
+  std::array<std::uint8_t,20> active{};
+  std::array<std::uint8_t,496> values{};
+  put(active,0,(1u<<11)|(1u<<21));
+  put(values,11*4,0x3f800000); put(values,21*4,0x3f800000);
+  if (ConsumeButtonQteInput(active,values)!=true || ReadBE(active,0) ||
+      ReadBE(values,21*4)) return 9;
+  put(active,0,1u<<11); // Chord magnitudes must not suppress the digital edge.
+  put(values,11*4,0x40000000);
+  if (ConsumeButtonQteInput(active,values)!=true || ReadBE(active,0) ||
+      ReadBE(values,11*4)) return 10;
+  if (ConsumeButtonQteInput(std::span(active).first(19),values) ||
+      ConsumeButtonQteInput(active,std::span(values).first(495))) return 11;
+  std::cout<<"Interaction ownership, handles and direct X consumption passed\n";
 }

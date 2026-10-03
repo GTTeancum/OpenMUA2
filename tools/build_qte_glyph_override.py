@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compile supplied Xbox X artwork into a PRIVATE candidate QTE HUD archive.
 
-This changes only seven motion-prompt cells in the verified Wii HUD atlas. It
+This changes seven motion-prompt cells and the safeguard instruction. It
 neither installs the archive nor claims complete Xbox UI conversion. Input game
 archives and supplied images are never modified. Keep all outputs outside Git.
 Requires the existing Pillow installation; nothing is downloaded.
@@ -74,6 +74,71 @@ def patch_package(data, source):
     return data[:start] + replacement + data[start + size:]
 
 
+
+def patch_safeguard_tip(data):
+    """Replace the platform-specific instruction without shifting XMLB offsets."""
+    def word(p):
+        if p < 0 or p + 4 > len(data):
+            raise ValueError('Truncated tip table')
+        return struct.unpack_from('<I', data, p)[0]
+    if word(0) != 0x11B1 or word(4) != 1:
+        raise ValueError('Unexpected tip XMLB format')
+    string_start = word(8)
+    def string(p):
+        if not string_start <= p < len(data):
+            raise ValueError('Invalid tip string offset')
+        end = data.find(b'\0', p)
+        if end < 0:
+            raise ValueError('Unterminated tip string')
+        return data[p:end].decode('cp1252')
+    seen, matches = set(), []
+    def visit(p):
+        if p in seen or p < 8 or p % 4 or len(seen) >= 4096:
+            raise ValueError('Invalid tip node graph')
+        seen.add(p)
+        count = word(p + 12)
+        if count > 64 or p + 16 + count * 8 > string_start:
+            raise ValueError('Invalid tip attributes')
+        attrs = {}
+        offsets = {}
+        for i in range(count):
+            key = string(word(p + 16 + i * 8))
+            value = word(p + 20 + i * 8)
+            if key in attrs:
+                raise ValueError('Duplicate tip attribute')
+            attrs[key], offsets[key] = string(value), value
+        if attrs.get('id') == '54' and attrs.get('platform') == 'rev':
+            if attrs.get('title') != 'Safeguard' or 'Wii Remote' not in attrs.get('text', ''):
+                raise ValueError('Unknown/already-modified safeguard tip')
+            matches.append((offsets['text'], len(attrs['text'].encode('cp1252'))))
+        child = word(p + 8)
+        while child != 0xffffffff:
+            visit(child)
+            child = word(child + 4)
+    visit(8)
+    if len(matches) != 1:
+        raise ValueError('Missing or ambiguous safeguard tip')
+    offset, size = matches[0]
+    replacement = b'UT: \\nRepeatedly press X to complete the safeguard interaction.\\n'
+    if len(replacement) > size:
+        raise ValueError('Replacement exceeds original string allocation')
+    result = bytearray(data)
+    result[offset:offset + size] = replacement.ljust(size, b'\0')
+    return bytes(result)
+
+
+def patch_tip_package(data):
+    for name in (b'data/vv_tips.engb\0', b'data/vv_tips.itab\0'):
+        if data.count(name) != 1:
+            raise ValueError('Missing or ambiguous packaged tips')
+        entry = data.index(name)
+        size = struct.unpack_from('<I', data, entry + 192)[0]
+        start = entry + 196
+        if start + size > len(data):
+            raise ValueError('Truncated packaged tips')
+        data = data[:start] + patch_safeguard_tip(data[start:start + size]) + data[start + size:]
+    return data
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--source-wad', type=Path, required=True)
@@ -90,22 +155,27 @@ def main():
             infos = source.infolist()
             if len({i.filename for i in infos}) != len(infos):
                 raise ValueError('Duplicate WAD entries')
-            replacement = patch_package(source.read(PACKAGE), image)
+            replacements = {PACKAGE: patch_package(source.read(PACKAGE), image)}
+            for name in ('data/vv_tips.engb', 'data/vv_tips.itab', 'data/vv_tips.xmlb'):
+                replacements[name] = patch_safeguard_tip(source.read(name))
+            tips_package = 'packages/generated/maps/package/permanent.fb'
+            replacements[tips_package] = patch_tip_package(source.read(tips_package))
             handle, temporary = tempfile.mkstemp(prefix='qte-glyph-', suffix='.wad.tmp', dir=output.parent)
             os.close(handle)
             try:
                 with zipfile.ZipFile(temporary, 'w') as target:
                     target.comment = source.comment
                     for info in infos:
-                        payload = replacement if info.filename == PACKAGE else source.read(info)
+                        payload = replacements[info.filename] if info.filename in replacements else source.read(info)
                         target.writestr(copy.copy(info), payload)
                 with zipfile.ZipFile(temporary) as check:
                     if check.testzip() is not None or check.namelist() != source.namelist():
                         raise ValueError('Candidate archive validation failed')
-                    if check.read(PACKAGE) != replacement:
-                        raise ValueError('Replacement package did not round-trip')
+                    for name, payload in replacements.items():
+                        if check.read(name) != payload:
+                            raise ValueError('Replacement did not round-trip: ' + name)
                     for info in infos:
-                        if info.filename == PACKAGE:
+                        if info.filename in replacements:
                             continue
                         other = check.getinfo(info.filename)
                         if (info.CRC, info.file_size) != (other.CRC, other.file_size):
@@ -118,8 +188,8 @@ def main():
                 Path(temporary).unlink(missing_ok=True)
     print(json.dumps({'status': 'candidate only; not installed', 'output': str(output),
                       'replaced_motion_cells': len(MOTION_CELLS),
-                      'unchanged_archive_members': len(infos) - 1,
-                      'scope': 'QTE motion artwork only; other Wii prompts remain'}, indent=2))
+                      'unchanged_archive_members': len(infos) - len(replacements),
+                      'scope': 'QTE motion artwork and safeguard instruction; other Wii prompts remain'}, indent=2))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,58 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Installed repeated-X statue safeguard - 2026-10-03
+
+C:\Games\MUA2\OpenMUA2.exe now includes direct repeated-X QTE progress for the
+managed Xbox profile. Twelve separate presses complete the tested statue
+safeguard; holding counts once. The legacy A/B-to-gesture adapter was removed.
+The original completion callback still performs mission cleanup. Seven HUD
+motion cells now use the supplied Xbox X artwork, and the safeguard instruction
+says to repeatedly press X. Other Wii prompts remain to be converted.
+
+The final Windows build (Build.cmd --cpu jit --jobs 2) exited 0; 47/47 tests
+passed in 10.66 seconds. Existing vendored CMake warnings remain; no compiler or
+linker errors. The packaged and installed EXE both verified every embedded file
+and runner help, exit 0, CPU affinity mask 4. Exact binary hashes and limits are
+in evidence/windows-20261003/DIRECT-QTE-INSTALLED.json.
+
+Installed EXE SHA-256:
+a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a
+Installed runner SHA-256:
+2c825b97cb5b863247bfffb13ec2fa5bb5aeab7597aad8d6b84f764debe7889b
+Installed private assets archive SHA-256:
+f4307ebb9ecc7f9d995c88bf4fc87b1ddcbfe5509866d617fb2b4f05bc28ec45
+All 55 real save/profile file hashes are unchanged. The installation root still
+contains only OpenMUA2.exe, GameData and saves. Original game data is preserved in
+.local/game; no proprietary archive, supplied image or state is committed.
+
+Headless process-local testing established twelve press edges, one completion,
+removal of the original callback's blockers/spawners, cleared interaction target,
+and subsequent player movement. Holding X counted once; A/B and the wrong port
+did not advance progress. A menu-closing X press did not also advance the QTE.
+Three consecutive state reloads reset progress and accepted the next fresh press.
+The final run used the managed profile without the experimental QTE flag.
+
+This used a seeded fixture: actor placement and the mission-gated statue trigger
+were prepared solely in the diagnostic process. The trigger was disabled before
+fusion tutorial completion, explaining the earlier failure to enter the QTE.
+It is not normal-route, physical-controller, visual, audio or FPS acceptance.
+No screenshots or host input. Artificial zero-health cancellation remains
+unverified; multiplayer and other motion interactions remain outstanding.
+
+An over-strict magnitude check was caught by the live repeat and removed: the
+digital action bit owns the press edge. A separate diagnostic load-state race
+was fixed: acknowledgment now follows CPU-thread restoration, preventing a
+subsequent scheduled input from being erased. The repeat passed. One transient
+read-only command-file open failure was also retained in private evidence.
+
+Inventory found 29 cooperative map definitions: 25 generic_sequence, two
+electro_sequence and two unspecified. Only the statue was exercised. Do not
+claim every QTE or all Xbox UI converted. Continue the full controls goal.
+
+Cleanup reclaimed 281,821,751 bytes from the superseded glyph-only archive.
+Automatic approval review rejected deletion of the new temporary packaging
+folders and superseded fixture (blocked by policy); these were not retried.
+
 ## Direct repeated-X runtime checkpoint - 2026-10-03
 
 Repeated X presses directly own QTE progress and completion. Holding X does not

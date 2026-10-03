@@ -303,3 +303,10 @@ The opt-in runtime integration builds and passes its focused regressions, but
 actual cooperative completion/cleanup is not yet verified or installed. The
 provisional development quota is twelve presses. Seven main HUD motion icons
 have a private Xbox X candidate; other Wii UI glyphs remain outstanding.
+
+## Installed safeguard quick reference - 2026-10-03
+
+Statue safeguard QTE: repeatedly press X (12 separate presses). Holding counts
+once. No B finish. The Xbox X prompt and matching tutorial text are installed.
+Native completion, mission cleanup and resumed movement passed in a seeded
+headless fixture. Other QTE variants and full Xbox glyph conversion remain open.
