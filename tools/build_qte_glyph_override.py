@@ -148,6 +148,9 @@ def main():
                     help='Also compile common Xbox menu fonts and 12 tutorial instructions; requires matching runtime')
     args = ap.parse_args()
     output = args.output_wad.resolve()
+    ui_manifest = output.with_suffix('.xbox-ui.manifest')
+    if args.xbox_ui and ui_manifest.exists():
+        raise ValueError('Xbox UI manifest output already exists')
     if output in (args.source_wad.resolve(), args.glyph_png.resolve()) or output.exists():
         raise ValueError('Output must be a new path separate from both inputs')
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -199,6 +202,11 @@ def main():
                 os.rename(temporary, output)
             finally:
                 Path(temporary).unlink(missing_ok=True)
+    if args.xbox_ui:
+        with ui_manifest.open('x', encoding='ascii', newline='\n') as manifest:
+            manifest.write('OpenMUA2-Xbox-UI-v2\n')
+            for name, payload in sorted(replacements.items()):
+                manifest.write(hashlib.sha256(payload).hexdigest() + '\t' + name + '\n')
     print(json.dumps({'status': 'candidate only; not installed', 'output': str(output),
                       'replaced_motion_cells': len(MOTION_CELLS),
                       'xbox_menu_fonts': 2 if args.xbox_ui else 0,

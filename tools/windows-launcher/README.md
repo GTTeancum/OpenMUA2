@@ -20,3 +20,17 @@ Custom profiles remain untouched. Other gamepads retain SDL discovery as fallbac
 
 Run Test-Profile.ps1 with a writable scratch directory for profile parsing and
 migration regression checks. These checks do not operate a controller or desktop.
+
+For the matching Xbox UI, compile a private candidate with
+`tools/build_qte_glyph_override.py --xbox-ui` and its required input/output paths.
+It creates the WAD and a sibling `.xbox-ui.manifest`. Pass that manifest to
+Build-Launcher.ps1 with `-XboxUiManifest`, and stage the resulting executable and
+WAD together. The manifest is embedded in the executable; no extra installation
+root file is needed. Normal launch checks the seven relevant archive members
+before enabling the guarded Xbox prompt resolver. A missing or mismatched member
+stops launch with an asset mismatch error, instead of enabling incompatible font
+slots. Packages without the manifest retain their original UI behavior.
+
+`Test-Xbox-UI.ps1 -WorkDirectory <scratch>` checks the version/hash gate using small
+synthetic archives. The common UI pack is still a partial conversion: remaining
+Wii-specific tutorials, menu operations and other QTE variants need validation.

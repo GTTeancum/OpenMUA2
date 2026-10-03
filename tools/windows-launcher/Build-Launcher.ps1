@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$RuntimeDirectory,
     [Parameter(Mandatory=$true)][string]$OutputExe,
-    [Parameter(Mandatory=$true)][string]$IconPath
+    [Parameter(Mandatory=$true)][string]$IconPath,
+    [string]$XboxUiManifest
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression
@@ -29,7 +30,13 @@ try {
     $manifest.Add((Get-FileHash -LiteralPath $windowIcon -Algorithm SHA256).Hash.ToLowerInvariant() + "`tOpenMUA2.ico")
 } finally { $zip.Dispose(); $zipFile.Dispose() }
 [IO.File]::WriteAllLines($manifestPath, $manifest, [Text.UTF8Encoding]::new($false))
-& "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /platform:x64 /optimize+ "/win32icon:$windowIcon" "/out:$OutputExe" /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll /reference:System.Windows.Forms.dll "/resource:$zipPath,payload.zip" "/resource:$manifestPath,payload.manifest" "/resource:$PSScriptRoot\Xbox-v5-profile.txt,Xbox-v5-profile.txt" (Join-Path $PSScriptRoot 'OpenMUA2.cs')
+$uiResource = @()
+if ($XboxUiManifest) {
+    $uiManifestPath = (Resolve-Path -LiteralPath $XboxUiManifest).Path
+    if ([IO.File]::ReadAllLines($uiManifestPath)[0] -ne 'OpenMUA2-Xbox-UI-v2') { throw 'Unsupported Xbox UI manifest version.' }
+    $uiResource = @("/resource:$uiManifestPath,xbox-ui.manifest")
+}
+& "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /platform:x64 /optimize+ "/win32icon:$windowIcon" "/out:$OutputExe" /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll /reference:System.Windows.Forms.dll "/resource:$zipPath,payload.zip" "/resource:$manifestPath,payload.manifest" "/resource:$PSScriptRoot\Xbox-v5-profile.txt,Xbox-v5-profile.txt" @uiResource (Join-Path $PSScriptRoot 'OpenMUA2.cs')
 if ($LASTEXITCODE -ne 0) { throw 'Launcher compilation failed.' }
 Write-Output "Build intermediates retained at $buildDirectory"
 Get-FileHash -LiteralPath $OutputExe -Algorithm SHA256

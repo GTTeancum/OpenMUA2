@@ -15,6 +15,51 @@ internal static class OpenMUA2
     static string Hash(Stream stream) { using (var sha = SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant(); }
     static string FileHash(string path) { using (var f = File.OpenRead(path)) return Hash(f); }
     static string Quote(string path) { return "\"" + path + "\""; }
+    static void VerifyXboxUiAssets(string wad, TextReader manifest)
+    {
+        if (manifest.ReadLine() != "OpenMUA2-Xbox-UI-v2")
+            throw new InvalidDataException("Unsupported Xbox UI asset version.");
+        var required = new HashSet<string>(StringComparer.Ordinal) {
+            "data/vv_tips.engb", "data/vv_tips.itab", "data/vv_tips.xmlb",
+            "packages/generated/maps/package/permanent.fb",
+            "packages/generated/maps/package/permanent_rev.fb",
+            "textures/fonts/rev_med_eng.igb", "textures/fonts/rev_med_ws_eng.igb"
+        };
+        var expected = new Dictionary<string, string>(StringComparer.Ordinal);
+        string line;
+        while ((line = manifest.ReadLine()) != null) {
+            var fields = line.Split('\t');
+            if (fields.Length != 2 || fields[0].Length != 64 || !required.Remove(fields[1]))
+                throw new InvalidDataException("Invalid Xbox UI manifest entry.");
+            foreach (char c in fields[0]) if (!Uri.IsHexDigit(c))
+                throw new InvalidDataException("Invalid Xbox UI checksum.");
+            expected.Add(fields[1], fields[0].ToLowerInvariant());
+        }
+        if (required.Count != 0) throw new InvalidDataException("Incomplete Xbox UI manifest.");
+        using (var stream = File.OpenRead(wad))
+        using (var archive = new ZipArchive(stream, ZipArchiveMode.Read)) {
+            var found = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var entry in archive.Entries) {
+                string checksum;
+                if (!expected.TryGetValue(entry.FullName, out checksum)) continue;
+                if (!found.Add(entry.FullName)) throw new InvalidDataException("Duplicate Xbox UI archive entry.");
+                using (var data = entry.Open()) if (Hash(data) != checksum)
+                    throw new InvalidDataException("GameData Xbox UI does not match this executable: " + entry.FullName);
+            }
+            if (found.Count != expected.Count) throw new InvalidDataException("GameData Xbox UI assets are incomplete.");
+        }
+    }
+
+    static bool ConfigureXboxUi(ProcessStartInfo info, string game)
+    {
+        using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("xbox-ui.manifest")) {
+            if (resource == null) return false; // Older packages retain their original UI.
+            using (var reader = new StreamReader(resource))
+                VerifyXboxUiAssets(Path.Combine(game, "files", "z", "assetsfb.wad"), reader);
+        }
+        info.EnvironmentVariables["OPENMUA2_XBOX_GLYPHS"] = "1";
+        return true;
+    }
     static string Prepare()
     {
         var assembly = Assembly.GetExecutingAssembly();
@@ -225,6 +270,7 @@ internal static class OpenMUA2
             string log = Path.Combine(logs, session + "-runtime.log");
             EnsureControls(cache, saves, Path.Combine(logs, session + "-controller.log"));
             var info = StartInfo(cache, "--game " + Quote(game) + " --cpu jit --title OpenMUA2 --user-dir " + Quote(saves) + " --graphics Vulkan --audio Cubeb");
+            ConfigureXboxUi(info, game);
             info.EnvironmentVariables["MODERNGEKKO_FRAME_TIMES"] = Path.Combine(logs, session + "-frames.csv");
             int exit = Run(info, log);
             if (exit != 0) MessageBox.Show("OpenMUA2 exited with code " + exit + ".\r\nDetails: " + log, "OpenMUA2", MessageBoxButtons.OK, MessageBoxIcon.Error);

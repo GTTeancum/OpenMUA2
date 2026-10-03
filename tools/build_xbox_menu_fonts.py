@@ -22,14 +22,21 @@ TABLE_HASHES = {
     '': 'ce185b67c873a76f610641009491ab5b984ac2820090316c0931eacb1e448b22',
     '_ws': 'c47e707183ad3953e5a45e6342dad16507d89a321fb57ffae0ba5b43a9b968ee',
 }
-# Native text character = 162 + icon ID. ID 6 becomes contextual Xbox X.
+# Native text character = 162 + icon ID. Preserve native DPAD at ID 6.
+# IDs 15-19 and 24 are not emitted by the verified Wii controller resolver.
 CROPS = {
     163: ('Start', (92, 572, 120, 597)),
     164: ('A', (360, 800, 420, 860)),
     165: ('B', (240, 800, 300, 860)),
     166: ('Y', (420, 800, 480, 860)),
     167: ('LB', (31, 572, 60, 597)),
-    168: ('X', (300, 800, 360, 860)),
+    168: ('DPad', (240, 620, 264, 650)),
+    177: ('LT', (432, 620, 456, 650)),
+    178: ('RT', (576, 620, 600, 650)),
+    179: ('View', (62, 572, 90, 597)),
+    180: ('LeftStick', (264, 620, 288, 650)),
+    181: ('RightStick', (288, 620, 312, 650)),
+    186: ('X', (300, 800, 360, 860)),
 }
 
 

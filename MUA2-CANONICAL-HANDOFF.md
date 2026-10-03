@@ -1,5 +1,41 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Installed common and auxiliary Xbox UI - 2026-10-03
+
+The root C:\Games\MUA2\OpenMUA2.exe now packages the matched Xbox UI resolver.
+Both normal/widescreen English menu fonts contain Start, A/B/X/Y, LB, D-pad,
+LT/RT, View and stick artwork. Twelve tutorial instructions use Xbox controls
+and explicit glyph tokens. Native DPAD keeps ID 6; contextual X now uses ID 24,
+fixing a collision in the earlier uninstalled candidate. The launcher embeds a
+versioned seven-member hash manifest and enables glyph resolution only after
+validating the matching GameData assets. No extra installation root files.
+
+Windows Build.cmd --cpu jit --jobs 2 passed 48/48 tests in 11.45 seconds, exit 0.
+Five tutorial tests, nine launcher UI-gate checks and nine profile checks passed.
+Existing vendored CMake warnings remain; no compiler/linker errors. The packaged
+runner cold-booted with candidate assets and native menu snapshots verified
+Start -> main, D-pad focus movement, A -> Story, B -> main, A -> Story again.
+A seeded process-local prompt fixture exercised LT/RT, sticks, View, D-pad and X
+through the native formatter, then restored its strings and entered the QTE.
+Earlier literal probes and too-short prompt windows failed their assertions;
+the final three-second windows passed. No screenshots or host input were used.
+
+Installed EXE SHA256:
+36cfa89bf54d9b6f2666a8b3ff3497d9355834cbdfb63d75c04a745bbe1c256b
+Installed runner SHA256:
+4c0916c05d461cdbb9befbd504867d3ce388ec308f78a5f4e6d0da4480017f74
+Installed WAD SHA256:
+fc2710eb8df0a028b36e127ff93a049c302a21bb5f75aeea2a46201af923561b
+All 55 save/profile files are unchanged; original extracted data is preserved.
+The installation root remains OpenMUA2.exe, GameData and saves.
+
+This is a PARTIAL Xbox UI conversion, not full visible/physical acceptance.
+Other Wii-specific instructions/menu actions and QTE variants remain open.
+Audio/FPS were not assessed (headless diagnostics used Null audio). Idle and
+reconnection were not repeated for this UI-only change. Keep the full goal
+active. Evidence: evidence/windows-20261003/XBOX-UI-INSTALLED.json.
+
+
 ## Xbox tutorial and combined UI candidate - 2026-10-03
 
 The private --xbox-ui asset compiler now combines the seven QTE X cells, both

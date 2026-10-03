@@ -12,21 +12,20 @@ STOCK_HASHES = frozenset((
     'e3ebcaf05dbac2b51f7b86d902149f23db77940da8b78a130642a7f2d3ba516a',
 ))
 
-# Literal trigger/face names remain readable without introducing unverified font
-# slots. Existing semantic tokens use the paired Xbox prompt resolver/font pack.
+# Explicit Xbox tokens require the paired guarded prompt resolver/font pack.
 REPLACEMENTS = {
     '3': ('Grab', 'UT: Press $ACTION to grab an enemy.'),
-    '5': ('SwitchToNextHero', 'UT: Use the D-pad to select a hero.'),
-    '9': ('SuperPowers', 'UT: Hold RT and press A, X, B or Y to use powers 1, 2, 3 or 4.'),
-    '12': ('Fusion', 'UT: Hold LT + A/B/X/Y to choose a fusion partner.'),
-    '31': ('RotCam', 'UT: Move the right stick left or right to rotate the camera.'),
-    '47': ('Fusionattack', r'UT: \nHold LT and press A/B/X/Y to choose a Fusion partner.\n'),
-    '48': ('Projectiles', r'UT: \nHold RT + A, X, B or Y to use an assigned ranged power.\n'),
-    '51': ('SwitchingHeroes', r'UT: \nSelect a hero with D-pad Up, Right, Down or Left.\n'),
-    '53': ('Powers', r'UT: \nHold RT + A, X, B or Y for powers 1, 2, 3 or 4.\n'),
-    '54': ('Safeguard', r'UT: \nRepeatedly press X to complete the safeguard interaction.\n'),
+    '5': ('SwitchToNextHero', 'UT: Use $XD to select a hero.'),
+    '9': ('SuperPowers', 'UT: Hold $XRT + $XA/$XX/$XB/$XY for powers 1/2/3/4.'),
+    '12': ('Fusion', 'UT: Hold $XLT + $XA/$XB/$XX/$XY for Fusion.'),
+    '31': ('RotCam', 'UT: Move $XR left or right to rotate the camera.'),
+    '47': ('Fusionattack', r'UT: \nHold $XLT + $XA/$XB/$XX/$XY to choose a Fusion partner.\n'),
+    '48': ('Projectiles', r'UT: \nHold $XRT + $XA/$XX/$XB/$XY to use a ranged power.\n'),
+    '51': ('SwitchingHeroes', r'UT: \nSelect a hero with $XD Up, Right, Down or Left.\n'),
+    '53': ('Powers', r'UT: \nHold $XRT + $XA/$XX/$XB/$XY for powers 1/2/3/4.\n'),
+    '54': ('Safeguard', r'UT: \nRepeatedly press $XX to complete the safeguard interaction.\n'),
     '56': ('GrabBasics', r'UT: \nPress $ACTION to grab enemies or objects. Tap $ATTACK to punch a grabbed enemy.\n'),
-    '59': ('CameraControl', r'UT: \nIn some areas, move the right stick left or right to rotate the camera.\n'),
+    '59': ('CameraControl', r'UT: \nIn some areas, move $XR left or right to rotate the camera.\n'),
 }
 
 

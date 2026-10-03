@@ -1,0 +1,178 @@
+{
+  "installed_exe_sha256": "36cfa89bf54d9b6f2666a8b3ff3497d9355834cbdfb63d75c04a745bbe1c256b",
+  "installed_wad_sha256": "fc2710eb8df0a028b36e127ff93a049c302a21bb5f75aeea2a46201af923561b",
+  "runner_sha256": "4c0916c05d461cdbb9befbd504867d3ce388ec308f78a5f4e6d0da4480017f74",
+  "original_wad_sha256": "b0933be3d33e7ad4082da39d4e86cbe6ab3dfb1cfc2b87406c6d6caf6b22bfe9",
+  "unchanged_save_profile_files": 55,
+  "root_entries": [
+    "GameData",
+    "OpenMUA2.exe",
+    "saves"
+  ],
+  "rollback": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\xbox-ui-rollback",
+  "scope": "common/auxiliary Xbox UI and twelve instructions; remaining UI/QTE scope still open",
+  "status": "installed; partial Xbox UI conversion; physical/rendered acceptance unresolved",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 48,
+    "tests_failed": 0,
+    "test_seconds": 11.45,
+    "warnings": [
+      "existing vendored CMake policy/minimum-version warnings",
+      "missing Wayland",
+      "object path-length warnings"
+    ],
+    "compiler_linker_errors": 0
+  },
+  "python_tutorial_tests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "launcher_ui_gate_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "launcher_profile_tests": {
+    "passed": 9,
+    "failed": 0
+  },
+  "glyphs": [
+    "Start",
+    "A",
+    "B",
+    "Y",
+    "LB",
+    "DPad",
+    "LT",
+    "RT",
+    "View",
+    "LeftStick",
+    "RightStick",
+    "X"
+  ],
+  "font_icon_ids": {
+    "DPad": 6,
+    "X": 24,
+    "LT": 15,
+    "RT": 16,
+    "View": 17,
+    "LeftStick": 18,
+    "RightStick": 19
+  },
+  "cold_start": {
+    "exit_code": 0,
+    "scope": "cold boot with candidate assets and packaged runner; headless internal input; no visual/physical/audio acceptance",
+    "menu_model": [
+      {
+        "label": "title",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x8118bae8",
+        "name": "start",
+        "page": 255,
+        "focus": "0x0"
+      },
+      {
+        "label": "main",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "label": "options-focus",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f558"
+      },
+      {
+        "label": "play-focus",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "label": "story",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      },
+      {
+        "label": "back",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "focus": "0x9003f038"
+      },
+      {
+        "label": "story-again",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 1,
+        "focus": "0x900404b8"
+      }
+    ],
+    "assertions_passed": true
+  },
+  "native_formatter": {
+    "exit_code": 0,
+    "fixture": "seeded statue prompt; exact in-process text substitutions restored before X interaction",
+    "observed": [
+      "81313274,ACTION,2,24",
+      "81313274,DPAD,6,6",
+      "81313274,MENU_BACK,3,3",
+      "81313274,MenuAccept,2,2",
+      "81313274,XD,255,6",
+      "81313274,XL,255,18",
+      "81313274,XLT,255,15",
+      "81313274,XR,255,19",
+      "81313274,XRT,255,16",
+      "81313274,XV,255,17",
+      "81313274,XX,255,24"
+    ]
+  },
+  "prior_probe_failures": [
+    "Registry/literal substitutions did not exercise auxiliary tokens",
+    "First bulk-memory request exceeded the 16 MiB command limit; rejected without reading; same process continued with bounded reads",
+    "One-second prompt windows did not exercise every token; three-second windows passed"
+  ],
+  "limitations": [
+    "Full Wii UI conversion remains incomplete",
+    "Quick-assign, camera reset, throw/motion and other menu operations remain open",
+    "Other motion-QTE variants and multiplayer still need validation",
+    "No screenshots, host input, physical-controller, audible-audio or FPS acceptance",
+    "Idle/reconnect were not repeated for this UI-only change; previous evidence remains scoped to its prior build"
+  ],
+  "proprietary_data_committed": false,
+  "candidate_font_hashes": [
+    "010383ad035f952c9fe231fa206d422d75c9c83b370bb680655d64bf2ccfb0c5",
+    "1bf995902a151ee6ff218bb4314cef106cb76758a01c2d77a4e6e9257642c9cb"
+  ],
+  "installed_package_verified": true,
+  "installed_asset_gate_verified": true,
+  "staging_candidates_pruned": true,
+  "cleanup": {
+    "reclaimed_bytes_excluding_hardlink_tree": 970156616,
+    "private_disc_tree_removed": true,
+    "actual_original_game_data_preserved": true,
+    "repo_bytes": 33403109719,
+    "free_d_bytes": 104258195456
+  },
+  "preexisting_static_recompiler_edits": "preserved, included in build, not staged"
+}
