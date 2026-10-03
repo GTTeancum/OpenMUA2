@@ -67,5 +67,12 @@ int main() {
   ConsumeFusionMarkers(active,values,true);
   if(ReadBE(active,0)!=(1u<<9) || ReadBE(active,4)!=(1u<<24) || values!=original_values) return 7;
   ConsumeFusionMarkers(active,values,false);if(ReadBE(active,0)!=0) return 8;
+  // Direct selection does not depend on retained Wii marker scalar values.
+  auto direct=f;std::fill(direct.memory[Fixture::input].begin()+0xbb20,direct.memory[Fixture::input].end(),0);
+  const auto read=[&](auto a,auto n){return direct.read(a,n);};
+  if(FusionCandidate(read,Fixture::owner,Fixture::input,1)!=0x90011000 ||
+     FusionCandidate(read,Fixture::owner,Fixture::input,-1)!=0 ||
+     FusionCandidate(read,Fixture::owner,Fixture::input,2)!=0 ||
+     FusionCandidate(read,Fixture::owner,Fixture::input,4)!=0) return 9;
   std::cout<<"Fusion roster, ownership, stale-handle, modifier and native-context guards passed\n";
 }

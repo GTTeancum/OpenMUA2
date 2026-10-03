@@ -74,5 +74,10 @@ int main() {
   ConsumeHeroMarkers(active,values);
   if(ReadBE(active,0)!=((1u<<13)|(1u<<9)) || ReadBE(active,4)!=0 ||
       ReadBE(active,8)!=(1u<<27) || ReadBE(active,12)!=0) return 7; // menu up and attacks survive
+  auto direct=f;std::fill(direct.memory[Fixture::input].begin()+0xbb20,direct.memory[Fixture::input].end(),0);
+  const auto read=[&](auto a,auto n){return direct.read(a,n);};
+  if(HeroButtonIndex(read,Fixture::owner,1,Fixture::input,0x80800000,1)!=1 ||
+     HeroButtonIndex(read,Fixture::owner,1,Fixture::input,0x80800000,4)!=4 ||
+     HeroButtonIndex(read,Fixture::owner,0,Fixture::input,0x80800000,1)) return 8;
   std::cout << "Direct hero index, ownership, stale-array and marker checks passed\n";
 }

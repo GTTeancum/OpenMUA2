@@ -5,6 +5,7 @@
 #include "Common/Crypto/SHA1.h"
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
+#include "mua2_gamepad_actions.hpp"
 #include "mua2_xbox_prompts.hpp"
 #include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
@@ -75,6 +76,29 @@ static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
 bool s_fusion_buttons_enabled = false;
 bool s_hero_buttons_enabled = false;
 std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
+
+std::uint8_t s_direct_gamepad_ports = 0;
+std::array<moderngekko::controls::GamepadActions,4> s_gamepad_actions;
+moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
+  moderngekko::controls::GamepadSample sample;
+  if(port>=4) return sample;
+  const auto lock=ControllerEmu::EmulatedController::GetStateLock();
+  const auto* controller=Wiimote::GetConfig()->GetController(port);
+  if(!controller) return sample;
+  // The profile supplies only the port's device assignment. No profile binding
+  // expression, remote report, tilt, IR, or gesture supplies these values.
+  const auto device=g_controller_interface.FindDevice(controller->GetDefaultDevice());
+  if(!device || (device->GetSource()!="XInput" && device->GetSource()!="OpenMUA2Test")) return sample;
+  const auto* connected=device->FindInput("Connected");
+  if(!connected || connected->GetState()<=0.5) return sample;
+  for(unsigned i=0;i<sample.inputs.size();++i) {
+    const auto* input=device->FindInput(moderngekko::automation::XboxInputNames[i]);
+    if(!input) return {};
+    sample.inputs[i]=input->GetState();
+  }
+  sample.connected=true;
+  return sample;
+}
 
 std::uint8_t s_xbox_prompt_ports = 0;
 void ObserveXboxPrompt(const Core::CPUThreadGuard& guard) {
@@ -166,7 +190,10 @@ void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
   const auto index = moderngekko::controls::HeroButtonIndex(
-      read, state.gpr[3], state.gpr[4], state.gpr[22], state.gpr[5]);
+      read, state.gpr[3], state.gpr[4], state.gpr[22], state.gpr[5],
+      moderngekko::controls::XboxPortEnabled(s_direct_gamepad_ports,state.gpr[22]) ?
+        std::optional<unsigned>(s_gamepad_actions[(state.gpr[22]-0x81313274)/0xbe00].hero_slot) :
+        std::nullopt);
   if (index) {
     state.gpr[6] = *index;
     // A direct request gets one native attempt. Never fall through to another
@@ -192,7 +219,10 @@ void ObserveFusionCandidate(const Core::CPUThreadGuard& guard, u32 entry,
   auto& state = system.GetPPCState();
   if (!moderngekko::controls::XboxPortEnabled(s_fusion_ports,state.gpr[input_register])) return;
   const auto candidate = moderngekko::controls::FusionCandidate(
-      read, state.gpr[owner_register], state.gpr[input_register]);
+      read, state.gpr[owner_register], state.gpr[input_register],
+      moderngekko::controls::XboxPortEnabled(s_direct_gamepad_ports,state.gpr[input_register]) ?
+        std::optional<int>(s_gamepad_actions[(state.gpr[input_register]-0x81313274)/0xbe00].fusion_slot) :
+        std::nullopt);
   if (candidate)
     state.gpr[3] = *candidate; // Original handle/type/eligibility processing follows.
 }
@@ -244,7 +274,8 @@ struct DirectQteSession {
 bool s_direct_qte_enabled = false;
 std::array<DirectQteSession, 4> s_direct_qtes;
 
-void ResetDirectQtes() { s_direct_qtes = {}; }
+void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; }
+
 
 bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
                    std::string_view expected) {
@@ -358,6 +389,8 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
   auto* data = memory.GetPointerForRange(object, 0xbe00);
   if (!data || moderngekko::controls::ReadBE(std::span<const u8>(data, 4), 0) != 0x811b4398)
     return;
+  const bool direct=moderngekko::controls::XboxPortEnabled(s_direct_gamepad_ports,object);
+  if (!direct) {
   const auto result = moderngekko::controls::RebindContextUse(
       std::span<u8>(data + 4, moderngekko::controls::DescriptorTableSize));
   if (result == moderngekko::controls::RebindResult::Applied)
@@ -366,6 +399,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
   // stock descriptor; normalize only subsequent evaluations of our chord.
   if (result != moderngekko::controls::RebindResult::AlreadyApplied)
     return;
+  }
   const auto& state = system.GetPPCState();
   constexpr u32 value_bytes = 124 * 4;
   const u32 active_address = state.gpr[14];
@@ -403,8 +437,8 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     input_timing << '\n';
   }
   if (!active || !values ||
-      !moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
-                                               std::span<u8>(values, value_bytes)))
+      (!direct && !moderngekko::controls::NormalizeChordUse(std::span<const u8>(active, 20),
+                                               std::span<u8>(values, value_bytes))))
     return;
   constexpr u32 first_input = 0x81313274, input_stride = 0xbe00;
   if (object < first_input || object >= first_input + 4 * input_stride ||
@@ -414,6 +448,22 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
     const auto* bytes = memory.GetPointerForRange(address, size);
     return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
   };
+  if(direct) {
+    const unsigned port=(object-first_input)/input_stride;
+    bool request=false;
+    const auto globals=read(0x80816a20,24);
+    if(globals.size()==24 && moderngekko::controls::ReadBE(globals,0)==1) {
+      const auto owner=moderngekko::controls::ReadBE(globals,16);
+      const auto actor=read(owner,0xa38);
+      request=actor.size()==0xa38 && moderngekko::controls::ReadBE(actor,0x9c)==0x8052a748 &&
+              !(actor[0x4d0]&0x80) && moderngekko::controls::ReadBE(actor,0x45c)==port;
+    }
+    auto& actions=s_gamepad_actions[port];
+    actions=moderngekko::controls::BuildGamepadActions(ReadGamepadSample(port),
+        moderngekko::controls::IsStartAcceptScreen(read),request);
+    std::copy(actions.active.begin(),actions.active.end(),active);
+    std::copy(actions.values.begin(),actions.values.end(),values);
+  } else {
   if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::MapHeroManagement(
         std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
@@ -449,6 +499,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
   if (moderngekko::controls::XboxPortEnabled(s_hero_ports,object))
     moderngekko::controls::ConsumeHeroMarkers(
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes));
+  }
   const unsigned port = (object - first_input) / input_stride;
   moderngekko::controls::CoopInteraction live;
   const bool context = moderngekko::controls::HasCoopInteraction(read, port, &live);
@@ -1692,7 +1743,7 @@ RuntimeRunResult Runtime::Run() {
   m_impl->booted = true;
   s_fusion_buttons_enabled = false;
   s_hero_buttons_enabled = false;
-  s_control_ports=s_hero_ports=s_fusion_ports=0;
+  s_control_ports=s_hero_ports=s_fusion_ports=s_direct_gamepad_ports=0;
   s_xbox_prompt_ports=0;
   s_direct_qte_enabled = false;
   ResetDirectQtes();
@@ -1718,6 +1769,10 @@ RuntimeRunResult Runtime::Run() {
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
       if (installed) {
         s_control_ports=want_control_ports;
+        if(enabled("OPENMUA2_DIRECT_GAMEPAD")) {
+          s_direct_gamepad_ports=managed_ports;
+          std::fprintf(stderr,"[openmua2] direct gamepad actions ports=%u (development)\n",s_direct_gamepad_ports);
+        }
         const bool idle_installed = HLE::SetExternalStartObserver(guard, 0x80403ae4, ObserveMua2AutoSleep);
         std::fprintf(stderr, "[openmua2] managed Xbox idle-timeout observer %s\n",
                      idle_installed ? "installed" : "rejected");

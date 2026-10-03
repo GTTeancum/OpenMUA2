@@ -124,6 +124,17 @@ private:
   const ControlState& m_level;
 };
 
+class Connected final : public Core::Device::Input
+{
+public:
+  explicit Connected(const ControlState& state) : m_state(state) {}
+  std::string GetName() const override { return "Connected"; }
+  ControlState GetState() const override { return m_state; }
+  bool IsDetectable() const override { return false; }
+private:
+  const ControlState& m_state;
+};
+
 static HMODULE hXInput = nullptr;
 
 typedef decltype(&XInputGetCapabilities) XInputGetCapabilities_t;
@@ -239,6 +250,7 @@ Device::Device(const XINPUT_CAPABILITIES& caps, u8 index) : m_subtype(caps.SubTy
     AddOutput(new Motor(u8(i), this, (&m_state_out.wLeftMotorSpeed)[i], 65535));
 
   AddInput(new Battery(&m_battery_level));
+  AddInput(new Connected(m_connected));
 }
 
 std::string Device::GetName() const
@@ -271,7 +283,8 @@ std::string Device::GetSource() const
 
 Core::DeviceRemoval Device::UpdateInput()
 {
-  if (!PollState(m_index, m_state_in, PXInputGetState))
+  m_connected = PollState(m_index, m_state_in, PXInputGetState) ? 1 : 0;
+  if (!m_connected)
   {
     m_battery_level = 0;
     // Retain the slot so a subsequent successful poll can recover even when a

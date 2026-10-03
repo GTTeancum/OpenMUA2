@@ -28,10 +28,12 @@ public:
   XboxTestDevice() {
     for (std::size_t i = 0; i < XboxInputNames.size(); ++i)
       AddInput(new Input(std::string(XboxInputNames[i]), values[i]));
+    AddInput(new Input("Connected", connected));
   }
   std::string GetName() const override { return "Xbox Profile Test"; }
   std::string GetSource() const override { return "OpenMUA2Test"; }
   bool IsVirtualDevice() const override { return true; }
   XboxState values{};
+  double connected = 1.0;
 };
 }

@@ -1,5 +1,36 @@
 # OpenMUA2 Xbox controls: MUA1 Xbox 360 target
 
+## Direct gamepad action layer development - 2026-10-03
+
+An opt-in OPENMUA2_DIRECT_GAMEPAD=1 backend reads raw XInput/test-device samples
+and writes logical action bits/values. It bypasses Wii binding outputs and passes
+explicit hero/fusion slots without marker actions. It remains OFF by default.
+Device assignment still uses the managed v5 profile and native polling lifecycle;
+this is not complete Wiimote removal and is not installed in C:\Games\MUA2.
+
+Final Windows Build.cmd --cpu jit --jobs 2: exit 0, 49/49 tests passed in 7.29s.
+No compiler/linker errors; existing CMake warnings remain. Cold start/title/main
+and A/B Story navigation worked. Main menu is horizontal: Down doing nothing was
+misdiagnosed as failure until renderer inspection. Native trace established the
+second directional action quartet; final Left/Right and Options navigation passed.
+Internal widget names can misidentify visible entries: option_Profile_text was
+Credits in the actual capture. Verify images, not field names alone.
+
+With all 124 legacy descriptor binding counts zeroed in a private process,
+Options Down/Up/Back and A/B navigation still worked. Wrong-port Down did not move
+focus; all current action/scalar bytes cleared on release. Native captures were
+inspected. Existing controls-menu Wii diagram/overlapping text remain deferred.
+No physical-controller, gameplay, FPS/audio, or complete UI acceptance claimed.
+All three diagnostic runs exited 0; single CPU2, Vulkan3x, Null audio, build-tail
+CPU overlap. No installed EXE, WAD or real saves were changed.
+
+Next: replace shared readiness/pointer and motion interaction families using the
+direct gamepad state. Validate axes, gameplay, fusion, reconnect and idle before
+staging. Preexisting wave-QTE and StaticRecomp changes remain local and excluded
+from this focused commit; the tested worktree included them (wave default off).
+Evidence: evidence/windows-20261003/DIRECT-GAMEPAD-DEVELOPMENT.json.
+Full goal remains active.
+
 ## Installed alternate co-op QTE sequence - 2026-10-03
 
 The direct repeated-X interaction now also accepts the exact electro_sequence

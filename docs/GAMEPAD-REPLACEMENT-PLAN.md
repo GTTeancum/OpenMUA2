@@ -1,6 +1,7 @@
 # Gamepad input replacement plan
 
-Status: architecture audit, implementation incomplete. The installed release has
+Status: direct action backend implemented behind a development flag; menu checks
+passed, shared pointer/motion replacement and gameplay validation incomplete. The installed release has
 not changed. A complete dormant gamepad backend has NOT been verified.
 
 ## Code evidence

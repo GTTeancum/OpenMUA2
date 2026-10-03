@@ -22,7 +22,8 @@ inline void ConsumeHeroMarkers(std::span<std::uint8_t> active,
 // Never retain the caller's temporary actor array beyond this invocation.
 template<typename Reader>
 std::optional<std::uint32_t> HeroButtonIndex(Reader read, std::uint32_t owner,
-    std::uint32_t port, std::uint32_t input, std::uint32_t actor_array) {
+    std::uint32_t port, std::uint32_t input, std::uint32_t actor_array,
+    std::optional<unsigned> direct_slot = std::nullopt) {
   const auto ram=[&](std::uint32_t a,std::size_t n) {
     const auto end=std::uint64_t(a)+n;
     if (!(a&3) && ((a>=0x80000000 && end<=0x81800000) ||
@@ -33,17 +34,20 @@ std::optional<std::uint32_t> HeroButtonIndex(Reader read, std::uint32_t owner,
   const auto device=ram(input,0xbe00);
   if(device.size()!=0xbe00 || ReadBE(device,0)!=0x811b4398) return std::nullopt;
   const auto values=device.subspan(0xbb20,496);
+  unsigned selected=4;
+  if(direct_slot) selected=*direct_slot;
+  else {
   if(ReadBE(values,13*4)!=0x3f800000) return std::nullopt;
   if(ReadBE(values,14*4)==0x3f800000) return 4;
   constexpr std::array<unsigned,4> directions{32,31,29,30}; // Up, Right, Down, Left
-  unsigned selected=4;
   for(unsigned i=0;i<4;++i) {
     const auto v=ReadBE(values,4*directions[i]);
     if(v==0 || v==0xbf800000) continue;
     if(v!=0x3f800000 || selected!=4) return 4;
     selected=i;
   }
-  if(selected==4) return 4;
+  }
+  if(selected>=4) return 4;
   const auto team=ram(0x80629490,0x740), global=ram(0x80817368,4);
   const auto actors=ram(actor_array,16);
   if(team.size()!=0x740 || ReadBE(team,0x100)!=0x80534c90 ||

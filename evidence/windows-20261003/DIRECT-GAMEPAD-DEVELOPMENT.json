@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "date": "2026-10-03",
+  "status": "Development backend only; disabled by default; no installed release",
+  "build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit": 0,
+    "tests_passed": 49,
+    "tests_failed": 0,
+    "seconds": 7.29,
+    "warnings": [
+      "Existing Wayland unavailable warning",
+      "Existing object path length warnings",
+      "Existing CMP0069 IPO policy warning"
+    ],
+    "compiler_or_linker_errors": false,
+    "binaries_sha256": {
+      "moderngekko-run.exe": "47520d6ec6a0e3715d04fa7049daf7eb81622075833bfcc9d54d3f0796c79669",
+      "ModernGekko.exe": "19d05e56b8ba38b73274bb8a3174305d46118572bb5d44d685fda5dfe214c2e7",
+      "moderngekko-port.exe": "6d9290c377e30776f3974fa7f1214d62ac3cd80ffd9d6ca8391bb21d981bd443",
+      "moderngekko_mua2_gamepad_actions_test.exe": "acb5424944b37642f108f2dcd357c1e6b7073c340c11e55fbb75ff983444eee0"
+    },
+    "scope": "Built worktree also includes preserved default-off wave-QTE and StaticRecomp experiments; these are excluded from this focused commit."
+  },
+  "native_validation": {
+    "cold_start": "Booted through normal intro to title; Start entered main; A/B opened/closed Story. Main is horizontal: Down not moving is expected, not a delay failure.",
+    "saved_main": "D-pad Left/Right navigation and Options entry observed. Internal option_Profile_text identifies the Credits widget in inspected render; do not infer visible label from field name.",
+    "binding_independence": "All 124 legacy descriptor binding counts zeroed in isolated process. A/B navigation and Options Down/Up/Back passed. No completion flags or tutorial text forced.",
+    "wrong_port": "Injected port 1 Down did not move port 0 Options focus.",
+    "release": "All 20 current action bytes and all 496 scalar-value bytes zero after release.",
+    "captures_inspected": [
+      "OpenMUA2-direct-gamepad-cold.png (intro logo)",
+      "OpenMUA2-direct-gamepad-menu-trace.png (main/Credits focus)",
+      "OpenMUA2-direct-gamepad-options.png (Effects focus)",
+      "OpenMUA2-direct-gamepad-options-down.png (Music focus)"
+    ],
+    "known_visual_defects": "Existing deferred controls-menu diagram still depicts Wii devices and contains overlapping text. This is not UI conversion acceptance.",
+    "process_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "configuration": "Single CPU2/mask4, Vulkan3x, normal clocks, headless process-local input, Null audio. Build-tail overlap; no FPS or audio claim."
+  },
+  "remaining": [
+    "Direct backend still uses managed v5 device assignment and native polling lifecycle; Wiimote removal is incomplete",
+    "Replace shared readiness/pointer families and remaining QTE consumers",
+    "Gameplay axes/hero/fusion and every affected gamepad action need native validation",
+    "Controller disconnect/reconnect/idle and physical-controller acceptance",
+    "User-facing package and complete Xbox gameplay UI conversion"
+  ],
+  "installed_exe_sha256": "21379ce9be5c51e701f7a67425b54f8e077654903d6d9f2abf87d311d03ca911",
+  "installed_changed": false,
+  "private_evidence_root": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\direct-gamepad-menu-trace"
+}

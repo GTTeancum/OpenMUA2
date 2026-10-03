@@ -41,6 +41,7 @@ private:
   XINPUT_STATE m_state_in{};
   XINPUT_VIBRATION m_state_out{};
   ControlState m_battery_level{};
+  ControlState m_connected{};
   const BYTE m_subtype;
   const u8 m_index;
 };

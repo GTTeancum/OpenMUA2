@@ -42,7 +42,8 @@ inline void ConsumeFusionMarkers(std::span<std::uint8_t> active,
 // The native picker continues its own actor/type/eligibility/cost checks.
 template<typename Reader>
 std::optional<std::uint32_t> FusionCandidate(Reader read, std::uint32_t owner,
-                                            std::uint32_t input) {
+                                            std::uint32_t input,
+                                            std::optional<int> direct_slot = std::nullopt) {
   const auto ram=[&](std::uint32_t a,std::size_t n) {
     const auto end=std::uint64_t(a)+n;
     if (!(a&3) && ((a>=0x80000000 && end<=0x81800000) ||
@@ -61,7 +62,7 @@ std::optional<std::uint32_t> FusionCandidate(Reader read, std::uint32_t owner,
   if(!std::isfinite(health) || health<=0) return 0;
   auto device=ram(input,0xbe00);
   if(device.size()!=0xbe00 || ReadBE(device,0)!=0x811b4398) return 0;
-  const auto slot=FusionButtonSlot(device.subspan(0xbb20,124*4));
+  const auto slot=direct_slot ? *direct_slot : FusionButtonSlot(device.subspan(0xbb20,124*4));
   if(slot<0) return 0;
   auto team=ram(0x80629490,0x740), global=ram(0x80817368,4);
   if(team.size()!=0x740 || ReadBE(team,0x100)!=0x80534c90 || global.size()!=4)
