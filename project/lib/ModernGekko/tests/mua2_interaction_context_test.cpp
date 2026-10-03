@@ -9,7 +9,7 @@ void put(std::span<std::uint8_t> b,std::size_t p,std::uint32_t v) {
 }
 struct Fixture {
   std::map<std::uint32_t,std::vector<std::uint8_t>> memory;
-  Fixture() {
+  explicit Fixture(std::string_view name="generic_sequence") {
     memory[0x80817368].resize(4);put(memory[0x80817368],0,0x90001000);
     auto& m=memory[0x90001000];m.resize(0x1400);put(m,0,0x81177d08);
     put(m,0x13fc,0x1ff);put(m,0xd30,6);put(m,8,0x90010000);
@@ -20,7 +20,6 @@ struct Fixture {
     auto& t=memory[0x90020000];t.resize(0xa0);put(t,0x48,2);put(t,0x9c,0x811769e0);
     auto& n=memory[0x90030000];n.resize(16);put(n,0,0x811b0620);put(n,12,0x0d000001);
     auto& s=memory[0x805f8828];s.resize(0x4020);put(s,0,13);
-    constexpr std::string_view name="generic_sequence";
     std::copy(name.begin(),name.end(),s.begin()+0x4008);
   }
   std::span<const std::uint8_t> read(std::uint32_t a,std::size_t n) const {
@@ -33,8 +32,7 @@ struct Fixture {
     return HasCoopInteraction([&](auto a,auto n){return read(a,n);},port);
   }
 };
-int main() {
-  Fixture f;
+int CheckFixture(Fixture f) {
   if(!f.eligible() || f.eligible(0) || f.eligible(4)) return 1;
   CoopInteraction resolved;
   if (!HasCoopInteraction([&](auto a, auto n) { return f.read(a, n); }, 1, &resolved) ||
@@ -86,4 +84,15 @@ int main() {
   if (ConsumeButtonQteInput(std::span(active).first(19),values) ||
       ConsumeButtonQteInput(active,std::span(values).first(495))) return 11;
   std::cout<<"Interaction ownership, handles and direct X consumption passed\n";
+  return 0;
+}
+int main() {
+  for (auto name : {"generic_sequence", "electro_sequence"}) {
+    const int result = CheckFixture(Fixture{name});
+    if (result) { std::cerr << name << ": " << result << '\n'; return result; }
+  }
+  for (auto name : {"generic_sequenc", "electro_sequenc", "electro_sequence_extra",
+                    "Electro_sequence", "other_sequence"})
+    if (Fixture{name}.eligible()) return 22;
+  return 0;
 }

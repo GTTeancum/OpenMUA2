@@ -1,5 +1,32 @@
 # Current status — GitHub main
 
+## Installed alternate co-op QTE sequence - 2026-10-03
+
+The direct repeated-X interaction now also accepts the exact electro_sequence
+name. Five original interact_coopsequence assets define it and generic_sequence
+with the same ch_coop_sequence handler and state transitions. The two Latveria
+boss-pit objects use the alternate name. All owner/type/handle guards remain.
+The regression suite checks both names and rejects near matches.
+
+Windows Build.cmd --cpu jit --jobs 2 exited 0; 48/48 tests passed in 10.06s.
+Package checksum verification passed, exit 0. A headless statue shared-handler
+fixture substituted only the sequence name: wrong buttons/port made no progress,
+holding X counted once, 12 fresh presses completed and cleared the target.
+The string was restored and the game exited 0. This is NOT an actual Electro
+boss encounter or multiuser acceptance. Chemical tank defaults remain unresolved.
+No screenshots/host input or physical/visible/audio/FPS claims. Single CPU2,
+Vulkan3x, normal clocks, Null diagnostic audio; build-tail overlap.
+
+Installed EXE SHA256:
+21379ce9be5c51e701f7a67425b54f8e077654903d6d9f2abf87d311d03ca911
+Runner SHA256:
+31ab4643395a4abdac0778185951521b19ed20dba9bfaa5962846f06bc20b66b
+GameData and all 55 save/profile files unchanged. Previous EXE retained as rollback.
+Xbox button glyphs/action labels remain installed; controller pictures excluded.
+Full controls/UI goal remains active. Evidence:
+evidence/windows-20261003/ELECTRO-SEQUENCE-QTE.json.
+
+
 ## Installed contextual Xbox menu prompts - 2026-10-03
 
 Controller pictures/diagrams are excluded from further work at the user's

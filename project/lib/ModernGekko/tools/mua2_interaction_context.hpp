@@ -70,9 +70,15 @@ bool HasCoopInteraction(Reader read, unsigned port, CoopInteraction* resolved = 
     const auto name_address=std::uint64_t(0x805f8828)+0x4008+offset;
     if (name_address>0xffffffffu) continue;
     constexpr std::string_view name="generic_sequence";
+    // Both verified fightstyle nodes use ch_coop_sequence and CCoopEntity's
+    // same stage/animation/completion path. Electro's alternate name must not
+    // exclude its boss interactions from the direct mash-button replacement.
+    constexpr std::string_view electro="electro_sequence";
+    static_assert(name.size() == electro.size());
     auto text=ram(static_cast<std::uint32_t>(name_address),name.size()+1);
     if (text.size()!=name.size()+1 || text.back()!=0 ||
-        !std::equal(name.begin(),name.end(),text.begin())) continue;
+        (!std::equal(name.begin(),name.end(),text.begin()) &&
+         !std::equal(electro.begin(),electro.end(),text.begin()))) continue;
     const auto target_handle=ReadBE(actor,0x6e8);
     const auto target_address=resolve(target_handle);
     if (!target_address || target_address==address) continue;
