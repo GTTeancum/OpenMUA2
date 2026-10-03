@@ -1,5 +1,31 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Fusion banner candidate rejected — 2026-10-03
+
+The text-based top-banner candidate was WRONG: it replaced the statue co-op
+QTE glyph when fusion tutorial text was forced into the HUD. The resulting
+screenshot is not valid fusion acceptance. Candidate source has been withdrawn
+from the worktree and retained only under workspace work/rejected-fusion-text-banner.
+No candidate EXE or WAD was installed; supported C:\Games\MUA2 remains unchanged,
+including all 55 save/profile files. Preexisting experimental work is preserved.
+
+A fresh diagnostic run using installed assets completed the seeded statue with
+12 X presses, then used LT to enter the actual fusion first-use flow. A advances
+to a pointer/profile-icon readiness gate; A and LT+A do not dismiss that gate.
+No forced tutorial text or fusion-state writes were used in this follow-up.
+Native captures were inspected. Actor placement/mission-trigger fixtures mean
+this is not normal-route acceptance. No FPS, audio or physical-controller claim.
+
+Next: trace the real first-use readiness handler and partner-selection state.
+Statue QTE remains repeated X; fusion uses its own verified context. Never use
+manually injected tutorial text as proof of correct interaction selection.
+Reproduction state: workspace work/fusion-real-interaction/fusion-ready-pointer-block.sav.
+The local runtime binary is the rejected diagnostic build (feature disabled for
+the final run); rebuild restored source before any packaging. 48/48 passing
+tests were insufficient to validate the rejected context rule. Full goal remains
+active. Evidence: evidence/windows-20261003/FUSION-CONTEXT-REJECTED.json.
+
+
 ## Installed alternate co-op QTE sequence - 2026-10-03
 
 The direct repeated-X interaction now also accepts the exact electro_sequence

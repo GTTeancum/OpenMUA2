@@ -1,0 +1,15 @@
+{
+  "status": "Rejected fusion banner candidate; not installed or accepted",
+  "failure": "Text-only detection misclassified an active statue QTE as fusion. Forced tutorial replay was invalid acceptance evidence.",
+  "correction": "Candidate source withdrawn; original statue banner remains X. Preexisting wave/static-recomp work preserved.",
+  "native_followup": "After seeded statue completion, LT opens actual fusion first-use instructions; A reaches readiness screen still requiring pointer over profile icon. A and LT+A did not clear readiness. No tutorial text or fusion state injected in this follow-up.",
+  "scope": "Process-local controller inputs; fixture actor positioning and statue-trigger enable. Not normal mission progression or physical-controller acceptance. Native renderer images inspected. No performance/audio claim.",
+  "reproduction": "work/fusion-real-interaction/fusion-ready-pointer-block.sav",
+  "next": "Trace actual first-use readiness input path and actual partner selection before any prompt replacement. Do not reuse rejected text-based top-banner logic.",
+  "build": "Rejected candidate built, 48/48 tests passed in 9.14s; tests did not establish correct interaction context. Current source restored afterward and requires rebuilding.",
+  "installed_exe_sha256": "21379ce9be5c51e701f7a67425b54f8e077654903d6d9f2abf87d311d03ca911",
+  "installed_wad_sha256": "e90498f4aa3d9a91598ea7b135150dcf14ed34a9111ad4d9c2a58e802be81092",
+  "unchanged_save_files": 55,
+  "candidate_source": "work/rejected-fusion-text-banner",
+  "new_game_assets_in_git": false
+}
