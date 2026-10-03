@@ -1,0 +1,72 @@
+{
+  "scope": "development checkpoint; partial Xbox prompt conversion, opt-in only, not installed",
+  "windows_build": {
+    "command": "Build.cmd --cpu jit --jobs 2",
+    "exit_code": 0,
+    "tests_passed": 48,
+    "tests_failed": 0,
+    "test_seconds": 9.68,
+    "prior_failed_attempt": "C2039 diagnostic state.lr field; removed before successful rebuild",
+    "warnings": "Existing vendored CMake deprecation/path-length/Wayland/CMP0069 warnings; no compiler or linker errors in final build"
+  },
+  "binaries": {
+    "moderngekko-run.exe": {
+      "sha256": "59419cd6ab12a28e4c9bb44061487eef897f190af721f787c3682a67a15a4f35",
+      "size": 16161792
+    },
+    "ModernGekko.exe": {
+      "sha256": "89235d6428d9d03ef0420746ce5a27a990d265c0ed6059100125ebefba1ed51b",
+      "size": 12206592
+    },
+    "moderngekko_mua2_xbox_prompts_test.exe": {
+      "sha256": "83c47cba95c2e6738ecbf38055ade3d6750476090011fae1323547bcdc522c7d",
+      "size": 16896
+    }
+  },
+  "runtime": {
+    "flag": "OPENMUA2_XBOX_GLYPHS=1",
+    "managed_profiles_only": true,
+    "code_hash_guards": true,
+    "controller_vtable_guard": true,
+    "unknown_tokens_preserved": true,
+    "native_headless_repeat_exit": 0,
+    "observed_prompts": [
+      "81313274,MENU_BACK,3,3",
+      "81313274,MenuAccept,2,2"
+    ],
+    "first_run": "One command-file open failed before parsing/input; preserved as failure; replacement processed and run stopped. Fresh complete repeat passed.",
+    "limits": "Only MenuAccept and MENU_BACK observed in native trace. Contextual X and other aliases tested in focused test; not end-to-end displayed acceptance. No screenshots, host input, physical controller, audio or FPS validation. Functional runs overlapped linking tests; single logical CPU2, Vulkan3x, normal clocks, Null audio."
+  },
+  "font_compiler": {
+    "rev_med_eng.igb": {
+      "byte_identical_to_inspected_candidate": true,
+      "header_unchanged": true,
+      "already_modified_rejected": true,
+      "invalid_artwork_rejected": true
+    },
+    "rev_med_ws_eng.igb": {
+      "byte_identical_to_inspected_candidate": true,
+      "header_unchanged": true,
+      "already_modified_rejected": true,
+      "invalid_artwork_rejected": true
+    }
+  },
+  "installed_exe_sha256": "a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a",
+  "installation_changed": false,
+  "preserved_unrelated_changes": [
+    "StaticRecompCore.cpp",
+    "StaticRecompCore.h",
+    "StaticRecompCore_Hooks.cpp",
+    "Build-With-Log.cmd",
+    "texs/"
+  ],
+  "cleanup": {
+    "removed_duplicate_font_bytes": 272241,
+    "previously_rejected_paths": "not retried"
+  },
+  "repository_bytes": 33402247899,
+  "free_bytes": {
+    "C": 234918268928,
+    "D": 103155691520
+  }
+}

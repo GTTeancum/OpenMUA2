@@ -310,3 +310,34 @@ Statue safeguard QTE: repeatedly press X (12 separate presses). Holding counts
 once. No B finish. The Xbox X prompt and matching tutorial text are installed.
 Native completion, mission cleanup and resumed movement passed in a seeded
 headless fixture. Other QTE variants and full Xbox glyph conversion remain open.
+
+## Xbox menu prompt development checkpoint - 2026-10-03
+
+The new opt-in OPENMUA2_XBOX_GLYPHS=1 observer resolves common Xbox prompts by
+semantic action instead of the original Wii descriptor. Contextual Grab/Action
+uses X; menu accept/back uses A/B; block uses LB, jump uses Y and pause uses Start.
+It is restricted to managed controller ports, exact code hashes and the verified
+controller type. Unknown tokens retain native behavior. This is not a complete
+power/fusion/gesture UI conversion and is not enabled in the installed game.
+
+The font compiler tools/build_xbox_menu_fonts.py produces private English normal
+and widescreen menu font candidates from the supplied Xbox artwork. It guards
+both texture and coordinate-table hashes, preserves all other bytes and refuses
+existing output directories. Six glyphs per font were decoded and individually
+inspected. The output is not installed and must accompany the runtime mapping.
+
+Windows Build.cmd --cpu jit --jobs 2 passed 48/48 tests in 9.68 seconds. An initial
+compile failed on a diagnostic state.lr reference; it was removed before the
+successful build. Existing vendored CMake warnings remain. A headless native
+repeat exited 0 and observed MenuAccept -> A and MENU_BACK -> B. Contextual X is
+covered by the focused regression, but has not yet been observed as a displayed
+prompt in the native flow. One prior automation command-file open failure was
+retained; it occurred before parsing or input and the fresh full repeat passed.
+No screenshots, host input, physical-controller, audio or FPS acceptance.
+
+The installed EXE remains a3740b32dd3be5f8f1cac94c4fbb2fc14395dc6f6ae6dbea477cab5978fb1d3a.
+Actual saves and installed assets were not touched. Existing unrelated static
+recompiler edits remain preserved and included in this local build. Evidence:
+evidence/windows-20261003/XBOX-PROMPT-DEVELOPMENT.json. Removed 272,241 bytes of
+verified duplicate candidate fonts; previously rejected deletions were not retried.
+Continue the full controls/QTE/UI goal; this checkpoint does not satisfy it.

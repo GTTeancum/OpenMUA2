@@ -5,6 +5,7 @@
 #include "Common/Crypto/SHA1.h"
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
+#include "mua2_xbox_prompts.hpp"
 #include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
 #include "moderngekko/gameplay/button_qte.hpp"
@@ -74,6 +75,46 @@ static_assert(offsetof(ModernGekkoModuleDesc, chunk_hashes) ==
 bool s_fusion_buttons_enabled = false;
 bool s_hero_buttons_enabled = false;
 std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
+
+std::uint8_t s_xbox_prompt_ports = 0;
+void ObserveXboxPrompt(const Core::CPUThreadGuard& guard) {
+  auto& system = guard.GetSystem();
+  auto& state = system.GetPPCState();
+  if (!moderngekko::controls::XboxPromptPort(s_xbox_prompt_ports, state.gpr[25])) return;
+  auto& memory = system.GetMemory();
+  for (const auto& [address, hash] : std::array<std::pair<u32, const char*>, 2>{{
+      {0x810f7b24, "9C7877005CC4815A52A29D60D59C129E2B1C9086"},
+      {0x810f7d60, "E490F512E7FA8A30B3B841DFAA9B79ADDE24E501"}}}) {
+    const auto* code = memory.GetPointerForRange(address, 64);
+    if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,64)) != hash) return;
+  }
+  const auto* object = memory.GetPointerForRange(state.gpr[25],4);
+  if (!object || moderngekko::controls::ReadBE(std::span<const u8>(object,4),0) != 0x811b4398) return;
+  // At the common return, r25 still owns the controller and r26 the token.
+  // Read at most 63 bytes, accepting only a complete ASCII C string in RAM.
+  std::string token;
+  for (u32 i=0; i<64; ++i) {
+    const std::uint64_t address = std::uint64_t(state.gpr[26]) + i;
+    if (!((address>=0x80000000 && address<0x81800000) ||
+          (address>=0x90000000 && address<0x94000000))) return;
+    const auto* byte = memory.GetPointerForRange(static_cast<u32>(address),1);
+    if (!byte) return;
+    if (!*byte) break;
+    if (*byte<32 || *byte>126 || i==63) return;
+    token.push_back(static_cast<char>(*byte));
+  }
+  const auto replacement=moderngekko::controls::XboxActionPrompt(token);
+  const auto original=state.gpr[3];
+  if (replacement) state.gpr[3]=static_cast<u8>(*replacement);
+  static std::ofstream trace([] {
+    const char* path=std::getenv("OPENMUA2_PROMPT_TRACE"); return path?path:"";
+  }());
+  if (trace) {
+    trace << std::hex << state.gpr[25] << std::dec << ','
+          << token << ',' << original << ',' << state.gpr[3] << '\n';
+    trace.flush();
+  }
+}
 
 // Opt-in, read-only tracing at the menu action consumer (not merely the input
 // producer). Captures the caller and its action set without modifying input.
@@ -1644,6 +1685,7 @@ RuntimeRunResult Runtime::Run() {
   s_fusion_buttons_enabled = false;
   s_hero_buttons_enabled = false;
   s_control_ports=s_hero_ports=s_fusion_ports=0;
+  s_xbox_prompt_ports=0;
   s_direct_qte_enabled = false;
   ResetDirectQtes();
   std::ifstream profile(m_impl->config.user_directory / "Config" / "WiimoteNew.ini");
@@ -1671,6 +1713,13 @@ RuntimeRunResult Runtime::Run() {
         const bool idle_installed = HLE::SetExternalStartObserver(guard, 0x80403ae4, ObserveMua2AutoSleep);
         std::fprintf(stderr, "[openmua2] managed Xbox idle-timeout observer %s\n",
                      idle_installed ? "installed" : "rejected");
+      }
+      // Development-only until the matching font pack and full prompt audit
+      // are staged together. Never opt in customized profiles via this flag.
+      if (installed && managed_ports && enabled("OPENMUA2_XBOX_GLYPHS")) {
+        const bool prompts=HLE::SetExternalStartObserver(guard,0x810f7d60,ObserveXboxPrompt);
+        if (prompts) s_xbox_prompt_ports=managed_ports;
+        std::fprintf(stderr,"[openmua2] Xbox prompt observer %s\n",prompts?"installed":"rejected");
       }
       if (installed && (managed_ports || enabled("OPENMUA2_DIRECT_QTE"))) {
         const bool clock = HLE::SetExternalStartObserver(guard, 0x80ed2c48, ObserveDirectQteClock);
