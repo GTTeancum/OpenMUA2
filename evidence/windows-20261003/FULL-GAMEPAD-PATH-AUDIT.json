@@ -1,0 +1,18 @@
+{
+  "status": "audit complete for traced layers; full gamepad path NOT verified; implementation incomplete",
+  "readiness_acceptance": false,
+  "runtime_exit": 0,
+  "initial_candidate_exit": 4294967295,
+  "build_exit": 0,
+  "tests": {
+    "passed": 49,
+    "failed": 0,
+    "seconds": 10.41
+  },
+  "installed_changed": false,
+  "installed_exe_sha256": "21379ce9be5c51e701f7a67425b54f8e077654903d6d9f2abf87d311d03ca911",
+  "development_runner_sha256": "756e9a679f10eec57801e4f18e0c6c5ae008a69e9665173b56c211446e208535",
+  "scope": "Native factory/decoder/evaluator, full logical-action inventory, menu assignments, fusion/readiness and button/motion challenge code; no full-game playthrough or physical-controller acceptance",
+  "private_evidence": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\shared-gamepad-ready-r2",
+  "source_changes": "Readiness/HLE candidate remains unstaged; audit docs only are checkpointed"
+}

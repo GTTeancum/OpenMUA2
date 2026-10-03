@@ -1,5 +1,9 @@
 # Gamepad input replacement plan
 
+Latest audit: `GAMEPAD-PATH-AUDIT.md`. Shared readiness acceptance failed;
+the direct backend has an early-exit coverage hole and unmapped menu operations.
+Do not infer complete input coverage from prior menu checks.
+
 Status: direct action backend implemented behind a development flag; menu checks
 passed, shared pointer/motion replacement and gameplay validation incomplete. The installed release has
 not changed. A complete dormant gamepad backend has NOT been verified.
