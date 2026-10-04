@@ -284,7 +284,9 @@ struct DirectQteSession {
   bool down = false;
   double duration = 0.0;
   u64 last_update = 0;
+  u64 last_clock = 0;
 };
+bool s_gamepad_provider=false;
 bool s_direct_qte_enabled = false;
 std::array<DirectQteSession, 4> s_direct_qtes;
 
@@ -324,6 +326,28 @@ DirectQteSession* FindDirectQte(const Core::CPUThreadGuard& guard, u32 target,
   return nullptr;
 }
 
+void AdvanceDirectQteInput(const Core::CPUThreadGuard& guard, DirectQteSession* session) {
+  auto& system=guard.GetSystem();
+  const auto ticks = system.GetCoreTiming().GetTicks();
+  const unsigned port = static_cast<unsigned>(session - s_direct_qtes.data());
+  const u64 identity = (u64(session->context.actor_handle) << 32) | session->context.target_handle;
+  // A discontinuity must not convert an old held sample into a new press.
+  if (session->last_update && (ticks < session->last_update ||
+      ticks - session->last_update > system.GetSystemTimers().GetTicksPerSecond() / 10))
+    session->progress.Update(identity, port, session->down, false);
+  session->last_update = ticks;
+  // Native animation updates stop when gameplay is suspended. Input polling
+  // continues for menus/status, but must not advance the suspended QTE.
+  const bool accepting=!s_gamepad_provider || (session->last_clock &&
+      ticks>=session->last_clock &&
+      ticks-session->last_clock<=system.GetSystemTimers().GetTicksPerSecond()/10);
+  session->result = session->progress.Update(identity, port, session->down, accepting);
+  if (session->result.advanced)
+    std::fprintf(stderr, "[openmua2] direct QTE target=%08x port=%u presses=%u/%u complete=%u\n",
+        session->context.target_handle, port, session->result.presses,
+        session->result.required, unsigned(session->result.completed_now));
+}
+
 void ObserveDirectQteClock(const Core::CPUThreadGuard& guard) {
   if (!s_direct_qte_enabled || !DirectQteCode(guard, 0x80ed2c48,
       "ADC2B0FAD37A0D512B5521DBA79E9B0955504CE8")) return;
@@ -334,19 +358,8 @@ void ObserveDirectQteClock(const Core::CPUThreadGuard& guard) {
   const double duration = state.ps[1].PS0AsDouble();
   if (!std::isfinite(duration) || duration <= 0 || duration > 100000) return;
   session->duration = duration;
-  const auto ticks = system.GetCoreTiming().GetTicks();
-  const unsigned port = static_cast<unsigned>(session - s_direct_qtes.data());
-  const u64 identity = (u64(session->context.actor_handle) << 32) | session->context.target_handle;
-  // A discontinuity must not convert an old held sample into a new press.
-  if (session->last_update && (ticks < session->last_update ||
-      ticks - session->last_update > system.GetSystemTimers().GetTicksPerSecond() / 10))
-    session->progress.Update(identity, port, session->down, false);
-  session->last_update = ticks;
-  session->result = session->progress.Update(identity, port, session->down, true);
-  if (session->result.advanced)
-    std::fprintf(stderr, "[openmua2] direct QTE target=%08x port=%u presses=%u/%u complete=%u\n",
-        session->context.target_handle, port, session->result.presses,
-        session->result.required, unsigned(session->result.completed_now));
+  session->last_clock=system.GetCoreTiming().GetTicks();
+  if(!s_gamepad_provider) AdvanceDirectQteInput(guard,session);
 }
 
 void ObserveDirectQteStage(const Core::CPUThreadGuard& guard) {
@@ -407,14 +420,19 @@ void UpdateButtonQteInput(const Core::CPUThreadGuard& guard,unsigned port,u8* ac
       std::fprintf(stderr, "[openmua2] direct QTE begin target=%08x port=%u\n", live.target_handle, port);
     }
     session.down = down;
+    // Animation callbacks may run less frequently than controller samples.
+    // Count fresh presses here so a complete press/release cannot disappear.
+    if(s_gamepad_provider && session.duration>0 &&
+       FindDirectQte(guard,live.target,live.actor)==&session)
+      AdvanceDirectQteInput(guard,&session);
   }
 }
 
 // Shared CInputManager boundary, deliberately separate from the compatibility
 // evaluator. Both polling callers can skip that evaluator when KPad is absent.
-bool s_gamepad_provider=false;
 bool s_provider_update_installed=false, s_provider_query_installed=false;
 bool s_provider_connected_installed=false, s_provider_ready_installed=false;
+bool s_provider_capabilities_installed=false;
 bool s_gamepad_tutorial_clock_installed=false, s_gamepad_tutorial_accept_installed=false;
 std::array<int,8> s_provider_status_last{-1,-1,-1,-1,-1,-1,-1,-1};
 std::array<u64,4> s_provider_status_queries{};
@@ -544,6 +562,34 @@ bool ReplaceGamepadStatus(const Core::CPUThreadGuard& guard, bool ready) {
 bool ReplaceGamepadConnected(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,false);}
 bool ReplaceGamepadReady(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,true);}
 
+// Shared physical-device capability query (vtable +124). Gameplay uses its
+// two outputs even after IsConnected/IsReady succeed. An Xbox pad provides
+// complete controls on its own; no extension identity or motion is synthesized.
+bool ReplaceGamepadCapabilities(const Core::CPUThreadGuard& guard) {
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  if(!s_gamepad_provider || state.gpr[3]!=0x81313238 ||
+     !ProviderCode(guard,0x810fd7b4,0x1f0,"FA4F3CA473B1E98B04C68DB89BD8E8F49BF12ADD"))return false;
+  auto& memory=system.GetMemory();
+  const auto* manager=memory.GetPointerForRange(state.gpr[3],60);
+  if(!manager || moderngekko::controls::ReadBE(std::span<const u8>(manager,60),0)!=0x811b4298)return false;
+  const auto ram=[](u32 a) {return (a>=0x80000000 && a<0x81800000) || (a>=0x90000000 && a<0x94000000);};
+  if(!ram(state.gpr[5]) || !ram(state.gpr[6]))return false;
+  auto* connected=memory.GetPointerForRange(state.gpr[5],1);
+  auto* complete=memory.GetPointerForRange(state.gpr[6],1);
+  if(!connected || !complete)return false;
+  // This method takes a physical port, unlike the logical status methods.
+  const unsigned physical=state.gpr[4];
+  const bool available=physical<4 && ReadGamepadSample(physical).connected;
+  *connected=*complete=available?1:0;
+  state.npc=LR(state);
+  static std::array<int,4> last{-1,-1,-1,-1};
+  if(physical<4 && last[physical]!=int(available) && std::getenv("OPENMUA2_PROVIDER_TRACE")) {
+    std::fprintf(stderr,"[openmua2] gamepad capabilities physical=%u connected=%u complete=%u\n",physical,unsigned(*connected),unsigned(*complete));
+    last[physical]=int(available);
+  }
+  return true;
+}
+
 void ObserveGamepadTutorialClock(const Core::CPUThreadGuard& guard) {
   s_gamepad_tutorial_clock={};
   if(!s_gamepad_provider || !ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))return;
@@ -578,6 +624,10 @@ void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
   if(!s_provider_ready_installed && ProviderCode(guard,0x810fd1ec,0x118,"CC09B94F59745A481FE2245D2ECF3C71BB9311A0")) {
     s_provider_ready_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd1ec,ReplaceGamepadReady);
     std::fprintf(stderr,"[openmua2] shared gamepad readiness method %s\n",s_provider_ready_installed?"installed":"rejected");
+  }
+  if(!s_provider_capabilities_installed && ProviderCode(guard,0x810fd7b4,0x1f0,"FA4F3CA473B1E98B04C68DB89BD8E8F49BF12ADD")) {
+    s_provider_capabilities_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd7b4,ReplaceGamepadCapabilities);
+    std::fprintf(stderr,"[openmua2] shared gamepad capabilities method %s\n",s_provider_capabilities_installed?"installed":"rejected");
   }
   if(!s_gamepad_tutorial_clock_installed && ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))
     s_gamepad_tutorial_clock_installed=HLE::SetExternalStartObserver(guard,0x8024ced8,ObserveGamepadTutorialClock);
@@ -1978,6 +2028,7 @@ RuntimeRunResult Runtime::Run() {
   s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
   s_provider_update_installed=s_provider_query_installed=false;
   s_provider_connected_installed=s_provider_ready_installed=false;
+  s_provider_capabilities_installed=false;
   s_provider_status_queries={};
   s_provider_status_last.fill(-1);
   s_gamepad_tutorial_clock_installed=s_gamepad_tutorial_accept_installed=false;
@@ -2012,13 +2063,14 @@ RuntimeRunResult Runtime::Run() {
         std::fprintf(stderr,"[openmua2] four-port gamepad provider entry hooks %s\n",update&&query?"installed":"rejected");
       }
       // Development-only until the matching font pack and full prompt audit
-      // are staged together. Never opt in customized profiles via this flag.
-      if (installed && managed_ports && enabled("OPENMUA2_XBOX_GLYPHS")) {
+      // are staged together. Legacy custom profiles remain excluded; the shared
+      // gamepad provider owns all four ports independently of Wii bindings.
+      if (installed && (s_gamepad_provider || managed_ports) && enabled("OPENMUA2_XBOX_GLYPHS")) {
         const bool prompts=HLE::SetExternalStartObserver(guard,0x810f7d60,ObserveXboxPrompt);
-        if (prompts) s_xbox_prompt_ports=managed_ports;
+        if (prompts) s_xbox_prompt_ports=s_gamepad_provider?15:managed_ports;
         std::fprintf(stderr,"[openmua2] Xbox prompt observer %s\n",prompts?"installed":"rejected");
       }
-      if (installed && (managed_ports || enabled("OPENMUA2_DIRECT_QTE"))) {
+      if (installed && (s_gamepad_provider || managed_ports || enabled("OPENMUA2_DIRECT_QTE"))) {
         const bool clock = HLE::SetExternalStartObserver(guard, 0x80ed2c48, ObserveDirectQteClock);
         const bool stage = HLE::SetExternalStartObserver(guard, 0x80ed2e6c, ObserveDirectQteStage);
         const bool animation = HLE::SetExternalStartObserver(guard, 0x80ed3480, ObserveDirectQteAnimation);

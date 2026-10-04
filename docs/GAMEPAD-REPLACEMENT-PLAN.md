@@ -1,5 +1,42 @@
 ## Shared four-port gamepad provider - 2026-10-03
 
+## Shared gamepad capabilities and QTE completion - 2026-10-03
+
+Found another shared Wii dependency: CInputManager vtable +124 reports device
+connection and complete-controls capability independently of IsConnected/IsReady.
+With empty Wii bindings and Extension=None, gameplay stopped updating while raw
+input still polled. Merely changing the diagnostic profile to Nunchuk let the QTE
+finish. The opt-in gamepad provider now replaces this shared physical-port query
+with actual Xbox connection state for both outputs; disconnected pads stay false.
+No extension identity, pointer, motion input or completion event is synthesized.
+
+Moved QTE edge counting to input publication so animation callback cadence cannot
+miss presses/releases. A recent native QTE clock is required, preventing progress
+while gameplay is suspended. QTE and optional Xbox prompt hooks no longer require
+managed Wii profile bindings when the shared provider owns input.
+
+Final runtime test used empty Device/buttons and Extension=None on all four ports.
+Wrong-port X counted zero; holding X counted once; twelve separate presses completed
+the original stage/callback path, removed the interaction entity, cleared the actor
+and restored movement. Native Start/B pause/resume passed: three X presses while
+paused left progress at1, fresh X after resume made2. Each of four physical ports
+independently reported connected/complete 1 -> 0 -> 1. Saved fixture and process-local
+input only; no physical-controller or rendered acceptance claimed.
+
+A prior-checkpoint five-minute main-menu idle test also passed A/B navigation and
+reconnection, with timestamps past305 seconds. It is included as prior-build evidence,
+not a new full regression of that flow. Final Windows Release runner build passed,
+focused tests2/2 in1.94s; runtime/codegen suite50/50 in8.11s. Native run exited0.
+No compiler warnings/errors in the targeted incremental build; existing unsupported
+formatter diagnostics remain. Null audio; no FPS/audio claim.
+
+Evidence: evidence/windows-20261003/GAMEPAD-CAPABILITIES-QTE.json. Installed game,
+real saves and proprietary assets are unchanged. Provider remains opt-in. Next:
+full per-player fusion (current selector excludes human partners), other QTE and
+UI/targeting consumers, then whole-flow and physical/rendered acceptance. Preserve
+unrelated readiness/wave/StaticRecomp experiments; do not resume prompt-only patches.
+
+
 ## Four joined gamepads and chooser ownership - 2026-10-03
 
 The opt-in shared gamepad provider now maps horizontal D-pad/left-stick input to

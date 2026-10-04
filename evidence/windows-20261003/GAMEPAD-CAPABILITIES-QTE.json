@@ -1,0 +1,286 @@
+{
+  "date": "2026-10-03",
+  "scope": "Opt-in shared gamepad provider, Windows headless single-core JIT, process-local input; installed release unchanged",
+  "runner": {
+    "path": "D:\\Programming\\GitHub\\OpenMUA2\\.local\\build\\windows-x64\\runtime\\moderngekko-run.exe",
+    "bytes": 16201728,
+    "sha256": "a8dbfa47a8b9d1891d63711e3a2dc6cba8b44bc767fa069bde58c49899b847b9"
+  },
+  "build": {
+    "exit": 0,
+    "focused": "2/2 passed, 1.94 seconds",
+    "regression": "49 moderngekko plus codegen_compile: 50/50 passed, 8.11 seconds",
+    "compiler_warnings_errors": "None in targeted final incremental build log",
+    "runtime": "Exited 0; existing unsupported formatter diagnostics (6320 calls), no overflow; Null audio, no FPS/audio acceptance"
+  },
+  "qte": {
+    "movement_after_completion": {
+      "before": [
+        -218.08914184570312,
+        -243.36888122558594,
+        118.11505126953125
+      ],
+      "after": [
+        -137.35186767578125,
+        -254.0312957763672,
+        118.13204193115234
+      ],
+      "distance": 81.4382883730032
+    },
+    "physical_capability_transitions": {
+      "0": [
+        [
+          "1",
+          "1"
+        ],
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ]
+      ],
+      "1": [
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ],
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ]
+      ],
+      "2": [
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ],
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ]
+      ],
+      "3": [
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ],
+        [
+          "0",
+          "0"
+        ],
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    "scope": "Fresh active-QTE saved fixture, new profile with empty Wii bindings, process-local gamepad input",
+    "wrong_port_presses": 0,
+    "held_X_presses": 1,
+    "fresh_presses_to_complete": 12,
+    "target_cleared": true,
+    "target_entity_still_live": false,
+    "legacy_profile": "[Wiimote1]\nDevice = \nExtension = None\nButtons/A = \nButtons/B = \nButtons/Home = \n[Wiimote2]\nDevice = \nExtension = None\nButtons/A = \nButtons/B = \nButtons/Home = \n[Wiimote3]\nDevice = \nExtension = None\nButtons/A = \nButtons/B = \nButtons/Home = \n[Wiimote4]\nDevice = \nExtension = None\nButtons/A = \nButtons/B = \nButtons/Home = \n",
+    "passed": true
+  },
+  "pause": {
+    "scope": "Saved active QTE, native Start/B menu, process-local input",
+    "before_pause": 1,
+    "after_three_X_in_pause": 1,
+    "after_fresh_X_resumed": 2,
+    "passed": true
+  },
+  "prior_idle": {
+    "checkpoint": "551949de",
+    "result": {
+      "passed": true,
+      "scope": "Saved main-menu fixture; process-local pad; 300000ms neutral and native menu-state navigation/reconnect checks, not visual/physical acceptance",
+      "events": [
+        {
+          "label": "before-idle",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 1.0309999999590218
+        },
+        {
+          "label": "idle-1-minute",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 61.82799999997951
+        },
+        {
+          "label": "idle-2-minute",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 122.68699999991804
+        },
+        {
+          "label": "idle-3-minute",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 183.5
+        },
+        {
+          "label": "idle-4-minute",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 244.35899999993853
+        },
+        {
+          "label": "idle-5-minute",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 305.23399999993853
+        },
+        {
+          "label": "after-idle-a",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 1,
+          "page_count": 4,
+          "focus": "0x900460f8",
+          "focus_name": "option05_text",
+          "page_name": "play",
+          "host_seconds": 308.3279999999795
+        },
+        {
+          "label": "after-idle-b",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 311.43699999991804
+        },
+        {
+          "label": "disconnected",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 312.7969999999041
+        },
+        {
+          "label": "reconnected",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 0,
+          "page_count": 4,
+          "focus": "0x90044c78",
+          "focus_name": "option01_text",
+          "page_name": "main",
+          "host_seconds": 316.10899999993853
+        },
+        {
+          "label": "reconnected-A",
+          "manager": "0x9002c628",
+          "active": "0x90076aa8",
+          "type": "0x81190d98",
+          "name": "cw_main",
+          "page": 1,
+          "page_count": 4,
+          "focus": "0x900460f8",
+          "focus_name": "option05_text",
+          "page_name": "play",
+          "host_seconds": 319.2029999999795
+        }
+      ]
+    }
+  },
+  "code_evidence": {
+    "capability_method": "CInputManager vtable +124, physical port, 810fd7b4, size1f0, SHA1 FA4F3CA473B1E98B04C68DB89BD8E8F49BF12ADD",
+    "native_semantics": "Two byte outputs: device connected and complete controls. Wii implementation requires extension type1 for complete controls. Shared gamepad provider supplies both from physical Xbox connection without synthesizing extension identity or gestures.",
+    "sampling": "Count raw gamepad X edges on input publication; native QTE clock recency guards suspension. Original stage/animation/callback cleanup retained."
+  },
+  "preserved_failures": [
+    "Original empty-Wii-profile QTE counted only4/12 fresh presses; animation callbacks missed edges",
+    "Input-sampled candidate counted12 but gameplay stopped and actor target remained active with Extension=None",
+    "Changing only the blank profile extension to Nunchuk allowed original completion; confirmed remaining shared capability dependency",
+    "Initial final-test invocation reused automation sequence numbers and failed to find its read result; rerun used distinct sequence range and explicit state reload"
+  ],
+  "limitations": [
+    "Only statue cooperative-QTE fixture exercised live, with owner0 and wrong-port1; other families and owners remain open",
+    "Four-player native joining/input isolation passed in prior checkpoint; four-player fusion still unverified, current candidate filter excludes other human partners",
+    "No cold campaign, screenshot, visible disconnect-warning, physical-controller, audio or FPS acceptance in this checkpoint",
+    "Immediate-query provider callback and function fallback still not explicitly exercised",
+    "Other menus/targeting/prompt families and Wii bootstrap/device creation still require audit; this is not a full gamepad-path completion claim"
+  ]
+}
