@@ -1,0 +1,24 @@
+{
+  "executable": "SLUS_218.79",
+  "version": "1.01",
+  "video": "NTSC",
+  "architecture": "32-bit little-endian MIPS ELF",
+  "sha256": "ae5c125652f0e5fffc1af74ecce474cc0d51f26936a881d2b6c0c0d24fd926ce",
+  "extracted_bytes": 7295081,
+  "git_ignored": true,
+  "findings": [
+    "Executable initialization binds gameplay action descriptors through 0x4316d0; additional bindings use 0x431760.",
+    "NormalAttack initializer call 0x4318c8, FusionPower 0x431c84, MenuAccept 0x432790, ComboChallenge1-4 0x431ee4/0x431f0c/0x431f34/0x431f5c.",
+    "PS2 buttonseq parser call at 0x3c9158 targets 0x1e36e0.",
+    "PS2 binary retains Wii pointer tutorial text AND code referencing it (0x4cb820, warning 0x4ca18c). Reachability must be compared; string presence alone is not evidence of the active controller path.",
+    "PS2 shared tutorial update 0x4ca880: accepted action 9 at 0x4ca9f8-0x4caa80 sets helper+0x48 to the native timer plus 0.2 seconds; it does not enter phase 1. Normal deadline cleanup follows at 0x4ca934-0x4ca9f4.",
+    "Wii counterpart 0x8024d04c-0x8024d050 instead stores phase 1, entering pointer-readiness logic. This is an actual shared state-machine difference, not merely a text/asset difference.",
+    "PS2 input configuration loop 0x42ee9c-0x42eef0 initializes indices 0 through 3 via the same virtual method at +0x40; loop limit is four at 0x42eee8. This establishes four internal input slots, not independently verified retail multiplayer support."
+  ],
+  "limits": [
+    "Physical signal IDs and chord flags are not yet fully decoded.",
+    "No PS2 execution or end-to-end gameplay validation.",
+    "No OpenMUA2 installed files or real saves changed."
+  ],
+  "private_analysis": "work/ps2-input"
+}

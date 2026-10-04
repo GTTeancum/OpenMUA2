@@ -1,5 +1,47 @@
 # OpenMUA2 gamepad path audit — 2026-10-03
 
+## Shared four-port gamepad provider - 2026-10-03
+
+Development flag OPENMUA2_GAMEPAD_PROVIDER=1 now publishes raw Xbox actions at
+CInputManager's shared update boundary, independently of KPad availability gates.
+All four ports own connection, neutral-on-connect, held/released input and action
+state. Existing game-disabled/ownership checks and action queue bookkeeping are
+preserved. Default remains the supported compatibility path; no installation changed.
+
+Fixed a release-build HLE dispatcher defect: its empty observer/branch marker
+functions could share an address after linker folding. Dispatch now uses explicit
+hook identity. The identical saved-state run then executed all four update callbacks.
+The immediate-query replacement is implemented but has not been exercised by these
+runs; do not claim full caller coverage from update counters alone.
+
+Actual process-local tests with all 124 legacy binding counts disabled on all four
+input objects passed simultaneous distinct axes, per-port release/disconnect,
+held reconnect suppression, fresh input after neutral and held-state clearing on
+load. Synthetic pads were not assigned to Wii profiles. Main-menu A/B navigation
+passed; port 1 A did not operate port 0's menu. Native Story-menu capture was inspected.
+This does not prove four joined actors, physical pads, connection warnings, combat,
+fusion, QTEs or complete removal of pointer interactions. Full goal remains active.
+
+Windows Release runner and two relevant test binaries rebuilt successfully;
+focused tests 2/2 (2.18s), full existing regression suite 49/49 (7.28s). Initial full
+Build.cmd completed before the manager changes (49/49, 14.41s); GUI/package was
+not rebuilt or staged afterwards. No compiler/linker errors. Existing configure
+warnings remain. A separate intrusive JIT-profiling run crashed before startup
+(exit 3221225477); no profile was produced and its private config was restored.
+
+PS2 executable reference is extracted only under ignored .local/ps2-reference.
+Its shared tutorial accepts action 9 by scheduling normal close after 0.2 seconds;
+Wii instead enters phase 1 pointer readiness. This is code evidence, not an asset
+inference, and that semantic replacement is still pending. PS2 config initialization
+loops through four slots using one method; retail multiplayer support is not inferred.
+
+Next: finish shared connection/status and four-player ownership, then implement
+PS2-style shared tutorial acceptance and audit remaining pointer/motion consumers.
+Do not resume isolated prompt substitutions. Preserve real saves and single-core
+execution. Prior readiness/wave/StaticRecomp experiments remain local and excluded
+from this focused checkpoint. Evidence: SHARED-GAMEPAD-PROVIDER.json and
+PS2-GAMEPAD-REFERENCE.json under evidence/windows-20261003.
+
 **A complete alternate gamepad path has not been verified in the Wii executable.**
 The inspected native device factory and decoder implement KPad input. Reusable
 logical actions and button-challenge code survive, but they do not constitute a

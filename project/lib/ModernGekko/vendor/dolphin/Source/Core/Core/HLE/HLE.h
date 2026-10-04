@@ -57,10 +57,15 @@ struct TryReplaceFunctionResult
 void PatchFixedFunctions(Core::System& system);
 void PatchFunctions(Core::System& system);
 void Clear();
-// Up to twelve runtime-owned observers, called before original instructions. Caller
+// Up to twenty runtime-owned observers, called before original instructions. Caller
 // must hold the CPU thread guard; Clear removes it at title shutdown.
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer);
+// Replace a verified relative branch-with-link site. A false callback result
+// executes the captured original branch; true requires the callback to set npc.
+using BranchReplacement = bool (*)(const Core::CPUThreadGuard&);
+bool SetExternalBranchReplacement(const Core::CPUThreadGuard& guard, u32 address,
+                                  BranchReplacement replacement);
 void Reload(Core::System& system);
 
 void Patch(Core::System& system, u32 pc, std::string_view func_name);

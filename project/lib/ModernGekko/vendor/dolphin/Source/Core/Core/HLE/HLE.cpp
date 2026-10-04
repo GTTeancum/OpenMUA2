@@ -30,7 +30,20 @@ static std::map<u32, u32> s_hooked_addresses;
 static std::map<u32, HookFunction> s_external_observers;
 // Execute dispatches this reserved hook by the actual instruction address.
 static void ObserveExternal(const Core::CPUThreadGuard&) {}
-constexpr std::array<Hook, 24> os_patches{{
+struct ExternalBranch { BranchReplacement callback; u32 instruction; };
+static std::map<u32, ExternalBranch> s_external_branches;
+static void ReplaceExternalBranch(const Core::CPUThreadGuard&) {}
+static void RunExternalBranch(const Core::CPUThreadGuard& guard, u32 current_pc)
+{
+  auto& state = guard.GetSystem().GetPPCState();
+  const auto it = s_external_branches.find(current_pc);
+  if (it == s_external_branches.end()) return;
+  if (it->second.callback(guard)) return;
+  const s32 displacement = s32(it->second.instruction << 6) >> 6;
+  LR(state) = current_pc + 4;
+  state.npc = current_pc + (displacement & ~3);
+}
+constexpr std::array<Hook, 25> os_patches{{
     // Placeholder, os_patches[0] is the "non-existent function" index
     {"FAKE_TO_SKIP_0",               HLE_Misc::UnimplementedFunction,       HookType::Replace, HookFlag::Generic},
 
@@ -63,7 +76,8 @@ constexpr std::array<Hook, 24> os_patches{{
     {"GeckoCodehandler",             HLE_Misc::GeckoCodeHandlerICacheFlush, HookType::Start,   HookFlag::Fixed},
     {"GeckoHandlerReturnTrampoline", HLE_Misc::GeckoReturnTrampoline,       HookType::Replace, HookFlag::Fixed},
     {"AppLoaderReport",              HLE_OS::HLE_GeneralDebugPrint,         HookType::Start,   HookFlag::Fixed}, // apploader needs OSReport-like function
-    {"RuntimeExternalObserver",      ObserveExternal,                     HookType::Start,   HookFlag::Fixed}
+    {"RuntimeExternalObserver",      ObserveExternal,                     HookType::Start,   HookFlag::Fixed},
+    {"RuntimeExternalBranch", ReplaceExternalBranch, HookType::Replace, HookFlag::Fixed}
 }};
 // clang-format on
 
@@ -156,7 +170,7 @@ void PatchFunctions(Core::System& system)
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer)
 {
-  if (!observer || !address || (address & 3) || s_external_observers.size() >= 12 ||
+  if (!observer || !address || (address & 3) || s_external_observers.size() + s_external_branches.size() >= 20 ||
       s_hooked_addresses.contains(address) || s_external_observers.contains(address))
     return false;
   s_external_observers.emplace(address, observer);
@@ -164,15 +178,32 @@ bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
   return true;
 }
 
+bool SetExternalBranchReplacement(const Core::CPUThreadGuard& guard, u32 address,
+                                  BranchReplacement replacement)
+{
+  if (!replacement || !address || (address & 3) ||
+      s_external_observers.size() + s_external_branches.size() >= 20 ||
+      s_hooked_addresses.contains(address)) return false;
+  auto& memory = guard.GetSystem().GetMemory();
+  if (!memory.GetPointerForRange(address, 4)) return false;
+  const u32 instruction = memory.Read_U32(address);
+  if ((instruction & 0xfc000003) != 0x48000001) return false;
+  s_external_branches.emplace(address, ExternalBranch{replacement, instruction});
+  Patch(guard.GetSystem(), address, "RuntimeExternalBranch");
+  return true;
+}
+
 void Clear()
 {
   s_hooked_addresses.clear();
   s_external_observers.clear();
+  s_external_branches.clear();
 }
 
 void Reload(Core::System& system)
 {
   const auto observers = s_external_observers;
+  const auto branches = s_external_branches;
   Clear();
   PatchFixedFunctions(system);
   PatchFunctions(system);
@@ -182,6 +213,11 @@ void Reload(Core::System& system)
     for (const auto& [address, observer] : observers)
       SetExternalStartObserver(guard, address, observer);
   }
+  if (!branches.empty()) {
+    const Core::CPUThreadGuard guard(system);
+    for (const auto& [address, branch] : branches)
+      SetExternalBranchReplacement(guard, address, branch.callback);
+  }
 }
 
 void Execute(const Core::CPUThreadGuard& guard, u32 current_pc, u32 hook_index)
@@ -189,7 +225,13 @@ void Execute(const Core::CPUThreadGuard& guard, u32 current_pc, u32 hook_index)
   hook_index &= 0xFFFFF;
   if (hook_index > 0 && hook_index < os_patches.size())
   {
-    if (os_patches[hook_index].function == ObserveExternal)
+    // Empty marker functions may share an address after release-linker ICF.
+    // Dispatch by stable hook identity, never by their function pointers.
+    if (std::string_view(os_patches[hook_index].name) == "RuntimeExternalBranch")
+    {
+      RunExternalBranch(guard, current_pc);
+    }
+    else if (std::string_view(os_patches[hook_index].name) == "RuntimeExternalObserver")
     {
       const auto it = s_external_observers.find(current_pc);
       if (it != s_external_observers.end())

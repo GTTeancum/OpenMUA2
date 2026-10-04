@@ -514,6 +514,10 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
         parsed.release_pad = value == "1";
         continue;
       }
+      if (key == "connected" && (value == "0" || value == "1")) {
+        parsed.xbox_connected = value == "1";
+        continue;
+      }
       const auto field = std::ranges::find(XboxFieldNames, key);
       double number = 0;
       const auto result = std::from_chars(value.data(), value.data() + value.size(), number);

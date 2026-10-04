@@ -1,0 +1,154 @@
+{
+  "date": "2026-10-03",
+  "status": "Shared four-port input-provider development; disabled by default; full goal remains active",
+  "flag": "OPENMUA2_GAMEPAD_PROVIDER=1",
+  "source_scope": "Focused provider/HLE/harness changes; worktree also contained preserved default-off readiness/wave and StaticRecomp experiments, excluded from this source checkpoint.",
+  "build": {
+    "toolchain": "Existing Windows tools/msvc-env.cmd and CMake Release",
+    "initial_full_build": "Build.cmd --cpu jit --jobs 2: exit 0, 49/49 in 14.41s (before shared-manager implementation)",
+    "final_targets": [
+      "moderngekko-run",
+      "moderngekko_mua2_gamepad_actions_test",
+      "moderngekko_automation_protocol_test"
+    ],
+    "final_build_exit": 0,
+    "focused_tests": "2/2, 2.18s",
+    "regression_tests": "49/49, 7.28s",
+    "compiler_linker_errors": false,
+    "warnings": "Initial configure retained existing CMake deprecation, unavailable Wayland, object path length and IPO policy warnings; targeted final build had no compiler/linker warnings.",
+    "binaries": {
+      "moderngekko-run.exe": "51465c54089ad4e0d3fa4f91ce2a9b537593dfcb3da7e86838e4210647e9bc6c",
+      "moderngekko_mua2_gamepad_actions_test.exe": "dcc88104ee72b0b6ffe22dae07a0f689075ad546dee2c1ecc5ef9da506abca45",
+      "moderngekko_automation_protocol_test.exe": "fcb6d0d197122697cd7263357db0361db556f82525543728da15e8e5435252ae"
+    },
+    "limit": "GUI/package was not rebuilt after shared-provider changes or staged; current tested output is the runner."
+  },
+  "routing_fix": "Two empty HLE dispatch markers could be folded to one address by release linking. Function-pointer discrimination silently routed observers to the branch handler. Dispatch now uses explicit hook names; the same saved-state run then executed all four update callbacks.",
+  "provider": {
+    "update": "0x810fcaec inside shared manager loop; preserves input-disabled gate, per-port history, queue/release-mask bookkeeping and native post-input activity handling",
+    "query": "0x810fc628 replacement implemented with ownership/disable checks; installation observed but invocation not exercised in these runs",
+    "raw_source": "Stable XInput port IDs, no Wii profile selection; independent per-port neutral-on-connect/reset state",
+    "synthetic_input": "Only in target process; connected=0/1 on xbox_time/frames; provider tests do not assign synthetic devices to Wii profiles"
+  },
+  "native_validation": {
+    "scope": "Process-local input-provider fixture; four physical ports, all legacy descriptor bindings disabled",
+    "held_axes": [
+      0.25,
+      0.375,
+      0.5,
+      0.625
+    ],
+    "after_port_2_release": [
+      0.25,
+      0.375,
+      0.0,
+      0.625
+    ],
+    "all_released_axes": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "passed": true,
+    "not_proven": [
+      "four joined gameplay actors",
+      "physical controllers",
+      "connection warning handling",
+      "fusion/QTE completion"
+    ],
+    "disconnected_port2": [
+      0.25,
+      0.375,
+      0.0,
+      0.625
+    ],
+    "reconnect_held_port2": [
+      0.25,
+      0.375,
+      0.0,
+      0.625
+    ],
+    "reconnect_fresh_port2": [
+      0.25,
+      0.375,
+      0.5,
+      0.625
+    ],
+    "held_state_load": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "synthetic_devices_assigned_to_wii_profiles": false
+  },
+  "menu_validation": {
+    "before": {
+      "label": "provider-menu-before",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x90044c78",
+      "focus_name": "option01_text",
+      "page_name": "main"
+    },
+    "wrong_port": {
+      "label": "provider-menu-wrong-port",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x90044c78",
+      "focus_name": "option01_text",
+      "page_name": "main"
+    },
+    "after_A": {
+      "label": "provider-menu-A",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 1,
+      "page_count": 4,
+      "focus": "0x900460f8",
+      "focus_name": "option05_text",
+      "page_name": "play"
+    },
+    "after_B": {
+      "label": "provider-menu-B",
+      "manager": "0x9002c628",
+      "active": "0x90076aa8",
+      "type": "0x81190d98",
+      "name": "cw_main",
+      "page": 0,
+      "page_count": 4,
+      "focus": "0x90044c78",
+      "focus_name": "option01_text",
+      "page_name": "main"
+    },
+    "passed": true
+  },
+  "visual": "Native renderer capture inspected: expected Story menu with Begin Story highlighted, Load Game, logo, Iron Man and Captain America backgrounds. This is menu routing evidence, not full UI conversion.",
+  "configuration": "Single CPU2/mask4, full JIT, Vulkan3x, normal clocks, headless, Null audio; no FPS/audio or physical-controller acceptance.",
+  "failures": {
+    "pre_fix_runtime": "Hooks registered but no provider execution and menu A failed. Corrected by HLE identity dispatch.",
+    "intrusive_profile": "A separate JIT block-profiling attempt exited 3221225477 before startup commands completed; no profile was produced. Cause not resolved; private config restored."
+  },
+  "remaining": [
+    "Complete gamepad-backed connection/status/join APIs, including four joined actors and remapping",
+    "Audit immediate-query consumer and all remaining menu/combat actions",
+    "Implement PS2 shared tutorial acceptance semantics and finish all pointer/motion family replacements",
+    "Verify fusion, repeated-X QTEs, targeting, prompts, idle/death/retry and save/load flows",
+    "Remove remaining Wii-profile activation dependencies for semantic/prompt helpers",
+    "Physical four-controller acceptance and supported root-EXE package"
+  ],
+  "installed_exe_sha256": "21379ce9be5c51e701f7a67425b54f8e077654903d6d9f2abf87d311d03ca911",
+  "installed_changed": false,
+  "private_evidence_root": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\gamepad-provider-connection"
+}

@@ -6,6 +6,8 @@
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
+#include "gamepad_port_state.hpp"
+#include "mua2_gamepad_provider.hpp"
 #include "mua2_xbox_prompts.hpp"
 #include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
@@ -79,25 +81,35 @@ std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 
 std::uint8_t s_direct_gamepad_ports = 0;
 std::array<moderngekko::controls::GamepadActions,4> s_gamepad_actions;
+std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
 moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   moderngekko::controls::GamepadSample sample;
   if(port>=4) return sample;
   const auto lock=ControllerEmu::EmulatedController::GetStateLock();
-  const auto* controller=Wiimote::GetConfig()->GetController(port);
-  if(!controller) return sample;
-  // The profile supplies only the port's device assignment. No profile binding
-  // expression, remote report, tilt, IR, or gesture supplies these values.
-  const auto device=g_controller_interface.FindDevice(controller->GetDefaultDevice());
-  if(!device || (device->GetSource()!="XInput" && device->GetSource()!="OpenMUA2Test")) return sample;
+  // Resolve stable physical ports directly; Wii profiles do not select or
+  // transform the input source. Process-local test devices replace only their
+  // own port and never send input outside this runtime.
+  std::shared_ptr<ciface::Core::Device> device;
+  for (const auto& candidate:g_controller_interface.GetAllDevices()) {
+    const auto source=candidate->GetSource();
+    const auto id=candidate->GetPreferredId();
+    if (!id || *id!=static_cast<int>(port)) continue;
+    if (source=="OpenMUA2Test") { device=candidate; break; }
+    if (source=="XInput") device=candidate;
+  }
+  if (!device) { s_gamepad_ports[port].Update({}); return {}; }
+  // Poll the selected gamepad directly, independent of Wii report generation.
+  device->UpdateInput();
   const auto* connected=device->FindInput("Connected");
-  if(!connected || connected->GetState()<=0.5) return sample;
+  if(!connected || connected->GetState()<=0.5) { s_gamepad_ports[port].Update({}); return {}; }
   for(unsigned i=0;i<sample.inputs.size();++i) {
     const auto* input=device->FindInput(moderngekko::automation::XboxInputNames[i]);
-    if(!input) return {};
+    if(!input) { s_gamepad_ports[port].Update({}); return {}; }
     sample.inputs[i]=input->GetState();
   }
   sample.connected=true;
-  return sample;
+  s_gamepad_ports[port].Update(sample);
+  return s_gamepad_ports[port].sample;
 }
 
 std::uint8_t s_xbox_prompt_ports = 0;
@@ -274,7 +286,7 @@ struct DirectQteSession {
 bool s_direct_qte_enabled = false;
 std::array<DirectQteSession, 4> s_direct_qtes;
 
-void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; }
+void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; s_gamepad_ports = {}; }
 
 
 bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
@@ -370,11 +382,159 @@ void ObserveDirectQteAnimation(const Core::CPUThreadGuard& guard) {
   state.ps[30].SetPS0((start + (end - start) * fraction) * session->duration);
 }
 
+void UpdateButtonQteInput(const Core::CPUThreadGuard& guard,unsigned port,u8* active,u8* values) {
+  constexpr u32 value_bytes=124*4;
+  const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
+    const auto* bytes=guard.GetSystem().GetMemory().GetPointerForRange(address,size);
+    return bytes?std::span<const u8>(bytes,size):std::span<const u8>{};
+  };
+  moderngekko::controls::CoopInteraction live;
+  const bool context = moderngekko::controls::HasCoopInteraction(read, port, &live);
+  if (s_direct_qte_enabled) {
+    auto& session = s_direct_qtes[port];
+    if (!context) { session = {}; return; }
+    const auto input = moderngekko::controls::ConsumeButtonQteInput(
+        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+    if (!input) { session = {}; return; }
+    const bool down = *input;
+    if (session.context != live) {
+      session = {};
+      session.context = live;
+      // Twelve separate presses. Holding never repeats.
+      session.progress.Begin((u64(live.actor_handle) << 32) | live.target_handle, port, 12, down);
+      std::fprintf(stderr, "[openmua2] direct QTE begin target=%08x port=%u\n", live.target_handle, port);
+    }
+    session.down = down;
+  }
+}
+
+// Shared CInputManager boundary, deliberately separate from the compatibility
+// evaluator. Both polling callers can skip that evaluator when KPad is absent.
+bool s_gamepad_provider=false;
+bool s_provider_update_installed=false, s_provider_query_installed=false;
+std::array<u64,4> s_provider_updates{}, s_provider_queries{};
+bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size,
+                  const char* expected) {
+  const auto* code=guard.GetSystem().GetMemory().GetPointerForRange(address,size);
+  return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,size))==expected;
+}
+void TraceProvider(const char* kind,unsigned port,u64& count) {
+  ++count;
+  if(count==1 || (std::getenv("OPENMUA2_PROVIDER_TRACE") && (count&(count-1))==0))
+    std::fprintf(stderr,"[openmua2] gamepad provider %s port=%u calls=%llu\n",
+                 kind,port,static_cast<unsigned long long>(count));
+}
+// The original queue and release-mask bookkeeping follows physical evaluation.
+// Keep it even when no controller is connected: script-injected actions are a
+// separate source, and stale physical values must still become zero.
+bool PublishProvider(const Core::CPUThreadGuard& guard,unsigned port,u32 bits_address,
+                     u32 values_address) {
+  if(port>=4 || !(s_direct_gamepad_ports&(1u<<port))) return false;
+  auto& memory=guard.GetSystem().GetMemory();
+  const u32 object=0x81313274+port*0xbe00;
+  auto* input=memory.GetPointerForRange(object,0xbe00);
+  const auto valid=[](u32 address,u32 size) {
+    return !(address&3) && ((address>=0x80000000 && address<=0x81800000-size) ||
+                           (address>=0x90000000 && address<=0x94000000-size));
+  };
+  if(!input || moderngekko::controls::ReadBE(std::span<const u8>(input,4),0)!=0x811b4398 ||
+     !valid(bits_address,20) || !valid(values_address,496)) return false;
+  // Never let corrupt caller pointers overwrite code, descriptors or each other.
+  const auto overlap=[](u32 a,u32 n,u32 b,u32 m) {
+    return u64(a)<u64(b)+m && u64(b)<u64(a)+n;
+  };
+  if(overlap(bits_address,20,values_address,496) ||
+     overlap(bits_address,20,object,4+moderngekko::controls::DescriptorTableSize) ||
+     overlap(values_address,496,object,4+moderngekko::controls::DescriptorTableSize)) return false;
+  auto* active=memory.GetPointerForRange(bits_address,20);
+  auto* values=memory.GetPointerForRange(values_address,496);
+  if(!active || !values) return false;
+  const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
+    const auto* bytes=memory.GetPointerForRange(address,size);
+    return bytes?std::span<const u8>(bytes,size):std::span<const u8>{};
+  };
+  bool request=false;
+  const auto globals=read(0x80816a20,24);
+  if(globals.size()==24 && moderngekko::controls::ReadBE(globals,0)==1) {
+    const auto actor=read(moderngekko::controls::ReadBE(globals,16),0xa38);
+    request=actor.size()==0xa38 && moderngekko::controls::ReadBE(actor,0x9c)==0x8052a748 &&
+      !(actor[0x4d0]&0x80) && moderngekko::controls::ReadBE(actor,0x45c)==port;
+  }
+  auto& actions=s_gamepad_actions[port];
+  actions=moderngekko::controls::BuildGamepadActions(ReadGamepadSample(port),
+      moderngekko::controls::IsStartAcceptScreen(read),request);
+  std::copy(actions.active.begin(),actions.active.end(),active);
+  std::copy(actions.values.begin(),actions.values.end(),values);
+  UpdateButtonQteInput(guard,port,active,values);
+  moderngekko::controls::MergeNativeActionQueue(std::span<u8>(input,0xbe00),
+                                               std::span<u8>(active,20));
+  return true;
+}
+bool ReplaceProviderUpdate(const Core::CPUThreadGuard& guard) {
+  auto& state=guard.GetSystem().GetPPCState();
+  const unsigned port=state.gpr[23];
+  if(!s_gamepad_provider || port>=4 || state.gpr[22]!=0x81313238 ||
+     state.gpr[26]!=0x81313274+port*0xbe00 ||
+     state.gpr[30]!=state.gpr[26]+0x5f08 || state.gpr[29]!=state.gpr[26]+0x5f1c ||
+     state.gpr[27]!=state.gpr[26]+0xbb20 ||
+     !ProviderCode(guard,0x810fc770,0x4e4,"05F032E3A4922AAD405C03013D1734C2115F6DBB")) return false;
+  auto& memory=guard.GetSystem().GetMemory();
+  auto* current=memory.GetPointerForRange(state.gpr[30],20);
+  auto* previous=memory.GetPointerForRange(state.gpr[29],20);
+  if(!current || !previous) return false;
+  std::array<u8,20> old;
+  std::copy_n(current,20,old.begin());
+  if(!PublishProvider(guard,port,state.gpr[30],state.gpr[27])) return false;
+  std::copy(old.begin(),old.end(),previous);
+  // Remain inside the native update loop after the input-disabled gate. Keep
+  // its activity timing and four-port iteration; omit KPad availability gates.
+  state.npc=0x810fcb80;
+  TraceProvider("update",port,s_provider_updates[port]);
+  return true;
+}
+bool ReplaceProviderQuery(const Core::CPUThreadGuard& guard) {
+  auto& state=guard.GetSystem().GetPPCState();
+  if(!s_gamepad_provider || state.gpr[31]!=0x81313238 || state.gpr[28]>=4 ||
+     !ProviderCode(guard,0x810fc5f8,0x124,"3A12236A46CB9C76365A7AE203979DE4A7C89639")) return false;
+  auto& memory=guard.GetSystem().GetMemory();
+  const auto* manager=memory.GetPointerForRange(state.gpr[31],60);
+  if(!manager) return false;
+  const unsigned port=moderngekko::controls::ReadBE(std::span<const u8>(manager,60),4+state.gpr[28]*4);
+  if(port>=4 || manager[20+port]) {
+    // Preserve native ownership/disabled-port rejection, including return value.
+    state.gpr[3]=0;state.npc=0x810fc6fc;return true;
+  }
+  if(!PublishProvider(guard,port,state.gpr[30],state.gpr[29])) return false;
+  // Join the original activity bookkeeping with the offset register it expects.
+  state.gpr[30]=port*0xbe00;
+  state.npc=0x810fc6c0;
+  TraceProvider("query",port,s_provider_queries[port]);
+  return true;
+}
+void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider) return;
+  static u64 entries=0;
+  TraceProvider("entry",0,entries);
+  // REL bytes are available here. Registration during asynchronous BootCore
+  // would inspect uninitialized memory and cannot validate a BL instruction.
+  if(!s_provider_update_installed &&
+     ProviderCode(guard,0x810fc770,0x4e4,"05F032E3A4922AAD405C03013D1734C2115F6DBB")) {
+    s_provider_update_installed=HLE::SetExternalBranchReplacement(guard,0x810fcaec,ReplaceProviderUpdate);
+    std::fprintf(stderr,"[openmua2] shared gamepad update boundary %s\n",s_provider_update_installed?"installed":"rejected");
+  }
+  if(!s_provider_query_installed &&
+     ProviderCode(guard,0x810fc5f8,0x124,"3A12236A46CB9C76365A7AE203979DE4A7C89639")) {
+    s_provider_query_installed=HLE::SetExternalBranchReplacement(guard,0x810fc628,ReplaceProviderQuery);
+    std::fprintf(stderr,"[openmua2] shared gamepad query boundary %s\n",s_provider_query_installed?"installed":"rejected");
+  }
+}
+
 // Experimental context-use rebind: observes the original evaluator, preserving
 // its instructions, action thresholds, per-player queues and timing. Runs after
 // evaluation so the experimental chord can retain digital use magnitude.
 void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
 {
+  if(s_gamepad_provider) return; // shared provider owns these action buffers
   auto& system = guard.GetSystem();
   auto& memory = system.GetMemory();
   constexpr u32 entry = 0x810f8544;
@@ -501,24 +661,7 @@ void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
         std::span<u8>(active, 20), std::span<const u8>(values, value_bytes));
   }
   const unsigned port = (object - first_input) / input_stride;
-  moderngekko::controls::CoopInteraction live;
-  const bool context = moderngekko::controls::HasCoopInteraction(read, port, &live);
-  if (s_direct_qte_enabled) {
-    auto& session = s_direct_qtes[port];
-    if (!context) { session = {}; return; }
-    const auto input = moderngekko::controls::ConsumeButtonQteInput(
-        std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
-    if (!input) { session = {}; return; }
-    const bool down = *input;
-    if (session.context != live) {
-      session = {};
-      session.context = live;
-      // Twelve separate presses. Holding never repeats.
-      session.progress.Begin((u64(live.actor_handle) << 32) | live.target_handle, port, 12, down);
-      std::fprintf(stderr, "[openmua2] direct QTE begin target=%08x port=%u\n", live.target_handle, port);
-    }
-    session.down = down;
-  }
+  UpdateButtonQteInput(guard,port,active,values);
 
 }
 
@@ -914,6 +1057,7 @@ std::optional<RuntimeError> ApplyTimedXboxHold(
     const auto lock = ControllerEmu::EmulatedController::GetStateLock();
     ciface::Touch::UnregisterWiiInputOverrider(command.pad.port);
     device->values = command.xbox;
+    device->connected = command.xbox_connected ? 1.0 : 0.0;
     start_ticks = timing.GetTicks();
     timing.ScheduleEvent(static_cast<s64>(duration_ticks), state.xbox_hold_event);
   }
@@ -973,6 +1117,7 @@ void AdvanceXboxSequence(RuntimeAutomationState& state, Core::System& system)
     step.scheduled_start = run->deadline;
     if (command.type == automation::CommandType::XboxTime) {
       run->device->values = command.xbox;
+      run->device->connected = command.xbox_connected ? 1.0 : 0.0;
       run->active_hold = run->next - 1;
       run->deadline += u64{run->frequency} * command.milliseconds / 1000;
       step.scheduled_end = run->deadline;
@@ -1115,16 +1260,18 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     }
     auto& device = state.xbox_devices[port];
     if (!device) {
-      device = std::make_shared<automation::XboxTestDevice>();
+      device = std::make_shared<automation::XboxTestDevice>(port);
       if (!g_controller_interface.AddDevice(device)) {
         device.reset();
         return RuntimeError{RuntimeErrorCode::InvalidState, "could not create process-local Xbox test device"};
       }
       const auto lock = ControllerEmu::EmulatedController::GetStateLock();
       ciface::Touch::UnregisterWiiInputOverrider(port);
-      auto* controller = Wiimote::GetConfig()->GetController(port);
-      controller->SetDefaultDevice(device->GetQualifiedName());
-      controller->UpdateReferences(g_controller_interface);
+      if (!s_gamepad_provider) {
+        auto* controller = Wiimote::GetConfig()->GetController(port);
+        controller->SetDefaultDevice(device->GetQualifiedName());
+        controller->UpdateReferences(g_controller_interface);
+      }
       // Only this process-local synthetic device is mapped to the tested port.
       Config::SetBase(Config::MAIN_INPUT_BACKGROUND_INPUT, true);
     }
@@ -1140,6 +1287,7 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
       const auto lock = ControllerEmu::EmulatedController::GetStateLock();
       ciface::Touch::UnregisterWiiInputOverrider(port);
       device->values = command.xbox;
+      device->connected = command.xbox_connected ? 1.0 : 0.0;
     }
     auto first = state.frame_count.load(std::memory_order_relaxed);
     while (!stop_token.stop_requested()) {
@@ -1203,6 +1351,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     Core::RunOnCPUThread(system, [&system, path = command.path.string(), loaded] {
       ResetDirectQtes();
       State::LoadAs(system, path); // Runs synchronously on this CPU thread.
+      if(std::getenv("OPENMUA2_PROVIDER_TRACE"))
+        std::fprintf(stderr,"[openmua2] after load hooks update=%u query=%u evaluator=%u provider=%u\n",
+          HLE::GetHookByAddress(0x810fc770),HLE::GetHookByAddress(0x810fc5f8),
+          HLE::GetHookByAddress(0x810f8544),unsigned(s_gamepad_provider));
       loaded->store(true, std::memory_order_release);
     });
     while (!loaded->load(std::memory_order_acquire) && !stop_token.stop_requested())
@@ -1753,8 +1905,11 @@ RuntimeRunResult Runtime::Run() {
   const auto enabled=[](const char* name) {
     const char* value=std::getenv(name);return value && std::string_view(value)=="1";
   };
-  const auto want_hero_ports=std::uint8_t(managed_ports | (enabled("OPENMUA2_HERO_BUTTONS")?15:0));
-  const auto want_fusion_ports=std::uint8_t(managed_ports | (enabled("OPENMUA2_FUSION_BUTTONS")?15:0));
+  s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
+  s_provider_update_installed=s_provider_query_installed=false;
+  s_provider_updates={};s_provider_queries={};
+  const auto want_hero_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_HERO_BUTTONS")?15:0));
+  const auto want_fusion_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_FUSION_BUTTONS")?15:0));
   const auto want_control_ports=std::uint8_t(want_hero_ports | want_fusion_ports |
       (enabled("OPENMUA2_CONTEXT_X")?15:0));
   if (want_control_ports) {
@@ -1769,13 +1924,18 @@ RuntimeRunResult Runtime::Run() {
       std::fprintf(stderr, "[openmua2] experimental X-use observer %s\n", installed ? "installed" : "rejected");
       if (installed) {
         s_control_ports=want_control_ports;
-        if(enabled("OPENMUA2_DIRECT_GAMEPAD")) {
-          s_direct_gamepad_ports=managed_ports;
+        if(s_gamepad_provider || enabled("OPENMUA2_DIRECT_GAMEPAD")) {
+          s_direct_gamepad_ports=s_gamepad_provider?15:managed_ports;
           std::fprintf(stderr,"[openmua2] direct gamepad actions ports=%u (development)\n",s_direct_gamepad_ports);
         }
         const bool idle_installed = HLE::SetExternalStartObserver(guard, 0x80403ae4, ObserveMua2AutoSleep);
         std::fprintf(stderr, "[openmua2] managed Xbox idle-timeout observer %s\n",
                      idle_installed ? "installed" : "rejected");
+      }
+      if(installed && s_gamepad_provider) {
+        const bool update=HLE::SetExternalStartObserver(guard,0x810fc770,ObserveProviderEntry);
+        const bool query=HLE::SetExternalStartObserver(guard,0x810fc5f8,ObserveProviderEntry);
+        std::fprintf(stderr,"[openmua2] four-port gamepad provider entry hooks %s\n",update&&query?"installed":"rejected");
       }
       // Development-only until the matching font pack and full prompt audit
       // are staged together. Never opt in customized profiles via this flag.

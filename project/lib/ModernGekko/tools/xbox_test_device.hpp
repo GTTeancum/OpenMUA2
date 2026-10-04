@@ -25,15 +25,18 @@ class XboxTestDevice final : public ciface::Core::Device {
     const double& m_value;
   };
 public:
-  XboxTestDevice() {
+  explicit XboxTestDevice(unsigned port=0) : m_port(port) {
     for (std::size_t i = 0; i < XboxInputNames.size(); ++i)
       AddInput(new Input(std::string(XboxInputNames[i]), values[i]));
     AddInput(new Input("Connected", connected));
   }
   std::string GetName() const override { return "Xbox Profile Test"; }
   std::string GetSource() const override { return "OpenMUA2Test"; }
+  std::optional<int> GetPreferredId() const override { return static_cast<int>(m_port); }
   bool IsVirtualDevice() const override { return true; }
   XboxState values{};
   double connected = 1.0;
+private:
+  unsigned m_port;
 };
 }

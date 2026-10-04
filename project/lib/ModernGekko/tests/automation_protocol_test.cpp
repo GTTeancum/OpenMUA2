@@ -259,12 +259,12 @@ int main()
 
   {
     std::ofstream output(commands / "xbox.txt");
-    output << "command=xbox_frames\nport=0\nframes=5\na=1\nright_left=0.6\nrelease=0\n";
+    output << "command=xbox_frames\nport=0\nframes=5\na=1\nright_left=0.6\nrelease=0\nconnected=0\n";
   }
   if (!automation::ParseCommandFile(commands / "xbox.txt", &command, &error) ||
       command.type != automation::CommandType::XboxFrames || command.frames != 5 ||
-      command.xbox[0] != 1 || command.xbox[19] != 0.6 || command.release_pad) return 30;
-  for (const char* invalid : {"a=nan", "a=2", "a=-1", "a=0.2garbage", "unknown=1", "release=2"}) {
+      command.xbox[0] != 1 || command.xbox[19] != 0.6 || command.release_pad || command.xbox_connected) return 30;
+  for (const char* invalid : {"a=nan", "a=2", "a=-1", "a=0.2garbage", "unknown=1", "release=2", "connected=2", "connected=nan"}) {
     {
       std::ofstream output(commands / "xbox.txt");
       output << "command=xbox_frames\nport=0\nframes=5\n" << invalid << '\n';
@@ -277,7 +277,7 @@ int main()
   }
   if (!automation::ParseCommandFile(commands / "xbox.txt", &command, &error) ||
       command.type != automation::CommandType::XboxTime || command.milliseconds != 1250 ||
-      command.frames != 0 || command.path != "hold.txt" || !command.release_pad) return 32;
+      command.frames != 0 || command.path != "hold.txt" || !command.release_pad || !command.xbox_connected) return 32;
   for (const char* invalid : {"milliseconds=0\npath=hold.txt", "milliseconds=600001\npath=hold.txt",
                              "milliseconds=-1\npath=hold.txt", "milliseconds=5",
                              "milliseconds=5\npath=hold.txt\nframes=5"}) {

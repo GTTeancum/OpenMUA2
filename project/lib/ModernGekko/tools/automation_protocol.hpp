@@ -48,6 +48,7 @@ struct Command
   std::string source_name;
   PadState pad;
   XboxState xbox{};
+  bool xbox_connected = true; // Process-local synthetic device only.
   std::filesystem::path path;
   std::uint32_t address = 0;
   std::uint32_t size = 0;
