@@ -95,6 +95,28 @@ int main() {
  for(auto v:a.values) if(v) return 13;
  p.connected=true;p.inputs={};set(K::RightRight,std::numeric_limits<double>::quiet_NaN());
  a=BuildGamepadActions(p,false,false);if(on(a,2)||on(a,7)) return 14;
+ // The shared profile/hero chooser must navigate independently on each pad.
+ for(auto key:{K::Left,K::LeftLeft,K::Right,K::LeftRight}) {
+  p.inputs={};set(key);a=BuildGamepadActions(p,false,false);
+  const bool left=key==K::Left || key==K::LeftLeft;
+  if(!on(a,left?63:64)||on(a,left?64:63))return 84;
+  p.inputs={};a=BuildGamepadActions(p,false,false);if(on(a,63)||on(a,64))return 85;
+ }
+ p.inputs={};set(K::Right);set(K::A);a=BuildGamepadActions(p,false,false,false);
+ if(!on(a,64)||!on(a,89)||on(a,13)||on(a,9)||a.hero_slot!=-1||a.mash_x)return 86;
+ p.inputs={};set(K::LeftRight);a=BuildGamepadActions(p,false,false,false);
+ if(!on(a,64)||on(a,0))return 87;
+ p.inputs={};set(K::LT);set(K::A);a=BuildGamepadActions(p,false,true,false);
+ if(on(a,33)||on(a,9)||a.fusion_slot!=-1)return 88;
+ std::array<std::uint8_t,60> join_manager{};
+ std::array<std::uint8_t,128> players{};
+ join_manager[0]=0x81;join_manager[1]=0x1b;join_manager[2]=0x42;join_manager[3]=0x98;
+ players[0]=0x80;players[1]=0x53;players[2]=0xd1;players[3]=0xa0;
+ for(unsigned i=0;i<4;++i)join_manager[7+i*4]=std::uint8_t(3-i);
+ players[42]=1;
+ for(unsigned i=0;i<4;++i)if(GamepadHasJoinedPlayer(join_manager,players,i)!=(i==2))return 89;
+ players[42]=0;if(GamepadHasJoinedPlayer(join_manager,players,2))return 90;
+ if(GamepadHasJoinedPlayer({},players,0)||GamepadHasJoinedPlayer(join_manager,{},0))return 91;
  // Every raw input must keep pointer, gesture, debug and network actions clear.
  for(unsigned key=0;key<22;++key) {
   p.inputs={};p.inputs[key]=1;a=BuildGamepadActions(p,false,true);

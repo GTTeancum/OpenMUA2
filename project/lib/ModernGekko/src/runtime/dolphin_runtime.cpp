@@ -468,7 +468,8 @@ bool PublishProvider(const Core::CPUThreadGuard& guard,unsigned port,u32 bits_ad
   }
   auto& actions=s_gamepad_actions[port];
   actions=moderngekko::controls::BuildGamepadActions(ReadGamepadSample(port),
-      moderngekko::controls::IsStartAcceptScreen(read),request);
+      moderngekko::controls::IsStartAcceptScreen(read),request,
+      moderngekko::controls::GamepadHasJoinedPlayer(read(0x81313238,60),read(0x80635648,128),port));
   std::copy(actions.active.begin(),actions.active.end(),active);
   std::copy(actions.values.begin(),actions.values.end(),values);
   UpdateButtonQteInput(guard,port,active,values);

@@ -34,7 +34,7 @@ struct GamepadActions {
   }
 };
 inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
-                                          bool start_accept, bool fusion_request) {
+                                          bool start_accept, bool fusion_request, bool gameplay=true) {
   using K=GamepadInput;
   GamepadActions out;
   if(!pad.connected) return out;
@@ -43,13 +43,16 @@ inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
     const double v=pad.Value(positive)-pad.Value(negative);
     return std::abs(v)<=0.15 ? 0.0f : static_cast<float>(v);
   };
-  out.Set(0,axis(K::LeftRight,K::LeftLeft));
-  out.Set(1,axis(K::LeftUp,K::LeftDown));
+  if(gameplay) {
+    out.Set(0,axis(K::LeftRight,K::LeftLeft));
+    out.Set(1,axis(K::LeftUp,K::LeftDown));
+  }
   // Menu/hero management takes priority over gameplay on the same sample.
   if(pad.Down(K::Back)) { out.Set(40); return out; }
   if(pad.Down(K::Start)) { out.Set(39);out.Set(start_accept?105:90);return out; }
   constexpr std::array<K,4> face{K::A,K::B,K::X,K::Y};
   if(lt || rt) {
+    if(!gameplay) return out;
     if(lt && rt) return out; // Ambiguous modifier: no attack/selection leakage.
     if(lt) {
       out.Set(33); // Native FusionPower request, without Nunchuk shake.
@@ -82,12 +85,22 @@ inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
   for(unsigned i=0;i<4;++i) if(pad.Down(directions[i])) {
     out.Set(menu[i]);out.Set(route[i]);out.hero_slot=int(i);++count;
   }
+  // Shared profile/hero join chooser uses its own previous/next actions.
+  if(pad.Down(K::Left) || pad.Value(K::LeftLeft)>0.5) out.Set(63);
+  if(pad.Down(K::Right) || pad.Value(K::LeftRight)>0.5) out.Set(64);
   // Stick navigation supplies both menu action families, without hero selection.
   if(pad.Value(K::LeftUp)>0.5) {out.Set(95);out.Set(94);}
   if(pad.Value(K::LeftDown)>0.5) {out.Set(96);out.Set(91);}
   if(pad.Value(K::LeftLeft)>0.5) {out.Set(97);out.Set(92);}
   if(pad.Value(K::LeftRight)>0.5) {out.Set(98);out.Set(93);}
   if(count==1) out.Set(13);else out.hero_slot=-1;
+  if(!gameplay) {
+    // Unjoined pads own the profile/hero chooser, never a live actor.
+    GamepadActions menu;
+    for(unsigned id:{63u,64u,89u,90u,91u,92u,93u,94u,95u,96u,97u,98u})
+      if(out.active[(id/32)*4+3-(id%32)/8] & (1u<<(id%8))) menu.Set(id);
+    return menu;
+  }
   return out;
 }
 } // namespace moderngekko::controls

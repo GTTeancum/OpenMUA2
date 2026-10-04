@@ -18,6 +18,19 @@ inline std::optional<bool> GamepadConnectionStatus(std::span<const std::uint8_t>
   return manager[20+physical]!=0 || connected[physical];
 }
 
+// The engine owns joining; translate its logical player flags back to a raw port.
+inline bool GamepadHasJoinedPlayer(std::span<const std::uint8_t> manager,
+    std::span<const std::uint8_t> players, unsigned physical) {
+  if(manager.size()!=60 || players.size()!=128 || physical>=4)return false;
+  const auto word=[](auto bytes,unsigned off) {
+    std::uint32_t v=0;for(unsigned i=0;i<4;++i)v=(v<<8)|bytes[off+i];return v;
+  };
+  if(word(manager,0)!=0x811b4298 || word(players,0)!=0x8053d1a0)return false;
+  for(unsigned logical=0;logical<4;++logical)
+    if(word(manager,4+logical*4)==physical && players[41+logical]==1)return true;
+  return false;
+}
+
 // PS2 shared tutorial semantics: a native action-9 edge schedules close after
 // 0.2 game-clock seconds, without entering Wii pointer readiness. The runtime
 // calls this only at the verified acceptance site, before native input cleanup.

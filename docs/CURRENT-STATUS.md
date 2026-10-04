@@ -1,5 +1,36 @@
 # Current status — GitHub main
 
+## Four joined gamepads and chooser ownership - 2026-10-03
+
+The opt-in shared gamepad provider now maps horizontal D-pad/left-stick input to
+HUDPreviousItem/HUDNextItem (63/64), consumed by the existing profile/hero join
+chooser. Start opens joining; A confirms the profile and then an available hero.
+The engine retains profile creation, occupied/KO checks and actor assignment.
+
+A mapping-only candidate failed: unjoined chooser input also emitted gameplay
+hero selection and changed player 0's hero. The corrected provider uses the
+engine's joined-player flags and logical-to-physical mapping to restrict unjoined
+pads to chooser/menu actions. Gameplay actions become available after native join.
+
+A real headless plaza fixture now joined all four heroes through process-local
+Start/A/direction input: actor slots 0..3 each have AI=false and owner ports 0..3.
+Simultaneous movement actions were [0.25,0.375,0.5,0.625]; releasing port 2 changed
+only its value to zero; all released values became zero. Selecting a hero already
+owned by another player left all four owners unchanged. This is native state
+verification, not physical-controller or rendered gameplay acceptance.
+
+Cold boot reached the title and readiness-based Start/main/A/Story/B/main passed.
+Earlier fixed-time assertions failed during the opening movie and menu transition;
+those failures remain in diagnostics. No load-state was used for the cold check.
+Windows Release runner build passed; focused tests 2/2 (1.97s), runtime suite plus
+codegen_compile 50/50 (10.70s). Existing formatter diagnostics remain; Null audio,
+no FPS/audio claims. Evidence: evidence/windows-20261003/FOUR-PLAYER-JOIN.json.
+
+The installed game and real saves are unchanged. Full per-player fusion/QTE,
+remaining UI/targeting consumers, cold campaign, idle/reconnect and visual/physical
+acceptance still remain; provider is opt-in. Preserve unrelated local experiments.
+
+
 ## Shared gamepad status and tutorial acceptance - 2026-10-03
 
 The opt-in OPENMUA2_GAMEPAD_PROVIDER path now replaces the two shared engine

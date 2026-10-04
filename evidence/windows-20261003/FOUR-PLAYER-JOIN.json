@@ -1,0 +1,491 @@
+{
+  "date": "2026-10-03",
+  "scope": "Opt-in shared gamepad provider; headless process-local input, not physical/visual/audio acceptance",
+  "runner_sha256": "b5091289164a0782420ce1b9cad51b8b5dde9441681e353b3862a32ba9d387d0",
+  "build": "Windows Release runner and gamepad/automation tests: exit 0; 2/2 passed in 1.97s",
+  "regression": "49 moderngekko tests plus codegen_compile: 50/50 in 10.70s",
+  "code_evidence": {
+    "join_update": "80132e00 checks Start, then shared profile/hero chooser 80132fd4",
+    "chooser_actions": {
+      "63": "HUDPreviousItem",
+      "64": "HUDNextItem",
+      "89": "confirm",
+      "90": "cancel"
+    },
+    "native_player_manager": "80635648, vtable8053d1a0, joined flags41..44; CInput logical-to-physical mapping respected"
+  },
+  "join": [
+    {
+      "label": "baseline",
+      "actors": [
+        {
+          "slot": 0,
+          "address": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "position": [
+            -169.42926025390625,
+            -108.65266418457031,
+            0.44571226835250854
+          ]
+        },
+        {
+          "slot": 1,
+          "address": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -25.941509246826172,
+            -286.8056640625,
+            0.16621413826942444
+          ]
+        },
+        {
+          "slot": 2,
+          "address": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "position": [
+            107.09081268310547,
+            -53.05763626098633,
+            -4.970418930053711
+          ]
+        },
+        {
+          "slot": 3,
+          "address": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -68.55049133300781,
+            -202.33413696289062,
+            1.3934626579284668
+          ]
+        }
+      ],
+      "menu": {
+        "label": "baseline",
+        "manager": "0x9002c628",
+        "active": "0x0"
+      }
+    },
+    {
+      "label": "profiles-selected",
+      "actors": [
+        {
+          "slot": 0,
+          "address": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "position": [
+            -169.42926025390625,
+            -108.65266418457031,
+            0.44571226835250854
+          ]
+        },
+        {
+          "slot": 1,
+          "address": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -13.160543441772461,
+            -180.58148193359375,
+            0.25770360231399536
+          ]
+        },
+        {
+          "slot": 2,
+          "address": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -45.41161346435547,
+            -136.43174743652344,
+            0.7917127013206482
+          ]
+        },
+        {
+          "slot": 3,
+          "address": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -71.69831848144531,
+            -155.93568420410156,
+            1.306228518486023
+          ]
+        }
+      ],
+      "menu": {
+        "label": "profiles-selected",
+        "manager": "0x9002c628",
+        "active": "0x0"
+      }
+    },
+    {
+      "label": "joined-1",
+      "actors": [
+        {
+          "slot": 0,
+          "address": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "position": [
+            -169.42926025390625,
+            -108.65266418457031,
+            0.44571226835250854
+          ]
+        },
+        {
+          "slot": 1,
+          "address": "0x934ba758",
+          "port": 1,
+          "ai": false,
+          "position": [
+            -180.0,
+            -60.0,
+            1.0635000467300415
+          ]
+        },
+        {
+          "slot": 2,
+          "address": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -58.44971466064453,
+            -131.67445373535156,
+            0.1502494066953659
+          ]
+        },
+        {
+          "slot": 3,
+          "address": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -91.4078598022461,
+            -134.92538452148438,
+            1.2780300378799438
+          ]
+        }
+      ],
+      "menu": {
+        "label": "joined-1",
+        "manager": "0x9002c628",
+        "active": "0x0"
+      }
+    },
+    {
+      "label": "joined-2",
+      "actors": [
+        {
+          "slot": 0,
+          "address": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "position": [
+            -169.42926025390625,
+            -108.65266418457031,
+            0.44571226835250854
+          ]
+        },
+        {
+          "slot": 1,
+          "address": "0x934ba758",
+          "port": 1,
+          "ai": false,
+          "position": [
+            -180.0,
+            -60.0,
+            1.0635000467300415
+          ]
+        },
+        {
+          "slot": 2,
+          "address": "0x934bb190",
+          "port": 2,
+          "ai": false,
+          "position": [
+            -220.0,
+            -100.0,
+            1.0635000467300415
+          ]
+        },
+        {
+          "slot": 3,
+          "address": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "position": [
+            -76.9779281616211,
+            -123.08802795410156,
+            1.2765156030654907
+          ]
+        }
+      ],
+      "menu": {
+        "label": "joined-2",
+        "manager": "0x9002c628",
+        "active": "0x0"
+      }
+    },
+    {
+      "label": "joined-3",
+      "actors": [
+        {
+          "slot": 0,
+          "address": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "position": [
+            -169.71572875976562,
+            -108.81047058105469,
+            0.4467122554779053
+          ]
+        },
+        {
+          "slot": 1,
+          "address": "0x934ba758",
+          "port": 1,
+          "ai": false,
+          "position": [
+            -180.0,
+            -60.0,
+            1.0635000467300415
+          ]
+        },
+        {
+          "slot": 2,
+          "address": "0x934bb190",
+          "port": 2,
+          "ai": false,
+          "position": [
+            -220.0,
+            -100.0,
+            1.0635000467300415
+          ]
+        },
+        {
+          "slot": 3,
+          "address": "0x934bbbc8",
+          "port": 3,
+          "ai": false,
+          "position": [
+            -140.69290161132812,
+            -92.82273864746094,
+            1.0111827850341797
+          ]
+        }
+      ],
+      "menu": {
+        "label": "joined-3",
+        "manager": "0x9002c628",
+        "active": "0x0"
+      }
+    }
+  ],
+  "input": {
+    "scope": "Headless process-local fixture, native joined actor ownership and published movement actions",
+    "initial": [
+      {
+        "slot": 0,
+        "port": 0,
+        "ai": false,
+        "position": [
+          -169.71572875976562,
+          -108.81047058105469,
+          0.4467122554779053
+        ]
+      },
+      {
+        "slot": 1,
+        "port": 1,
+        "ai": false,
+        "position": [
+          -180.0,
+          -60.0,
+          1.0635000467300415
+        ]
+      },
+      {
+        "slot": 2,
+        "port": 2,
+        "ai": false,
+        "position": [
+          -220.0,
+          -100.0,
+          1.0635000467300415
+        ]
+      },
+      {
+        "slot": 3,
+        "port": 3,
+        "ai": false,
+        "position": [
+          -140.69290161132812,
+          -92.82273864746094,
+          1.0111827850341797
+        ]
+      }
+    ],
+    "held_axes": [
+      0.25,
+      0.375,
+      0.5,
+      0.625
+    ],
+    "port2_release": [
+      0.25,
+      0.375,
+      0.0,
+      0.625
+    ],
+    "all_neutral": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "before_occupied_selection": [
+      {
+        "slot": 0,
+        "port": 0,
+        "ai": false,
+        "position": [
+          -169.71572875976562,
+          -108.81047058105469,
+          0.4467122554779053
+        ]
+      },
+      {
+        "slot": 1,
+        "port": 1,
+        "ai": false,
+        "position": [
+          -235.2090606689453,
+          -30.886831283569336,
+          0.8215711712837219
+        ]
+      },
+      {
+        "slot": 2,
+        "port": 2,
+        "ai": false,
+        "position": [
+          -255.00088500976562,
+          -72.1113052368164,
+          1.084501028060913
+        ]
+      },
+      {
+        "slot": 3,
+        "port": 3,
+        "ai": false,
+        "position": [
+          -210.79505920410156,
+          -53.08200454711914,
+          1.0750938653945923
+        ]
+      }
+    ],
+    "after_occupied_selection": [
+      {
+        "slot": 0,
+        "port": 0,
+        "ai": false,
+        "position": [
+          -169.71572875976562,
+          -108.81047058105469,
+          0.4467122554779053
+        ]
+      },
+      {
+        "slot": 1,
+        "port": 1,
+        "ai": false,
+        "position": [
+          -235.2090606689453,
+          -30.886831283569336,
+          0.8215711712837219
+        ]
+      },
+      {
+        "slot": 2,
+        "port": 2,
+        "ai": false,
+        "position": [
+          -255.00088500976562,
+          -72.1113052368164,
+          1.084501028060913
+        ]
+      },
+      {
+        "slot": 3,
+        "port": 3,
+        "ai": false,
+        "position": [
+          -210.79505920410156,
+          -53.08200454711914,
+          1.0750938653945923
+        ]
+      }
+    ],
+    "passed": true
+  },
+  "cold": {
+    "passed": true,
+    "menus": [
+      {
+        "label": "main-ready",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "page_count": 4,
+        "focus": "0x90044c78",
+        "focus_name": "option01_text",
+        "page_name": "main"
+      },
+      {
+        "label": "story-ready",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 1,
+        "page_count": 4,
+        "focus": "0x900460f8",
+        "focus_name": "option05_text",
+        "page_name": "play"
+      },
+      {
+        "label": "back-ready",
+        "manager": "0x9002c628",
+        "active": "0x90076aa8",
+        "type": "0x81190d98",
+        "name": "cw_main",
+        "page": 0,
+        "page_count": 4,
+        "focus": "0x90044c78",
+        "focus_name": "option01_text",
+        "page_name": "main"
+      }
+    ],
+    "scope": "Cold boot; process-local input and native menu state, not visual acceptance"
+  },
+  "failures_preserved": [
+    "Initial Start alone did not complete profile/hero chooser; second A completed player2 join",
+    "First mapping-only candidate let unjoined chooser input also emit gameplay hero selection; four-player assertion failed. Joined-player input gate fixed this in subsequent run",
+    "First cold checks ran during movie at60seconds and during menu transition at1.5seconds; assertions failed. Same process reached title normally, then readiness-based navigation passed"
+  ],
+  "limitations": [
+    "Four physical controllers not tested",
+    "No screenshot/visual or audio/FPS acceptance in these runs",
+    "Gameplay fixture restored from earlier plaza state; not a fresh four-player campaign",
+    "Per-player fusion/QTE, death/retry, long idle/reconnection, complete remaining UI actions/prompts still open",
+    "Supported installed game unchanged; provider remains opt-in"
+  ]
+}
