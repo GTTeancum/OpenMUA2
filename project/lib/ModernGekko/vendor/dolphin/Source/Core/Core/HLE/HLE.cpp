@@ -17,6 +17,7 @@
 #include "Core/HLE/HLE_OS.h"
 #include "Core/HW/Memmap.h"
 #include "Core/Host.h"
+#include "Core/PowerPC/Interpreter/Interpreter.h"
 #include "Core/PowerPC/PPCSymbolDB.h"
 #include "Core/PowerPC/PowerPC.h"
 #include "Core/System.h"
@@ -30,7 +31,7 @@ static std::map<u32, u32> s_hooked_addresses;
 static std::map<u32, HookFunction> s_external_observers;
 // Execute dispatches this reserved hook by the actual instruction address.
 static void ObserveExternal(const Core::CPUThreadGuard&) {}
-struct ExternalBranch { BranchReplacement callback; u32 instruction; };
+struct ExternalBranch { BranchReplacement callback; u32 instruction; bool function = false; };
 static std::map<u32, ExternalBranch> s_external_branches;
 static void ReplaceExternalBranch(const Core::CPUThreadGuard&) {}
 static void RunExternalBranch(const Core::CPUThreadGuard& guard, u32 current_pc)
@@ -39,6 +40,17 @@ static void RunExternalBranch(const Core::CPUThreadGuard& guard, u32 current_pc)
   const auto it = s_external_branches.find(current_pc);
   if (it == s_external_branches.end()) return;
   if (it->second.callback(guard)) return;
+  if (it->second.function) {
+    // Use the ordinary MMU/exception behavior for the captured stack prologue.
+    auto& system = guard.GetSystem();
+    state.pc = current_pc;
+    state.npc = current_pc + 4;
+    UGeckoInstruction instruction;
+    instruction.hex = it->second.instruction;
+    Interpreter::stwu(system.GetInterpreter(), instruction);
+    if (state.Exceptions & EXCEPTION_DSI) system.GetPowerPC().CheckExceptions();
+    return;
+  }
   const s32 displacement = s32(it->second.instruction << 6) >> 6;
   LR(state) = current_pc + 4;
   state.npc = current_pc + (displacement & ~3);
@@ -193,6 +205,21 @@ bool SetExternalBranchReplacement(const Core::CPUThreadGuard& guard, u32 address
   return true;
 }
 
+bool SetExternalFunctionReplacement(const Core::CPUThreadGuard& guard, u32 address,
+                                    BranchReplacement replacement)
+{
+  if (!replacement || !address || (address & 3) ||
+      s_external_observers.size() + s_external_branches.size() >= 20 ||
+      s_hooked_addresses.contains(address)) return false;
+  auto& memory = guard.GetSystem().GetMemory();
+  if (!memory.GetPointerForRange(address, 4)) return false;
+  const u32 instruction = memory.Read_U32(address);
+  if ((instruction & 0xffff8000) != 0x94218000) return false;
+  s_external_branches.emplace(address, ExternalBranch{replacement, instruction, true});
+  Patch(guard.GetSystem(), address, "RuntimeExternalBranch");
+  return true;
+}
+
 void Clear()
 {
   s_hooked_addresses.clear();
@@ -215,8 +242,10 @@ void Reload(Core::System& system)
   }
   if (!branches.empty()) {
     const Core::CPUThreadGuard guard(system);
-    for (const auto& [address, branch] : branches)
-      SetExternalBranchReplacement(guard, address, branch.callback);
+    for (const auto& [address, branch] : branches) {
+      if (branch.function) SetExternalFunctionReplacement(guard, address, branch.callback);
+      else SetExternalBranchReplacement(guard, address, branch.callback);
+    }
   }
 }
 

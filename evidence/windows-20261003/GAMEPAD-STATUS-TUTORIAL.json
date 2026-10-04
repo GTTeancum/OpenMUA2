@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-03",
+  "scope": "Opt-in shared gamepad provider; Windows headless process-local tests, not installed release",
+  "runner_sha256": "5a634ac6e7ad48fae06a5472e23ed8027281c1aa9f47c0d1c4b57361d7fc4d2d",
+  "build": {
+    "exit": 0,
+    "focused_tests": "2/2 passed, 2.12 seconds",
+    "regression": "49 moderngekko tests plus codegen_compile: 50/50 passed, 10.17 seconds, documented MSVC environment",
+    "broad_ctest_attempt": "67 passed, 3 dependency executables missing (fullbench/fuzzer/zstreamtest), codegen_compile failed without MSVC include environment, 1 disabled; codegen_compile passed after running tools/msvc-env.cmd"
+  },
+  "tutorial": [
+    {
+      "label": "initial",
+      "visible": 1,
+      "phase": 0,
+      "kind": 1,
+      "deadline": 0.0,
+      "owner": 0
+    },
+    {
+      "label": "neutral",
+      "visible": 1,
+      "phase": 0,
+      "kind": 1,
+      "deadline": 0.0,
+      "owner": 0
+    },
+    {
+      "label": "wrong-owner-A",
+      "visible": 1,
+      "phase": 0,
+      "kind": 1,
+      "deadline": 0.0,
+      "owner": 0
+    },
+    {
+      "label": "owner-A",
+      "visible": 0,
+      "phase": 0,
+      "kind": 1,
+      "deadline": 201.3470001220703,
+      "owner": 0
+    }
+  ],
+  "connection_transitions": [
+    {
+      "method": "ready",
+      "logical": 0,
+      "physical": 0,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 1,
+      "physical": 1,
+      "available": 0
+    },
+    {
+      "method": "ready",
+      "logical": 2,
+      "physical": 2,
+      "available": 0
+    },
+    {
+      "method": "ready",
+      "logical": 3,
+      "physical": 3,
+      "available": 0
+    },
+    {
+      "method": "connected",
+      "logical": 0,
+      "physical": 0,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 1,
+      "physical": 1,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 2,
+      "physical": 2,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 3,
+      "physical": 3,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 0,
+      "physical": 0,
+      "available": 0
+    },
+    {
+      "method": "connected",
+      "logical": 0,
+      "physical": 0,
+      "available": 0
+    },
+    {
+      "method": "connected",
+      "logical": 1,
+      "physical": 1,
+      "available": 1
+    },
+    {
+      "method": "connected",
+      "logical": 2,
+      "physical": 2,
+      "available": 1
+    },
+    {
+      "method": "connected",
+      "logical": 3,
+      "physical": 3,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 0,
+      "physical": 0,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 1,
+      "physical": 1,
+      "available": 0
+    },
+    {
+      "method": "ready",
+      "logical": 1,
+      "physical": 1,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 2,
+      "physical": 2,
+      "available": 0
+    },
+    {
+      "method": "ready",
+      "logical": 2,
+      "physical": 2,
+      "available": 1
+    },
+    {
+      "method": "ready",
+      "logical": 3,
+      "physical": 3,
+      "available": 0
+    },
+    {
+      "method": "ready",
+      "logical": 3,
+      "physical": 3,
+      "available": 1
+    }
+  ],
+  "limitations": [
+    "Four physical controllers and four joined gameplay actors not tested",
+    "Native disconnect warning visual dismissal not inspected",
+    "Only fusion-kind tutorial fixture exercised live; all five kinds/four owners covered by helper tests",
+    "No FPS or audio claims: Null audio diagnostic runs",
+    "Immediate-query provider callback and function fallback not explicitly exercised",
+    "Installed game unchanged; complete gamepad consumer and prompt audit remains open"
+  ]
+}

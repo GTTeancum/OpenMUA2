@@ -1,5 +1,36 @@
 # MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Shared gamepad status and tutorial acceptance - 2026-10-03
+
+The opt-in OPENMUA2_GAMEPAD_PROVIDER path now replaces the two shared engine
+connection/readiness methods with per-gamepad state, preserving logical-to-physical
+port remapping and engine-owned input slots. Actual runtime logs exercised both
+methods. Each of four ports independently reported ready -> disconnected -> ready.
+This is process-local input evidence, not four joined actors or physical-pad acceptance.
+
+PS2-style shared tutorial acceptance is implemented: the existing action-9 edge
+schedules native close after 0.2 game-clock seconds instead of entering pointer
+readiness. Original input-history cleanup and delayed hide/unpause/callback remain.
+The live fusion tutorial fixture rejected port 1 A for owner 0, then owner 0 A closed
+it with phase 0 retained. No ready-icon or completion flags were forced by the test.
+All five tutorial kinds and four owners are covered by helper tests; only kind 1
+was exercised in the runtime. This does not establish fusion combat completion.
+
+Windows Release runner build passed; focused tests 2/2 (2.12s). The 49 runtime
+regressions plus codegen_compile passed 50/50 (10.17s) in the documented MSVC
+environment. An initial unfiltered CTest attempt exposed three absent dependency
+benchmark/fuzzer executables and a missing string.h compiler environment; the latter
+passed after msvc-env.cmd. These were not gamepad source failures. Native runs exited
+0; existing unsupported-formatter diagnostics remain. Null audio, no FPS claims.
+
+HLE now supports guarded function-entry replacement with captured stwu interpreter
+fallback; the successful replacement path ran, fallback is not separately exercised.
+The installed C:\Games\MUA2 build and real saves remain untouched. Provider stays
+opt-in while full consumer/prompt, connection-warning, joining, four-actor gameplay,
+QTE/targeting and cold-flow validation continue. See GAMEPAD-STATUS-TUTORIAL.json.
+Prior unrelated readiness/wave/StaticRecomp experiments remain local WIP.
+
+
 ## Shared four-port gamepad provider - 2026-10-03
 
 Development flag OPENMUA2_GAMEPAD_PROVIDER=1 now publishes raw Xbox actions at

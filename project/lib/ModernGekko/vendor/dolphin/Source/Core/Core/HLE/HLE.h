@@ -66,6 +66,11 @@ bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
 using BranchReplacement = bool (*)(const Core::CPUThreadGuard&);
 bool SetExternalBranchReplacement(const Core::CPUThreadGuard& guard, u32 address,
                                   BranchReplacement replacement);
+// Replace a function with a verified stwu r1,negative(r1) prologue. A false
+// callback executes that original instruction through the interpreter and then
+// continues at the second instruction; true must supply the return npc.
+bool SetExternalFunctionReplacement(const Core::CPUThreadGuard& guard, u32 address,
+                                    BranchReplacement replacement);
 void Reload(Core::System& system);
 
 void Patch(Core::System& system, u32 pc, std::string_view func_name);

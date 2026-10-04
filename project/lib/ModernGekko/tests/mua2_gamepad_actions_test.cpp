@@ -8,6 +8,30 @@ bool on(const GamepadActions& a,unsigned id) {
  return (a.active[id/32*4+3-(id%32)/8]&(1u<<(id%8)))!=0;
 }
 int main() {
+ std::array<std::uint8_t,60> manager{};
+ std::array<bool,4> connections{false,false,false,true};
+ for(unsigned i=0;i<4;++i)manager[7+i*4]=std::uint8_t(i);
+ for(unsigned i=0;i<4;++i)if(GamepadConnectionStatus(manager,i,connections)!=std::optional<bool>(i==3))return 71;
+ manager[7]=3;if(GamepadConnectionStatus(manager,0,connections)!=true)return 72;
+ connections[3]=false;if(GamepadConnectionStatus(manager,0,connections)!=false)return 73;
+ manager[21]=1;if(GamepadConnectionStatus(manager,1,connections)!=true)return 74;
+ manager[15]=255;if(GamepadConnectionStatus(manager,2,connections)!=false)return 75;
+ if(GamepadConnectionStatus({},0,connections)||GamepadConnectionStatus(manager,4,connections))return 76;
+ // All five shared tutorial kinds schedule native close; no ready-icon writes.
+ for(unsigned kind=0;kind<5;++kind) for(unsigned owner=0;owner<4;++owner) {
+   std::array<std::uint8_t,80> tutorial{};
+   tutorial[20]=1;tutorial[65]=1;tutorial[67]=std::uint8_t(kind);
+   tutorial[24]=0x80;tutorial[25]=0x56;tutorial[26]=0x42;tutorial[27]=0x48;
+   tutorial[79]=std::uint8_t(owner);
+   if(AcceptGamepadTutorial(tutorial,(owner+1)%4,10))return 77;
+   if(!AcceptGamepadTutorial(tutorial,owner,10)||tutorial[65])return 78;
+   std::uint32_t deadline=0;for(unsigned i=0;i<4;++i)deadline=(deadline<<8)|tutorial[72+i];
+   if(std::bit_cast<float>(deadline)!=10.2f)return 79;
+   for(unsigned slot:{32u,40u,48u,56u})if(tutorial[slot]||tutorial[slot+1])return 80;
+   if(AcceptGamepadTutorial(tutorial,owner,10))return 81;
+   tutorial[65]=1;if(AcceptGamepadTutorial(tutorial,owner,std::numeric_limits<float>::infinity()))return 82;
+   tutorial[67]=5;if(AcceptGamepadTutorial(tutorial,owner,10))return 83;
+ }
  GamepadPortState port;
  GamepadSample raw;raw.connected=true;raw.inputs[0]=1;
  port.Update(raw);if(port.sample.Down(GamepadInput::A)||port.pressed[0])return 50;

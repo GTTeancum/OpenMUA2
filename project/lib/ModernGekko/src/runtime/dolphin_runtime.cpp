@@ -82,6 +82,8 @@ std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 std::uint8_t s_direct_gamepad_ports = 0;
 std::array<moderngekko::controls::GamepadActions,4> s_gamepad_actions;
 std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
+struct GamepadTutorialClock { u32 object=0; unsigned owner=4; float seconds=0; u64 ticks=0; };
+GamepadTutorialClock s_gamepad_tutorial_clock;
 moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   moderngekko::controls::GamepadSample sample;
   if(port>=4) return sample;
@@ -286,7 +288,7 @@ struct DirectQteSession {
 bool s_direct_qte_enabled = false;
 std::array<DirectQteSession, 4> s_direct_qtes;
 
-void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; s_gamepad_ports = {}; }
+void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; s_gamepad_ports = {}; s_gamepad_tutorial_clock = {}; }
 
 
 bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
@@ -412,6 +414,10 @@ void UpdateButtonQteInput(const Core::CPUThreadGuard& guard,unsigned port,u8* ac
 // evaluator. Both polling callers can skip that evaluator when KPad is absent.
 bool s_gamepad_provider=false;
 bool s_provider_update_installed=false, s_provider_query_installed=false;
+bool s_provider_connected_installed=false, s_provider_ready_installed=false;
+bool s_gamepad_tutorial_clock_installed=false, s_gamepad_tutorial_accept_installed=false;
+std::array<int,8> s_provider_status_last{-1,-1,-1,-1,-1,-1,-1,-1};
+std::array<u64,4> s_provider_status_queries{};
 std::array<u64,4> s_provider_updates{}, s_provider_queries{};
 bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size,
                   const char* expected) {
@@ -511,8 +517,71 @@ bool ReplaceProviderQuery(const Core::CPUThreadGuard& guard) {
   TraceProvider("query",port,s_provider_queries[port]);
   return true;
 }
+bool ReplaceGamepadStatus(const Core::CPUThreadGuard& guard, bool ready) {
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  if(!s_gamepad_provider || state.gpr[3]!=0x81313238 || state.gpr[4]>=4 ||
+     !ProviderCode(guard,ready?0x810fd1ec:0x810fd174,ready?0x118:0x78,
+       ready?"CC09B94F59745A481FE2245D2ECF3C71BB9311A0":"C9A5AA566837F05C9DB7D66FADE23D5A3305951D"))return false;
+  const auto* data=system.GetMemory().GetPointerForRange(state.gpr[3],60);
+  if(!data || moderngekko::controls::ReadBE(std::span<const u8>(data,60),0)!=0x811b4298)return false;
+  const unsigned logical=state.gpr[4];
+  const unsigned physical=moderngekko::controls::ReadBE(std::span<const u8>(data,60),4+logical*4);
+  std::array<bool,4> connected{};
+  if(physical<4)connected[physical]=ReadGamepadSample(physical).connected;
+  const auto status=moderngekko::controls::GamepadConnectionStatus(std::span<const u8>(data,60),logical,connected);
+  if(!status)return false;
+  const unsigned trace_index=(ready?4:0)+logical;
+  if(s_provider_status_last[trace_index]!=int(*status) && std::getenv("OPENMUA2_PROVIDER_TRACE"))
+    std::fprintf(stderr,"[openmua2] gamepad status %s logical=%u physical=%u available=%u\n",
+                 ready?"ready":"connected",logical,physical,unsigned(*status));
+  s_provider_status_last[trace_index]=int(*status);
+  state.gpr[3]=*status?1:0;
+  state.npc=LR(state);
+  TraceProvider(ready?"ready":"connected",logical,s_provider_status_queries[logical]);
+  return true;
+}
+bool ReplaceGamepadConnected(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,false);}
+bool ReplaceGamepadReady(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,true);}
+
+void ObserveGamepadTutorialClock(const Core::CPUThreadGuard& guard) {
+  s_gamepad_tutorial_clock={};
+  if(!s_gamepad_provider || !ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))return;
+  auto& system=guard.GetSystem();const auto& state=system.GetPPCState();
+  const auto* help=system.GetMemory().GetPointerForRange(state.gpr[31],80);
+  const float now=static_cast<float>(state.ps[1].PS0AsDouble());
+  if(!help || state.gpr[30]>=4 || help[20]!=1 || help[64] || help[65] ||
+     moderngekko::controls::ReadBE(std::span<const u8>(help,80),24)!=0x80564248 ||
+     !std::isfinite(now) || now<0)return;
+  s_gamepad_tutorial_clock={state.gpr[31],state.gpr[30],now,system.GetCoreTiming().GetTicks()};
+}
+void ObserveGamepadTutorialAccept(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !ProviderCode(guard,0x8024d054,64,"E8536E72613B812C2BBFFDDFFA3FC31DF79BE89A"))return;
+  auto& system=guard.GetSystem();const auto& state=system.GetPPCState();
+  const auto clock=s_gamepad_tutorial_clock;s_gamepad_tutorial_clock={};
+  const auto ticks=system.GetCoreTiming().GetTicks();
+  if(clock.object!=state.gpr[31] || clock.owner!=state.gpr[30] || ticks<clock.ticks ||
+     ticks-clock.ticks>system.GetSystemTimers().GetTicksPerSecond()/60)return;
+  auto* help=system.GetMemory().GetPointerForRange(clock.object,80);
+  if(!help || !moderngekko::controls::AcceptGamepadTutorial(std::span<u8>(help,80),clock.owner,clock.seconds))return;
+  // The original manager call and action-history cleanup execute next. Native
+  // deadline handling performs hide, unpause and callbacks on a later update.
+  std::fprintf(stderr,"[openmua2] gamepad tutorial accepted kind=%u owner=%u clock=%.6f\n",help[67],clock.owner,clock.seconds);
+}
+
 void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
   if(!s_gamepad_provider) return;
+  if(!s_provider_connected_installed && ProviderCode(guard,0x810fd174,0x78,"C9A5AA566837F05C9DB7D66FADE23D5A3305951D")) {
+    s_provider_connected_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd174,ReplaceGamepadConnected);
+    std::fprintf(stderr,"[openmua2] shared gamepad connection method %s\n",s_provider_connected_installed?"installed":"rejected");
+  }
+  if(!s_provider_ready_installed && ProviderCode(guard,0x810fd1ec,0x118,"CC09B94F59745A481FE2245D2ECF3C71BB9311A0")) {
+    s_provider_ready_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd1ec,ReplaceGamepadReady);
+    std::fprintf(stderr,"[openmua2] shared gamepad readiness method %s\n",s_provider_ready_installed?"installed":"rejected");
+  }
+  if(!s_gamepad_tutorial_clock_installed && ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))
+    s_gamepad_tutorial_clock_installed=HLE::SetExternalStartObserver(guard,0x8024ced8,ObserveGamepadTutorialClock);
+  if(!s_gamepad_tutorial_accept_installed && ProviderCode(guard,0x8024d054,64,"E8536E72613B812C2BBFFDDFFA3FC31DF79BE89A"))
+    s_gamepad_tutorial_accept_installed=HLE::SetExternalStartObserver(guard,0x8024d054,ObserveGamepadTutorialAccept);
   static u64 entries=0;
   TraceProvider("entry",0,entries);
   // REL bytes are available here. Registration during asynchronous BootCore
@@ -1907,6 +1976,10 @@ RuntimeRunResult Runtime::Run() {
   };
   s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
   s_provider_update_installed=s_provider_query_installed=false;
+  s_provider_connected_installed=s_provider_ready_installed=false;
+  s_provider_status_queries={};
+  s_provider_status_last.fill(-1);
+  s_gamepad_tutorial_clock_installed=s_gamepad_tutorial_accept_installed=false;
   s_provider_updates={};s_provider_queries={};
   const auto want_hero_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_HERO_BUTTONS")?15:0));
   const auto want_fusion_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_FUSION_BUTTONS")?15:0));
