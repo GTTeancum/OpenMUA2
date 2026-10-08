@@ -22,7 +22,8 @@ internal static class OpenMUA2
                       header == "OpenMUA2-Xbox-UI-v4" ? 4 :
                       header == "OpenMUA2-Xbox-UI-v5" ? 5 :
                       header == "OpenMUA2-Xbox-UI-v6" ? 6 :
-                      header == "OpenMUA2-Xbox-UI-v7" ? 7 : 0;
+                      header == "OpenMUA2-Xbox-UI-v7" ? 7 :
+                      header == "OpenMUA2-Xbox-UI-v8" ? 8 : 0;
         if (version == 0) throw new InvalidDataException("Unsupported Xbox UI asset version.");
         var required = new HashSet<string>(StringComparer.Ordinal) {
             "data/vv_tips.engb", "data/vv_tips.itab", "data/vv_tips.xmlb",
@@ -36,6 +37,7 @@ internal static class OpenMUA2
             required.Add("ui/fonts/rev_med_ws.xmlb");
         }
         if (version >= 7) required.Add("packages/generated/maps/package/menus/options_rev.fb");
+        if (version >= 8) required.Add("packages/generated/maps/package/menus/cw_pda_rev.fb");
         var expected = new Dictionary<string, string>(StringComparer.Ordinal);
         string line;
         while ((line = manifest.ReadLine()) != null) {

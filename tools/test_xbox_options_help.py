@@ -52,10 +52,16 @@ class OptionsHelpTests(unittest.TestCase):
                     target.patch_options_help(original)
 
     def test_complete_control_reference(self):
-        from xbox_options_layout import PACKAGE, patch_options_package
+        from xbox_options_layout import PACKAGES
+        for package, (_, menu) in PACKAGES.items():
+            with self.subTest(package=package):
+                self.check_control_reference(package, menu)
+
+    def check_control_reference(self, package, menu):
+        from xbox_options_layout import patch_options_package
         with zipfile.ZipFile(self.source_wad) as archive:
-            original = archive.read(PACKAGE)
-        result = patch_options_package(original)
+            original = archive.read(package)
+        result = patch_options_package(original, package)
         import struct
         def members(data):
             out = {}; offset = 0
@@ -69,10 +75,17 @@ class OptionsHelpTests(unittest.TestCase):
         before, after = members(original), members(result)
         self.assertEqual(before.keys(), after.keys())
         changed = {n for n in before if before[n] != after[n]}
-        self.assertEqual(changed, {'ui/menus/options_rev.engb', 'ui/menus/options_rev.itab',
+        self.assertEqual(changed, {f'ui/menus/{menu}.engb', f'ui/menus/{menu}.itab',
                                    'ui/menus/cw_pausemenu.igb'})
         for name in sorted(changed - {'ui/menus/cw_pausemenu.igb'}):
             nodes = {a.get('name'): a for _, a, *_ in target.read_nodes(after[name])}
+            old_nodes = target.read_nodes(before[name])
+            new_nodes = target.read_nodes(after[name])
+            self.assertEqual(len(old_nodes), len(new_nodes))
+            for old, new in zip(old_nodes, new_nodes):
+                widget = old[1].get('name', '')
+                if widget not in ('controls', 'controls_list', 'controls_list2') and not widget.startswith(('label_button', 'label_stick', 'label_click')):
+                    self.assertEqual(old, new, widget)
             self.assertEqual(nodes['controls']['model'], 'ui/models/m_invis')
             self.assertIn('Powers', nodes['label_button02']['text'])
             self.assertIn('Fusion', nodes['label_button03']['text'])
@@ -80,7 +93,7 @@ class OptionsHelpTests(unittest.TestCase):
             for i in ([1] + list(range(4,13))):
                 self.assertFalse(nodes['label_button%02d' % i].get('text'))
         with self.assertRaises(ValueError):
-            patch_options_package(result)
+            patch_options_package(result, package)
 
 
 if __name__ == '__main__':

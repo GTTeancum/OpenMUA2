@@ -9,6 +9,10 @@ from xbox_tutorials import read_nodes
 
 PACKAGE = 'packages/generated/maps/package/menus/options_rev.fb'
 STOCK_HASH = '959320faf08481590a0c7b0a9ff98ae7fe1a4263483c6eb8135aa8e6e1ba4544'
+PAUSE_PACKAGE = 'packages/generated/maps/package/menus/cw_pda_rev.fb'
+PACKAGES = {PACKAGE: (STOCK_HASH, 'options_rev'),
+            PAUSE_PACKAGE: ('e1f2fbb08aa434f8a95c986916dc979e452ecafc4026ed9f0a35c7a788760b46',
+                            'cw_pda_rev')}
 
 
 def patch_scene(data):
@@ -57,15 +61,18 @@ def patch_layout(data):
     return bytes(result)
 
 
-def patch_options_package(data):
-    if hashlib.sha256(data).hexdigest() != STOCK_HASH:
+def patch_options_package(data, package=PACKAGE):
+    if package not in PACKAGES:
+        raise ValueError('Unknown Options package name')
+    stock_hash, menu = PACKAGES[package]
+    if hashlib.sha256(data).hexdigest() != stock_hash:
         raise ValueError('Unknown/already modified Options package')
     result = bytearray()
     offset = 0
     changed = set()
     targets = {'ui/menus/cw_pausemenu.igb': patch_scene,
-               'ui/menus/options_rev.engb': patch_layout,
-               'ui/menus/options_rev.itab': patch_layout}
+               f'ui/menus/{menu}.engb': patch_layout,
+               f'ui/menus/{menu}.itab': patch_layout}
     while offset < len(data):
         header = data[offset:offset + 196]
         if len(header) != 196:

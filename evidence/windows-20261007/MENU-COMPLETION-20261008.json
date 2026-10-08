@@ -1,0 +1,87 @@
+{
+  "date": "2026-10-08",
+  "scope": "TODO #2 Controls menu and Powers-page behavior",
+  "result": "complete",
+  "changes": [
+    "Apply shared native Options compiler to cw_pda_rev.fb as well as options_rev.fb",
+    "Require both menu packages in paired v8 launcher manifest"
+  ],
+  "validation": {
+    "options_tests": "4/4 passed, both packages; unrelated widgets preserved",
+    "font_tests": "2/2 passed",
+    "launcher_checks": "67/67 passed",
+    "windows_launcher_build": "Release optimized x64 C# compiler succeeded; no printed warnings/errors",
+    "runtime": "Existing verified MSVC runner unchanged; no C++ rebuild needed",
+    "live": [
+      "D-pad Right selected Iron Man; Left returned Captain America",
+      "LB: 15 to 16 points, Shield Throw rank 3 to 2",
+      "RB: 16 to 15 points, rank 2 to 3",
+      "Y: priority dots cycled from 3 to 0",
+      "A opened native hero_power_assign page",
+      "LT with Autospend On redistributed 10 test points and updated rank stars",
+      "Fresh boot and normal Load Game, Start then Options: reviewed corrected pause layout without Wii diagram or QTE row"
+    ],
+    "fixture": "Private user profile; prior bounded level20/10-point RAM fixture for allocation eligibility; no forced menu or skill outcomes. Installed saves untouched.",
+    "audio_fps": "Not tested; Null audio; no performance claim",
+    "input": "Process-local port0 input only; no OS input",
+    "installed_package": "--verify-package exit0; actual embedded v8 UI manifest validated against installed WAD"
+  },
+  "stage": {
+    "exe_sha256": "F8CFAAFEE1E849CA51A31183A3E07B0AC6B8039F2AED9549BA7A06B10F5AE4FB",
+    "wad_sha256": "602702B7B332D33718D1223804B0503455B5AA601776C515D0537C5E707CC35D",
+    "saves_unchanged": 55,
+    "root_items": [
+      "GameData",
+      "saves",
+      "OpenMUA2.exe"
+    ],
+    "game_launched": false
+  },
+  "screenshots": [
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-hero-next-test.png",
+      "sha256": "edca93c57b338daa4feb0ba013ac5da14fe40ca4ee03ef9b3567fc7df819c8cd",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-hero-previous-verified.png",
+      "sha256": "747674808bdd1dd8b5b2c819258618359927a3c445bb20395d0b95f644def2dd",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-manual-before-refund.png",
+      "sha256": "87d8ec6d77471eff72e7a789698fc528c951481534c4f40fccabba90d93d250e",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-manual-refund-verified.png",
+      "sha256": "ffe63a622913d85d3050a83bf0db6cc36a57b5ff967a8c8f4932a57f39437f44",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-manual-allocate-verified.png",
+      "sha256": "051112632206e6204ee3528934f7c3097dd94642fb26a9cc8b5668e5d6778c6c",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-priority-verified.png",
+      "sha256": "c9d5a1aae1521676ed0b947a7bffc1f5356c6e56a45282bd2eafcaf19aa1d317",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-assign-final-verified.png",
+      "sha256": "02a6ed629f5c868516f0a4ab1ccc9ae0185b21527fd0f669afeffc74db977abe",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-redistributed-native.png",
+      "sha256": "03c6c3e2f7a43bcd6382362a732ba20b6ccefb0a5a97fb0805336838c7c52e1d",
+      "inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-v8-pause-options.png",
+      "sha256": "dee65d8805a892e1fb5ff493783486be82de4718feb5aeacaddd4d7523cfc3a0",
+      "inspected": true
+    }
+  ]
+}

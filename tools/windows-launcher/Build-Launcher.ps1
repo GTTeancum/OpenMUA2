@@ -16,7 +16,7 @@ $windowIcon = (Resolve-Path -LiteralPath $IconPath).Path
 $uiResource = @()
 if ($XboxUiManifest) {
     $uiManifestPath = (Resolve-Path -LiteralPath $XboxUiManifest).Path
-    if ([IO.File]::ReadAllLines($uiManifestPath)[0] -notin @('OpenMUA2-Xbox-UI-v3','OpenMUA2-Xbox-UI-v4','OpenMUA2-Xbox-UI-v5','OpenMUA2-Xbox-UI-v6','OpenMUA2-Xbox-UI-v7')) { throw 'Unsupported Xbox UI manifest version.' }
+    if ([IO.File]::ReadAllLines($uiManifestPath)[0] -notin @('OpenMUA2-Xbox-UI-v3','OpenMUA2-Xbox-UI-v4','OpenMUA2-Xbox-UI-v5','OpenMUA2-Xbox-UI-v6','OpenMUA2-Xbox-UI-v7','OpenMUA2-Xbox-UI-v8')) { throw 'Unsupported Xbox UI manifest version.' }
     $uiResource = @("/resource:$uiManifestPath,xbox-ui.manifest")
 }
 $buildDirectory = Join-Path $env:TEMP ('OpenMUA2-package-' + [Guid]::NewGuid().ToString('N'))

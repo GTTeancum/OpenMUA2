@@ -222,10 +222,11 @@ def main():
             if args.xbox_ui:
                 from xbox_tutorials import patch_tutorials
                 from xbox_options_help import patch_options_help
-                from xbox_options_layout import PACKAGE as OPTIONS_PACKAGE, patch_options_package
+                from xbox_options_layout import PACKAGES as OPTIONS_PACKAGES, patch_options_package
                 from build_xbox_menu_fonts import HASHES, TABLE_HASHES, patch_font, patch_font_table, read_font
                 tip_patcher = patch_tutorials
-                replacements[OPTIONS_PACKAGE] = patch_options_package(source.read(OPTIONS_PACKAGE))
+                for package in OPTIONS_PACKAGES:
+                    replacements[package] = patch_options_package(source.read(package), package)
                 for extension in ('engb', 'itab', 'xmlb'):
                     name = 'data/strings.' + extension
                     replacements[name] = patch_options_help(source.read(name))
@@ -268,7 +269,7 @@ def main():
                 Path(temporary).unlink(missing_ok=True)
     if args.xbox_ui:
         with ui_manifest.open('x', encoding='ascii', newline='\n') as manifest:
-            version = 7
+            version = 8
             manifest.write(f'OpenMUA2-Xbox-UI-v{version}\n')
             for name, payload in sorted(replacements.items()):
                 manifest.write(hashlib.sha256(payload).hexdigest() + '\t' + name + '\n')

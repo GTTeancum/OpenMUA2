@@ -79,7 +79,7 @@ foreach ($version in @(4,5,6)) {
     Check $shared ($current + "`n" + $lines[10]) $false
 }
 Check $shared ($lines -join "`n") $false
-Check $shared (($lines -join "`n").Replace('UI-v3','UI-v8')) $false
+Check $shared (($lines -join "`n").Replace('UI-v3','UI-v9')) $false
 # Version 7 requires the native Options layout in the paired archive.
 $oldLines = $lines
 $name = 'packages/generated/maps/package/menus/options_rev.fb'
@@ -94,9 +94,23 @@ Check $menu $current $true
 Check $shared $current $false
 Check $menu (($oldLines -join "`n").Replace('UI-v3','UI-v7')) $false
 Check $menu ($current.Replace($hash,('0'*64))) $false
+# Version 8 additionally requires the pause-menu copy of the controls layout.
+$oldLines = $lines
+$name = 'packages/generated/maps/package/menus/cw_pda_rev.fb'
+$names += $name
+$sha = [Security.Cryptography.SHA256]::Create()
+try { $hash = [BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($name))).Replace('-','').ToLowerInvariant() }
+finally { $sha.Dispose() }
+$lines += "$hash`t$name"
+$menu = Write-Fixture 'pause-menu'
+$current = ($lines -join "`n").Replace('UI-v3','UI-v8')
+Check $menu $current $true
+Check $shared $current $false
+Check $menu (($oldLines -join "`n").Replace('UI-v3','UI-v8')) $false
+Check $menu ($current.Replace($hash,('0'*64))) $false
 # Verify package versions activate the corresponding runtime features only.
 $configure = $type.GetMethod('ConfigureXboxUiVersion', [Reflection.BindingFlags]'Static,NonPublic')
-foreach ($version in @(3,4,5,6,7)) {
+foreach ($version in @(3,4,5,6,7,8)) {
     $info = [Diagnostics.ProcessStartInfo]::new()
     foreach ($key in @('OPENMUA2_GAMEPAD_PROVIDER','OPENMUA2_DIRECT_GAMEPAD','OPENMUA2_RAPID_TAP_GLYPHS','OPENMUA2_GAMEPAD_AIM','OPENMUA2_GAMEPAD_LOCKON')) {
         $info.EnvironmentVariables.Remove($key)

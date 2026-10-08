@@ -5257,3 +5257,23 @@ Root remains OpenMUA2.exe, GameData, saves. No gameplay auto-launch/warp.
 Powers allocation/refund, redistribution and hero cycling remain open, so TODO
 section 2 is not closed. No audio/FPS validation claimed.
 Evidence: evidence/windows-20261007/MENU-LAYOUT-20261008.json.
+
+## Controls and Powers-page completion - 2026-10-08
+
+TODO #2 is complete and removed. Both native Options copies now use the shared
+Xbox layout; the pause-menu cw_pda_rev package was previously missed. Version8
+requires both packages in the paired manifest. No C++ runtime changes.
+
+Private-profile native menu checks passed: LB refunded one point/rank, RB
+restored it, Y cycled priority, A opened Assign, LT redistributed with Autospend
+On, and D-pad left/right changed the selected hero. Eligibility used an isolated
+level/points fixture, not installed saves or forced menu outcomes. Fresh boot,
+normal Load Game, then Start/Options confirmed the corrected pause layout.
+
+Windows optimized x64 launcher build passed without printed warnings/errors;
+Options tests4/4 (both packages), font tests2/2, launcher checks67/67 passed.
+Paired v8 staged at C:/Games/MUA2/OpenMUA2.exe with GameData; all55 saves unchanged.
+Installed embedded-runtime and actual paired UI manifest verification passed.
+No audio/FPS or physical-controller acceptance claim. Runtime stopped.
+Costume cycling remains a separate TODO: X Skin, Y Details.
+Evidence: evidence/windows-20261007/MENU-COMPLETION-20261008.json.
