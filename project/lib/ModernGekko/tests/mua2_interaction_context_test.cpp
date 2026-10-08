@@ -1,4 +1,5 @@
 #include "mua2_interaction_context.hpp"
+#include "mua2_wave_qte_context.hpp"
 #include <array>
 #include <map>
 #include <vector>
@@ -19,7 +20,7 @@ struct Fixture {
     put(a,0x45c,1);put(a,0x3a8,0x90030000);put(a,0x6e8,2);
     auto& t=memory[0x90020000];t.resize(0xa0);put(t,0x48,2);put(t,0x9c,0x811769e0);
     auto& n=memory[0x90030000];n.resize(16);put(n,0,0x811b0620);put(n,12,0x0d000001);
-    auto& s=memory[0x805f8828];s.resize(0x4020);put(s,0,13);
+    auto& s=memory[0x805f8828];s.resize(0x4040);put(s,0,13);
     std::copy(name.begin(),name.end(),s.begin()+0x4008);
   }
   std::span<const std::uint8_t> read(std::uint32_t a,std::size_t n) const {
@@ -86,7 +87,48 @@ int CheckFixture(Fixture f) {
   std::cout<<"Interaction ownership, handles and direct X consumption passed\n";
   return 0;
 }
+int CheckWaveActors() {
+  for (auto name : {"grab_struggle_attacker", "power_smash_challenge_victim"}) {
+    Fixture f{name};
+    const auto eligible = [](const Fixture& fixture, unsigned port = 1) {
+      return FindWaveQteActor([&](auto a, auto n) { return fixture.read(a, n); }, port);
+    };
+    WaveQteActor actor;
+    if (!FindWaveQteActor([&](auto a, auto n) { return f.read(a, n); }, 1, &actor) ||
+        actor != WaveQteActor{0x90010000, 1, 0x90030000, 0x0d000001} ||
+        eligible(f, 0) || eligible(f, 4) || f.eligible()) return 30;
+    for (auto [address, offset, value] : {
+        std::tuple{0x90001000u, 0xd70u, 0x201u},
+        std::tuple{0x90001000u, 0xd30u, 4u},
+        std::tuple{0x90010000u, 0x4d0u, 0x80000000u},
+        std::tuple{0x90010000u, 0x2a0u, 0u},
+        std::tuple{0x90010000u, 0x2a0u, 0x7fc00000u},
+        std::tuple{0x90010000u, 0x3a8u, 0xfffffffcu},
+        std::tuple{0x90030000u, 12u, 0x0c000001u},
+        std::tuple{0x805f8828u, 8u, 0xffffffffu}}) {
+      auto changed = f; put(changed.memory[address], offset, value);
+      if (eligible(changed)) return 31;
+    }
+    auto duplicate = f; duplicate.memory[0x90040000] = f.memory[0x90010000];
+    put(duplicate.memory[0x90040000], 0x48, 3);
+    auto& m = duplicate.memory[0x90001000];
+    put(m, 0xd30, 14); put(m, 16, 0x90040000); put(m, 0xd78, 3);
+    if (eligible(duplicate)) return 32;
+    // Wave challenges do not require a CCoopEntity target.
+    put(f.memory[0x90010000], 0x6e8, 0);
+    if (!eligible(f)) return 33;
+    if (FindWaveQteActor([&](auto a, auto n) { return f.read(a, n); }, 4, &actor) ||
+        actor != WaveQteActor{}) return 34;
+  }
+  for (auto name : {"generic_sequence", "grab_struggle_attacker_extra",
+                    "power_smash_challenge_victi", "idle"}) {
+    Fixture f{name};
+    if (FindWaveQteActor([&](auto a, auto n) { return f.read(a, n); }, 1)) return 35;
+  }
+  return 0;
+}
 int main() {
+  if (const int result = CheckWaveActors()) return result;
   for (auto name : {"generic_sequence", "electro_sequence"}) {
     const int result = CheckFixture(Fixture{name});
     if (result) { std::cerr << name << ": " << result << '\n'; return result; }

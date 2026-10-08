@@ -1,0 +1,72 @@
+{
+  "result": "PASS: PS2 shared held-power prompt semantics translated to Xbox, verified in OpenMUA2",
+  "correction": "The visible D-pad was samepowerhold, not a steering instruction. Original left-stick replacement proposal was incorrect.",
+  "reference": {
+    "executable": "SLUS_218.79",
+    "sha256": "ae5c125652f0e5fffc1af74ecce474cc0d51f26936a881d2b6c0c0d24fd926ce",
+    "method": "0x4b6c10",
+    "power_actions": "29/30/31/32 select face-button cells 42/46/44/48 or alternate 43/47/45/49; static branch suppresses these actions with sentinel114.",
+    "authored": "power1 and power1_loop request button_hint samepowerhold; authored description separately instructs LEFT_STICK steering.",
+    "limit": "PS2 executable statically traced; PS2 game not run."
+  },
+  "implementation": "Guarded shared resolver calls at80f5daf0/80f5db4c translate power action29/30/31/32 to Xbox A/X/B/Y. Reuses paired HUD sprites. No shader/texture/new atlas/screenshot-overlay replacement; no input changes.",
+  "build": {
+    "exit": 0,
+    "bytes": 16226816,
+    "sha256": "7cd9d3aedfde89baabe4bc7f0f6bd642ef8b99708d180b80939f845096542d50",
+    "warnings_errors": "None printed in final MSVC Release build",
+    "test": "moderngekko.mua2_xbox_prompts 1/1 passed, 0.04s"
+  },
+  "verification": {
+    "input": "One process-local controller: RT+A held simultaneously with left-stick left versus right for350ms. Native shield projectile paths differ. Neutral1500ms clears hint and restores portrait.",
+    "steering": [
+      {
+        "direction": "left_left",
+        "entities": [
+          {
+            "name": "shield_shot",
+            "address": 2471401504,
+            "position": [
+              -417.98974609375,
+              -411.7688293457031,
+              48.58572769165039
+            ],
+            "health": 1.0,
+            "flags": "24513dbe4000c0200000010804000000"
+          }
+        ]
+      },
+      {
+        "direction": "left_right",
+        "entities": [
+          {
+            "name": "shield_shot",
+            "address": 2471401504,
+            "position": [
+              -413.31512451171875,
+              -366.6018981933594,
+              48.58572769165039
+            ],
+            "health": 1.0,
+            "flags": "24513dbe4000c0200000010804000000"
+          }
+        ]
+      }
+    ],
+    "trace": "action29 alternate0 static0 ->sprite43; HUD caller80f5e9ac draws43 instead of56",
+    "screenshots_reviewed": [
+      "outputs/native-campaign-shield-power-prompt-fixed.png",
+      "outputs/native-campaign-shield-power-prompt-released.png"
+    ]
+  },
+  "installed_changed": false,
+  "proprietary_data_changed": false,
+  "host_input": false,
+  "runtime_stopped": true,
+  "limits": "No physical controller, audio or performance acceptance claims. Other power slots covered by resolver regression, not fresh in-game activation.",
+  "disk": {
+    "repo_apparent_bytes": 35013578864,
+    "files": 71778,
+    "cleanup": "Reused current build and private WAD; no new game-data copies. Removed this turn redundant reference-check screenshot only. Existing protected diagnostic files untouched."
+  }
+}

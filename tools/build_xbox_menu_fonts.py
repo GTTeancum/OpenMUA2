@@ -13,6 +13,7 @@ import zipfile
 from PIL import Image
 from build_qte_glyph_override import rgb5a3
 from inspect_button_glyphs import read_font
+from xbox_tutorials import read_nodes
 
 HASHES = {
     '': '27a007d6850ef0417531ec1a5b95822fd1b23867671730db1f7bd7de69c2f64a',
@@ -23,7 +24,7 @@ TABLE_HASHES = {
     '_ws': 'c47e707183ad3953e5a45e6342dad16507d89a321fb57ffae0ba5b43a9b968ee',
 }
 # Native text character = 162 + icon ID. Preserve native DPAD at ID 6.
-# IDs 15-19 and 24 are not emitted by the verified Wii controller resolver.
+# Preserve native rank markers; extra Xbox controls use empty character slots.
 CROPS = {
     163: ('Start', (92, 572, 120, 597)),
     164: ('A', (360, 800, 420, 860)),
@@ -31,13 +32,43 @@ CROPS = {
     166: ('Y', (420, 800, 480, 860)),
     167: ('LB', (31, 572, 60, 597)),
     168: ('DPad', (240, 620, 264, 650)),
-    177: ('LT', (432, 620, 456, 650)),
-    178: ('RT', (576, 620, 600, 650)),
-    179: ('View', (62, 572, 90, 597)),
-    180: ('LeftStick', (264, 620, 288, 650)),
-    181: ('RightStick', (288, 620, 312, 650)),
-    186: ('X', (300, 800, 360, 860)),
+    225: ('LT', (432, 620, 456, 650)),
+    226: ('RT', (576, 620, 600, 650)),
+    227: ('View', (62, 572, 90, 597)),
+    228: ('LeftStick', (264, 620, 288, 650)),
+    229: ('RightStick', (288, 620, 312, 650)),
+    231: ('RB', (0, 572, 30, 597)),
+    234: ('X', (300, 800, 360, 860)),
 }
+
+
+# These original empty characters are reserved by the paired v7 runtime.
+EXTRA_CHARACTERS = frozenset((225, 226, 227, 228, 229, 231, 234))
+
+
+def font_layout(table):
+    glyphs = {n: dict(g) for n, g in table['glyphs'].items()}
+    occupied = [bytearray(256) for _ in range(256)]
+    for g in glyphs.values():
+        left, right = (round(float(g[k])*256) for k in ('s', 's2'))
+        top, bottom = sorted(round((1-float(g[k]))*256) for k in ('t', 't2'))
+        for y in range(top, bottom):
+            occupied[y][left:right] = bytes([1])*(right-left)
+    for number in sorted(EXTRA_CHARACTERS):
+        if any(float(glyphs[number][k]) for k in ('width','height','horizadvance')):
+            raise ValueError('Reserved Xbox character is not empty')
+        cell = next(((x,y) for y in range(237) for x in range(237)
+                     if not any(any(row[x:x+20]) for row in occupied[y:y+20])), None)
+        if cell is None:
+            raise ValueError('No unused font cell for Xbox controls')
+        x,y = cell
+        for row in occupied[y:y+20]: row[x:x+20] = bytes([1])*20
+        g = glyphs[number]
+        for key in ('width','height','horizadvance','horizoffset','baseline'):
+            g[key] = glyphs[164][key]
+        g.update(s=str(x/256),s2=str((x+20)/256),
+                 t=str(1-(y+20)/256),t2=str(1-y/256))
+    return glyphs
 
 
 def patch_font(original, font_table, source, suffix):
@@ -50,16 +81,20 @@ def patch_font(original, font_table, source, suffix):
     pixel_start = len(original) - 256 * 256 * 2
     touched = set()
     cells = []
+    layout = font_layout(font_table)
     for character, (label, crop) in CROPS.items():
-        g = font_table['glyphs'][character]
+        g = layout[character]
         left, right = (round(float(g[k]) * 256) for k in ('s', 's2'))
         top, bottom = (round((1 - float(g[k])) * 256) for k in ('t2', 't'))
         if not (0 <= left < right <= 256 and 0 <= top < bottom <= 256):
             raise ValueError('Invalid font cell bounds')
         width, height = right - left, bottom - top
         glyph = source.crop(crop)
-        if glyph.getbbox() is None:
+        bounds = glyph.getchannel('A').getbbox()
+        if bounds is None:
             raise ValueError('Supplied glyph crop is empty')
+        # Apply one tight-crop rule to every shared Xbox button.
+        glyph = glyph.crop(bounds)
         glyph.thumbnail((width, height), Image.Resampling.LANCZOS)
         cell = Image.new('RGBA', (width, height))
         cell.paste(glyph, ((width-glyph.width)//2, (height-glyph.height)//2))
@@ -78,6 +113,39 @@ def patch_font(original, font_table, source, suffix):
     if any(a != b and i not in touched for i, (a, b) in enumerate(zip(original, result))):
         raise ValueError('Write escaped selected glyph cells')
     return bytes(result), cells
+
+
+
+def patch_font_table(original, suffix):
+    """Use the face-button em box for every shared Xbox glyph; keep UVs intact."""
+    if suffix not in TABLE_HASHES or hashlib.sha256(original).hexdigest() != TABLE_HASHES[suffix]:
+        raise ValueError('Unknown/already-modified font coordinate table')
+    nodes = read_nodes(original)
+    layout = font_layout(read_font(original))
+    reference = next(node for node in nodes if node[0] == 'glyph' and node[1].get('num') == '164')
+    fields = ('width', 'height', 'horizadvance', 'baseline')
+    result = bytearray(original)
+    matched = set()
+    for name, attrs, locations, pointers in nodes:
+        if name != 'glyph' or int(attrs['num']) not in CROPS:
+            continue
+        matched.add(int(attrs['num']))
+        if int(attrs['num']) in EXTRA_CHARACTERS:
+            for field in ('width','height','horizadvance','horizoffset','baseline','s','s2','t','t2'):
+                offset = len(result)
+                result.extend(layout[int(attrs['num'])][field].encode('ascii') + b'\0')
+                struct.pack_into('<I', result, pointers[field], offset)
+            continue
+        for field in fields:
+            # Redirect this attribute only; never overwrite a shared XMLB string.
+            struct.pack_into('<I', result, pointers[field], reference[2][field])
+    if matched != set(CROPS):
+        raise ValueError('Missing shared Xbox glyph metrics')
+    after, before = read_font(result), read_font(original)
+    for number, glyph in before['glyphs'].items():
+        if number not in CROPS and after['glyphs'][number] != glyph:
+            raise ValueError('Changed a non-button character')
+    return bytes(result)
 
 
 def main():
@@ -99,6 +167,7 @@ def main():
             table = read_font(table_bytes)
             result, cells = patch_font(original, table, source, suffix)
             prepared.append((name, result, cells))
+            prepared.append((f'ui/fonts/rev_med{suffix}.xmlb', patch_font_table(table_bytes, suffix), []))
     args.output_dir.mkdir(parents=True)
     receipt = {'scope': 'private candidates; runtime mapping required; not installed', 'textures': []}
     for name, data, cells in prepared:

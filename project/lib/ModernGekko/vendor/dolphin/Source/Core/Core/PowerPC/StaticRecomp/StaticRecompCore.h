@@ -228,10 +228,13 @@ private:
   u64 m_jit_fallback_runs = 0;
   u64 m_hook_fallback_instructions = 0;
   u64 m_hook_fallback_fast_cache_instructions = 0;
+  u64 m_hook_fallback_fast_cache_code_ea = 0;
+  u64 m_hook_fallback_fast_cache_noncode_ea = 0;
   u64 m_hook_fallback_slow_instructions = 0;
   std::unordered_map<u32, u64> m_jit_fallback_pc_samples;
   std::unordered_map<u32, u64> m_hook_fallback_pc_samples;
   std::unordered_map<u64, u64> m_hook_fallback_instruction_samples;
+  std::unordered_map<u64, u64> m_hook_fallback_fast_cache_ea_samples;
   std::unordered_map<u32, u64> m_hook_fallback_slow_pc_samples;
   std::unordered_map<u64, u64> m_hook_fallback_slow_instruction_samples;
   u64 m_timebase_cycle_remainder = 0;

@@ -1,0 +1,97 @@
+{
+  "date": "2026-10-07",
+  "status": "Private candidate, not installed or visually accepted",
+  "change": "Four hardcoded hacking descriptions/tutorials now use left-stick wording through existing exact-hash text replacement. Requires active gamepad aiming; removes pointer/Nunchuk centering requests, preserves power-up tokens and existing pause-reset warning. Original files unchanged.",
+  "build": {
+    "exit": 0,
+    "runner_sha256": "daa8aa4917268c00e62cda264c27e324eefccefc478d6f2afddf0ba91a19e9fb",
+    "runner_bytes": 16220160,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ],
+    "focused": "4/4 in2.40s",
+    "regression": "50/50 in8.15s",
+    "compiler_linker_warnings_errors": 0
+  },
+  "native_checks": {
+    "on": [
+      {
+        "address": "0x805390b8",
+        "allocation": 296,
+        "enabled": true,
+        "passed": true,
+        "sha256": "b41a29986e787c2ef6f20d673e1bca744bbc97ff843d879a066487163ed4becd",
+        "text": "Hack the Computer!\n\nMove the left stick to steer your signal. Avoid walls and obstacles. The first player to gain access earns 1000 EXP."
+      },
+      {
+        "address": "0x80563708",
+        "allocation": 404,
+        "enabled": true,
+        "passed": true,
+        "sha256": "879409b0c2779f5e7704754db968e33c30a0774455af01266edcef75bb79ca21",
+        "text": "Hack the Computer!\nSteer your signal with the left stick.\nAvoid walls and obstacles.\nBe the first player to gain access!\n\nCollect coins for extra points.\nTouch power-ups to change speed or grow your signal.\nPausing resets your hacking attempt."
+      },
+      {
+        "address": "0x8056389c",
+        "allocation": 427,
+        "enabled": true,
+        "passed": true,
+        "sha256": "2d37c4d005547fbe18c5000e0d41b3defa4c682154df51a460bf47686caaa2fb",
+        "text": "Hack the Computer!\nSteer your signal with the left stick.\nAvoid walls and obstacles.\nBe the first player to gain access!\n\nCollect coins for extra points.\nTouch $HACK2 and $HACK3 to change speed.\nTouch $HACK4 to grow your signal.\nPausing resets your hacking attempt.\n\nPress $ATTACK to continue..."
+      },
+      {
+        "address": "0x80563a48",
+        "allocation": 363,
+        "enabled": true,
+        "passed": true,
+        "sha256": "a6ad15bb499d34288b6a9af4ef2d415098aac7562ffdf5bee9069b0c3d3fd9f2",
+        "text": "Hack the Computer!\n\nSteer your signal with the left stick.\nAvoid walls and obstacles to gain access.\n\nCollect coins for extra points.\nTouch $HACK2 and $HACK3 to change speed.\nTouch $HACK4 to grow your signal."
+      }
+    ],
+    "off": [
+      {
+        "address": "0x805390b8",
+        "allocation": 296,
+        "enabled": false,
+        "passed": true,
+        "sha256": "07229c40499c037d9f1c843b264509df24f12f96028551d603a9acc0b1a1b3ea",
+        "text": "(original hash verified)"
+      },
+      {
+        "address": "0x80563708",
+        "allocation": 404,
+        "enabled": false,
+        "passed": true,
+        "sha256": "e0e148787ad70b3fa554c9165f703b8b2c2575c06d3e7ed3bc0f0ba062a54a10",
+        "text": "(original hash verified)"
+      },
+      {
+        "address": "0x8056389c",
+        "allocation": 427,
+        "enabled": false,
+        "passed": true,
+        "sha256": "1e2a7793342ed014c24b94e0451aeccaa27c7199bb9b73586c842a744d4034e6",
+        "text": "(original hash verified)"
+      },
+      {
+        "address": "0x80563a48",
+        "allocation": 363,
+        "enabled": false,
+        "passed": true,
+        "sha256": "2f44461df3457135f926a6f92ec61cfa9a5cd0b39bd2595decb9705379ced4b3",
+        "text": "(original hash verified)"
+      }
+    ]
+  },
+  "native_method": "Two separate single-core headless processes restored existing encounter fixture, advanced200ms through contained input, inspected original text allocations read-only, exited0. No game context or completion forced.",
+  "not_verified": [
+    "Hacking screen layout and actual tutorial rendering",
+    "Hacking success/failure/cancel/reset flow",
+    "Turret and Nullifier gameplay acceptance",
+    "Four joined players",
+    "Physical controller/audio/FPS"
+  ],
+  "next": "Reach actual gameplay interactions and inspect instructions in context; verify native success/failure/exit and four-player ownership before installation.",
+  "goal_complete": false
+}

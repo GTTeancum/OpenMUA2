@@ -1,0 +1,49 @@
+{
+  "result": "PASS port0 targeted hacking entry, steering, native collision failure, retry, win and return",
+  "map": "act2/rebelhideout/rebel_anti_2",
+  "entity": "armory_terminal",
+  "fixture": "Warp from safe map entry; only terminal enabled bit changed to bypass boss prerequisite. No minigame collision, speed, score or win-condition modifications. Successful route used diagnostic save-state retries.",
+  "source_fix": "CW_Results_Hack type0x81194460 added to guarded shared Start-continue context; native XMLB uses MENU_OK Continue Game. Corrects action105 emission and Xbox Start glyph together.",
+  "verified": [
+    "A dismisses instruction screen",
+    "Left/right/up/down stick input steers native signal",
+    "Wall collision produces FAILED screen",
+    "Xbox Start prompt displayed on results; Start retries",
+    "Native goal reached:180points,+1000EXP",
+    "Start leaves winning results and returns to gameplay",
+    "Left stick moves hero from [2937.368,1635.920,1.252] to [2939.383,1605.413,1.258]"
+  ],
+  "remaining": [
+    "Four-player ownership and simultaneous hacking input",
+    "Physical controller acceptance",
+    "Other gameplay interaction types and installed packaging",
+    "Instruction panel has native signal/marker drawn over text; visual layering remains deferred with existing menu-overlay issue"
+  ],
+  "runtime": {
+    "sha256": "389c19ef09c7ddc7ab10aa53b8032d9037f386bff6f5a5a53dcd885a4b4b8e9c",
+    "bytes": 16226304,
+    "build": "Windows Release existing MSVC toolchain; exit0",
+    "focused": "5/5 passed",
+    "supported": "50/50 passed",
+    "warnings": "No compiler warnings or errors printed"
+  },
+  "proofs": {
+    "outputs/native-campaign-isolated-hacking-start.png": "1d682f15a8f6414268100d0cf52eb6402f18da4dbcf24e46daca4c935976b152",
+    "outputs/native-campaign-hacking-fixed-results.png": "f1ca683af977ea554224ada5b56ef5f399defe94be7116b93f9f79bd0c5ff3c7",
+    "outputs/native-campaign-hacking-fixed-retry.png": "979e62517428ce2887dbd0e2b3e115272169f3b15c6ea1746336dec6a07fe2d6",
+    "outputs/native-campaign-hacking-win-result.png": "4fe14d561e4ac54a27e59ac8aac39275b6eaa7c192335c9bbd730dceb720ce1e",
+    "outputs/native-campaign-hacking-return-world.png": "5074d7446d424ab8328660530c98398f49895372a84bf47df561a19b39f128b5"
+  },
+  "private_wad_restored": {
+    "before": "6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec",
+    "after": "b09d490d1c59b31caf91d215654ef9f2687435541072a164bf7840c72c63cd8b",
+    "member": "scripts/menus/new_game.py",
+    "replacement": "loadMapKeepTeam(\"act2/rebelhideout/rebel_anti_2\")\r\n",
+    "restore_required": false,
+    "restored_sha256": "6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec"
+  },
+  "installed_game_changed": false,
+  "host_input": false,
+  "audio": "Null; not validated",
+  "goal_complete": false
+}

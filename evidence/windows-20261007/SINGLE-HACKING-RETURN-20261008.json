@@ -1,0 +1,183 @@
+{
+  "result": "PASS winning-results return and movement; fresh maze win not retested",
+  "runtime_sha256": "69bfa1f66ddccf79bd0df53f8c28fb596df2d6a979618ca0c5ac820d30fce3b2",
+  "state": "hacking-result-final.sav",
+  "records": [
+    {
+      "label": "single-current-return",
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "health": 54.0,
+          "position": [
+            2937.368408203125,
+            1635.920166015625,
+            1.2517505884170532
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            1.5740643739700317
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "health": 51.0,
+          "position": [
+            2974.6708984375,
+            1629.814453125,
+            1.0607911348342896
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            2.999891519546509
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 51.0,
+          "position": [
+            2912.49658203125,
+            1599.4063720703125,
+            0.7464014291763306
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            4.14028263092041
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "health": 60.0,
+          "position": [
+            2945.21337890625,
+            1558.8951416015625,
+            0.8667792081832886
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            4.443181991577148
+          ],
+          "weapon": 0
+        }
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 0,
+        "kind": 0,
+        "owner": 4294967295
+      }
+    },
+    {
+      "label": "single-current-moved",
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "health": 54.0,
+          "position": [
+            2939.274658203125,
+            1605.3792724609375,
+            1.2583943605422974
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            4.711971759796143
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "health": 51.0,
+          "position": [
+            2974.6708984375,
+            1629.814453125,
+            1.0607911348342896
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            2.999891519546509
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 51.0,
+          "position": [
+            2900.63330078125,
+            1576.3038330078125,
+            0.7554013133049011
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            3.7542717456817627
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "health": 60.0,
+          "position": [
+            2948.42626953125,
+            1570.794189453125,
+            0.8750957250595093
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            5.671902656555176
+          ],
+          "weapon": 0
+        }
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 0,
+        "kind": 0,
+        "owner": 4294967295
+      }
+    }
+  ],
+  "reviewed_captures": [
+    "single-hacking-restored-result",
+    "single-current-hacking-world"
+  ],
+  "remaining": [
+    "Fresh single-player maze win on current build",
+    "PS2 manual turret exit determination"
+  ],
+  "excluded": "Four-port testing, Nullifier research, broad inventory, packaging, installed regressions, physical acceptance",
+  "installed_changed": false
+}

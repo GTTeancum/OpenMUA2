@@ -1,4 +1,1051 @@
-# MUA2 CANONICAL HANDOFF — Wii Marvel: Ultimate Alliance 2 native PC recompilation
+# MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
+
+## Section 1 closed: loading tip corrected - 2026-10-08
+
+The last open section1 item was a loading-screen tip. It now describes the
+verified RT + A/X/B/Y power controls instead of unsupported LB + D-pad quick
+assignment. Three loose tables and two embedded copies validated; all other
+archive members unchanged. Controller/prompt tests2/2 passed. User explicitly
+ended further screenshot pursuit: this specific tip was not captured in-game.
+Only the private development WAD was updated; installed package unchanged.
+Runtime stopped. Sections2/3 remain deferred.
+Evidence: evidence/windows-20261007/LOADING-TIP-FIX-20261008.json.
+
+## PS2 held-power prompt fix - 2026-10-08
+
+Corrected the shield HUD diagnosis: its D-pad symbol was a samepowerhold hint,
+not a stick-steering instruction. PS2 executable mapper0x4b6c10 selects the
+power face button. Shared guarded Xbox resolver now uses A/X/B/Y for power
+slots1/2/3/4, preserving the native static suppression and unrelated prompts.
+No input or proprietary data changes. RT+A plus opposite left-stick inputs
+steered the live shield; reviewed captures show Xbox A during the throw and
+Captain America portrait restored after release. Windows Release build and
+focused prompt test passed. PS2 itself was not run; installed package unchanged.
+Evidence: evidence/windows-20261007/SHIELD-POWER-PROMPT-FIX-20261008.json.
+
+## Profile-ready Xbox Start glyph fixed - 2026-10-08
+
+Legacy MenuExit token now resolves to the existing Xbox Start/Menu font cell
+only with direct provider and established Start-accept context. No input mapping
+changed. Windows Release build passed without printed warnings/errors; focused
+prompt test1/1 passed. Fresh one-controller headless launch, native ready-screen
+capture reviewed: Xbox Menu beside Start Game, B Back intact. Start reached the
+normal overwrite confirmation; no overwrite accepted. Installed package unchanged.
+Evidence: evidence/windows-20261007/PROFILE-START-GLYPH-20261008.json.
+
+## Scope correction and turret exit code finding - 2026-10-08
+
+User removed fresh maze-win replay and four-port tests. Gameplay acceptance and
+edge-case testing belong to their beta testers. Do not restart those checks,
+Nullifier research, broad inventories, packaging or installed-build regressions.
+
+PS2 method0040D1D0 belongs to CCHBFGEnd (vtable007D9E40, RTTI00782EA0,
+name00782E80). It resolves category31 and runs the ending transition; it does
+not establish a manual-exit input. No speculative button mapping was added.
+Automatic turret exit passed previously. Manual exit remains unproven, not
+claimed absent. Evidence: TURRET-EXIT-DISAMBIGUATION.json. No runtime change.
+
+## Single-controller scope and current hacking return - 2026-10-08
+
+User excludes all four-port testing from this pass. Remaining work is limited to
+one-controller hacking current-build success and PS2 turret manual-exit analysis.
+Current runner69bfa1f6 loaded the prior native winning results state (180points,
+1000EXP). Start returned to world; left stick moved Captain America from
+[2937.368,1635.920,1.252] to [2939.275,1605.379,1.258]. Native result/world
+captures reviewed. This verifies return/movement, NOT a fresh current-build win.
+PS2 turret update40C650..40CEEC traced farther; no manual-exit binding proved.
+Do not invent one or close that question based solely on the aiming handler.
+Runtime stopped; no source/build/installed or proprietary-data changes.
+
+## Current scope and four-player hacking checkpoint - 2026-10-08
+
+User narrowed this pass to remaining hacking and turret checks only. Do not
+pursue Nullifier research, a broader interaction inventory, packaging, installed
+regressions or physical-controller acceptance in this pass.
+
+Four-port hacking steering isolation and scheduler release passed. Native
+signals map ports0..3 to green/red/yellow/blue. Four-player FAILED results and
+port0 Start retry to the Xbox A/left-stick tutorial were visually reviewed.
+Multiplayer success/return and four-player turret ownership remain pending.
+Marker overlapping tutorial text remains a deferred overlay issue.
+Harness correction: release=0 retains input across command gaps; release=1
+zeros values at the scheduled time and passed this four-port release test.
+Do not repeat the unsupported blanket claim that release=1 disconnects pads.
+Runtime stopped, private WAD restored byte-exact, installed game unchanged.
+Evidence: evidence/windows-20261007/FOUR-PORT-HACKING-20261008.json.
+
+## Four-port lock-on encounter passed - 2026-10-08
+
+Four Guest profiles selected/confirmed through native new-game UI before the
+private Chemical Plant checkpoint route. All four actor owners0..3 remained
+AI=false after loading. Synthetic pads must remain connected between commands:
+release=0 neutral; releasing their override caused a real disconnect dialog.
+No actor owners or join flags were assigned by the harness.
+
+XMLB-validated tank placement, then native movement/use after the boss intro:
+Player2 repeated X completed the tank. Each controller port0..3 independently
+cleared the active A lock-on target; LB left it intact. Player4 cleared the
+remaining B targets and native boss HP fell75600->54600. Native captures reviewed:
+tilted X, gamepad instruction, readable B timing ring, and world combat after win.
+Player3's hero was KO before lock-on; its joined controller still participated.
+No HP, target assignments/timers or completion writes. Evidence:
+FOUR-PORT-LOCKON-20261008.json. Runtime unchanged from prior69bfa1f6 build.
+
+The retained chemical-four-joined.sav is during the boss introduction; wait for
+it to end before use. chemical-four-lockon-instruction.sav and
+chemical-four-lockon-active.sav preserve the actual four-player interaction.
+Private WAD restored to6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec;
+runtime stopped, installed game/saves untouched. Earlier standalone zoneinfo
+start-map experiment loaded Latveria and was restored; do not repeat it.
+Quitting to main menu clears party; select four profiles before direct map route.
+
+Next: four-player turret/hacking via the same native profile-first fixture;
+then remaining gameplay inventory and reviewed installation/source integration.
+Keep deferred menu overlays separate. Profile Start prompts on additional ports
+still show Wii plus; note for UI pass. No physical-controller/audio/FPS claim.
+Temporary dump cleanup remains blocked by the earlier automatic approval review;
+no retry through another method. Goal remains active.
+
+## Lock-on prompt readability fixed - 2026-10-08
+
+Removed the colored star model covering lock-on face glyphs through the shared,
+hash-guarded gamepad target transform. Native timing ring, target lifetime,
+button assignment and completion remain intact. Native screenshots reviewed:
+Y is readable; pressing Y returns to combat. Windows Release moderngekko-run
+rebuilt successfully without printed compiler/linker warnings/errors. Four
+focused control tests passed. Evidence: LOCKON-VISUAL-20261008.json.
+
+Post-dispatcher-fix hacking regression: all four stick directions change the
+native aim record with correct opposite signs; neutral is zero. Native screenshot
+shows signal movement and subsequent collision/FAILED results with Xbox Start.
+Full hacking success was previously tested but not repeated on this build.
+
+Four-player encounter ownership remains unverified. Boss checkpoint has player
+manager byte40=0x70: join handler80132E20..28 requires bit0x80, so exits before
+reading Start. Do not force join flags or repeat Start in that checkpoint.
+Next: establish native joins before the boss transition, then carry the joined
+party into the XMLB-targeted encounter. No statue/fusion or campaign traversal.
+Runtime stopped; installed game and real saves unchanged. Private WAD unchanged.
+
+## Native lock-on reached and dispatcher fixed - 2026-10-08
+
+Supersedes the tank-entry diagnosis below. Tank heaviness2 rejects Captain
+America (strength0). Iron Man has strength2; selecting him, placing behind the
+trigger and walking into use range starts generic_sequence. Existing repeated X
+completes the tank. No input-binding or strength bypass was needed.
+
+Live lock-on then exposed stale PPC state.pc in external hook callbacks under
+JIT. HLE dispatcher now synchronizes it to the explicit instruction address for
+external branches/observers. This shared fix activates the guarded gamepad path.
+Native instruction now says Press the buttons on the target. A/B/X/Y each cleared
+their assigned native targets across [X,A,A] and [B,X,Y] sequences. LB did not
+clear X. Boss HP48000 ->43200 (tank) ->31200 (lock-on win); timeout left43200.
+Movement returned after success. No HP, timers, target assignments or win flags
+were edited. Y glyph is partly covered by a star effect and still needs visual
+correction. Unjoined port1 did not affect targets; joined four-player validation
+remains open, not replaced by that check. Shared aiming needs a post-fix regression.
+
+Windows Release rebuild completed without printed compiler/linker warnings or
+errors. 68 tests passed; three dependency binaries (fullbench/fuzzer/zstreamtest)
+were unavailable and playTests disabled, so full CTest invocation returned nonzero.
+Runner SHA256 11c69585d846c32340ecba0f22384663d92beb094c39c4dd6af4ba8e22ddec66,
+16226304 bytes. Installed game/saves unchanged; private WAD remains restored.
+Runtime stopped. Evidence: TARGETED-LOCKON-20261008.json.
+Next: inspect the star covering Y from chemical-lockon-y.sav, then joined-player
+ownership and shared aiming. Do not repeat statue/fusion or campaign traversal.
+
+## Targeted Chemical Plant checkpoint - 2026-10-08
+
+Boss lock-on is NOT passed. XMLB identifies the fuel-tank co-op interaction as
+its prerequisite. The authored boss checkpoint startup path was used in the
+private diagnostic route; native boss introduction, fuel tanks and Hank Pym HP
+bar appeared. Direct placement at the earlier trigger had failed to activate it.
+X Throw Fuel Tank displays correctly and X runs fade_safeguards, but both
+Captain America and Iron Man remain in idle with no co-op target. Spreading
+allies to remove collision overlap did not resolve entry. No QTE progress,
+boss HP, target timers or completion callbacks were changed. Lock-on itself
+has not yet been tested. Next: trace tank acttargets -> CCoopEntity activation
+-> generic_sequence using chemical-tank-before.sav; do not revisit statue/fusion.
+
+Runtime stopped. Private route restored to original SHA256
+6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec.
+Installed game/saves unchanged; no new source build in this checkpoint.
+Retained chemical-boss-checkpoint.sav and chemical-tank-entry-failure.sav as
+reproduction points. Evidence: TARGETED-CHEMICAL-20261008.json.
+
+## Targeted encounter continuation - 2026-10-08
+
+Supersedes the incomplete turret status below. Port0 completed both native turret
+objectives, the ending cutscene released the turret, and left-stick movement
+worked afterward. No enemy HP or completion flags changed during turret combat.
+The harness needed the authored projectile-origin offset when choosing its aim;
+runtime aim code did not change. Four-player encounter ownership remains pending.
+
+Hacking reached through the authored armory_terminal in
+act2/rebelhideout/rebel_anti_2. Diagnostic fixture enabled only the terminal to
+bypass the boss prerequisite; this does not prove campaign access. Native hacking
+instructions show left-stick wording, A dismisses them, and steering moves the
+signal. A wall collision produced the native FAILED results. Start and A could
+not leave that screen: CW_Results_Hack (0x81194460) requires MENU_OK, which was
+missing from the shared Start-continue context. Added the guarded context and a
+regression. Windows Release rebuild passed (5/5 focused, 50/50 supported tests). Native
+results now show Xbox Start; Start retries successfully. The maze was completed
+using stick input and save-state retries: 180 points, +1000 EXP. Start returned to
+gameplay and movement worked. No collision, speed, score or win flags modified.
+Four-player ownership and physical-controller acceptance remain pending.
+Native signal/marker overlaps the instruction panel; record as unresolved visual
+layering alongside the deferred menu overlay issue.
+See evidence/windows-20261007/TARGETED-HACKING-20261008.json.
+
+Private new-game route has been restored byte-for-byte to WAD SHA256
+6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec.
+Installed game and saves untouched. Diagnostic states hacking-tutorial.sav,
+hacking-active.sav, hacking-failed.sav, hacking-result-final.sav and hacking-complete.sav are in the existing workspace
+work/campaign-progress-20261008. No OS input, audio or physical-controller claim.
+
+
+## XMLB-targeted turret validation - 2026-10-08
+
+User explicitly authorized warps to authored map encounters, superseding campaign
+traversal. Added tools/warp_gameplay_encounter.py. It reads private XMLB and
+validates live target name/position, moves four party actors through process-local
+checked writes, records receipts and leaves the runtime paused. No host input.
+
+Storm Castle prerequisites used a diagnostic 1-HP-generator fixture, destroyed
+through normal attacks. X mounted the enabled turret. Found and fixed remaining
+Wii wording in both shared turret tutorial branches and the mounted HUD. Fresh
+entry screenshots were inspected: left-stick aim and Xbox A/B fire are correct.
+A/B firing and stick aim destroyed all six original-HP turrets; native objective
+reported Covering Fire: Turrets COMPLETE. Doombot phase/final release remain
+unverified after a diagnostic entity-arena failure. No manual exit binding
+accepted. Do not claim full encounter or four-player acceptance.
+
+Windows Release build passed, focused4/4 and supported50/50 passed; no printed
+warnings. Runtime SHA25672f205f86322114ea3b9759139f58c2737a5215392b2740f411a0b2b1d1f001f
+(16,226,304 bytes). Installed EXE and user saves unchanged; no repackaging.
+PID32304 paused at TRIG_turretEvent. Workspace work/campaign-progress-20261008/
+turret-before-use.sav preserves targeted entry; campaign-current.sav preserves
+natural progress separately (updated hash in evidence). Finish turret release,
+then target hacking/other gameplay interactions using XMLB; no statue/fusion
+replay. See evidence/windows-20261007/TARGETED-TURRET-20261008.json.
+
+
+## Normal campaign progression authorized - 2026-10-08
+
+User authorized normal progression to the later encounters, superseding the
+route-scope blocker below. Loaded the preserved natural campaign state on the
+reset-fixed runtime. Repeated X presses completed the required statue objective;
+native capture confirmed Hero Training: Might (COMPLETE). Continued through
+adjacent streets using contained process-local input. No later map transition or
+turret encounter reached yet; do not treat navigation as encounter acceptance.
+
+PID13876 is paused. Current natural progress is saved at workspace-relative
+work/campaign-progress-20261008/campaign-current.sav (not yet reload-verified).
+Installed saves and EXE are unchanged. Turret, hacking, lock-on, packaging and
+physical-controller acceptance remain open. Audio was Null and is unverified.
+See evidence/windows-20261007/CAMPAIGN-PROGRESSION-20261008.json. Continue from
+this checkpoint; do not repeat completed statue/fusion proof audits.
+
+## Encounter validation blocked - 2026-10-07
+
+Rechecked installed saves: Game1 is the 00:01 Latveria auto-save; Game2..10
+are blank. No mounted/later normal encounter checkpoint is available. The same
+route constraint has persisted through the recent audit/review turns. Runtime
+PID21228 stopped with exit0 and its unique parked state is retained. User asked
+to leave statue/fusion work parked; do not restart that route without resolving
+scope. Need a later normal save or a route decision permitting ordinary campaign
+progression to the required encounters. Static checks do not replace live proof.
+Packaging/install validation, final reviewed push and physical acceptance remain
+outstanding. See evidence/windows-20261007/ENCOUNTER-VALIDATION-BLOCKER.json.
+
+## Lock-on runtime restart flags repaired - 2026-10-07
+
+Runtime::Run now resets lock-on active/registration flags with other controls.
+Core shutdown clears HLE hooks; stale flags could otherwise skip reinstall on a
+second run in the same process. Initial compilation passed but link failed
+LNK1104 because parked PID21228 held the runtime open. Saved that unique run to
+work/native-campaign-validation/normal-campaign-parked.sav and stopped it (exit0).
+No statue/fusion replay performed. Installed saves untouched.
+
+Retry Windows Release build passed without printed warnings. Focused tests4/4,
+supported tests50/50 passed. Runtime SHA256:
+a7e889a52dc3144ac17e4c03ab288017a01fdd4c8502421b8d5c5fa7d729353d
+(16,225,792 bytes). Existing private v6 launcher still embeds the prior runtime;
+installed EXE unchanged. Two complete runs in one process and actual lock-on
+encounter remain unverified. See LOCKON-RUN-RESET.json in evidence/windows-20261007.
+
+## Packaging preflight and encounter checkpoint - 2026-10-07
+
+Build-Launcher now validates icon/optional UI manifest before creating its large
+payload archive. Missing-icon and missing-manifest checks both failed early,
+with identical temporary-package directory inventories before/after. No runtime
+or installed changes, and no rebuild needed for this preflight-only edit.
+See evidence/windows-20261007/PACKAGING-PREFLIGHT.json.
+
+Retained turret checkpoint inventory found only the known KeepTeam entry;
+no mounted or normally progressed turret state. Asked whether a later normal
+save exists. Live encounter acceptance remains open; do not repeat static
+audits as a substitute or return to statue/fusion without a route decision.
+
+## Turret analog and tutorial code audit - 2026-10-07
+
+Verified PS2 CCHWeapon stick rotation constants/deadzone/limits against the
+candidate helper and original binary. The exact-hash turret instruction hook
+selects shipped analog-stick text at80563D38, skipping pointer text at80563DC4.
+This verifies code selection only: no live turret tutorial, firing, exit or
+four-player acceptance. Do not infer an exit button from unrelated handlers.
+See evidence/windows-20261007/TURRET-ANALOG-PROMPT-AUDIT.json.
+
+## Scripted turret identity and private package checkpoint - 2026-10-07
+
+Read-only authored map audit distinguishes ordinary use-activated turrets from
+mm_turret, whose actonuse=false and dropscript selects turretevent_dropturret.
+Validate the actual scripted encounter; a generic turret test cannot establish
+its entry/exit behavior. No new exit binding inferred or source patch applied.
+Statue/fusion replay remains parked; turret/hacking/lock-on retain priority.
+See TURRET-LIFECYCLE-AUDIT.json in evidence/windows-20261007.
+
+Previously built private v6 candidate is retained and its SHA256/size rechecked:
+4b566c4e669e820aaf7b5d414e6d37b341582ab5e522d43bcdd012e58fc4af4e,
+10,636,800 bytes. Packaging checks previously verified 2,634 payload members
+and asset verifier version6. This is not installed or gameplay acceptance.
+Installed EXE/data/saves unchanged. See XBOX-UI-V6-CANDIDATE.json.
+Automatic cleanup review rejected deletion of two package temporary directories
+with only "blocked by policy"; retained, not retried through another mechanism.
+
+## Gameplay priority correction and turret exit audit - 2026-10-07
+
+Stop replaying statue/fusion checks; user reaffirmed turret/hacking/lock-on
+priority. PID21228 remains paused near statue after Spider-Man double jump;
+do not continue that detour. Turret exit remains unresolved. PS2 text saying
+Block to Exit belongs to CCHTurnObjSequence, a different handler (vtable
+007DA250), whose code consumes61/62 for turn and12 for exit. This is not
+turret evidence. Actual usage/Wii parity of that family must be established
+before implementation. No speculative binding change or installed update.
+Evidence: evidence/windows-20261007/TURRET-EXIT-DISAMBIGUATION.json.
+
+
+## Normal-campaign fusion completion verified - 2026-10-07
+
+PID21228 reached plaza naturally. Native tutorial shows LT + A/B/X/Y.
+Port0 LT+B input selected Captain America/Iron Man; actual completion banner
+shows Beam Split, 1294 total damage and10 total KOs. No seeded positions,
+resources, eligibility or progression writes. Input sequence includes retries;
+exact initial latch timing not isolated. One pairing only; physical controller,
+statue QTE and later gameplay interactions remain open. Installed unchanged.
+PID21228 paused in plaza after completion, all heroes alive.
+Evidence: evidence/windows-20261007/NATIVE-CAMPAIGN-FUSION.json.
+
+
+## Normal-route powers tutorial inspected - 2026-10-07
+
+Continued PID21228 through street combat using process-local input only.
+Native powers tutorial visibly shows RT + A/X/B/Y for powers1/2/3/4,
+matching provider action order. This verifies the prompt in context, not
+execution of all four powers. All heroes alive; paused beyond tutorial at
+Cap position approximately [786,126,1]. No forced state/progression writes.
+Installed game/saves unchanged. Later gameplay interactions remain open.
+Evidence: evidence/windows-20261007/NATIVE-POWER-TUTORIAL.json.
+
+
+## Native player action activation verified - 2026-10-07
+
+Unseeded campaign: B enters CCHHoldSmash, RT+A enters
+CCHReturningProjectile; both return to CCHIdle with cleared input on release.
+Native capture shows Captain America throwing his shield. A changes to a
+distinct generic combat node; exact authored name not decoded. Damage
+attribution, other powers/players and physical input remain unverified.
+PID21228 paused in street combat. Installed game unchanged.
+Evidence: evidence/windows-20261007/NATIVE-PLAYER-ACTION-PROOF.json.
+
+
+## Normal campaign validation reset - 2026-10-07
+
+Retained statue/fusion states reviewed have seeded positions/resources and
+cannot prove normal campaign progression. Restored original New Game script
+in existing private WAD, checked against authoritative extraction; all other
+members unchanged. No extra WAD retained, installed data/saves untouched.
+Cold-start PID21228 uses work/native-campaign-validation, no loaded state or
+gameplay writes. Normal title/main/Guest/autospend flow reached original
+Latveria intro and initial street with four heroes alive. Continued into
+first Doombot combat: A/B attack tutorial visibly correct, mixed player/AI
+damage and downed enemies observed; isolated attack/power proof pending. Native captures
+inspected. PID21228 paused in initial street combat; continue rather than restart. Physical
+controller, audio, combat and later-interaction acceptance remain pending.
+Evidence: evidence/windows-20261007/NATIVE-CAMPAIGN-FIXTURE.json.
+
+
+## Retained turret fixture progression confirmed - 2026-10-07
+
+Native Hero Details confirms Captain America and Iron Man are level1 with
+zero spare points and one available power each. This KeepTeam fixture skipped
+prior campaign; do not repeat it as normally progressed combat acceptance.
+Enemy scaling and defeat cause remain unproven. Installed save headers show
+only an early Latveria autosave; others blank. No saves changed. Audit process
+exited0. Evidence: evidence/windows-20261007/TURRET-PROGRESSION-AUDIT.json.
+
+
+## Storm Castle contained route check - 2026-10-07
+
+Normal generator objective display and Iron Man flight were visually checked
+using native captures. Double-Y and Y/LB flight prompts observed; camera-relative
+route changes prevented reaching the turret. No turret acceptance or v6 HUD
+acceptance claimed from this older saved state. Follow-up combat again
+failed to reach generators; PID35908 stopped normally, exit0. Audit native
+progression/power availability before repeating this fixture. Timing receipts
+confirm synthetic presses/releases, not combat or physical acceptance.
+Nullifier usage corroborated by online PS2/Wii transcript; unique mechanics
+remain unverified. Installed game and actual saves unchanged.
+Evidence: evidence/windows-20261007/TURRET-ROUTE-R3.json.
+
+
+## Turret handler identity confirmed - 2026-10-07
+
+PS2 RTTI/vtables confirm CCHBFG and CCHBFGFire share update0040C650,
+the reference used for direct rotation. Both use shared action dispatch.
+Action21 reaches a guarded drop routine, but that is not sufficient proof
+of fffgunexit; do not claim X exit verified. No speculative binding change.
+Updated TURRET-LIFECYCLE-AUDIT.json with addresses and remaining trace.
+
+
+## Turret lifecycle audit - 2026-10-07
+
+Read-only authored-data audit confirms west then east generator destruction
+enables the Storm Castle turret event. The activating hero owns the gunner
+role; native scripts handle camera, collision, exit/re-entry and completion.
+Fightstyle chains attack/smash to firing (current A/B); this is source evidence,
+not gameplay acceptance. Exact exit input remains to trace. Preserve native
+gating and lifecycle during validation. No installation or gameplay changes.
+Evidence:evidence/windows-20261007/TURRET-LIFECYCLE-AUDIT.json.
+
+
+## Paired gameplay package version prepared - 2026-10-07
+
+Xbox UI v6 pairs shared HUD artwork with local aiming and lock-on launcher
+switches after asset-hash verification. Older versions retain prior behavior.
+Compiler rejects shared HUD without full Xbox UI and rapid-tap assets.
+49 launcher checks and2 atlas checks passed; incomplete CLI rejected.
+Packaging source only, not installed. Actual encounters remain unverified.
+Evidence:evidence/windows-20261007/XBOX-UI-V6-PACKAGING.json.
+
+
+## Lock-on prerequisite correction - 2026-10-07
+
+Candidate activation now requires successful direct-QTE hooks, matching the
+shared prompt renderer prerequisite. Previously partial QTE registration
+failure could enable X target consumption without the static-X draw override.
+Windows build exit0, no compiler/linker warnings/errors; focused4/4(2.03s),
+full50/50(9.67s). Cold registration PID41452 confirms complete hook group
+and exits0. Failure path source-reviewed, not fault-injected. Encounter
+acceptance remains pending; installed game unchanged. Current runner SHA256
+4A67B357F172688E2BC13E232A37478C8D933622D50B15DE829739AAD6123C33.
+Evidence: evidence/windows-20261007/LOCKON-PREREQUISITE-FIX.json.
+
+
+## Private load and flight validation - 2026-10-07
+
+PID29748 cold-started and loaded the private Punish Pym autosave via normal
+menus. Native captures verify Xbox A/B load prompts and Iron Man flight
+with Y/LB tutorial glyphs. Continuous double-Y activated flight; Y raised
+altitude and LB returned him to the walkway. Initial separated diagnostic
+steps delayed the double tap; not a confirmed binding defect. Yard enemies
+damaged Iron Man before safeguard; lock-on/Nullifier/turret remain unverified.
+Process stopped cleanly (exit0). Installed game and actual saves unchanged.
+Evidence: evidence/windows-20261007/CHEMICAL-FLIGHT-VALIDATION.json.
+
+
+## Chemical Plant native entry tested - 2026-10-07
+
+Candidate cold-start navigated title/main/Begin Story/Easy/Guest/Autospend
+through process-local input; native captures inspected. Entered Chemical
+Plant and traversed walkway/stairs; D-pad Right selected Iron Man. Yard
+fire/enemies downed Iron Man before safeguard. Final image shows fire
+exposure; no proven level-scaling defect or lock-on acceptance. Process
+PID33784 exited0. Private chemical route + paired HUD remains selected;
+receipt workspace work/rapid-tap-game/chemical-route-receipt.json is current.
+Actual installed game/saves unchanged. No new savestate created. Profile
+Ready still shows Wii + for Start Game; flagged in TODO, deferred.
+Evidence: evidence/windows-20261007/CHEMICAL-NATIVE-ENTRY.json.
+
+Read-only follow-up: Iron Man final XY lies inside authored HARM_ALL_FIRE_07
+footprint at2296.63,-299.076. Private native autosave is Punish Pym GUEST(E),
+act2/chemical_plant/chem_anti_2. Reload through Load Game and avoid that
+hazard; do not infer hero-level mismatch or repeat the prior movement route.
+
+
+## Lock-on gamepad candidate built - 2026-10-07
+
+Opt-in OPENMUA2_GAMEPAD_LOCKON=1 restores PS2 target actions A/B/X/Y,
+assignment/drawing/consumption and instruction4 gamepad wording as one
+six-hook group. Shared block remains LB; lock-on grab uses static-X sprite99.
+Native timing, callbacks and four-port input loop remain. Requires paired
+Xbox HUD pack; not enabled in installed launcher. HLE address-map budget
+audited and increased32->64; no opcode/array capacity change. Windows build
+exit0, focused4/4(2.33s), full50/50(11.04s), no build warnings/errors.
+Headless registration PID13740 activated all hooks with shared aiming,
+loaded retained prison state and exited0. This verifies registration only;
+actual lock-on encounter and in-game prompts remain unverified.
+Evidence: evidence/windows-20261007/LOCKON-CANDIDATE.json.
+
+Paired private HUD archive prepared and verified2026-10-07: only the11
+shared button cells changed; all other member/package bytes preserved.
+Private WAD now532c8f5654f41601947c54252fcf24a0b1169fcae707856ec8fd876009027260;
+older prison-route WAD hash is historical. Prison route still selected.
+Chemical Plant native win_boss_safeguard script activates lock-on after
+the safeguard succeeds; use that progression, not a forced lock-on call.
+Installed game unchanged. Evidence: evidence/windows-20261007/LOCKON-PAIRED-HUD-PREPARED.json.
+
+
+## Lock-on button and prompt mismatch traced - 2026-10-07
+
+PS2 target table is [9,10,11,19] (current Xbox A/B/X/Y); retained Wii
+table is [9,10,12,19] (A/B/LB/Y). Three separate network-mask gates
+control assignment, rendering and consumption. Enabling consumption alone
+would not restore the PS2 path. Native draw IDs38/44/40/41 use HUD provider80FA770C and
+atlas texture slot1, separate from the Xbox menu font. PS2 draws38/39/40/41.
+Restore shared Xbox HUD artwork and routing together; changing the font
+alone cannot fix this encounter. Native target timer and success/failure dispatch
+identified and must remain intact. Audit evidence updated; no runtime or
+installed build changed, no new gameplay acceptance.
+Evidence: evidence/windows-20261007/LOCKON-GAMEPAD-PATH-AUDIT.json.
+
+Shared HUD button compiler now has opt-in --xbox-hud-buttons for11 A/B/LB/Y
+frames. Tests2/2 pass against stock coordinates and byte-preservation checks.
+Decoded atlas inspected; shared scale-up rule fixes small LB artwork. This
+is asset-only, not installed or in-game acceptance. Lock-on X routing and
+full coherent gamepad activation remain pending.
+Evidence: evidence/windows-20261007/SHARED-XBOX-HUD-BUTTONS.json.
+
+
+## Lock-on gameplay path identified - 2026-10-07
+
+CLockonEntity uses instruction4 and CHudTargetPoints. Authored lockonent
+entities and win/fail scripts exist in both Chemical Plant boss routes and
+Wakanda Man-Ape sequences. PS2 update004CE960 tests target-assigned buttons
+for ports0..3. Native8024F408 contains the corresponding button consumer,
+but entry8024F43C queries network mask2 before choosing it. Full lock-on
+coverage is NOT established by shared aiming changes. Next audit button
+generation/rendering, lifecycle and ownership before enabling local path;
+never spoof network flags or force outcomes. No build/install changes.
+Evidence: evidence/windows-20261007/LOCKON-GAMEPAD-PATH-AUDIT.json.
+
+
+## Prison walkway combat evidence - 2026-10-07
+
+Bounded actor probe now completes. Native capture identifies immediate foes
+as Light Nanite Mutants (Endopsychic Tether), not established to be the three
+guards gating HackPanel. Two heroes fell before reaching the interaction.
+Nearby enemies took damage during mixed player/AI combat; this is not isolated
+attack-binding proof. No native hero level measured; difficulty mismatch is
+unproven. Installed save read-only header is Latveria S, act1/latveria/latveria1.
+Asked about a later campaign save; avoid repeating this approach unchanged.
+Process exited0; no installed changes, new states or duplicate data/builds.
+Evidence: evidence/windows-20261007/PRISON-WALKWAY-COMBAT.json.
+
+
+## Prison diagnostic failure - 2026-10-07
+
+Actor-name read computed an invalid address; command channel then stopped
+completing valid reads. Test process explicitly terminated (exit4294967295).
+No gameplay acceptance. Workspace read helper now rejects requests outside
+mapped RAM before publishing; four invalid-range checks pass. Next use bounded
+numeric actor records, never unverified tags as string handles, from retained
+prison entry. No source build/install changes or additional states this run.
+Web playthrough/transcript also confirms the Nullifier beam is used against
+Absorbing Man in MUA2's last-generation version.
+Evidence: evidence/windows-20261007/PRISON-PROBE-FAILURE.json.
+
+
+## Interaction-instruction aim reset restored - 2026-10-07
+
+PS2's second reset predicate is CHudPointerError visibility: this object is
+also the interaction-instruction panel used by turret and Nullifier callers.
+Native getter80FB9030 and loaded object812D9EA0/vtable80564248 identify the
+matching panel. Candidate now centers each sampled aim while it is visible,
+preserving validity and projection data; normal accumulation resumes on close.
+No panel activation/confirmation/completion is forced. Windows build exit0;
+focused4/4 in2.11s, full50/50 in9.90s; no compiler/linker warnings/errors.
+New branch still needs live encounter validation. Installed game unchanged.
+Evidence: evidence/windows-20261007/GAMEPAD-INSTRUCTION-CENTERING.json.
+
+
+## Gamepad projection aspect corrected - 2026-10-07
+
+PS2 projection calls use selector0 (display aspect/scale); the candidate
+incorrectly selected Wii mode1 fixed-aspect/alternate-scale branches. Changed
+three guarded branches to native zero-selector instructions, preserving all
+projection/collision math. All three60-byte hashes and target instructions
+verified against linked code. Windows build exit0; focused4/4 in2.07s, full
+50/50 in8.54s, no compiler/linker warnings/errors. Encounter targeting still
+unverified; installed game unchanged. Validate this candidate before acceptance.
+Evidence: evidence/windows-20261007/GAMEPAD-PROJECTION-ASPECT.json.
+
+
+## Full-aiming prison approach - 2026-10-07
+
+Restored the prison entry with full shared aiming and turret hooks installed,
+extra profile tracing off. Process-local movement and attacks reached combat;
+native captures inspected. Guard prerequisite remains uncleared; team damaged.
+No hacking/Nullifier/turret operation acceptance. Process exited0. Existing
+entry retained, no extra states/builds/GameData copies; installed game unchanged.
+Continue normal route/combat from entry without forcing terminal eligibility.
+Evidence: evidence/windows-20261007/PRISON-FULL-AIM-APPROACH.json.
+
+
+## Gameplay priority and profile diagnosis correction - 2026-10-07
+
+Gameplay progression (turrets, hacking, Nullifier, QTEs) precedes menu polish.
+The prior profile-blocker diagnosis is superseded: native capture showed an
+Autospend modal omitted by top-level menu metadata. A accepted it and loaded
+the prison introduction. All three diagnostic hooks registered and native
+parent input dispatch executed. No remapping fix was required.
+Windows build exit0, focused4/4 in2.29s; previous full50/50 in11.90s predates
+the registration-log-only change. This diagnostic run disables aiming for
+hook capacity and is NOT interaction acceptance. Installed game unchanged.
+Next retain a normal prison entry and validate with full aiming enabled.
+Evidence: evidence/windows-20261007/PROFILE-AUTOSPEND-CORRECTION.json.
+
+
+## Profile dispatcher diagnostic - 2026-10-07
+
+Retained-state modal mode27452 and network flags1864 both read0; neither
+explains the missing profile handler query. Added default-off bounded trace at
+81000A90,80F94214,80FC8738, exact hashes, disabled alongside full aiming.
+Windows Release exit0; focused4/4 in2.45s, supported50/50 in11.90s; no compiler/
+linker warnings/errors. Three native diagnostic processes exited0.
+No profile-dispatch entries emitted. Loaded code hashes match; registration
+success not logged, so empty trace is INCONCLUSIVE. Verify registration next
+before concluding these sites are unreachable. No mapping fix or acceptance.
+Installed game unchanged; no new states/build trees/GameData copies.
+Evidence: evidence/windows-20261007/PROFILE-DISPATCH-GATE-AUDIT.json.
+
+
+## Profile button delivery narrowed - 2026-10-07
+
+Scoped native trace confirms A89 and Start105 reach generic dispatch, and A89
+reaches the profile GUI consumer. Port0 profile pane is page2; others page4.
+Parent profile handler80F94214 should query Start105 at80F944B0, but that caller
+is absent from captured queries. Next inspect parent input dispatch/gates.
+Do not assume a missing button mapping or force profile readiness.
+Two full-aiming trace configurations exhausted32 observer/branch slots and
+rejected core input hooks; those runs are invalid acceptance evidence. Scoped
+trace disabled aiming to free slots, had no rejected hooks and reproduced the
+failure. Any fix must pass again with full aiming and no extra trace.
+All four processes exited0; no source/build/installation change. Existing exact
+profile state retained, no additional states. Goal incomplete.
+Evidence: evidence/windows-20261007/PROFILE-ACCEPT-CONSUMER-TRACE.json.
+
+
+## Prison encounter entry exposed profile blocker - 2026-10-07
+
+Selected prison_break_4 for native hacking/Nullifier acceptance: three guard
+deaths enable HackPanel; normal completion leads to Nullifier. Private KeepTeam
+new-game destination changed only; no eligibility/completion state forced.
+Single-core native run exited0 but stopped at four-slot profile screen (Guest).
+Repeated A, held A and Start did not progress. Title/main/play/difficulty did
+respond. Native title/profile captures inspected; no hacking encounter reached.
+Retained one exact profile repro state paired with prison-route WAD receipt.
+Do not load older Storm Castle state until restoring its matching WAD.
+Next trace native profile accept/ready consumers; cause not established.
+No source/build/installed change this checkpoint. Goal incomplete.
+Evidence: evidence/windows-20261007/PRISON-ENTRY-PROFILE-BLOCKER.json.
+
+
+## Hacking entry reset candidate - 2026-10-07
+
+Implemented reset on the native transition into mazehack, using the game's
+mode setter and identifier. Centers all four targets once per entry; preserves
+validity/projection and original setter execution. No host history or forced
+interaction state. Exact code hash guards the observer.
+Windows Release exit0, focused4/4 in2.40s, supported50/50 in10.53s; no compiler/
+linker warnings/errors. Regression covers entry/re-entry, sustained steering,
+exit, invalid context and all four records. Native single-core run exit0;
+all six aiming hooks registered and accumulated aim/release/isolation passed.
+Actual hacking entry and completion NOT exercised; gameplay acceptance remains
+open. Second PS2 reset predicate and projection parity still need tracing.
+Not installed/staged/pushed. Evidence: evidence/windows-20261007/HACKING-ENTRY-RESET.json.
+
+
+## Gameplay aiming lifecycle audit - 2026-10-07
+
+Found a missing PS2 behavior: shared aiming centers on entry to mazehack.
+Current accumulated-stick candidate omits that transition reset; hacking is
+not ready for acceptance. Mode setters on both platforms only store mode,
+so they do not supply the missing reset. A second PS2 reset condition and
+projection-dimension parity require tracing before changes. Wii special-mode
+getter identified from the actual DOL vtable; no state was forced.
+No runtime edit, rebuild, gameplay run, installation or push this checkpoint.
+Next implement equivalent lifecycle behavior and verify real interactions.
+Evidence: evidence/windows-20261007/GAMEPAD-AIM-LIFECYCLE-AUDIT.json.
+Goal remains incomplete; gameplay blockers retain priority.
+
+
+## Hacking instruction wording - 2026-10-07
+
+Four hardcoded hacking descriptions/tutorials now say left stick, using the
+existing bounded, exact-hash text handler only while candidate gamepad aiming
+is active. Removed pointer/Nunchuk centering requests; retained power-up tokens
+and original pause-reset warning. No proprietary original file changed.
+Windows Release exit0; focused4/4 in2.40s; supported50/50 in8.15s; no compiler/
+linker warnings/errors. Two native single-core runs exited0: all4 replacements
+verified in live memory when enabled; all4 original hashes verified disabled.
+These are text-allocation checks, not visual or actual hacking acceptance.
+Screen layout, interaction lifecycle, turret/Nullifier and four-player gameplay
+remain pending. Not installed/staged/pushed. Goal incomplete.
+Evidence: evidence/windows-20261007/HACKING-GAMEPAD-TEXT.json.
+
+
+## Nullifier analog instruction; hacking audit - 2026-10-07
+
+Private candidate now selects the shipped Nullifier analog-stick tutorial,
+using the same guarded instruction callback as turret with separate native
+call sites. No tutorial identity/owner or NetPlay state is changed.
+Windows Release exit0; focused4/4 in2.27s; supported50/50 in8.02s; no compiler/
+linker warnings/errors. Native run exit0, both tutorial hooks registered, and
+accumulated-aim record probe passed again. Tutorial rendering and real encounters
+remain unverified. Not installed/staged/pushed.
+PS2 hacking code uses owner-indexed shared aiming and four participant records.
+Correction:800E9588 is hack availability, not an input-mode selector; preserve
+its network restriction. Wii-only hacking wording remains in hardcoded strings
+(805390CE,805391A0,805638AF,80563A5C,80563B8C); shared aim does not replace it.
+Next trace those instruction sites/lifecycle and validate actual gameplay.
+Evidence: evidence/windows-20261007/NULLIFIER-PROMPT-HACKING-AUDIT.json.
+
+
+## Shared aiming correction with native record proof - 2026-10-07
+
+Fixed two candidate defects: enable guard must check byte5925 bit0x80, not0x40
+(native rotate25/mask31); PS2 default mode3 accumulates stick/20 per native
+update with +/-0.1 deadzone and [-1,1] limits, retaining target on release.
+Previous absolute-axis candidate incorrectly recentered; prior enable analysis
+was wrong. Native projection/collision and network flags remain unchanged.
+Final Windows Release build exit0, focused4/4 in2.42s, supported50/50 in11.45s;
+no compiler/linker warnings/errors. Native single-core process exited0.
+Actual owner0 record: 0 ->0.30 ->0.30 neutral ->0.30 unjoined pad1 ->~0 opposite.
+Other records stayed invalid. This proves shared input handling in the running
+game, not an actual aiming encounter or four joined players. No screenshots,
+audio/FPS or physical acceptance this pass. Not installed/staged/pushed.
+Next real Nullifier entry/aim/use/exit and prompt; turret/hacking still pending.
+Evidence: evidence/windows-20261007/ACCUMULATED-GAMEPAD-AIM.json. Goal incomplete.
+
+
+## Nullifier PS2 consumer trace - 2026-10-07
+
+PS2 executable code confirms Nullifier uses an owner-indexed shared aiming
+record and collision ray, unlike the turret's direct pitch/yaw controls.
+The getter and named activation registration support slots 0..3; this is code
+evidence, not four-player gameplay acceptance. The PS2 instruction specifies
+left analog stick. Next trace the exact record producer and activation lifetime
+before accepting or changing the current shared gamepad aim candidate.
+Native turret retry cleared the first group but failed in the corridor before
+the generator. No turret acceptance. Map has no explicit world level; team/enemy
+scaling remains unknown. Process exited 0. No runtime edits, rebuild, installation
+or push. Gameplay interactions retain priority; goal incomplete.
+Evidence: evidence/windows-20261007/NULLIFIER-PS2-PATH-AUDIT.json.
+
+
+## Gameplay-first encounter validation - 2026-10-07
+
+Gameplay interactions remain ahead of all menu polish. Continued the private
+Storm Castle entry through stairs and corridor using contained Xbox input.
+Native captures show real enemy combat; team defeat occurred before reaching
+the generator. No eligibility, actor position or completion flags were forced.
+This is a failed approach, not a turret pass or an established turret defect.
+The reason for defeat (fixture progression versus combat approach) is unresolved.
+Process exited 0. No rebuild, installation, proprietary-data publication or push.
+Latest candidate remains the prior 50/50-tested build; gameplay acceptance open.
+Next inspect native progression/encounter requirements and establish a viable
+combat approach, then verify turret controls and instructions in context.
+Nullifier, hacking, remaining QTEs and four-pad ownership remain required.
+Evidence: evidence/windows-20261007/TURRET-ENCOUNTER-APPROACH.json.
+
+
+## Direct gamepad turret candidate - 2026-10-07
+
+PS2 CCHWeapon code confirms direct stick-driven pitch/yaw, not a pointer ray.
+Added opt-in direct rotation with native game delta and weapon/reset limits,
+then the original native rotation setter/cleanup. Selects the shipped analog
+turret instruction without changing NetPlay state. Earlier shared-aim candidate
+alone is NOT the complete PS2 turret path.
+Windows Release rebuild exit0; focused4/4 in2.48s, full50/50 in12.16s, no
+compiler/linker warnings/errors. First native run exposed an unsupported hook
+site; corrected to the existing call. Second native run confirms both rotation
+and tutorial registrations, restores level entry and exits0. No actual turret
+operation or in-context tutorial acceptance yet. Not installed/staged/pushed.
+
+The original new-game script reaches its cinematic; the AddTeam diagnostic route
+fails. KeepTeam loads Storm Castle with four heroes visibly present. One50MB
+entry state is retained. Private test WAD keeps ONLY the diagnostic new-game
+script change (plus earlier font candidate) to match that state; original script
+is retained for exact restoration. This route is not for the user-facing game.
+No turret flags, generator prerequisites or outcomes were forced. Next reach
+and test the generator/turret normally, then Nullifier/hacking/four-player paths.
+Evidence: evidence/windows-20261007/DIRECT-TURRET-CANDIDATE.json. Goal incomplete.
+
+
+## Turret encounter fixture attempt - 2026-10-07
+
+Gameplay interactions remain the priority. A cold, single-core private run
+reached normal player setup through contained Xbox input, with native captures
+inspected. The diagnostic new-game route did not reach Storm Castle: after
+autosave/AI autospend confirmation it returned to the ready screen. One retry
+and a neutral wait did not advance. Script dispatch was not traced; do not infer
+the cause or count this as an aiming failure/pass. No turret was exercised.
+Process exited0. The private new-game script was restored and the entire WAD
+hash exactly matches its pre-test hash. Installed game/user saves are unchanged.
+Next verify map entry/script dispatch, then native turret entry/aim/fire/exit
+with original encounter prerequisites intact. No forced gameplay flags or
+completion. Nullifier, hacking and four-player acceptance remain outstanding.
+Evidence: evidence/windows-20261007/TURRET-NATIVE-ENTRY.json. Goal incomplete.
+
+
+## Shared gamepad aiming candidate - 2026-10-07
+
+Private opt-in OPENMUA2_GAMEPAD_AIM=1 with the gamepad provider; not installed.
+Adds shared stick-mode selection, per-player sampling and consistent native
+projection selection without changing CNetPlayManager state. Menu/disabled aim
+contexts retain original behavior. Native collision and outcomes remain owned
+by the game. Windows Release build exit0, focused4/4 in3.41s, supported runtime/
+codegen suite50/50 in10.46s. Initial unfiltered tests outside the MSVC environment
+failed on missing vendor benchmark binaries/string.h; corrected invocation passed.
+
+The native plaza probe installed hooks and exited0 but DID NOT exercise aiming:
+its native aiming-enable bit was clear and all four records remained invalid.
+No context flags were forced. This is not turret/hacking/Nullifier acceptance.
+Use the genuine stormcastle_1 turret sequence (generator_destroyed enables
+mm_turret/TRIG_turretEvent, turretevent_start enters, dropturret exits) for next
+validation; prison_break_4 contains Nullifier and rebelhideout maps contain hack
+observers. Source/data inspection is only a route lead, not interaction proof.
+Matching gameplay prompts and all four players' live behavior remain pending.
+Evidence: evidence/windows-20261007/GAMEPAD-AIM-CANDIDATE.json. No staging/push.
+
+
+## Aiming dependency correction: network state, not platform - 2026-10-07
+
+Code tracing identifies mask2 of802722DC as CNetPlayManager Game state.
+80273AAC sets it in NetPlayStart Game;80273AD8 references the corresponding
+RESEEDING log at8056B968. There are149 literal-mask2 callers in the current
+combined code. A global override would affect session/network behavior and
+ownership; do not use it to enable Xbox controls.
+
+Shared aiming still contains real stick input, but three projection helpers
+(80FFB394,80FFB524,80FFB750) independently gate stick scaling on network state.
+Selecting manager mode1 alone therefore does not establish correct aiming.
+Hacking entry800E3550 selects mode1 and exit800E5DF8 restores0 under the same
+gate. The repair needs a shared local-gamepad input-mode policy across sampling,
+projection and interaction lifecycle, leaving network state intact. No runtime
+patch, build, game launch or installation change in this follow-up. Gameplay
+acceptance remains pending. GAMEPLAY-AIM-PATH-AUDIT.json records the correction.
+
+
+## Shared gameplay aiming path traced - 2026-10-07
+
+Read-only code audit found an executable shared analog aiming branch, not just
+alternate text: mode1 reads owning-player actions0/1; pointer mode reads4/5/6.
+The native manager bounds ports to0..3 and has four72-byte aiming records.
+Nullifier entry/exit selects stick/default mode only behind config mask2; HUD
+selection uses the same mask. Do not globally override this flag without auditing
+its other consumers. The exact aiming integration and turret behavior remain
+unverified. A contained headless run loaded an existing diagnostic state solely
+to resolve the live manager vtable, then stopped exit0. No game input, guest
+writes, captures, installed changes or gameplay acceptance in this audit.
+Evidence: GAMEPLAY-AIM-PATH-AUDIT.json under evidence/windows-20261007.
+Next: trace shared mode selection and aiming consumers against PS2, implement
+the direct gamepad lifecycle, then verify actual entry/use/exit and four players.
+
+
+## Gameplay interactions take priority - 2026-10-07
+
+User redirected work to gameplay blockers before menu polish. Next: turret and
+Nullifier entry/aim/use/exit, hacking, then remaining motion/pointer QTE families.
+Trace the native consumers against PS2 code and verify direct gamepad behavior,
+player ownership, release/cancellation and actual outcomes. Matching gameplay
+prompts are part of each interaction's acceptance. These paths remain unresolved.
+The Hero Management overlay stays deferred. Menu prompt candidate source is
+preserved; its Windows rebuild and 50/50 tests passed, but latest visual
+verification was interrupted before menu acceptance. Diagnostic process stopped
+with exit0. Installed game and user saves are unchanged. The current priority
+checklist is in docs/PERFORMANCE-GOAL.md at the repository root.
+
+
+## Native menu gamepad mapping candidate - 2026-10-07
+
+Private, not installed/pushed. Shared native active-menu routing adds missing
+point/profile/hero menu actions from the PS2 initializer groups and suppresses
+combat/camera/fusion/QTE outputs while a menu is open. Menu A accepts/assigns,
+B backs out, X details/cycle, Y priority, LB/RB remove/add points, LT previous
+hero/redistribute, RT next hero. Native consumers retain eligibility/ownership.
+Windows Release build exit0, focused3/3 in3.44s, rebuilt action-bindings test
+and full50/50 in11.36s. No compiler/linker warnings/errors in build log.
+Native saved-menu captures verify RB allocation help, A dismissal/assignment,
+B return to powers and Y priority3->0. Zero spare points and auto-spend prevent
+spend/refund acceptance; LT redistribution effect and RT hero change unverified.
+Prompts still wrong (LB Assign, Wii +/- and1); do not stage this candidate.
+Fresh startup/four-port/physical acceptance still outstanding. Overlay issue
+remains deferred at user request. See MENU-GAMEPAD-MAP.json. No new forced
+menu/state writes; existing diagnostic saved-state provenance still applies.
+
+
+## Remaining binding consumers traced - 2026-10-07
+
+Private WIP only, not packaged/installed/pushed. Bounded opt-in action-query
+tracing now observes native held/scalar/edge consumers without changing guest
+registers or input. Live trace identifies pointer actions 4/5/6 at 80ffbcac,
+80ffbcdc,80ffbd0c and camera action3 at800f6368. Fixed missing vertical camera
+mapping: RightUp/Down publishes action3 and enables action7. Native +/-0.75,
+release-to-zero and three actual captures verify closer/back camera movement.
+Windows MSVC Release build exit0, focused3/3 in2.06s, full50/50 in9.97s. No
+compiler/linker warnings/errors in successful build log. No physical/audio/FPS claim.
+
+Hero Management native captures verify View entry, A tutorial dismissal, LB
+powers/details then assignment. Actual powers page still displays Wii +/- Allocate
+and 1 Redistribute Points; live descriptors118/119/122 have no direct bindings.
+Preserved native hero-powers state for repair. Short Back sequence remained in
+hero browse. Longer saved-menu repeat cleared active menu but capture showed
+stale menu background plus gameplay HUD with no world. A subsequent cold-start
+repeat without loading a state reproduced the failure after normal View entry.
+Formatter-off isolation also fails on View then Back without entering Powers.
+Opening/closing Pause restores the world; Start -> Hero Details -> Back -> Back
+returns correctly. These native captures were inspected. Direct View return
+remains failed; code-level cause unresolved. See HERO-MENU-RETURN-ISOLATION.json.
+
+
+Graphics isolation: native menu/stack flags clear identically in failed and good
+returns. Four differing viewport drawing flags were temporarily cleared in the
+private process and restored; captures still fail. No corrective source patch
+was made. Investigation deferred at user request; see the open issue at the
+top of docs/PERFORMANCE-GOAL.md. Earlier hooks/test setup remain suspects, not
+established causes. Continue remaining bindings and prompts instead.
+HERO-MENU-GRAPHICS-AUDIT.json retains evidence. Installation unchanged.
+
+Wave-QTE registration still requires legacy managed_ports plus experimental flag.
+Mask2 query802722dc selects analog/pointer tutorial branches but has many other
+callers; no global flag was changed. Hacking, turret/Nullifier and other motion
+families remain unresolved. Evidence: windows-20261007/REMAINING-BINDINGS-TRACE.json.
+Goal not complete; installation/saves untouched. Compact source recovery refreshed.
+
+
+## Fresh-data statue entry verified - 2026-10-07
+
+The preceding unresolved entry was tested using Captain America. Stock hero data
+assigns Might to Spider-Man, not Captain America. Resuming the pre-interaction
+fresh-assets session, native D-pad Down selected Spider-Man. After diagnostic
+placement at the same statue, X entered the real coop interaction. The in-game
+capture shows the tilted X using the cold-loaded candidate HUD; no active-QTE
+state import or resident texture refresh was used for this repeat. Native hero
+eligibility was preserved; no entry workaround was added. Diagnostic placement
+and the earlier prerequisite trigger enable mean this is not full natural-route
+acceptance. Hero eligibility explains the prior difference; do not record it as
+a proven lost-input defect.
+
+Repeated-X validation passed again: wrong physical port counts zero, held X one,
+twelve separate presses complete, target clears, coop entity is removed and
+movement resumes (51.76 world units in the measured movement check). All four
+simulated capability disconnect/reconnect transitions passed with empty Wii
+bindings. Native entry/completion captures were visually inspected. Full existing
+runtime/codegen suite passed 50/50 in 11.43s. No physical-input/audio/FPS claim.
+Receipt: evidence/windows-20261007/FRESH-STATUE-GAMEPAD.json; private native proof
+in workspace outputs/OpenMUA2-fresh-statue-entry.png and fresh-statue-completed.png.
+
+Installed game remains unchanged. The remaining release work includes review of
+the combined provider/fusion/prompt changes, remaining pointer/HUD prompts and
+interaction paths, source checkpoint/verified routine backup/push and packaging.
+The goal remains active; this correction does not establish full-game coverage.
+
+## Rapid-tap statue prompt visual proof - 2026-10-07
+
+Private opt-in candidate only; installed EXE/data/saves unchanged. The shared
+motion HUD draw path now selects the supplied tilted X raised/pressed poses at
+four cycles per game second while a validated direct button-QTE session is active.
+Pauses stop its clock. This is presentation only; progress still requires twelve
+separate X presses. Paired assets use --rapid-tap and the runtime requires
+OPENMUA2_RAPID_TAP_GLYPHS=1. Do not enable either side alone.
+
+Windows MSVC Release build passed with no compiler warning/error reported;
+focused native tests passed 3/3 (2.41s), private rapid-art preservation test 1/1.
+Native captured frames visibly show both tilted poses, the statue falling/removal,
+and Hero Training: Might (COMPLETE). Process-local tests: wrong port = 0 presses,
+held X = 1, twelve fresh presses complete and clear the actor interaction target.
+This is a saved active-statue diagnostic fixture, with resident HUD pixels refreshed
+byte-for-byte from the private candidate WAD. It is not cold-entry acceptance:
+a separate fresh-loaded plaza/statue placement attempt did not enter the QTE and
+remains unresolved. Preserve its state and logs. Other rapid-tap encounters and
+physical-controller acceptance remain unverified; do not claim full-game coverage.
+
+Proof receipt: workspace outputs/OpenMUA2-statue-QTE-proof.json. Native screenshots
+were encoded at their game-clock timestamps (sampled capture, no FPS/audio claim).
+Completion captured 68/71 requested frames; missing 10/14/16 remain timestamp gaps,
+not fabricated frames. GIF shows the cue; MP4 shows completion. Private cold-start
+profile captures also verify Connect gamepad to join in all three unused panels.
+Source remains WIP, uncommitted/unpackaged; compact recovery saved, no release
+checkpoint or push claimed. The full controls goal remains active.
+
+## In-progress prompt validation - 2026-10-07
+
+Experimental working tree remains uncommitted, unpackaged and unaccepted for release.
+Native headless Vulkan captures show the fusion instruction panel for all four
+verified initiators. An earlier missing-Iron-Man report was a visual inspection
+error; the original and fresh-process repeat both show it. Do not change visibility
+based on that rejected finding. The shield is also the selected Stars And Stripes
+profile emblem; do not presume it should track the hero portrait.
+
+The shared Xbox font builder trims alpha padding for every button and normalizes
+button metrics to the face-button box, preserving UVs and unrelated characters.
+The combined Xbox UI compiler includes both normalized font tables as well as the
+textures. Private-data font regression tests pass 2/2 for normal and widescreen.
+A private WAD changes exactly four font entries; installed data/saves are unchanged.
+Matched cold-start repeat with empty Wii bindings passed title Start, main-menu
+A/B, profile selection/confirmation and entered gameplay. Captures were inspected.
+The first candidate attempt failed to advance main-menu A; cause remains unproven,
+so preserve the failed evidence. Later matching repeat passed without a control fix.
+
+Fresh-loaded fonts visibly enlarge LT in both the fusion banner and native fusion
+help. The shared help now says to hold LT and choose A/B/X/Y, preserving resource,
+revival text and its native formatting placeholder. Proof uses private diagnostic
+plaza placement/resource setup, not a natural full-playthrough acceptance. A state
+saved from that fresh session was used to repeat the help-text verification.
+Remaining prompts include Connect Wii Remote to Join in disconnected player panels.
+The old four-player fixture has a red pointer cursor; the fresh fusion capture does
+not. Audit its lifecycle before suppressing a possibly unrelated HUD element.
+
+Windows Release runner SHA256 c79392096ac97ce913ced21226aca0560534bbe150f4944b7d4a9d68c49231b5.
+Build succeeded; focused3/3 passed in2.41s, with no compiler/linker warnings/errors
+in the successful incremental log. No physical-controller, audio or FPS acceptance.
+Installation unchanged. Evidence: task workspace outputs/OpenMUA2-prompt-investigation.json
+and OpenMUA2-fusion-shared-LT-proof.png. Broader controls/prompt acceptance, source
+review/checkpoint, routine backup, push and package remain outstanding.
+
+## Paused experimental fusion work - 2026-10-07
+
+Working tree only: not committed, pushed, packaged, or accepted for release.
+PS2 fusion entry uses held action33; Wii queries an edge. The shared provider
+candidate adds held FusionPower semantics, LT preparatory block sequencing,
+and a common partner selector before either Wii pointer picker. Native roster,
+pair eligibility, approach, resource consumption and animation lifecycle remain.
+
+Headless raw process-local tests: all four LT owners entered the native chooser;
+12 teammate choices selected the requested pair, four self choices rejected.
+Native role ordering may swap the pair; the original initiator remained correct.
+One ground-level human pair entered active fusion, spent resource1->0, and later
+returned to mode0 with cleared pair pointers. The statue-elevated owner caused a
+native unreachable-partner timeout without resource cost. No physical-controller,
+rendered, audio or FPS acceptance. Windows Release build and focused3/3 passed;
+runtime/codegen50/50 passed in18.58s. Diagnostic process stopped with exit0.
+
+Earlier edge-pulse and held-level-only candidates failed native entry; retained
+as failure evidence. The first partner matrix had stale held-port inputs and an
+incorrect ordered-pair assertion; corrected neutral matrix passed16/16.
+
+Paused at the user's requested higher-reasoning boundary. Next: remove obsolete
+pointer-gate/conditional-HLE candidate and unused trace edits, review/simplify entry
+sequencing, verify release/disconnect/simultaneous owners/empty resources and more
+fusion pairs, then focused source checkpoint, verified Backup.cmd, push and package.
+Preserve unrelated readiness/wave/StaticRecomp WIP. Existing installation unchanged.
+Do not promote this working tree or claim the entire gamepad path is complete.
+Evidence in the task workspace outputs/OpenMUA2-four-player-fusion-progress.json;
+private native reads in work/gamepad-fusion-shared. Full routine backup deferred
+with the unfinished checkpoint; compact WIP recovery archive saved in outputs.
+
 
 ## Shared gamepad capabilities and QTE completion - 2026-10-03
 
@@ -141,7 +1188,7 @@ execution. Prior readiness/wave/StaticRecomp experiments remain local and exclud
 from this focused checkpoint. Evidence: SHARED-GAMEPAD-PROVIDER.json and
 PS2-GAMEPAD-REFERENCE.json under evidence/windows-20261003.
 
-## Full gamepad path audit — 2026-10-03
+## Full gamepad path audit â€” 2026-10-03
 
 User requested full-path verification before more isolated Wii-interaction fixes.
 See docs/GAMEPAD-PATH-AUDIT.md. No complete dormant alternate backend is verified.
@@ -211,7 +1258,7 @@ packaging. Installed EXE/GameData/saves unchanged. No new build/test/visual succ
 claimed. Evidence: evidence/windows-20261003/INPUT-ARCHITECTURE-AUDIT.json.
 Full goal remains active.
 
-## Fusion banner candidate rejected — 2026-10-03
+## Fusion banner candidate rejected â€” 2026-10-03
 
 The text-based top-banner candidate was WRONG: it replaced the statue co-op
 QTE glyph when fusion tutorial text was forced into the HUD. The resulting
@@ -2770,7 +3817,7 @@ formatter opt-in ON remain unchanged. Goal active/unmet. Next profile bulk JIT
 finalization and correlate later stalls with CPU service in the same run.
 Evidence: `evidence/windows-20260930/CONTINUOUS-COMBAT-QUEUE.json`.
 
-## JIT backpatch rehash spike reduction — 2026-09-30
+## JIT backpatch rehash spike reduction â€” 2026-09-30
 
 Thread CPU/cycle diagnostics isolated a 54.6 ms emission of only 29 guest
 instructions (181.7 million thread cycles). Slow-instruction tracing located
@@ -2811,7 +3858,7 @@ Next address bulk-compilation bursts and improve the varied-combat route.
 Goal remains active. Evidence and binary hashes:
 evidence/windows-20260930/JIT-BACKPATCH-SHARDING.json.
 
-## Audio capture and JIT compilation stalls — 2026-09-30
+## Audio capture and JIT compilation stalls â€” 2026-09-30
 
 Added explicit --capture-audio with --profile-audio --audio Cubeb: retain at most
 60 seconds of final stereo 16-bit mixer PCM in a preallocated ring, write WAV
@@ -2858,7 +3905,7 @@ Final Windows build exit0, 38/38 runtime tests7.20s. Full tooling suite136 tests
 warnings/errors found; existing configure warnings remain. Exact artifacts,
 failed experiment and measurements: evidence/windows-20260930/AUDIO-JIT-STALLS.json.
 
-## Mixed formatter rewrite experiment — 2026-09-30
+## Mixed formatter rewrite experiment â€” 2026-09-30
 
 A bounded 64-address unsupported-format census found frequent mixed string,
 signed-integer and float calls. The census run counted 399572 unsupported calls,
@@ -2892,7 +3939,7 @@ The first expanded candidate measured 29.9796 FPS at 100.0319% guest speed,
 P99 39.0198 ms, maximum 84.8094 ms and minimum rolling one-second FPS 28.
 All 1230 guest intervals were 33.367 ms. Four host intervals exceeded 50 ms;
 they occurred early (frames 12630,12662,12676,12753) with negligible GPU fence
-wait and 68–79 ms unclassified elapsed time. Profile JIT/shader compilation and
+wait and 68â€“79 ms unclassified elapsed time. Profile JIT/shader compilation and
 other host work next; unclassified time alone does not identify the cause.
 This single headless diagnostic still fails solid-30 delivery. Three native
 endpoint captures were inspected sequentially: actual combat, effects, scenery
@@ -2910,7 +3957,7 @@ Goal active/unmet; sound crackling remains unresolved. All runs remain headless
 Vulkan/Cubeb volume=0, JIT, one logical CPU, 3x EFB and normal clocks. No audible
 quality claim, qualifying repeat or ten-minute combat acceptance is made.
 
-## Formatter caller-state audit and remaining hotspots — 2026-09-30
+## Formatter caller-state audit and remaining hotspots â€” 2026-09-30
 
 Extended the default-off formatter shadow diagnostic to aggregate changed
 register numbers (GPR, both paired-single lanes, and condition-register fields).
@@ -2919,7 +3966,7 @@ replacement behavior and the default-off setting are unchanged.
 
 A headless combat shadow run compared 398399 supported calls, including 150262
 floating calls: zero output/va_list/return/FPSCR mismatches, abandoned or pending
-samples. Original code changed GPR 0 and 3–12, floating PS0 registers 0–1, and
+samples. Original code changed GPR 0 and 3â€“12, floating PS0 registers 0â€“1, and
 CR fields 0, 1, 5. No PS1 changes were observed. Other inspected registers stayed
 unchanged. This strengthens the observed caller-state audit; it is not complete
 architectural equivalence, interrupt timing, alias coverage or whole-game proof.
@@ -2939,7 +3986,7 @@ are heavily perturbed and must not be cited as release FPS.
 
 A separate candidate run without block profiling averaged 29.8246 FPS at
 100.0001% guest speed, P99 51.2428 ms, maximum 84.9062 ms and minimum rolling
-one-second FPS 28 (frames 12620–13850). Guest intervals: 1074 at 33.367 ms,
+one-second FPS 28 (frames 12620â€“13850). Guest intervals: 1074 at 33.367 ms,
 84 at 50.05 ms, 72 at 16.683 ms. It still fails sustained-30 pacing. Runtime/audio
 span profiling remained enabled; this is a diagnostic, not visible acceptance.
 All three native endpoint captures were inspected in order. Heroes, Doombots,
@@ -2954,9 +4001,9 @@ JIT, Vulkan, 3x EFB, one host CPU, normal clocks and muted Cubeb. The user's
 visible-performance and sound failures remain unresolved. Goal active/unmet;
 no manual retest requested and no experimental replacement promoted.
 
-## Headless GPU submission diagnosis — 2026-09-30
+## Headless GPU submission diagnosis â€” 2026-09-30
 
-The user's visible 17–18 FPS and poor-audio report still fails acceptance.
+The user's visible 17â€“18 FPS and poor-audio report still fails acceptance.
 Added opt-in bounded runtime spans (`--profile-runtime`, environment
 `OPENMUA2_RUNTIME_SPANS`) for throttle, GPU pacing, worker, Vulkan fence/submit/
 present and Presenter elapsed time. `tools/analyze_runtime_spans.py` merges
@@ -2972,7 +4019,7 @@ fix to the user's visible playtest or treat old headless stalls as its diagnosis
 
 Matched route/profile diagnostics (one host CPU, JIT, Vulkan, 3x EFB, normal
 clocks, formatter off, Cubeb volume=0) reduced accumulated fence waits from
-5.041 s to 0.00694 s over frames 12620–13850. P99 fell from 93.493 to 50.777 ms;
+5.041 s to 0.00694 s over frames 12620â€“13850. P99 fell from 93.493 to 50.777 ms;
 average FPS rose from 27.669 to 28.581, minimum rolling 1 s FPS from 21 to 24.
 Repeat: 27.679 FPS, P99 51.746 ms, total fence waits 0.00658 s.
 Scene progression differs; these are bounded diagnostics, not a controlled
@@ -2989,14 +4036,14 @@ found. Exact binaries, run hashes, repeat results and limits are recorded in
 Next: profile remaining guest frame-production stalls and the visible rendering
 path without host UI automation; do not request another manual test yet.
 
-## Audio and frame-cadence diagnosis — 2026-09-30
+## Audio and frame-cadence diagnosis â€” 2026-09-30
 
 Added an offline synthetic mixer benchmark and opt-in numeric audio profiling.
 Use --profile-audio --audio Cubeb with tools/run_combat_benchmark.py; explicit
 profiling permits a headless Cubeb diagnostic, while ordinary headless runs
 remain silent. Inherited profiling is cleared for ordinary benchmarks. Counters
 are bounded, written after callbacks stop, and contain no audio samples.
-Channel IDs: 0 DMA, 1 streaming, 2–5 remote speakers, 6 portal, 7–10 GBA,
+Channel IDs: 0 DMA, 1 streaming, 2â€“5 remote speakers, 6 portal, 7â€“10 GBA,
 11 Cubeb callback. Producer counts cover only 0/1; other producer fields are
 unavailable. Final traces include steady-clock anchors for frame correlation.
 
@@ -3013,11 +4060,11 @@ interval was 533.65 ms; without captures it fell to 100.83 ms. Scene progression
 varied, so do not label this a controlled gameplay optimization.
 
 The no-capture run averaged 27.117 FPS at 100.073% guest speed. The last instrumented run
-measured 27.180 FPS over frames 12620–13850, P99 93.91 ms, maximum 112.59 ms and
+measured 27.180 FPS over frames 12620â€“13850, P99 93.91 ms, maximum 112.59 ms and
 minimum rolling 1 s FPS 20. It still fails. Its guest cadence included 237
 50.05-ms intervals among 1,230 intervals. A five-second process sample used
 66.62% of the single allowed CPU; that is limited headless evidence, not proof
-about the visible 17–18 FPS manual test. Investigate frame production and waits
+about the visible 17â€“18 FPS manual test. Investigate frame production and waits
 before investing in small mixer optimizations.
 
 All four initial native captures were inspected sequentially; the last instrumented run's
@@ -3036,12 +4083,12 @@ one-core constraint. Goal remains active/unmet. User testing stays deferred;
 future manual launches start normally. User edits and proprietary assets remain
 preserved outside this checkpoint.
 
-## Xbox controls and failed user playtest — 2026-09-30
+## Xbox controls and failed user playtest â€” 2026-09-30
 
 The physical Xbox One controller was detected, but the first manual launch used
 the old generic mapping and a combat savestate. The user reported wrong controls,
-roughly 17–18 FPS and poor audio, and deferred further playtesting. That FPS is
-user-observed, not an instrumented interval. Earlier short 27–29 FPS results do
+roughly 17â€“18 FPS and poor audio, and deferred further playtesting. That FPS is
+user-observed, not an instrumented interval. Earlier short 27â€“29 FPS results do
 not establish playability. Sustained 30 FPS and acceptable audio remain unmet.
 
 New profiles map actions: A attack/confirm, B heavy/back, X grab, Y jump, LB
@@ -3091,7 +4138,7 @@ costs under the whole-process one-core limit, then close remaining control gaps.
 Private assets, saves, captures and logs stay in .local. User StaticRecomp edits,
 Build-With-Log.cmd and the unfinished static experiment stash remain preserved.
 
-## Whole-process one-core correction — 2026-09-30
+## Whole-process one-core correction â€” 2026-09-30
 
 The user's requirement is to run the entire game on one CPU core. The earlier
 CPUThread=False setting only serialized CPU/GPU runtime work; helper threads
@@ -3143,7 +4190,7 @@ controls remain open. Private assets, outputs, user edits and stash are preserve
 
 Evidence: evidence/windows-20260930/JIT-ONE-HOST-CORE.json.
 
-## Guarded formatter rewrite experiment — 2026-09-30
+## Guarded formatter rewrite experiment â€” 2026-09-30
 
 Single-core CPU/GPU emulation remains enforced. The new default-off
 `--simple-format shadow|on` experiment replaces a narrow game-library formatter
@@ -3170,7 +4217,7 @@ formats and values retain the original path.
 
 Three short runs per mode used the same runner, save, profile and input sequence
 at 1920x1080 preset / 3x EFB, Vulkan/Cubeb, normal clocks and single-core mode.
-Each measures frames 12620–12990, 370 newly rendered frame intervals:
+Each measures frames 12620â€“12990, 370 newly rendered frame intervals:
 
 | Mode / run | Average FPS | P99 ms | Maximum ms | Lowest rolling 1 s FPS |
 | --- | ---: | ---: | ---: | ---: |
@@ -3220,7 +4267,7 @@ Build-With-Log.cmd and the unfinished static experiment stash are preserved.
 
 Evidence: evidence/windows-20260930/JIT-SIMPLE-FORMAT.json.
 
-## Single-core requirement and active JIT callers — 2026-09-30
+## Single-core requirement and active JIT callers â€” 2026-09-30
 
 The user requires single-core execution and intends an eventual original Xbox
 port. CPU/GPU emulation now has a per-run CPUThread=False override, including
@@ -3267,7 +4314,7 @@ Private data/captures remain ignored. User static edits, Build-With-Log.cmd and
 the unfinished static experiment stash are preserved. Goal remains active.
 
 
-## JIT block profile and crowded control comparison — 2026-09-30
+## JIT block profile and crowded control comparison â€” 2026-09-30
 
 Full JIT remains primary; sustained 30 FPS is unmet. Added opt-in
 `--jit-block-profile` to the process-local combat harness, with reset/dump
@@ -3286,7 +4333,7 @@ no original game code/configuration or cycle charges were changed.
 
 Sequential uninstrumented same-runner controls at 1920x1080 preset / 3x EFB,
 Vulkan/Cubeb and normal clocks measured 27.524 FPS single-core and 26.318 FPS
-threaded over frames 12620–13690. P99: 50.66 / 52.63 ms; maximum: 83.40 /
+threaded over frames 12620â€“13690. P99: 50.66 / 52.63 ms; maximum: 83.40 /
 84.41 ms; rolling one-second minimum: 22 FPS both. Input receipt delays can
 change exact guest timing. These one-off results do not establish a gain or
 acceptance; threaded execution and the presentation queue remain unpromoted.
@@ -3315,7 +4362,7 @@ Three-repeat and ten-minute varied combat acceptance remain outstanding.
 Private assets, raw profiles, disassembly and captures remain outside Git.
 User static edits, Build-With-Log.cmd and the static experiment stash are preserved.
 
-## Presentation experiment and native fusion input — 2026-09-30
+## Presentation experiment and native fusion input â€” 2026-09-30
 
 Full JIT remains primary. Goal active/unmet. A clean heavier fight measured
 26.0101 FPS over 41.14 seconds at the same 1920x1080 preset / 3x EFB and
@@ -3365,7 +4412,7 @@ evidence/windows-20260930/JIT-QUEUE-AND-INPUT.json.
 All proprietary data stays private. User static diagnostics and Build-With-Log.cmd
 remain uncommitted; the unfinished static experiment remains stashed.
 
-## JIT pacing diagnostics and profile-directory fix — 2026-09-30
+## JIT pacing diagnostics and profile-directory fix â€” 2026-09-30
 
 The JIT primary path is committed at 0642cd3e. Additional opt-in
 `MODERNGEKKO_PRESENT_TIMES` telemetry records XFB-copy, before-present and
@@ -3414,7 +4461,7 @@ harness exposes buttons/sticks, but not Nunchuk motion. Private route/save:
 All original data, generated output, caches, native captures and raw logs stay
 private. User static diagnostics and Build-With-Log.cmd remain uncommitted.
 
-## JIT primary path built and repeated — 2026-09-30
+## JIT primary path built and repeated â€” 2026-09-30
 
 The user explicitly selected full JIT. Build.cmd and Run.cmd now default to JIT;
 --cpu staticrecomp retains the native path and --native-rel still implies it.
@@ -3455,7 +4502,7 @@ unfinished direct chunk experiment before JIT priority". The user's three static
 diagnostic edits are restored and remain uncommitted; Build-With-Log.cmd retained.
 Evidence: evidence/windows-20260930/JIT-PRIMARY-CHECKPOINT.json.
 
-## Aggregate native execution profile — 2026-09-30
+## Aggregate native execution profile â€” 2026-09-30
 
 The opt-in dispatch profiler now totals every PC before truncating its ranking.
 It records the first/last dispatch timestamp without adding new clock reads.
@@ -3477,7 +4524,7 @@ The 30 FPS goal remains unmet. Next investigate generated-code entry/return
 frequency and helper overhead, not only the external dispatcher. Preserve
 native eligibility/hash checks, exceptions and interrupt/timing boundaries.
 
-## Compiler candidates completed; combat still below target — 2026-09-30
+## Compiler candidates completed; combat still below target â€” 2026-09-30
 
 Both build sessions finished with exit 0. Clang/O2 produced a 170525696-byte
 module, SHA256 47922fb187294b601b2b8667805c42bfda639ecfe9ffc014d36b7d1a0bcb6d51,
@@ -3491,7 +4538,7 @@ bounded validation, not complete floating-point or gameplay equivalence.
 
 At the existing 1920x1080 preset / 3x EFB, sequential same-runner combat tests
 measured baseline 6.1936 FPS, Clang 10.9880 FPS, MSVC c1024 9.4445 FPS over
-frames 11472–11625. P99 frame times: 283.17, 167.95, 170.13 ms respectively.
+frames 11472â€“11625. P99 frame times: 283.17, 167.95, 170.13 ms respectively.
 All routes completed and exited 0 with command receipts validated. Compiler
 load had ended; XEMU was using CPU in the background. These single comparisons
 are diagnostic, not repeated or sustained acceptance. Goal remains unmet.
@@ -3512,7 +4559,7 @@ SMC warnings and CMake deprecation/Wayland/path/unused-variable warnings; no
 compiler error diagnostics. Private assets, generated C, images and raw logs
 remain under .local. Earlier statements below about live builds are historical.
 
-## Idle-cycle hypothesis ruled out for this fight — 2026-09-29
+## Idle-cycle hypothesis ruled out for this fight â€” 2026-09-29
 
 Added read_timing to the process-local automation protocol. It snapshots
 CoreTiming ticks and idle_ticks under a CPU-thread guard, then releases the
@@ -3540,7 +4587,7 @@ only on success. It does not replace the default build receipt. See
 .local/ACTIVE-PERFORMANCE-BUILDS.json for active commands/logs. Neither module
 has a completed audit or performance result yet. Goal remains active and unmet.
 
-## Ob1 build completed; no combat speedup — 2026-09-29
+## Ob1 build completed; no combat speedup â€” 2026-09-29
 
 The long-running session 60093 finished with exit 0. Windows native module:
 .local/build/windows-x64/module-mg01-rel-o2-ob1/gRMSE52_recomp.dll,
@@ -3569,7 +4616,7 @@ log .local/logs/combat-c1024-ob2-build.log. Do not restart a live build.
 Smaller functions may permit stronger optimization but add dispatch boundaries;
 no performance gain is assumed. Goal remains active and unmet.
 
-## Combat-only dispatch profile — 2026-09-29
+## Combat-only dispatch profile â€” 2026-09-29
 
 The earlier per-dispatch profile included boot/restoration. Added optional
 STATICRECOMP_PROFILE_GATE_FILE: native profiling waits for a private marker,
@@ -3599,7 +4646,7 @@ its direct calls would need native eligibility/hash/host-call and REL checks,
 bounded cycle handling and regression coverage before a safe game experiment.
 This is a future design lead, not an implemented optimization.
 
-## Selective JIT profiling checkpoint — 2026-09-29
+## Selective JIT profiling checkpoint â€” 2026-09-29
 
 Added opt-in STATICRECOMP_FALLBACK_USE_JIT=1 for forced fallback ranges.
 Default execution remains unchanged; without the flag (or without a JIT),
@@ -3631,7 +4678,7 @@ a stationary log. New runner SHA256:
 Compare both baseline and Ob1 using this same runner after the build finishes.
 Goal remains active and unmet; production defaults have not been changed.
 
-## Command-publication race fixed; extended combat route — 2026-09-29
+## Command-publication race fixed; extended combat route â€” 2026-09-29
 
 The extended route exposed a Windows sharing failure while renaming a command
 from .txt.tmp to .txt. Root cause: ListCommandFiles consumes every regular
@@ -3670,7 +4717,7 @@ functions with no reported failure. No candidate DLL/audit/FPS result yet.
 Continue the live build, then benchmark with the corrected publisher. Goal
 remains active; no production speedup or sustained-30 claim is made.
 
-## Rebuilt-runtime combat and audio-path checks — 2026-09-29
+## Rebuilt-runtime combat and audio-path checks â€” 2026-09-29
 
 The Ob1 module build is still live in terminal session 60093; it has passed
 chunk0165 and chunk0167 with no reported compile failure. Large generated
@@ -3701,7 +4748,7 @@ baseline Ob0 module. The Ob1 module has not linked/audited or been benchmarked.
 Next: finish the live build, audit, compare baseline/candidate without compiler
 load, and continue toward the unchanged sustained-30 combat goal.
 
-## MSVC helper-inline experiment in progress — 2026-09-29
+## MSVC helper-inline experiment in progress â€” 2026-09-29
 
 The sustained-30 goal remains active. Added opt-in `--module-msvc-inline 1`
 with separate module output and build-receipt metadata; default remains Ob0.
@@ -3734,7 +4781,7 @@ baseline beside the candidate. Another unrelated project was compiling;
 record contention and do not stop it. Inspect native captures before claiming
 correctness. No production speedup, audio pass, or sustained-30 pass is claimed.
 
-## Combat timing and CPU comparison — 2026-09-29
+## Combat timing and CPU comparison â€” 2026-09-29
 
 Goal remains active; no production speedup or sustained-30 pass is claimed.
 Added opt-in bounded unique-frame timing at after_present, independent of the
@@ -3778,7 +4825,7 @@ checkpoint used explicit hashed runner/module paths. Original binaries are
 preserved under .local/perf-baseline-789e77f9. Pre-existing diagnostic edits are
 restored after the telemetry build and remain excluded from tested binaries.
 
-## Active sustained-30-FPS goal — 2026-09-29
+## Active sustained-30-FPS goal â€” 2026-09-29
 
 The user requested major frame-rate improvements and will not accept less than
 solid 30 FPS in combat. The active goal and acceptance criteria are recorded in
@@ -3804,7 +4851,7 @@ Next: replay combat, implement low-overhead unique-frame timing and benchmark
 analysis, establish uninstrumented combat baseline, then profile CPU/GPU and
 short-block/OS scheduling costs. Preserve all timing and verification guards.
 
-## Windows performance checkpoint — 2026-09-29
+## Windows performance checkpoint â€” 2026-09-29
 
 OpenMUA2 was actually run using the audited Windows O2/indexed native DOL+REL
 binaries from the c54bde7 source checkpoint. Native application captures confirmed
@@ -3829,7 +4876,7 @@ player movement and party-following. Combat was not reached or measured.
 - Next performance work: reach an actual enemy encounter, measure a repeatable
   combat interval, then profile CPU/GPU before attributing the low frame rate.
 
-## Windows continuation — 2026-09-29
+## Windows continuation â€” 2026-09-29
 
 - Confirmed `origin` is `https://github.com/GTTeancum/OpenMUA2.git` and pulled
   `main` with `--ff-only` to `5e5ffc8daf84ec10b59637ecebc9d6134af6a15c`.
@@ -3919,30 +4966,30 @@ Native DOL + REL execution is present. SMC/chunk-hash protection remains enabled
 
 Key accepted performance commits:
 
-- `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` — `O2 + indexed` default.
-- `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` — page-index combined DOL+REL dispatch.
-- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` — empty/single-chunk merged-dispatch fast paths.
-- `405b81de4136a7532e966218185a190f6eb9230d` — page-local ordinary indexed dispatch.
-- `917a5d893087736a74566dbaf71de5f3989a6d90` — cached x86-64-v3 feature detection.
-- `4e677ac8491bc3b5256998ba3688893f61d07695` — module-load baseline/v3 chassis binding.
-- `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` — reuse module-load v3 choice for indirect dispatch.
-- `2776fa0a3e80136495a32552b9d909e16dcfcd5e` — gate host-call probes by cached per-chunk coverage.
-- `af7938bdb63d4530ea43a6ba445800fc4171a153` — reuse runtime→linked PC between eligibility and dispatch.
-- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` — same-section linked→runtime REL hint.
-- `7a9cdc0165257ec19301972785150e4961f7f65e` — same-section runtime→linked continuation hint.
-- `12a75b2db225678368be5e2b6340218ba2aafa2f` — skip empty forced-fallback range scans in native eligibility.
-- `5b87d08b8f6e4daff2ca64bab75d67632ec28721` — read cached host-call chunk state directly in the burst path.
-- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` — chassis-only generated dispatch skips duplicate host-call dispatch.
-- `dc43d362d425134222d00aa02dd4dbec99fcf222` — remove redundant explicit module-active check from the native burst back-edge.
-- `20dd90851c3a2625ddb973f8850e2494bb33ca9f` — skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
-- `de411096f5986980ac58e1f3a7373d8f5351dc67` — reuse generated linked results across eligible native burst continuations.
-- `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` — check cheap burst termination conditions before continuation eligibility.
-- `b78431f21625ad61b4f66855f5f94b859f04cf7a` — check fallback-slice termination before dispatchability/host-call probes.
-- `7b11a1869c85aec8d5384c7f044779454e37a69f` — reuse the proven native-entry exact host-call result in fallback.
+- `a6328f40bb0c98a58c8f50e52a30d4da55390b7e` â€” `O2 + indexed` default.
+- `bf2ecd76eb6050ceedba2c9e8d4d21619f06c8dc` â€” page-index combined DOL+REL dispatch.
+- `f4b7f991deb4a9e787b97c3bac2a475faadfc1f6` â€” empty/single-chunk merged-dispatch fast paths.
+- `405b81de4136a7532e966218185a190f6eb9230d` â€” page-local ordinary indexed dispatch.
+- `917a5d893087736a74566dbaf71de5f3989a6d90` â€” cached x86-64-v3 feature detection.
+- `4e677ac8491bc3b5256998ba3688893f61d07695` â€” module-load baseline/v3 chassis binding.
+- `5e6ad207c77affbf500bf5327ce6222e9e7fd7c1` â€” reuse module-load v3 choice for indirect dispatch.
+- `2776fa0a3e80136495a32552b9d909e16dcfcd5e` â€” gate host-call probes by cached per-chunk coverage.
+- `af7938bdb63d4530ea43a6ba445800fc4171a153` â€” reuse runtimeâ†’linked PC between eligibility and dispatch.
+- `7b7e412f671039e1d29e2cdff7b2e51509bc046e` â€” same-section linkedâ†’runtime REL hint.
+- `7a9cdc0165257ec19301972785150e4961f7f65e` â€” same-section runtimeâ†’linked continuation hint.
+- `12a75b2db225678368be5e2b6340218ba2aafa2f` â€” skip empty forced-fallback range scans in native eligibility.
+- `5b87d08b8f6e4daff2ca64bab75d67632ec28721` â€” read cached host-call chunk state directly in the burst path.
+- `8f8c32a9c90e039c898d78eb8313c7d9d64f28c5` â€” chassis-only generated dispatch skips duplicate host-call dispatch.
+- `dc43d362d425134222d00aa02dd4dbec99fcf222` â€” remove redundant explicit module-active check from the native burst back-edge.
+- `20dd90851c3a2625ddb973f8850e2494bb33ca9f` â€” skip the forced-fallback helper in the interpreter/fallback branch when no forced-fallback ranges are configured.
+- `de411096f5986980ac58e1f3a7373d8f5351dc67` â€” reuse generated linked results across eligible native burst continuations.
+- `d3aeab80a3ae44c2d18265ad9f1e5868bf369e50` â€” check cheap burst termination conditions before continuation eligibility.
+- `b78431f21625ad61b4f66855f5f94b859f04cf7a` â€” check fallback-slice termination before dispatchability/host-call probes.
+- `7b11a1869c85aec8d5384c7f044779454e37a69f` â€” reuse the proven native-entry exact host-call result in fallback.
 
 Important accepted correctness/runtime commits include absolute REL section-table support (`67d75dc6...`), native cache-control codegen (`770db108...`), scalar FMA repair (`7e0b4866...`), MEM2 lockstep journaling (`26334ad6...`), and merged DOL+REL eligibility guards (`46091e1a...`).
 
-## Latest accepted work — PR #22
+## Latest accepted work â€” PR #22
 
 PR #22 `Remove redundant module-active burst check` is **MERGED**.
 
@@ -3965,9 +5012,9 @@ Validation:
 
 Status doc:
 
-- `039782520c25933f7c6653797332bd7e8d0715cd` — `Record merged module-active burst cleanup`
+- `039782520c25933f7c6653797332bd7e8d0715cd` â€” `Record merged module-active burst cleanup`
 
-## Latest accepted work — PR #23
+## Latest accepted work â€” PR #23
 
 PR #23 `Skip empty forced-fallback scan in interpreter path` is **MERGED**.
 
@@ -3989,7 +5036,7 @@ Validation:
 
 Status doc:
 
-- `2de1dee811932d3d010dc606abf02cb7ab749769` — `Record merged interpreter fallback fast path`
+- `2de1dee811932d3d010dc606abf02cb7ab749769` â€” `Record merged interpreter fallback fast path`
 
 ## Historical RMSE52 performance boundary
 
@@ -4007,7 +5054,7 @@ Historical accepted native-REL run, predating recent optimizations:
 
 This proves native REL progression, **not current performance**.
 
-## Latest accepted work — PR #24
+## Latest accepted work â€” PR #24
 
 PR #24 `Reuse generated linked result on burst continuation` is **MERGED**.
 
@@ -4018,8 +5065,8 @@ Merge commit:
 Behavior:
 
 - Preserves the linked PC returned by generated dispatch while keeping `m_guest.pc` in runtime form for host-side semantics.
-- `TranslateRelAddress()` reports the active REL section selected during linked→runtime translation.
-- `FastDispatchableLinkedAt()` uses a preserved linked result for the next verified chunk lookup when its invariants hold, avoiding the normal runtime→linked conversion.
+- `TranslateRelAddress()` reports the active REL section selected during linkedâ†’runtime translation.
+- `FastDispatchableLinkedAt()` uses a preserved linked result for the next verified chunk lookup when its invariants hold, avoiding the normal runtimeâ†’linked conversion.
 - Forced-fallback and exact host-call checks remain on the runtime address.
 - REL chunks must still belong to the resolved active REL section; DOL chunks require the non-REL sentinel.
 - Lockstep-checked blocks and native exception returns disable preserved-result reuse.
@@ -4037,9 +5084,9 @@ Validation:
 
 Status doc:
 
-- `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` — `Record merged linked continuation fast path`
+- `1256b9ff7e59dd48750fdc93ebcfec63a900ab22` â€” `Record merged linked continuation fast path`
 
-## Latest accepted work — PR #25
+## Latest accepted work â€” PR #25
 
 PR #25 `Check cheap burst termination before continuation lookup` is **MERGED**.
 
@@ -4067,9 +5114,9 @@ Validation:
 
 Status doc:
 
-- `3417a27ee6a0d3b032650020724c9758b2191973` — `Record merged cheap burst termination gate`
+- `3417a27ee6a0d3b032650020724c9758b2191973` â€” `Record merged cheap burst termination gate`
 
-## Latest accepted work — PR #27
+## Latest accepted work â€” PR #27
 
 PR #27 `Check fallback termination before dispatch probes` is **MERGED**.
 
@@ -4098,9 +5145,9 @@ Validation:
 
 Status doc:
 
-- `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` — `Record merged fallback termination ordering`
+- `c1ee8eba08ba06d2a08b687e26a8615f5c63ebfc` â€” `Record merged fallback termination ordering`
 
-## Latest accepted work — PR #28
+## Latest accepted work â€” PR #28
 
 PR #28 `Reuse native entry host-call result` is **MERGED**.
 
@@ -4131,7 +5178,7 @@ Validation:
 
 Status doc:
 
-- `fa6dde0c484903e9e9bfabf024af22f0569991c3` — `Record merged native-entry host-call reuse`
+- `fa6dde0c484903e9e9bfabf024af22f0569991c3` â€” `Record merged native-entry host-call reuse`
 
 ## Historical Linux container blockers
 
@@ -4159,7 +5206,7 @@ Status doc:
 6. Once the optimized module links, run the native audit and require **524/524** chunk-hash PASS.
 7. Gameplay comes only after the optimized module passes audit.
 
-## Previous container update — 2026-09-29
+## Previous container update â€” 2026-09-29
 
 What happened:
 
@@ -4180,8 +5227,8 @@ What happened:
   `ninja: no work to do.`
 - Verified all four dependency records report `(VALID)`.
 - Durable build state advanced:
-  - **48 → 52 total objects**;
-  - **41 → 45 generated chunk objects**.
+  - **48 â†’ 52 total objects**;
+  - **41 â†’ 45 generated chunk objects**.
 - Created and uploaded a new persistent private checkpoint:
   `/MUA2/Build-Checkpoints/MUA2-BUILD-CHECKPOINT-52obj.tar.zst`.
 - Archive size: ~47 MB.
@@ -4190,3 +5237,23 @@ What happened:
 - No optimized `gRMSE52_recomp.so` has linked yet.
 - No source/runtime semantics changed.
 - No gameplay or FPS test was attempted.
+
+## Controls layout and rank-symbol preservation - 2026-10-08
+
+Native Options scene now uses aligned glyph/action columns plus Powers/Fusion
+rows. QTE reference removed from Options; contextual gameplay prompt retained.
+Extra Xbox font cells moved into verified unused cells, preserving every native
+power-rank star and priority dot. Fresh campaign capture confirms restored stars;
+native Options capture confirms the final layout without runtime position edits.
+Corrected the embedded Powers Assign label to A (A enters assignment; X did not),
+and updated the raw fusion label for the new glyph slots. Final Assign-label
+change is built but not recaptured.
+
+MSVC Release passed. 68/68 built CTests passed under VsDevCmd; three unbuilt
+vendor tools excluded and playTests disabled. Initial full invocation lacked
+compiler headers; corrected toolchain rerun passed. Options 4/4, fonts 2/2,
+launcher 58 checks. Paired v7 EXE/data staged at C:/Games/MUA2; 55 saves unchanged.
+Root remains OpenMUA2.exe, GameData, saves. No gameplay auto-launch/warp.
+Powers allocation/refund, redistribution and hero cycling remain open, so TODO
+section 2 is not closed. No audio/FPS validation claimed.
+Evidence: evidence/windows-20261007/MENU-LAYOUT-20261008.json.

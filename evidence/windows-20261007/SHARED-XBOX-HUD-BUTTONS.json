@@ -1,0 +1,37 @@
+{
+  "status": "Optional asset compiler implemented; not installed or accepted in game",
+  "switch": "--xbox-hud-buttons",
+  "source": "tools/build_qte_glyph_override.py",
+  "sprites": {
+    "A": [
+      38,
+      42,
+      43
+    ],
+    "B": [
+      44,
+      45
+    ],
+    "LB": [
+      40,
+      46,
+      47
+    ],
+    "Y": [
+      41,
+      48,
+      49
+    ]
+  },
+  "scope": "11 shared button/alternate-frame cells. Preserve native block as LB. No global Z-to-X replacement. Lock-on PS2 action11 and dedicated X routing still pending.",
+  "validation": {
+    "tests": "2/2 tools/test_rapid_tap_glyphs.py, 0.439s",
+    "coverage": "Actual stock HUD coordinate table; pixel changes confined to button cells; rapid-X motion and all unrelated bytes preserved; alpha padding and visible glyph width verified; rejects unknown stock texture.",
+    "visual": "Decoded final atlas inspected upright. Initial small LB corrected via uniform fit-and-upscale rule. This is asset inspection, not gameplay proof.",
+    "private_preview": "workspace outputs/shared-xbox-hud-buttons-asset-check.png"
+  },
+  "build": "No C++ changes or Windows rebuild this checkpoint. No new WAD generated.",
+  "installed": "Unchanged",
+  "cleanup": "One compact preview overwritten in place; no duplicate game data, runtime, build tree or save created. Free space C194941931520,D89822392320 bytes.",
+  "goal_complete": false
+}

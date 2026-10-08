@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-07",
+  "status": "Private opt-in shared aim correction; not installed",
+  "fixed": [
+    "Wrong enable guard: native81015AC8 rotates left25/masks bit31, selecting byte5925 bit7 (0x80), not0x40. Native flags observed0xA1, explaining prior inactive candidate.",
+    "Raw stick position was written as target, causing recenter on release. PS2 default mode3 accumulates axis/20 per native update beyond +/-0.1 and clamps to[-1,1]. Target retained on neutral; disconnected/unjoined invalidates without erasing last target."
+  ],
+  "ps2_reference": {
+    "producer": "00523570",
+    "default_mode3": "00736BC0 contains3",
+    "input_reads": "005237C0..0052381C action0/1",
+    "integration": "005238B4..00523918",
+    "limits": "0052391C..005239D0",
+    "valid": "00523A58",
+    "scope": "Port-local record state; native projection and collision retained; no NetPlay flag changes"
+  },
+  "build": {
+    "result": "Windows MSVC Release exit0",
+    "runner_sha256": "31821db0e52f8494b7ce1d47e191e8c2674391c6b8f1d8a1b6dd96eef6300385",
+    "runner_bytes": 16218624,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib",
+      "moderngekko_mua2_gamepad_actions_test.exe"
+    ],
+    "focused": "4/4 in2.42s",
+    "regression": "50/50 in11.45s",
+    "warnings_errors": "No compiler/linker warnings/errors in final build log"
+  },
+  "native": {
+    "exit": 0,
+    "method": "Single-core headless restored native encounter entry; contained Xbox inputs and read-only record inspection; no memory writes or prerequisite changes",
+    "samples": [
+      {
+        "label": "loaded",
+        "manager": "0x9002c628",
+        "vtable": "0x81198830",
+        "flags": 161,
+        "mode": 0,
+        "menu": "0x0",
+        "records": [
+          {
+            "port": 0,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 2,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 3,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          }
+        ]
+      },
+      {
+        "label": "right",
+        "manager": "0x9002c628",
+        "vtable": "0x81198830",
+        "flags": 161,
+        "mode": 0,
+        "menu": "0x0",
+        "records": [
+          {
+            "port": 0,
+            "x": 0.30000001192092896,
+            "y": 0.0,
+            "valid": 1
+          },
+          {
+            "port": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 2,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 3,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          }
+        ]
+      },
+      {
+        "label": "neutral",
+        "manager": "0x9002c628",
+        "vtable": "0x81198830",
+        "flags": 161,
+        "mode": 0,
+        "menu": "0x0",
+        "records": [
+          {
+            "port": 0,
+            "x": 0.30000001192092896,
+            "y": 0.0,
+            "valid": 1
+          },
+          {
+            "port": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 2,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 3,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          }
+        ]
+      },
+      {
+        "label": "unjoined-port1",
+        "manager": "0x9002c628",
+        "vtable": "0x81198830",
+        "flags": 161,
+        "mode": 0,
+        "menu": "0x0",
+        "records": [
+          {
+            "port": 0,
+            "x": 0.30000001192092896,
+            "y": 0.0,
+            "valid": 1
+          },
+          {
+            "port": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 2,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 3,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          }
+        ]
+      },
+      {
+        "label": "left",
+        "manager": "0x9002c628",
+        "vtable": "0x81198830",
+        "flags": 161,
+        "mode": 0,
+        "menu": "0x0",
+        "records": [
+          {
+            "port": 0,
+            "x": 7.450580596923828e-09,
+            "y": 0.0,
+            "valid": 1
+          },
+          {
+            "port": 1,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 2,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          },
+          {
+            "port": 3,
+            "x": 0.0,
+            "y": 0.0,
+            "valid": 0
+          }
+        ]
+      }
+    ],
+    "pass": "Accumulation, neutral hold, unjoined port isolation and opposite movement inside running game",
+    "limits": [
+      "Shared-record probe outside an active aiming interaction, not Nullifier or turret gameplay acceptance",
+      "No four joined player interaction proof",
+      "No in-context prompt/rendering, audio, FPS or physical-controller acceptance"
+    ]
+  },
+  "next": "Validate real Nullifier activation/aim/use/exit and prompt, complete turret encounter and hacking paths, then packaging/review. Gameplay first.",
+  "goal_complete": false
+}

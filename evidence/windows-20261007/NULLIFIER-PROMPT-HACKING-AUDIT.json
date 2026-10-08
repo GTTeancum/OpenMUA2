@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-07",
+  "status": "Private candidate, not installed or visually accepted",
+  "prompt_change": "Shared callback chooses each native tutorial own analog-text branch: turret8024DBBC->8024DBD0; Nullifier8024DD08->8024DD1C. Provider/feature/runtime guards and exact56-byte SHA1 checked. Does not alter tutorial identity, ownership or network state.",
+  "nullifier_text": "Native analog instruction at80563E50; pointer alternative80563EF8 remains for non-candidate paths.",
+  "build": {
+    "exit": 0,
+    "runner_sha256": "de22930722b87cc385572ecf83748fc38285f5dc6db7bd6d1630e6e3c944b957",
+    "runner_bytes": 16218624,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ],
+    "focused": "4/4 in2.27s",
+    "regression": "50/50 in8.02s",
+    "compiler_linker_warnings_errors": 0
+  },
+  "native": {
+    "exit": 0,
+    "verified": "Both analog tutorial hooks register; shared record accumulation/release/unjoined isolation probe repeats successfully.",
+    "not_verified": "Neither tutorial actually displayed; no Nullifier/hacking/turret encounter acceptance, four joined players, audio/FPS or physical controller proof."
+  },
+  "hacking_audit": {
+    "PS2": "002491F0..00249378 consumes owner-indexed aim validity;0024B540..0024B668 iterates4 participant slots and controls record+0x44;0024B6D0 returns available=true.",
+    "Wii_correction": "800E9588 is the hack availability query (script wrapper80EB7B10), not a pointer-versus-analog selector. It restricts network Game state; leave intact.",
+    "remaining_pointer_text": [
+      "805390CE hacking description",
+      "805391A0 center-pointer instruction",
+      "805638AF and80563A5C hacking HUD wording",
+      "80563B8C center-pointer warning"
+    ],
+    "next": "Trace instruction call sites/native lifecycle; replace Wii-only hacking language coherently with implemented stick controls, then verify actual encounters and prompts. Shared aiming does not automatically change these strings."
+  },
+  "goal_complete": false
+}

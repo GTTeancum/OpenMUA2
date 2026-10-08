@@ -1,0 +1,27 @@
+{
+  "result": "FAIL: Hero Management direct return still retains menu graphics",
+  "run": "menu-return-graphics-audit",
+  "exit_code": 0,
+  "entry": "Existing native hero-powers state, B then B; repeats with View then B. No forced menu state.",
+  "comparison": "Start then B restores world. Both exits have active menu=0, stack=0, manager bytes5924..5926=00e122.",
+  "diagnostic": "Four viewport drawing flags at viewport1+672+44*i were changed 1->0, captured, then restored0->1. All three captures still show stale menu background/stat bars. This diagnostic is not a source fix or acceptance.",
+  "findings": [
+    "PDA helper80f9c4c8 is an empty return; cannot supply missing cleanup.",
+    "Shared manager menu flags and stack clear correctly in good and bad exits.",
+    "Three menu viewport objects have identical enable flags after good and bad exits.",
+    "Clearing four differing viewport drawing flags does not recover the scene.",
+    "Manager graphics collection differs; retained models still require tracing."
+  ],
+  "limits": [
+    "No executable source changed, build/test rerun or installation performed.",
+    "No physical-controller/audio/FPS acceptance.",
+    "Only isolated process-local memory changed in diagnostic; restored before clean stop."
+  ],
+  "captures": {
+    "OpenMUA2-graphics-audit-bad.png": "05ac1f40b7ebdf6490af19828a6f3daa9acd625fa8d1aa2479e7ab31368abdb5",
+    "OpenMUA2-graphics-audit-good.png": "f5f175c707da6f9f8e96678c2c7835173f0141918c173e1ae9e4c052f805cc19",
+    "OpenMUA2-graphics-audit-second-failure.png": "60db1b80a0445a5d629a2522c8c58e1779b62731daa8d93a3235253c3e797af7",
+    "OpenMUA2-graphics-audit-diagnostic-quads-disabled.png": "6fa21723abbba0834e23db054bd9999b6924b608330527d0f2a5d2f07ac1b4d9",
+    "OpenMUA2-graphics-audit-diagnostic-quads-restored.png": "0edf8b6113be50ed6d7a793c9e5a85903e46d03c17dbd0162bcc421bfa875b85"
+  }
+}

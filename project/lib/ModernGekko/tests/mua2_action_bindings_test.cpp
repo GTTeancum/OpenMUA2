@@ -162,6 +162,14 @@ int main() {
      !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
      ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 40;
   put(menu,10404,0x8118bae8);
+  // Native hacking results must emit continue, never back.
+  put(menu,10404,0x81194460);
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!IsStartAcceptScreen(read) ||
+     !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
+     ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 41;
+  put(menu,10404,0x8118bae8);
   truncated=true;if(IsStartAcceptScreen(read)) return 34;truncated=false;
   put(menu,10404,0x81190d98);if(IsStartAcceptScreen(read)) return 35;
   put(menu,10404,0x8118bae8);

@@ -1,0 +1,158 @@
+{
+  "method": "Cold-started unseeded campaign, process-local port0 input, bounded reads of controlled actor combat node and native input bits; no memory writes",
+  "actions": [
+    {
+      "label": "neutral",
+      "node": "0x90760048",
+      "handler": "0x81307750",
+      "vtable": "0x811accd0",
+      "node_words": [
+        "0x811b0620",
+        "0x90287ed8",
+        "0x81307750",
+        "0xc000d06",
+        "0x0",
+        "0x0",
+        "0xe07",
+        "0x0"
+      ],
+      "actions": []
+    },
+    {
+      "label": "A",
+      "node": "0x90762848",
+      "handler": "0x81307ec0",
+      "vtable": "0x811b0cb0",
+      "node_words": [
+        "0x811b0620",
+        "0x90288108",
+        "0x81307ec0",
+        "0xc000d4f",
+        "0xcc",
+        "0x192",
+        "0xd52",
+        "0xc000d06"
+      ],
+      "actions": [
+        9,
+        43,
+        89
+      ]
+    },
+    {
+      "label": "A-released",
+      "node": "0x90760048",
+      "handler": "0x81307750",
+      "vtable": "0x811accd0",
+      "node_words": [
+        "0x811b0620",
+        "0x90287ed8",
+        "0x81307750",
+        "0xc000d06",
+        "0x0",
+        "0x0",
+        "0xe07",
+        "0x0"
+      ],
+      "actions": []
+    },
+    {
+      "label": "B",
+      "node": "0x90762938",
+      "handler": "0x813079b0",
+      "vtable": "0x811a4a98",
+      "node_words": [
+        "0x811b0620",
+        "0x90288108",
+        "0x813079b0",
+        "0xc0003aa",
+        "0xca",
+        "0x12a",
+        "0xd55",
+        "0xc000061"
+      ],
+      "actions": [
+        10,
+        44,
+        90
+      ]
+    },
+    {
+      "label": "B-released",
+      "node": "0x90760048",
+      "handler": "0x81307750",
+      "vtable": "0x811accd0",
+      "node_words": [
+        "0x811b0620",
+        "0x90287ed8",
+        "0x81307750",
+        "0xc000d06",
+        "0x0",
+        "0x0",
+        "0xe07",
+        "0x0"
+      ],
+      "actions": []
+    },
+    {
+      "label": "RT+A",
+      "node": "0x90762a28",
+      "handler": "0x81307e50",
+      "vtable": "0x811a2ab0",
+      "node_words": [
+        "0x811b0620",
+        "0x90288108",
+        "0x81307e50",
+        "0xc000975",
+        "0x6d",
+        "0x12c",
+        "0xd58",
+        "0xc000d06"
+      ],
+      "actions": [
+        29
+      ]
+    },
+    {
+      "label": "RT+A-released",
+      "node": "0x90760048",
+      "handler": "0x81307750",
+      "vtable": "0x811accd0",
+      "node_words": [
+        "0x811b0620",
+        "0x90287ed8",
+        "0x81307750",
+        "0xc000d06",
+        "0x0",
+        "0x0",
+        "0xe07",
+        "0x0"
+      ],
+      "actions": []
+    }
+  ],
+  "rtti": {
+    "0x811accd0": "CCHIdle",
+    "0x811b0cb0": "CCombatNodeHandler",
+    "0x811a4a98": "CCHHoldSmash",
+    "0x811a2ab0": "CCHReturningProjectile"
+  },
+  "conclusions": [
+    "B entered CCHHoldSmash; RT+A entered CCHReturningProjectile",
+    "Both returned to CCHIdle after release; native action bits cleared",
+    "A entered a distinct CCombatNodeHandler node and returned to idle; exact authored node name not decoded",
+    "Native capture visibly shows Captain America throwing shield, corroborating RT+A execution independently of AI damage"
+  ],
+  "capture": {
+    "path": "outputs\\native-campaign-shield-activation.png",
+    "sha256": "374ec6e9659fe2361689a6dc6ffb447e9a182a8f9c2c07dd45566f9f2aa3ad96"
+  },
+  "limits": [
+    "Damage attribution not isolated",
+    "Other heroes/powers and four-port behavior not covered",
+    "Physical controller acceptance not covered",
+    "Large directional-pad image remains in power-steering HUD; audit shared steering prompt against actual input before accepting glyph coverage"
+  ],
+  "state": "PID21228 paused in first street combat; preserve live continuation",
+  "installed_changed": false
+}

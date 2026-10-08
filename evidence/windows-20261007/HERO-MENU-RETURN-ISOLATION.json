@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-07",
+  "result": "FAIL: direct Hero Management return rendering",
+  "cold_start": {
+    "run": "cold-hero-return-audit",
+    "save_state_loaded": false,
+    "forced_menu_state": false,
+    "result": "World absent after View, tutorial A, LB, B, B and ten additional game-seconds. HUD draws over stale menu background."
+  },
+  "isolation": {
+    "run": "menu-return-formatter-off",
+    "save_state_loaded": "existing genuine hero-powers state; separate from cold proof",
+    "formatter": "off",
+    "direct_view_then_back": "fails without entering powers or assignment",
+    "start_then_back": "restores world after direct-return failure",
+    "start_then_a_then_b_then_b": "Hero Management via pause returns to pause and then visible world"
+  },
+  "limits": [
+    "Code-level cause unresolved; no corrective source change yet.",
+    "No physical controller, audio, or performance acceptance.",
+    "Installed game and real saves untouched.",
+    "No build/test rerun: no executable source changed this turn."
+  ],
+  "runs_exit": {
+    "cold-hero-return-audit": 0,
+    "menu-return-formatter-off": 0
+  },
+  "native_captures": {
+    "OpenMUA2-cold-hero-return-settled.png": "a787e36cb274be24b4b36355536dc678c8ea91aa5e153ee8722f3335a3196098",
+    "OpenMUA2-return-formatter-off.png": "4b403fa31064eb9f65ed025e7706f1f14c3b375cb4fbcdf2dd9ac0267ceccac3",
+    "OpenMUA2-return-direct-view.png": "3a14b5018025d0d9ecc7164ab12dd7e94f87594ae9117015e33bb5f05aa27d1d",
+    "OpenMUA2-return-direct-view-exit.png": "97341e5fcb2d99da4d96debec02972ff656003b1136689be9a60cb36bc12930c",
+    "OpenMUA2-return-via-pause-team.png": "ee828adaa9e2e396baed063f5897fb47b19177b641e1cf66dbccc0737162d758",
+    "OpenMUA2-return-via-pause-back.png": "f2d6236e0df2187c0173f06d5ce60f382290391e95108a689b6e7333af9737a1",
+    "OpenMUA2-return-via-pause-exit.png": "e106a8366368c7aa0af86213658b2998723b59fd1205e976a2ff999974b86af0"
+  }
+}

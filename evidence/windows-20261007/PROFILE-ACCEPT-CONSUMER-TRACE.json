@@ -1,0 +1,131 @@
+{
+  "date": "2026-10-07",
+  "status": "Unresolved profile flow; button delivery verified in scoped diagnostic",
+  "failed_diagnostics": [
+    "Full aiming plus broad tracing exceeded combined32 observer/branch capacity, rejecting provider update/query hooks.",
+    "Full aiming plus menu trace alone also rejected required hooks. Neither run is acceptance evidence."
+  ],
+  "valid_scope": "Aiming disabled solely to free diagnostic slots for profile input trace. No rejected hooks in scoped run. A/Start still fail to progress. Must recheck eventual fix with full aiming and no extra trace.",
+  "observations": [
+    "Native generic dispatch receives A89 at81006F00 and Start105 at81006EEC.",
+    "Profile GUI consumer81010788 receives action89.",
+    "Live parent profile vtable8118F008 has four child panes, each vtable8118EEC8. Port0 child at92144050 is page2; other panes page4.",
+    "Parent input handler80F94214 checks child readiness then Start105 at80F944B0. That caller was absent from the captured menu query trace.",
+    "Child input handler80F96610 contains parent activity, pending page and readiness gates before action handling. Next inspect those gates and native dispatch into parent handler."
+  ],
+  "queries": [
+    {
+      "caller": "0x81006eec",
+      "action": 105,
+      "set": 0,
+      "count": 680
+    },
+    {
+      "caller": "0x81006eec",
+      "action": 105,
+      "set": 1,
+      "count": 3
+    },
+    {
+      "caller": "0x81006f00",
+      "action": 89,
+      "set": 0,
+      "count": 678
+    },
+    {
+      "caller": "0x81006f00",
+      "action": 89,
+      "set": 1,
+      "count": 2
+    },
+    {
+      "caller": "0x810070f0",
+      "action": 105,
+      "set": 0,
+      "count": 1
+    },
+    {
+      "caller": "0x81007104",
+      "action": 89,
+      "set": 0,
+      "count": 1
+    },
+    {
+      "caller": "0x8100a0b0",
+      "action": 91,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0b0",
+      "action": 92,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0b0",
+      "action": 93,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0b0",
+      "action": 94,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0cc",
+      "action": 91,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0cc",
+      "action": 92,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0cc",
+      "action": 93,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x8100a0cc",
+      "action": 94,
+      "set": 0,
+      "count": 245
+    },
+    {
+      "caller": "0x81010788",
+      "action": 89,
+      "set": 0,
+      "count": 244
+    },
+    {
+      "caller": "0x81010788",
+      "action": 89,
+      "set": 1,
+      "count": 1
+    },
+    {
+      "caller": "0x81011094",
+      "action": 90,
+      "set": 0,
+      "count": 51
+    }
+  ],
+  "runtime_edits": false,
+  "build_changed": false,
+  "installed_changed": false,
+  "next": "Trace parent profile input dispatch/gating; do not remap known-delivered A/Start speculatively or force ready/completion. Keep gameplay encounters as next acceptance work.",
+  "not_verified": [
+    "Root cause/fix",
+    "Profile progression",
+    "Hacking/Nullifier encounters",
+    "Physical input"
+  ],
+  "goal_complete": false
+}

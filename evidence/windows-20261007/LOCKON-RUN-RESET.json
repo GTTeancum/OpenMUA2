@@ -1,0 +1,37 @@
+{
+  "fix": "Reset s_gamepad_lockon_active and all six registration flags at Runtime::Run initialization",
+  "cause": "HLE::Clear clears external hooks during core shutdown; retained registration flags could prevent reinstall on a second Run in the same host process",
+  "source_evidence": [
+    "dolphin_runtime.cpp Runtime::Run initialization",
+    "HLE/HLE.cpp Clear",
+    "Core/Core.cpp shutdown HLE::Clear"
+  ],
+  "build": {
+    "first_attempt": "Compile passed; link failed LNK1104 because PID21228 held output EXE open",
+    "retry_exit": 0,
+    "warnings": "No compiler or linker warnings in successful logs",
+    "runtime_bytes": 16225792,
+    "runtime_sha256": "a7e889a52dc3144ac17e4c03ab288017a01fdd4c8502421b8d5c5fa7d729353d"
+  },
+  "tests": {
+    "focused": "4/4 passed",
+    "supported": "50/50 passed",
+    "limitations": "Does not exercise two full Runtime::Run sessions or actual lock-on encounter"
+  },
+  "parked_run": {
+    "pid": 21228,
+    "exit": 0,
+    "state": "work/native-campaign-validation/normal-campaign-parked.sav",
+    "bytes": 46900970,
+    "sha256": "411f93ce0f63d92c841c702cbd41d37e36d292ccbda8bf2fd6e2cbf59d1feb74",
+    "note": "Save command acknowledgement preceded file completion; observed complete file before stop. State not replay-validated."
+  },
+  "installed_changed": false,
+  "private_v6_package": "Existing candidate still embeds prior runtime; not repackaged, not current reset fix",
+  "logs": [
+    "work/lockon-run-reset-build.log",
+    "work/lockon-run-reset-build-retry.log",
+    "work/lockon-run-reset-tests.log"
+  ],
+  "hygiene": "Existing build tree reused; one unique parked state retained to release executable lock. No new game-data copy or packaged candidate."
+}

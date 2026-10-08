@@ -1,0 +1,132 @@
+{
+  "scope": "Contained headless process-local validation; no host input",
+  "pid": 35908,
+  "state": "Stopped normally, confirmed exit 0",
+  "fixture": "Retained Storm Castle entry state; older HUD, not v6 visual acceptance",
+  "observations": [
+    "Normal objective display: Destroy Shield Generators (0/2), Destroy West Generator",
+    "D-pad Right selected Iron Man; double-Y activated flight; native capture visibly shows airborne Iron Man and Y/LB flight instructions",
+    "Camera-relative movement changed direction during traversal; did not reach west generator or turret"
+  ],
+  "evidence": [
+    "work/turret-normal-route-r3/encounter.json",
+    "outputs/turret-r3-attack-check.png",
+    "outputs/turret-r3-iron-flight-route.png"
+  ],
+  "unverified": [
+    "Turret entry, aim, fire, exit and re-entry",
+    "Nullifier and lock-on encounter controls",
+    "Physical controller acceptance"
+  ],
+  "installed": "Unchanged; actual saves untouched",
+  "nullifier_web": {
+    "url": "https://transcripts-fanon.fandom.com/wiki/Marvel_Ultimate_Alliance_2_%28PS2/Wii%29",
+    "finding": "Fury dialogue explicitly directs activating Nullifier ray at console during Absorbing Man sequence",
+    "limit": "Transcript corroboration of usage, not proof of unique input mechanic"
+  },
+  "hygiene": "No new builds, game-data copies, profiles or savestates; retained compact logs/native captures. Previously policy-blocked fixture deletion not retried.",
+  "followup": {
+    "result": "Second route reached initial combat but not generators; stopped before repeating defeat",
+    "last_state": {
+      "label": "wolverine-power",
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": true,
+          "health": 29.744657516479492,
+          "position": [
+            -1205.92919921875,
+            2073.7265625,
+            1.249997615814209
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            3.808739423751831
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "health": 0.8901209831237793,
+          "position": [
+            -1353.6036376953125,
+            2020.801025390625,
+            0.46068963408470154
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            5.574049949645996
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 39.05357360839844,
+          "position": [
+            -1185.0751953125,
+            1946.986572265625,
+            0.37831535935401917
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            2.116638422012329
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": false,
+          "health": 43.82600784301758,
+          "position": [
+            -1234.5465087890625,
+            2117.6171875,
+            0.36540839076042175
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            5.030683994293213
+          ],
+          "weapon": 0
+        }
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 0,
+        "kind": 0,
+        "owner": 0
+      }
+    },
+    "observations": [
+      "D-pad Left selected Wolverine",
+      "Short A/A/B press sequences completed and released per guest-tick receipts",
+      "RT+A showed single unlocked-looking power icon; capture alone does not prove unlock status or successful power execution",
+      "Controlled Iron Man health fell to 6.89 during combo sequence; later 0.89 while AI-controlled"
+    ],
+    "cause": "Unresolved: fixture progression/available powers, combat strategy or controls; no root cause established",
+    "next": "Audit native hero progression and power availability read-only before repeating this fixture; use normally progressed save if fixture is inappropriate",
+    "additional_inspected_captures": [
+      "route-current",
+      "climb-flight",
+      "corridor-forward",
+      "stairs-forward",
+      "platform-west",
+      "combat-combo",
+      "wolverine-power"
+    ],
+    "exit": 0
+  }
+}

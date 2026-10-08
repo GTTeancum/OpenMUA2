@@ -1,0 +1,43 @@
+{
+  "status": "Candidate implemented and tested; encounter validation pending",
+  "ps2_evidence": {
+    "producer": "00523A5C..00523A74 resets x/y while object+14 visible",
+    "getter": "004B9240 returns HUD+6DB0",
+    "class": "CHudPointerError; RTTI pointer0078D430",
+    "callers": [
+      "0040C5EC turret",
+      "001DB7D0 Nullifier",
+      "002475D0 interaction instruction"
+    ]
+  },
+  "native_evidence": {
+    "getter": "80FB9030 returns HUD+6EC0",
+    "loaded_hud": "812D2FE0",
+    "loaded_help": "812D9EA0",
+    "loaded_help_vtable": "80564248",
+    "loaded_visible": 0,
+    "diagnostic_exit": 0
+  },
+  "change": "Center sampled target while the guarded native interaction-instruction object is visible. Preserve joined/connected validity, native projection bytes, and all native confirmation/close behavior. No new hook or forced visibility.",
+  "tests": {
+    "focused": "4/4 in2.11s",
+    "full": "50/50 in9.90s",
+    "new_coverage": "All four records center during instructions, connected/disconnected validity, resume accumulation after close, projection-data preservation"
+  },
+  "build": {
+    "exit": 0,
+    "sha256": "5132464932e4c48b67efeb1587f08437da8342f8ff580bdca90b69e522b3a935",
+    "bytes": 16223744,
+    "outputs": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ]
+  },
+  "not_verified": [
+    "Runtime execution of new centering branch",
+    "Actual hacking/Nullifier/turret completion",
+    "Four joined players"
+  ],
+  "installed_changed": false,
+  "goal_complete": false
+}

@@ -1,0 +1,118 @@
+{
+  "date": "2026-10-07",
+  "method": "Continued existing cold-start headless campaign PID21228 using process-local port0 input only; no gameplay memory writes or state loads",
+  "observations": [
+    "Nearby street enemies down after mixed player/AI combat; all four heroes remain alive",
+    "Normal progression reached powers tutorial: Hold RT + A/X/B/Y for powers 1/2/3/4",
+    "Prompt order matches BuildGamepadActions action IDs 29/30/31/32",
+    "Continued beyond tutorial; campaign remains unfinished"
+  ],
+  "captures": [
+    {
+      "path": "outputs\\native-campaign-street-heavy.png",
+      "sha256": "de60a14f4b5aa02ddd20c61cf67d035941b58b649ad0e8085ef80daf94b5fe51",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs\\native-campaign-next-corner.png",
+      "sha256": "1e40d8dfc7e3d14ba8879b30da6e86ca0babd3895586f96b288937248f0ac211",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs\\native-campaign-beyond-power-tutorial.png",
+      "sha256": "04d9c4f69fcacb5e6478055af1514e37f220322c99e6d3e0ad93464326646cb8",
+      "visually_inspected": true
+    }
+  ],
+  "last_actor_state": {
+    "label": "beyond-power-tutorial",
+    "heroes": [
+      {
+        "slot": 0,
+        "actor": "0x934b9d20",
+        "port": 0,
+        "ai": false,
+        "health": 44.545780181884766,
+        "position": [
+          785.642578125,
+          126.2234115600586,
+          0.9821169972419739
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          4.808194637298584
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 1,
+        "actor": "0x934ba758",
+        "port": 0,
+        "ai": true,
+        "health": 47.0,
+        "position": [
+          1255.6927490234375,
+          23.68427276611328,
+          1.044917106628418
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          2.3967769145965576
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 2,
+        "actor": "0x934bb190",
+        "port": 0,
+        "ai": true,
+        "health": 49.0,
+        "position": [
+          1427.375244140625,
+          -19.4772891998291,
+          -5.046342849731445
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          3.1414432525634766
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 3,
+        "actor": "0x934bbbc8",
+        "port": 0,
+        "ai": true,
+        "health": 60.0,
+        "position": [
+          1383.43017578125,
+          -15.208074569702148,
+          -5.060552597045898
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          2.8827555179595947
+        ],
+        "weapon": 0
+      }
+    ],
+    "help": {
+      "visible": 0,
+      "phase": 0,
+      "kind": 0,
+      "owner": 0
+    }
+  },
+  "limits": [
+    "No proof of powers2/3/4 execution from tutorial text",
+    "Turret, hacking, lock-on, Nullifier and normal-route statue QTE not reached",
+    "Physical controller and audible audio not tested",
+    "Shield-steering D-pad prompt remains open; no speculative glyph replacement"
+  ],
+  "installed_changed": false,
+  "continuation": "PID21228 paused; work/native_campaign_game.py; no new savestate/profile/WAD copy created"
+}

@@ -287,6 +287,28 @@ void StaticRecompCore::Shutdown()
                  static_cast<u32>(key >> 32), static_cast<u32>(key),
                  static_cast<unsigned long long>(hook_fallback_instruction_samples[i].second));
   }
+  if (m_hook_fallback_fast_cache_instructions != 0)
+  {
+    std::fprintf(stderr,
+                 "[staticrecomp] hook-fast-cache-ea code=%llu noncode=%llu\n",
+                 static_cast<unsigned long long>(m_hook_fallback_fast_cache_code_ea),
+                 static_cast<unsigned long long>(m_hook_fallback_fast_cache_noncode_ea));
+  }
+  std::vector<std::pair<u64, u64>> hook_fallback_fast_cache_ea_samples(
+      m_hook_fallback_fast_cache_ea_samples.begin(),
+      m_hook_fallback_fast_cache_ea_samples.end());
+  std::sort(hook_fallback_fast_cache_ea_samples.begin(),
+            hook_fallback_fast_cache_ea_samples.end(),
+            [](const auto& left, const auto& right) { return left.second > right.second; });
+  for (std::size_t i = 0;
+       i < std::min<std::size_t>(hook_fallback_fast_cache_ea_samples.size(), 16); ++i)
+  {
+    const u64 key = hook_fallback_fast_cache_ea_samples[i].first;
+    std::fprintf(stderr,
+                 "[staticrecomp] hook-fast-cache-ea xo=%u line=%08x samples=%llu\n",
+                 static_cast<u32>(key >> 32), static_cast<u32>(key),
+                 static_cast<unsigned long long>(hook_fallback_fast_cache_ea_samples[i].second));
+  }
   std::vector<std::pair<u32, u64>> hook_fallback_slow_pc_samples(
       m_hook_fallback_slow_pc_samples.begin(), m_hook_fallback_slow_pc_samples.end());
   std::sort(hook_fallback_slow_pc_samples.begin(), hook_fallback_slow_pc_samples.end(),

@@ -1,4 +1,5 @@
 #include "mua2_fusion_buttons.hpp"
+#include "mua2_fusion_entry.hpp"
 #include <iostream>
 #include <map>
 #include <tuple>
@@ -74,5 +75,48 @@ int main() {
      FusionCandidate(read,Fixture::owner,Fixture::input,-1)!=0 ||
      FusionCandidate(read,Fixture::owner,Fixture::input,2)!=0 ||
      FusionCandidate(read,Fixture::owner,Fixture::input,4)!=0) return 9;
+  // Four distinct human owners can select each other, never themselves.
+  auto humans=f;
+  for(unsigned i=0;i<4;++i) {
+    auto& actor=humans.memory[0x90010000+i*0x1000];actor[0x4d0]=0;put(actor,0x45c,i);
+    auto& device=humans.memory[0x81313274+i*0xbe00];device.resize(0xbe00);put(device,0,0x811b4398);
+  }
+  for(unsigned owner=0;owner<4;++owner) {
+    put(humans.memory[0x80816a20],16,0x90010000+owner*0x1000);
+    for(unsigned partner=0;partner<4;++partner) {
+      const auto target=FusionCandidate([&](auto a,auto n){return humans.read(a,n);},
+          0x90010000+owner*0x1000,0x81313274+owner*0xbe00,int(partner));
+      if(target!=(owner==partner?0u:0x90010000+partner*0x1000))return 10;
+    }
+  }
+  // The activation edge must arrive after block entry, once per LT hold.
+  std::array<FusionEntryState,4> entry;
+  GamepadSample lt;lt.connected=true;lt.inputs[unsigned(GamepadInput::LT)]=1;
+  for(unsigned port=0;port<4;++port) {
+    const auto owner=0x90010000+port*0x1000;
+    auto& actor=humans.memory[owner];put(actor,0x3a8,0x90020000+port*0x100);
+    auto& node=humans.memory[0x90020000+port*0x100];node.resize(16);put(node,0,0x811b0620);put(node,8,0x90021000+port*4);
+    auto& h=humans.memory[0x90021000+port*4];h.resize(4);put(h,0,0x811accd0);
+    const auto reader=[&](auto a,auto n){return humans.read(a,n);};
+    auto who=ReadFusionActor(reader,port);if(who.actor!=owner || who.handler!=0x811accd0)return 20;
+    auto a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(!(a.active[2]&16) || (a.active[7]&2) || ReadBE(a.values,33*4))return 21;
+    put(h,0,0x811a6e48);who=ReadFusionActor(reader,port);
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(!(a.active[7]&2) || ReadBE(a.values,33*4)!=0x3f800000)return 22;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(!(a.active[7]&2))return 23;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner,0x811a45e8});if(a.active[7]&2)return 30;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 31;
+    GamepadActions neutral;entry[port].Apply(neutral,who);
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(!(a.active[7]&2))return 24;
+    entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner,0x811accd0});
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner+4,0x811a6e48});if(a.active[7]&2)return 25;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 26;
+    entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{});
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 27;
+    actor[0x4d0]=128;if(ReadFusionActor(reader,port).actor)return 28;actor[0x4d0]=0;
+    put(actor,0x2a0,0);if(ReadFusionActor(reader,port).actor)return 29;put(actor,0x2a0,0x42480000);
+  }
   std::cout<<"Fusion roster, ownership, stale-handle, modifier and native-context guards passed\n";
 }

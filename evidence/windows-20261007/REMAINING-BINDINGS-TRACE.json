@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-07",
+  "scope": "Contained native diagnostic fixtures; no host input, physical-controller/audio/FPS claim or installation change",
+  "build": {
+    "result": "Windows MSVC Release exit 0; focused 3/3 in 2.06s; no compiler/linker warnings/errors in successful log",
+    "runtime_sha256": "d1469f85aebc31b4e2a9a1800da5f0071f9d765348f8595fb908115e15364c49",
+    "regression": "50/50 passed, 9.97s"
+  },
+  "trace": {
+    "flag": "OPENMUA2_ACTION_CONSUMER_TRACE=1",
+    "bounds": "1024 distinct caller/kind/port/action records, hash-guarded observer installation; no guest input/state changes by tracing",
+    "held": "810f9218",
+    "scalar": "810f9294",
+    "edge": "810f92bc",
+    "live_pointer_reads": [
+      "80ffbcac action4",
+      "80ffbcdc action5",
+      "80ffbd0c action6"
+    ],
+    "camera_reads": [
+      "800f634c action2",
+      "800f6368 action3"
+    ]
+  },
+  "camera_fix": "Right-stick Y now publishes native action3 and action7 on vertical-only movement. Native +0.75/-0.75 and release-to-zero verified; all three screenshots inspected: closer with up, back with down. Horizontal behavior preserved.",
+  "menu_findings": {
+    "View": "Opened Hero Details tutorial; A dismissed it",
+    "LB": "Opened powers, then assign page; captures inspected",
+    "missing_actions": {
+      "118": "MenuAddSkillPoint",
+      "119": "MenuRemoveSkillPoint",
+      "122": "MenuReallocate"
+    },
+    "prompts": "Actual powers page retains Wii minus/plus Allocate and 1 Redistribute Points",
+    "return": "Short B sequence remained in hero browse. Longer saved-menu repeat cleared manager active pointer but native capture retained menu background with gameplay HUD and no world. NOT a passing return-flow/render result; save-state influence not isolated.",
+    "repro": "work/remaining-menu-consumers/hero-powers.sav"
+  },
+  "other_findings": {
+    "wave": "Experimental wave registration still requires managed_ports and OPENMUA2_WAVE_QTE; not enabled for empty-profile provider alone",
+    "mode_query": "802722dc checks bit mask in object+1864. Mask2 selects analog/pointer tutorial branches and affects many gameplay callers; not globally changed",
+    "hacking": "CHackObserverEntity RTTI80534748, vtable805345e8; consumers require further RE",
+    "remaining": "Hacking/turret/Nullifier, other wave QTEs, menu missing actions and return-render issue not resolved"
+  },
+  "goal_complete": false,
+  "installed": false
+}

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-08",
+  "authorization": "User authorized ordinary campaign progression to later gameplay encounters. Supersedes the route-scope blocker.",
+  "runtime_sha256": "a7e889a52dc3144ac17e4c03ab288017a01fdd4c8502421b8d5c5fa7d729353d",
+  "method": "Headless process-local input only, single logical core, native captures inspected. No actor/progression/resource writes.",
+  "observed": [
+    "Prior parked natural state loaded successfully.",
+    "Repeated X presses completed the required statue objective; native Hero Training: Might (COMPLETE) appeared.",
+    "Party navigated adjacent streets and fought Doombots. No later map transition reached."
+  ],
+  "checkpoint": {
+    "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\campaign-progress-20261008\\campaign-current.sav",
+    "bytes": 51966052,
+    "sha256": "103c0af06930c6c82b0a0ade733cace6cd02971c2e8e02f43140f3381cfc3f07",
+    "reloaded": false
+  },
+  "process": {
+    "pid": 13876,
+    "paused": true
+  },
+  "unverified": [
+    "Turret entry/aim/fire/exit/reentry",
+    "Hacking encounter",
+    "Lock-on encounter",
+    "Physical controllers",
+    "Audio: Null backend in this run"
+  ],
+  "installed_executable_changed": false,
+  "evidence_root": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\campaign-progress-20261008",
+  "captures": [
+    "outputs/native-campaign-objective-progress.png",
+    "outputs/native-campaign-beyond-plaza.png",
+    "outputs/native-campaign-alley-end.png"
+  ],
+  "cleanup": "Reused runtime/game/profile; no duplicate build or game extraction. Checkpoint retained for continuing this unresolved route. Previously policy-rejected deletions not retried."
+}

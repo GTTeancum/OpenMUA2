@@ -1,0 +1,27 @@
+{
+  "scope": "Private compiled v6 launcher candidate; not installed acceptance",
+  "candidate": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\fusion-banner-package\\OpenMUA2-candidate-v6.exe",
+  "bytes": 10636800,
+  "sha256": "4b566c4e669e820aaf7b5d414e6d37b341582ab5e522d43bcdd012e58fc4af4e",
+  "previous_build_result": "Build-Launcher.ps1 exit0; no compiler warnings/errors printed",
+  "previous_packaging_checks": {
+    "actual_private_asset_verifier_returned": 6,
+    "payload_members_hash_verified": 2634,
+    "embedded_runtime_sha256": "4a67b357f172688e2bc13e232a37478c8d933622d50b15de829739aad6123c33"
+  },
+  "current_recheck": "Candidate size and SHA256 confirmed; gameplay and launcher cold-start not retested",
+  "installed_changed": false,
+  "cleanup": {
+    "outcome": "Previous automatic approval review rejected deletion: blocked by policy. Not retried.",
+    "retained_temp_dirs": [
+      "OpenMUA2-package-d7ab6118051e4e5dabc67867a60cb061",
+      "OpenMUA2-package-c89a28c5aaca4887a7cd28320cfff89b"
+    ]
+  },
+  "unverified": [
+    "Scripted turret entry/aim/fire/exit/re-entry",
+    "Hacking and lock-on encounter completion",
+    "Four physical controllers",
+    "Installed v6 cold-start"
+  ]
+}

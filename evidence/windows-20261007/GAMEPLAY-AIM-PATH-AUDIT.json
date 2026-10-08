@@ -1,0 +1,51 @@
+{
+  "status": "read-only code/runtime inspection; gameplay acceptance pending",
+  "date": "2026-10-07",
+  "manager": {
+    "object": "0x9002c628",
+    "vtable": "0x81198830",
+    "methods": {
+      "476": "0x81015ac4",
+      "480": "0x81015b58",
+      "484": "0x81015b08",
+      "664": "0x81000dd0"
+    }
+  },
+  "findings": {
+    "shared_aim_update": "80FFBA60 obtains caller port record through manager virtual476. Mode1 branch80FFBB58 reads actions0/1 into record X/Y and sets valid=1; pointer branch80FFBC80 reads actions4/5/6. Common projection follows80FFBD5C.",
+    "port_records": "81015AC4 gates manager flag5925 bit6, validates unsigned port<=3, returns manager+4904+72*port.",
+    "mode": "81015B58 accepts0..2, writes manager+5192; getter81015B08 returns it except mode0 may resolve to2 through802722FC.",
+    "nullifier": "80092370 obtains actor+1116 port record via virtual476; requires record+8 valid. Entry80092894 checks config mask2 before virtual480(mode1); exit80092954 checks same before mode0. Exact aim integration downstream still requires full trace.",
+    "prompts": "Turret8024DBC4 and Nullifier8024DD10 query mask2; nonzero selects stick instructions, zero pointer instructions.",
+    "PS2": "Nullifier action handler1DB340 references debug string at1DB420. PS2 HUD uses analog turret text at4CB200 and Nullifier text4CB350. These are code references, not proof of full interaction behavior."
+  },
+  "validation": {
+    "diagnostic_pid": 13208,
+    "headless": true,
+    "single_processor": 2,
+    "loaded_existing_state": "work/statue-entry-audit/fresh-assets-statue-active.sav",
+    "guest_writes": false,
+    "input_sent": false,
+    "native_capture": false,
+    "exit_code": 0,
+    "note": "Existing diagnostic state used only to resolve runtime manager vtable. No gameplay validation or platform flag changed.",
+    "network_state_changed": false
+  },
+  "next": "Decouple shared analog aim sampling and projection from CNetPlayManager Game state, preserving gameplay mode lifecycle, native collision/hit testing and ownership. Turret update candidate810CDDF4 consumes per-player projected ray at810CE0CC; prove class identity before patching it. Hacking also selects stick mode at800E3550 and restores at800E5DF8 under the network gate.",
+  "installed_changed": false,
+  "wii_original_sha256": "0857973ed7646eaf1294981295673243546c935cdbd1fd07345b4d1093c62741",
+  "ps2_sha256": "ae5c125652f0e5fffc1af74ecce474cc0d51f26936a881d2b6c0c0d24fd926ce",
+  "correction": "Mask2 is network-play Game state, NOT a platform/gamepad capability. 80273AAC sets it in NetPlayStart Game; global override would alter networking/session ownership.",
+  "network_evidence": {
+    "setter": "80273AA0..80273AB0",
+    "log_reference": "80273AD8 -> 8056B968",
+    "log_text": "NetPlayStart : Game / CNetPlay--RESEEDING",
+    "known_literal_mask2_call_sites": 149,
+    "shared_projection_dependencies": [
+      "80FFB394",
+      "80FFB524",
+      "80FFB750"
+    ],
+    "implication": "Selecting manager stick mode alone is insufficient: projection scaling independently tests network mask2. Replace the shared input-mode dependency, not network state."
+  }
+}

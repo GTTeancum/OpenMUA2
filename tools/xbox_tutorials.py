@@ -18,6 +18,8 @@ REPLACEMENTS = {
     '5': ('SwitchToNextHero', 'UT: Use $XD to select a hero.'),
     '9': ('SuperPowers', 'UT: Hold $XRT + $XA/$XX/$XB/$XY for powers 1/2/3/4.'),
     '12': ('Fusion', 'UT: Hold $XLT + $XA/$XB/$XX/$XY for Fusion.'),
+    # Gameplay provider has fixed power slots; LB+D-pad blocks/selects a hero.
+    '30': ('Quickassign', 'UT: Hold $XRT + $XA/$XX/$XB/$XY to use powers.'),
     '31': ('RotCam', 'UT: Move $XR left or right to rotate the camera.'),
     '47': ('Fusionattack', r'UT: \nHold $XLT + $XA/$XB/$XX/$XY to choose a Fusion partner.\n'),
     '48': ('Projectiles', r'UT: \nHold $XRT + $XA/$XX/$XB/$XY to use a ranged power.\n'),

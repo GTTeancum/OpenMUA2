@@ -1,7 +1,7 @@
 """Convert the ten native Options control descriptions in private game data.
 
-Use only verified stock tables. Reuse their existing string allocations so the
-XMLB and WAD layout stay unchanged. No original game text is distributed here.
+Use only verified stock tables. Reuse existing string allocations where possible;
+append longer descriptions and update only their pointers. No game data is distributed.
 """
 import hashlib
 import struct
@@ -14,16 +14,17 @@ STOCK_HASHES = frozenset((
     '96f283836634eb8aa0edd19f01a1de7240f88f54ab5d51b06ad23425caffb55b',
 ))
 REPLACEMENTS = {
-    '5515': '$XA Light attack',
-    '5516': '$XB Heavy attack',
-    '5517': '$XRT + $XA/$XX/$XB/$XY Powers',
-    '5518': '$XLT + $XA/$XB/$XX/$XY Fusion',
-    '5519': '$XY Jump',
-    '5520': '$Block Block',
-    '5521': '$XX Grab / Use',
+    '1071': '$MenuAssignPowers Assign',
+    '5515': '$XL Move',
+    '5516': '$XR Camera',
+    '5517': '$XA Light attack',
+    '5518': '$XY Jump',
+    '5519': '$XB Heavy attack',
+    '5520': '$XX Grab / Use',
+    '5521': '$Block Block',
     '5522': '$Pause Pause',
     '5523': '$XD Change hero',
-    '5524': '$XR Camera',
+    '5524': '$XV Heroes',
 }
 
 
@@ -61,13 +62,18 @@ def patch_options_help(data):
     result = bytearray(data)
     allowed = set()
     for (text, ident), (start, end) in zip(strings, slots):
+        if len(text) > 128:
+            raise ValueError('Options description exceeds UI text limit')
         if len(text) > end - start:
-            raise ValueError('Options description exceeds available allocation')
-        result[start:end] = text.ljust(end - start, b'\0')
-        struct.pack_into('<I', result, selected[ident], start)
-        allowed.update(range(start, end))
+            target = len(result)
+            result.extend(text)
+        else:
+            target = start
+            result[start:end] = text.ljust(end - start, b'\0')
+            allowed.update(range(start, end))
+        struct.pack_into('<I', result, selected[ident], target)
         allowed.update(range(selected[ident], selected[ident] + 4))
-    if len(result) != len(data) or any(a != b and i not in allowed
+    if any(a != b and i not in allowed
                                      for i, (a, b) in enumerate(zip(data, result))):
         raise ValueError('Options write escaped selected descriptions')
     return bytes(result)

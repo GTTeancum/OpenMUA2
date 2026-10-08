@@ -1,0 +1,79 @@
+{
+  "status": "Lock-on visual obstruction fixed; multiplayer remains unverified",
+  "fix": "Guarded shared gamepad lock-on observer zeroes native star-model scale at 8024EA98. Circle timing and native lifecycle remain intact. All target buttons use this correction.",
+  "build": {
+    "result": "Windows Release moderngekko-run built successfully",
+    "warnings_errors": "None printed by compiler/linker",
+    "sha256": "69bfa1f66ddccf79bd0df53f8c28fb596df2d6a979618ca0c5ac820d30fce3b2",
+    "bytes": 16226304,
+    "tests": "4/4 focused control tests passed",
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\lockon-star-build.log"
+  },
+  "visual": {
+    "readable_Y": "Native capture inspected: Y visible inside orange timing ring",
+    "Y_completion": "Native capture inspected: returns to world combat after Y",
+    "proofs": [
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-y-readable.png",
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-y-readable-win.png",
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-hacking-post-dispatch-right.png",
+      "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-hacking-post-dispatch-release.png"
+    ]
+  },
+  "aim_regression": {
+    "directions": [
+      {
+        "label": "right",
+        "aim": [
+          0.10000000149011612,
+          0.0,
+          1
+        ]
+      },
+      {
+        "label": "left",
+        "aim": [
+          -0.10000000149011612,
+          0.0,
+          1
+        ]
+      },
+      {
+        "label": "up",
+        "aim": [
+          0.0,
+          0.10000000149011612,
+          1
+        ]
+      },
+      {
+        "label": "down",
+        "aim": [
+          0.0,
+          -0.10000000149011612,
+          1
+        ]
+      },
+      {
+        "label": "neutral",
+        "aim": [
+          0.0,
+          0.0,
+          1
+        ]
+      }
+    ],
+    "visual": "Rightward left-stick movement of hacking signal observed; subsequent collision produced native FAILED results with Xbox Start prompt",
+    "test_correction": "First harness assertion incorrectly expected negative internal Y for up. Observed/native convention is positive up; corrected assertion, rerun passed. Full hacking win was not repeated after dispatcher fix."
+  },
+  "multiplayer": {
+    "status": "Not verified",
+    "observation": "Boss checkpoint Start on ports1..3 does not join. Player manager byte40=0x70; native join handler80132E20..28 tests bit0x80 and exits when clear, before Start query. No join flags or actor owners changed.",
+    "next": "Join before boss checkpoint transition using native join flow, preserve joined party into targeted encounter. Do not retry Start inside join-disabled checkpoint."
+  },
+  "runtime_stopped": true,
+  "installed_changed": false,
+  "proprietary_data_committed": false,
+  "audio": "Null; not tested",
+  "goal_complete": false,
+  "cleanup": "Deletion of temporary read-*.bin diagnostics rejected by automatic approval review: blocked by policy. No retry or removal."
+}

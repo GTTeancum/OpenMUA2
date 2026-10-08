@@ -15,10 +15,15 @@ internal static class OpenMUA2
     static string Hash(Stream stream) { using (var sha = SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant(); }
     static string FileHash(string path) { using (var f = File.OpenRead(path)) return Hash(f); }
     static string Quote(string path) { return "\"" + path + "\""; }
-    static void VerifyXboxUiAssets(string wad, TextReader manifest)
+    static int VerifyXboxUiAssets(string wad, TextReader manifest)
     {
-        if (manifest.ReadLine() != "OpenMUA2-Xbox-UI-v3")
-            throw new InvalidDataException("Unsupported Xbox UI asset version.");
+        string header = manifest.ReadLine();
+        int version = header == "OpenMUA2-Xbox-UI-v3" ? 3 :
+                      header == "OpenMUA2-Xbox-UI-v4" ? 4 :
+                      header == "OpenMUA2-Xbox-UI-v5" ? 5 :
+                      header == "OpenMUA2-Xbox-UI-v6" ? 6 :
+                      header == "OpenMUA2-Xbox-UI-v7" ? 7 : 0;
+        if (version == 0) throw new InvalidDataException("Unsupported Xbox UI asset version.");
         var required = new HashSet<string>(StringComparer.Ordinal) {
             "data/vv_tips.engb", "data/vv_tips.itab", "data/vv_tips.xmlb",
             "data/strings.engb", "data/strings.itab", "data/strings.xmlb",
@@ -26,6 +31,11 @@ internal static class OpenMUA2
             "packages/generated/maps/package/permanent_rev.fb",
             "textures/fonts/rev_med_eng.igb", "textures/fonts/rev_med_ws_eng.igb"
         };
+        if (version >= 4) {
+            required.Add("ui/fonts/rev_med.xmlb");
+            required.Add("ui/fonts/rev_med_ws.xmlb");
+        }
+        if (version >= 7) required.Add("packages/generated/maps/package/menus/options_rev.fb");
         var expected = new Dictionary<string, string>(StringComparer.Ordinal);
         string line;
         while ((line = manifest.ReadLine()) != null) {
@@ -49,17 +59,35 @@ internal static class OpenMUA2
             }
             if (found.Count != expected.Count) throw new InvalidDataException("GameData Xbox UI assets are incomplete.");
         }
+        return version;
     }
 
     static bool ConfigureXboxUi(ProcessStartInfo info, string game)
     {
+        int version;
         using (var resource = Assembly.GetExecutingAssembly().GetManifestResourceStream("xbox-ui.manifest")) {
             if (resource == null) return false; // Older packages retain their original UI.
             using (var reader = new StreamReader(resource))
-                VerifyXboxUiAssets(Path.Combine(game, "files", "z", "assetsfb.wad"), reader);
+                version = VerifyXboxUiAssets(Path.Combine(game, "files", "z", "assetsfb.wad"), reader);
         }
-        info.EnvironmentVariables["OPENMUA2_XBOX_GLYPHS"] = "1";
+        ConfigureXboxUiVersion(info, version);
         return true;
+    }
+
+    static void ConfigureXboxUiVersion(ProcessStartInfo info, int version)
+    {
+        info.EnvironmentVariables["OPENMUA2_XBOX_GLYPHS"] = "1";
+        if (version >= 5) {
+            // These switches require the exact paired HUD/font data verified above.
+            info.EnvironmentVariables["OPENMUA2_GAMEPAD_PROVIDER"] = "1";
+            info.EnvironmentVariables["OPENMUA2_DIRECT_GAMEPAD"] = "1";
+            info.EnvironmentVariables["OPENMUA2_RAPID_TAP_GLYPHS"] = "1";
+        }
+        if (version >= 6) {
+            // v6 pairs the shared A/B/X/Y HUD cells with complete local aiming.
+            info.EnvironmentVariables["OPENMUA2_GAMEPAD_AIM"] = "1";
+            info.EnvironmentVariables["OPENMUA2_GAMEPAD_LOCKON"] = "1";
+        }
     }
     static string Prepare()
     {

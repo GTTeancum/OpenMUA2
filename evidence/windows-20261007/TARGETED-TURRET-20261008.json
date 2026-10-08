@@ -1,0 +1,67 @@
+{
+  "date": "2026-10-08",
+  "scope": "User-authorized XMLB-targeted diagnostic warps; no host input",
+  "runtime": {
+    "sha256": "72f205f86322114ea3b9759139f58c2737a5215392b2740f411a0b2b1d1f001f",
+    "bytes": 16226304,
+    "build_exit": 0,
+    "focused_tests": "4/4",
+    "supported_tests": "50/50",
+    "warnings": "No warnings printed in final build log"
+  },
+  "source_changes": [
+    "tools/warp_gameplay_encounter.py: XMLB positions, live target guard, four party slots, checked memory writes, warp receipts, leaves paused",
+    "dolphin_runtime.cpp: exact-hash shared turret tutorial and HUD gamepad wording"
+  ],
+  "fixture": [
+    "Private Storm Castle entry save and private profile",
+    "Prerequisite generators weakened to 1 HP, then destroyed through normal attack actions to execute native prerequisite scripts",
+    "An early discarded diagnostic pass raised party current HP; the final fresh-entry replay did not",
+    "Turret/enemy-turret HP and completion flags were not changed"
+  ],
+  "verified": [
+    "X activates enabled scripted turret",
+    "Tutorial visually shows left stick and Xbox A confirmation",
+    "Fresh mounted banner visually shows Left stick: Aim and Xbox A/B: Fire",
+    "Left stick changes turret yaw and pitch",
+    "A reduced tall_turret06 health from 300 to 200; B destroyed it",
+    "All six tall turrets destroyed through contained stick/face input; native screenshot shows Covering Fire: Turrets COMPLETE",
+    "One groundTroop03 hit reduced health from 88.2 to -11.8"
+  ],
+  "remaining": [
+    "Y, X, LB and RB probes did not manually exit; do not advertise exit binding",
+    "Four player ownership still unverified in actual turret encounter",
+    "Hacking and other remaining unique encounters need targeted fixtures",
+    "Installed executable unchanged; candidate not repackaged",
+    "Null audio; no physical-controller or FPS acceptance"
+  ],
+  "natural_save": {
+    "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\campaign-progress-20261008\\campaign-current.sav",
+    "sha256": "d987da9b42d039d498f26c0a633ab8a4836537cb79edff60cbf2a43048ebd2ec",
+    "bytes": 45827069
+  },
+  "resume": "Turret port0 encounter completed; turret-complete.sav and turret-ground-start.sav retained. Proceed to hacking, not statue/fusion.",
+  "goal_complete": false,
+  "proofs": {
+    "native-campaign-fresh-turret-tutorial.png": "bf64099dfa5f86ff1e68370f3c5369fd9d9d99c3bf4408fa2705beb24a851d48",
+    "native-campaign-fresh-turret-banner.png": "26ab3704a8148ff3fc0a67fb8bfdb19a14889716167a528bbbbcfccd42d481fa",
+    "native-campaign-turret-final-target.png": "a73873f3bf41c33e26a16240c4a2ad0ed9402f80743954c7644316c5d927210b"
+  },
+  "completion_retest": {
+    "result": "PASS for port0 diagnostic full turret encounter",
+    "cause_of_previous_misses": "Harness aimed from actor origin instead of authored forward/above projectile spawn; sub-deadzone fine corrections also ineffective. Runtime aiming code unchanged.",
+    "changes": "Harness uses projectile origin offset, shorter fine corrections, cycles live ground troops and monitors escort health.",
+    "observed": [
+      "Native Covering Fire: Doombots COMPLETE and Covering Fire COMPLETE",
+      "Script finishes cutscene and releases turret: weapon becomes0",
+      "Left-stick movement after release moves player position from [3701.79,1078.87,-119.57] to [3711.34,1025.06,-119.56]"
+    ],
+    "forced_completion": false,
+    "enemy_health_modified": false,
+    "captures": {
+      "native-campaign-ground-corrected-result.png": "5e4708c8799577c6bea0817a1dd07d07036bbf50df00ed0a1ffd263b118e93f5",
+      "native-campaign-turret-completion-release.png": "aaaf78aa05700d8f9fad882bb6469788fe51ff364f1b0b71961a06cfffaa8556"
+    },
+    "next": "Hacking: act2/rebelhideout/rebel_anti_2, armory_terminal. Native minigame reached in private fixture."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-07",
+  "status": "Reference audit, not a functional pass",
+  "ps2_reference_sha256": "ae5c125652f0e5fffc1af74ecce474cc0d51f26936a881d2b6c0c0d24fd926ce",
+  "nullifier": {
+    "name_reference": "007614D0 referenced at001DB420",
+    "entry": "001DB530; owning actor+0x480 passed to manager virtual0x1D0, enabled with named registration",
+    "aim_consumer": "001DB148..001DB2E4; owner index -> manager virtual0x1DC; requires non-null record and record+8 valid. Ray endpoints record+0x14/+0x20 go to collision query; resulting point+1 Z becomes beam target.",
+    "manager": "00532D60 singleton, constructor00524100 final primary vtable007E0D10",
+    "aim_getter": "vtable+0x1DC ->005496C0, guards enable bit manager+0x1725 bit0 and port0..3, returns manager+0x1328+72*port",
+    "enable_registration": "00549440 accepts port0..3 and stores named per-owner registrations;005493B0 applies across four slots",
+    "instruction": "0078D210, referenced004CB350: left analog stick directs Nullifier",
+    "wii_equivalent": "80092370..80092508 also obtains owner-indexed record and collision query. Shared projection is part of the PS2 design too, unlike direct turret rotation.",
+    "remaining": "Trace exact PS2 record producer and activation lifetime; compare with current opt-in shared gamepad aim, preserve collision and ownership, then live entry/aim/use/exit and native prompt validation."
+  },
+  "turret_retry": {
+    "result": "First group visibly defeated; corridor approach still failed to reach generator/turret. Last snapshot three heroes below zero health and Spider-Man9.056.",
+    "inputs": "Process-local normal movement, attacks, hero switch, block, LT+B request; continuous timed attack sequence also tried. No forced progress, health or actor position.",
+    "fixture_level": "Map world definition has no explicit level; this does not establish actual team/enemy scaling. No level mismatch proven.",
+    "exit": 0,
+    "captures_inspected": [
+      "attack-combo",
+      "advance-attacking",
+      "fusion-combat",
+      "corridor-combat",
+      "continuous-combo"
+    ],
+    "not_proven": "Fusion completion, actual turret operation, aiming ownership, audio/FPS or physical input acceptance"
+  },
+  "source_runtime_changes": false,
+  "installed_changes": false,
+  "goal_complete": false
+}

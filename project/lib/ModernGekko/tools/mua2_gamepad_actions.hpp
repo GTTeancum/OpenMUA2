@@ -25,7 +25,7 @@ struct GamepadActions {
   std::array<std::uint8_t,20> active{};
   std::array<std::uint8_t,124*4> values{};
   int hero_slot=-1, fusion_slot=-1;
-  bool mash_x=false;
+  bool mash_x=false, ready_confirm=false;
   void Set(unsigned action,float value=1.0f) {
     if(action>=124 || !std::isfinite(value)) return;
     const auto word=std::bit_cast<std::uint32_t>(value);
@@ -34,10 +34,33 @@ struct GamepadActions {
   }
 };
 inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
-                                          bool start_accept, bool fusion_request, bool gameplay=true) {
+                                          bool start_accept, bool fusion_request, bool gameplay=true,
+                                          bool menu_active=false) {
   using K=GamepadInput;
   GamepadActions out;
   if(!pad.connected) return out;
+  if(menu_active) {
+    // PS2 action initializer groups (signals 8..15) provide the menu-only
+    // shoulder/face semantics. Xbox keeps A confirm/B back; the game retains
+    // page selection, ownership, point limits and destructive confirmations.
+    if(pad.Down(K::Back)) {out.Set(40);return out;}
+    if(pad.Down(K::Start)) {out.Set(39);out.Set(start_accept?105:90);return out;}
+    if(pad.Down(K::A)) {out.Set(89);out.Set(102);}
+    if(pad.Down(K::B)) out.Set(90);
+    if(pad.Down(K::X)) for(unsigned id:{100u,101u,121u,123u}) out.Set(id);
+    if(pad.Down(K::Y)) {out.Set(106);out.Set(109);}
+    if(pad.Down(K::LB)) out.Set(119);
+    if(pad.Down(K::RB)) out.Set(118);
+    if(pad.Down(K::LT)) {out.Set(104);out.Set(122);}
+    if(pad.Down(K::RT)) out.Set(103);
+    if(pad.Down(K::Up)||pad.Value(K::LeftUp)>0.5) {out.Set(95);out.Set(94);}
+    if(pad.Down(K::Down)||pad.Value(K::LeftDown)>0.5) {out.Set(96);out.Set(91);}
+    if(pad.Down(K::Left)||pad.Value(K::LeftLeft)>0.5)
+      for(unsigned id:{97u,92u,63u,117u}) out.Set(id);
+    if(pad.Down(K::Right)||pad.Value(K::LeftRight)>0.5)
+      for(unsigned id:{98u,93u,64u,116u}) out.Set(id);
+    return out;
+  }
   const bool lt=pad.Down(K::LT),rt=pad.Down(K::RT);
   const auto axis=[&](K positive,K negative) {
     const double v=pad.Value(positive)-pad.Value(negative);
@@ -65,14 +88,18 @@ inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
     }
     return out;
   }
+  out.ready_confirm=pad.Down(K::A) && !pad.Down(K::B) && !pad.Down(K::X) &&
+                    !pad.Down(K::Y) && !pad.Down(K::LB) && !pad.Down(K::RB);
   if(pad.Down(K::A)) {out.Set(9);out.Set(89);out.Set(43);}
   if(pad.Down(K::B)) {out.Set(10);out.Set(90);out.Set(44);}
   if(pad.Down(K::X)) {out.Set(11);out.Set(21);out.Set(45);out.mash_x=true;}
   if(pad.Down(K::Y)) for(unsigned id:{8u,19u,41u,46u,55u,106u,109u}) out.Set(id);
   if(pad.Down(K::LB)) for(unsigned id:{12u,20u,38u,49u,100u,101u,102u,120u,121u}) out.Set(id);
   const float camera=axis(K::RightRight,K::RightLeft);
+  const float camera_y=axis(K::RightUp,K::RightDown);
   out.Set(2,camera);
-  if(camera!=0) out.Set(7);
+  out.Set(3,camera_y);
+  if(camera!=0 || camera_y!=0) out.Set(7);
   if(camera>0.65f) out.Set(61);
   if(camera<-0.65f) out.Set(62);
   constexpr std::array<K,4> directions{K::Up,K::Right,K::Down,K::Left};

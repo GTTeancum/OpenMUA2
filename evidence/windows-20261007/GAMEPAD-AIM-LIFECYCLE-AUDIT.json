@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-07",
+  "status": "Source audit; gameplay acceptance incomplete",
+  "findings": [
+    {
+      "path": "PS2 shared aim producer",
+      "entry": "00523570",
+      "reset": "00523A78..00523AF4",
+      "evidence": "Previous-special-mode flag at GP-0x71C4 gates clearing record x/y on entry to mode hash 00792E28. Initializer 007BC604..007BC614 constructs that hash from string 00794A48: mazehack. Current candidate WriteGamepadAim implements accumulation only; it omits this transition behavior.",
+      "required_action": "Implement and validate equivalent native special-mode transition handling, including entry/re-entry, without resetting every frame or forcing interaction state."
+    },
+    {
+      "path": "PS2 producer additional reset",
+      "site": "00523A5C..00523A74",
+      "evidence": "Non-null object returned through manager 004B3730 virtual0xCC resets x/y while byte+0x14 is nonzero. Object semantics still unresolved; do not invent a reset trigger."
+    },
+    {
+      "path": "Mode setters",
+      "ps2": "00549720..00549738",
+      "wii": "81015B58..81015B64",
+      "evidence": "Validate mode0..2 and store mode only; no record centering. Changing mode is not the missing reset."
+    },
+    {
+      "path": "Wii special-mode getter",
+      "singleton": "80629490",
+      "vtable": "80534C90",
+      "slot": 860,
+      "getter": "80100464..80100470",
+      "evidence": "Copies singleton+36268 special-mode hash to caller output. Derived from DOL vtable and getter instructions; runtime transition not yet observed."
+    },
+    {
+      "path": "Projection parity to resolve",
+      "ps2": "00523154 and 0052329C",
+      "wii": "80FFB3D0 and 80FFB560",
+      "evidence": "PS2 passes zero to projection dimension query; candidate forces mode1 and Wii supplies one. Parameter meaning/platform aspect handling must be traced before declaring equivalence or changing it."
+    }
+  ],
+  "runtime_edits": false,
+  "new_build_or_tests": false,
+  "installed_changed": false,
+  "not_verified": [
+    "Actual hacking entry/reset/completion",
+    "Turret and Nullifier encounters",
+    "Four joined players"
+  ],
+  "goal_complete": false
+}

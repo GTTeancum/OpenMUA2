@@ -57,4 +57,58 @@ Check $valid (($lines[0..6]) -join "`n") $false
 Check $valid ($manifest + "`n" + $lines[1]) $false
 Check $valid ($manifest.Replace('data/vv_tips.engb','../unknown')) $false
 Check $valid ($manifest.Replace($lines[1].Substring(0,64),('z'*64))) $false
+# Shared-metric packs must include both coordinate tables, and rapid-tap packs
+# must verify the same complete set before enabling their paired runtime path.
+$legacyNames = $names
+$legacyLines = $lines
+$names += @('ui/fonts/rev_med.xmlb','ui/fonts/rev_med_ws.xmlb')
+foreach ($name in $names[10..11]) {
+    $sha = [Security.Cryptography.SHA256]::Create()
+    try { $hash = [BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($name))).Replace('-','').ToLowerInvariant() }
+    finally { $sha.Dispose() }
+    $lines += "$hash`t$name"
+}
+$shared = Write-Fixture 'shared'
+foreach ($version in @(4,5,6)) {
+    $current = ($lines -join "`n").Replace('UI-v3',"UI-v$version")
+    Check $shared $current $true
+    Check $valid $current $false
+    Check $shared (($legacyLines -join "`n").Replace('UI-v3',"UI-v$version")) $false
+    Check $shared ($current.Replace($lines[10].Substring(0,64),('0'*64))) $false
+    Check $shared ($current.Replace($lines[11].Substring(0,64),('0'*64))) $false
+    Check $shared ($current + "`n" + $lines[10]) $false
+}
+Check $shared ($lines -join "`n") $false
+Check $shared (($lines -join "`n").Replace('UI-v3','UI-v8')) $false
+# Version 7 requires the native Options layout in the paired archive.
+$oldLines = $lines
+$name = 'packages/generated/maps/package/menus/options_rev.fb'
+$names += $name
+$sha = [Security.Cryptography.SHA256]::Create()
+try { $hash = [BitConverter]::ToString($sha.ComputeHash([Text.Encoding]::ASCII.GetBytes($name))).Replace('-','').ToLowerInvariant() }
+finally { $sha.Dispose() }
+$lines += "$hash`t$name"
+$menu = Write-Fixture 'menu'
+$current = ($lines -join "`n").Replace('UI-v3','UI-v7')
+Check $menu $current $true
+Check $shared $current $false
+Check $menu (($oldLines -join "`n").Replace('UI-v3','UI-v7')) $false
+Check $menu ($current.Replace($hash,('0'*64))) $false
+# Verify package versions activate the corresponding runtime features only.
+$configure = $type.GetMethod('ConfigureXboxUiVersion', [Reflection.BindingFlags]'Static,NonPublic')
+foreach ($version in @(3,4,5,6,7)) {
+    $info = [Diagnostics.ProcessStartInfo]::new()
+    foreach ($key in @('OPENMUA2_GAMEPAD_PROVIDER','OPENMUA2_DIRECT_GAMEPAD','OPENMUA2_RAPID_TAP_GLYPHS','OPENMUA2_GAMEPAD_AIM','OPENMUA2_GAMEPAD_LOCKON')) {
+        $info.EnvironmentVariables.Remove($key)
+    }
+    $configure.Invoke($null,@($info,$version)) | Out-Null
+    foreach ($key in @('OPENMUA2_GAMEPAD_PROVIDER','OPENMUA2_DIRECT_GAMEPAD','OPENMUA2_RAPID_TAP_GLYPHS')) {
+        if (($info.EnvironmentVariables[$key] -eq '1') -ne ($version -ge 5)) { throw "Wrong v$version switch: $key" }
+        $script:checks++
+    }
+    foreach ($key in @('OPENMUA2_GAMEPAD_AIM','OPENMUA2_GAMEPAD_LOCKON')) {
+        if (($info.EnvironmentVariables[$key] -eq '1') -ne ($version -ge 6)) { throw "Wrong v$version switch: $key" }
+        $script:checks++
+    }
+}
 "PASS: $checks Xbox UI version/hash/preservation-gate checks; synthetic archives only; no game or host input."

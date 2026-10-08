@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-07",
+  "result": "Encounter approach failed before generator; turret remains unverified",
+  "method": "Contained process-local Xbox input, native captures inspected individually. Diagnostic KeepTeam entry fixture skips prior campaign; no actor placement, prerequisite flags, damage overrides or forced outcomes. Single CPU, headless Vulkan, Null audio.",
+  "observed": "Normal stairs/corridor traversal, enemy combat, D-pad hero change and jump. Team surrounded; all four health values fell below zero before reaching generator. Native screenshots show defeat in combat.",
+  "cause_limit": "Did not establish whether fixture progression/levels, combat strategy or another issue caused the failed approach. Do not attribute this to turret controls.",
+  "last_state": {
+    "label": "jump-again",
+    "heroes": [
+      {
+        "slot": 0,
+        "actor": "0x934b9d20",
+        "port": 0,
+        "ai": true,
+        "health": -0.10404253005981445,
+        "position": [
+          -588.50244140625,
+          644.881591796875,
+          1.4486539363861084
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          0.8010646104812622
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 1,
+        "actor": "0x934ba758",
+        "port": 0,
+        "ai": true,
+        "health": -0.5691156387329102,
+        "position": [
+          -371.6094970703125,
+          682.0735473632812,
+          1.4181575775146484
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          3.7798824310302734
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 2,
+        "actor": "0x934bb190",
+        "port": 0,
+        "ai": false,
+        "health": -1.0377365350723267,
+        "position": [
+          -577.2140502929688,
+          618.9459228515625,
+          88.7809066772461
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          5.115906715393066
+        ],
+        "weapon": 0
+      },
+      {
+        "slot": 3,
+        "actor": "0x934bbbc8",
+        "port": 0,
+        "ai": true,
+        "health": -0.046625375747680664,
+        "position": [
+          -514.1304931640625,
+          610.8771362304688,
+          0.9310165047645569
+        ],
+        "angles": [
+          0.0,
+          0.0,
+          0.8117228746414185
+        ],
+        "weapon": 0
+      }
+    ],
+    "help": {
+      "visible": 0,
+      "phase": 0,
+      "kind": 0,
+      "owner": 0
+    }
+  },
+  "captures": {
+    "climb": "d2ef04ebfa625a644a07b3497bb5c1b986a264a44a4bf35e8e1623c7a83b1876",
+    "west-route": "ed73092991b25cd254f43df13ad84e6a227287cb84647549867b6965613e11df",
+    "corridor": "068e6c0d3f9cb50a584e7d15ce855df1d88a7a28488c665bf391d992c1441946",
+    "generator-route": "1a52d9eaec852ad82b361e86c7fbbd72d64d561773dbcb3e1041137cfa4bc293",
+    "escape-attempt": "55bc50950da3fcd8a6fadb2953b6149d4ef03c5d789ed977dc6508b60ad5ca01"
+  },
+  "exit": 0,
+  "not_verified": [
+    "Turret entry, rotation, firing and exit",
+    "In-context turret instruction",
+    "Nullifier and hacking",
+    "Four-pad interaction ownership",
+    "Audio, FPS or physical controller acceptance"
+  ],
+  "next": "Use the retained entry fixture to establish a viable normal combat approach, checking native progression and encounter requirements read-only before another attempt. Continue turret, Nullifier, hacking and remaining QTEs before menu polish.",
+  "installed_changes": false,
+  "goal_complete": false
+}

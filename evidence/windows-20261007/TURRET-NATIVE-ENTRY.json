@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-07",
+  "priority": "Gameplay blockers: turret, Nullifier, hacking and remaining QTEs before menu polish.",
+  "result": "FAILED TEST FIXTURE, not a gameplay pass",
+  "setup": "Cold boot, single CPU affinity mask4, JIT, headless Vulkan, Null audio; private game data/profile and contained process-local Xbox port0 input. No loaded state, forced menu, entity flag changes or host input. Private new-game script requested Storm Castle through loadMapAddTeam. Script execution itself was not traced.",
+  "observed": [
+    "Native captures inspected: normal difficulty selection; missing-profile prompt; guest join, select, confirm and ready; Start opens autosave confirmation; A opens AI autospend selection; A returns to ready screen.",
+    "One retry repeats the confirmation flow; 15 seconds neutral does not load the encounter.",
+    "No Storm Castle/turret entry, aiming, firing or exit was reached. No inference that aiming candidate caused this fixture failure."
+  ],
+  "exit": 0,
+  "restoration": {
+    "verified": true,
+    "only_member_changed": "scripts/menus/new_game.py",
+    "wad_sha256": "c1847015ad402a562cf65239b1de22a0030c525858dd685dab21783bf8d69d20",
+    "matches_pretest_hash": true
+  },
+  "candidate": "Shared aiming remains opt-in, not installed or accepted; previously reported Windows build and 50/50 supported tests stand, but no native aiming acceptance.",
+  "unverified": [
+    "Turret functional behavior and prompts",
+    "Nullifier and hacking",
+    "Four-player interaction ownership",
+    "Physical gamepad, audio and FPS acceptance"
+  ],
+  "next": "Verify the map entry path and native script dispatch before another diagnostic route. Do not force turret eligibility, context flags or completion to obtain a pass.",
+  "captures": {
+    "turret-route-boot.png": "63325ba36998128d2bed80da278342937b3188bf94d2698cc0c3787c20ab80f7",
+    "turret-route-confirm.png": "7e1e64c90b284d0177c6576d82c67c408b85d2bb8a4d5d2834091aeb5ad7c60f",
+    "turret-route-joined.png": "1d275fb8881eea71223c3986eaa01017a7065762944bd80b6cf520149e72ad07",
+    "turret-route-load.png": "cfe5eef23d951c5e323d7d3999d4c66fd059a463651bbd67af935c043da2f64e",
+    "turret-route-new-game.png": "14219c32186c016e59d806fd7c3e56491d4db765422148f94fa4525707ed20c9",
+    "turret-route-no-profile.png": "63e26d4a266a3461932af3d4725bc895c00e47c6a78e97d4818c48f19441bae3",
+    "turret-route-progress.png": "3c6a2b84de3d54a154a05fe5a6521cd824ac3c7d10dbc3eae879aeaca362e878",
+    "turret-route-ready.png": "70c7578f7b7ac36902695c5aaf3d2c2c6cbbab47d1cbeb475e22286b6187e09e",
+    "turret-route-retry-start.png": "7a35a42fba8b4d47cec6c7c59ea6a97166227260353bee9b9d04d594c7df8085",
+    "turret-route-started.png": "2054545c035a3f1cece3d8f3d180938923bdba6bca5f8639bd5f2f1b031f3182",
+    "turret-route-team.png": "8b23da8b2dbe3d6aca8e6d443fda79c176751fbc07e30001919cccdffe101222"
+  },
+  "goal_complete": false
+}

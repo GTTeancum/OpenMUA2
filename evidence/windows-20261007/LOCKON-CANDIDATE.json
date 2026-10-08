@@ -1,0 +1,36 @@
+{
+  "status": "Opt-in runtime candidate built; encounter acceptance pending",
+  "opt_in": "OPENMUA2_GAMEPAD_LOCKON=1; requires four managed ports, Xbox prompts and rapid-tap observer/paired HUD pack",
+  "implementation": [
+    "Six exact-code-guarded hooks activate as a group; partial registrations stay inert.",
+    "Retains native random selection but translates action12 to PS2 action11; native four-port consumer uses assigned action.",
+    "Render comparison selects existing sprite arm for action11; shared draw observer routes only lock-on caller8024E7E8 from sprite40 to static-X sprite99.",
+    "Assignment, rendering, consumption and instruction4 select gamepad branches without changing network state.",
+    "Preserves native target timers, removal, success/failure callbacks."
+  ],
+  "hle_budget": "Address-keyed maps dispatch through two existing HLE identities. Audited32 limit is registration policy, not array/opcode capacity; increased bounded budget to64 for complete interaction path.",
+  "build": {
+    "exit": 0,
+    "runner_sha256": "D9DBBA84708080E62DCC561CF991CB03070AD2F1109E11B7BE8DE552453740E3",
+    "runner_bytes": 16225280,
+    "outputs": [
+      ".local/build/windows-x64/runtime/moderngekko-run.exe",
+      ".local/build/windows-x64/runtime/moderngekko_runtime.lib"
+    ],
+    "warnings_errors": "No compiler/linker warnings or errors in build log",
+    "focused": "4/4,2.33s",
+    "full": "50/50,11.04s"
+  },
+  "runtime": {
+    "pid": 13740,
+    "exit": 0,
+    "evidence": "workspace work/lockon-registration/runtime.log",
+    "proven": "Registration with shared aiming; retained private prison entry loaded; neutral process-local interval and clean stop.",
+    "not_proven": "Lock-on encounter/button success, failure, timing, four-player ownership or correct visible prompts. Paired new HUD artwork not staged in this run.",
+    "format_diagnostics": "Existing unsupported formatter counters present; not claimed as clean rendering acceptance."
+  },
+  "installed": "C:/Games/MUA2 unchanged",
+  "cleanup": "No new GameData/build tree/state copy; compact registration logs only. Existing build reused.",
+  "next": "Validate actual Chemical Plant/Wakanda lock-on with paired private HUD pack; include X-vs-LB, all four ports, expiry/failure and instruction panel. Continue other progression interactions.",
+  "goal_complete": false
+}

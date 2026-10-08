@@ -1,0 +1,16 @@
+{
+  "status": "Diagnostic failure, not gameplay acceptance",
+  "process_exit": 4294967295,
+  "cause": "Actor-name probe computed out-of-range address F69B0CED. Subsequent valid reads did not complete; process explicitly terminated. Root cause inside runtime not established.",
+  "repair": "Workspace options_nav.read now rejects nonpositive lengths and ranges outside mapped MEM1/MEM2 before publishing any command. Four invalid-range tests pass. No game source changes this run.",
+  "next": "Use bounded numeric actor records with validated IDs and positions; do not interpret arbitrary actor tags as string handles. Restore existing prison entry in a fresh process.",
+  "web_confirmation": {
+    "nullifier_usage": "MUA2 last-generation playthrough description states beam used against Absorbing Man; transcript names Nullifier ray.",
+    "sources": [
+      "https://rumble.com/playlists/apx4fq0HlTU",
+      "https://video-games.fandom.com/wiki/Marvel%3A_Ultimate_Alliance_2/Transcript"
+    ]
+  },
+  "installed_changed": false,
+  "goal_complete": false
+}

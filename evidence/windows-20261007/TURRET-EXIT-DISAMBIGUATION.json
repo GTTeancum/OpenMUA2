@@ -1,0 +1,37 @@
+{
+  "scope": "Read-only PS2 executable and authored-data audit; no runtime/input changes",
+  "turret_exit": "Still unresolved. Shared action41 resolves actor category4 through actor+0x3cc virtual slot0x164; no proven mapping of category4 to fffgunexit. Do not claim X/Y/LB turret exit.",
+  "distinct_handler": {
+    "name": "CCHTurnObjSequence",
+    "vtable": "007DA250",
+    "rtti": "007830E8",
+    "entry": "0040A760",
+    "instruction_address": "00780F00",
+    "update": "0040A800",
+    "turn_actions": {
+      "61": "0040A924 ->003359B0",
+      "62": "0040A980 ->00335C50"
+    },
+    "exit": "0040A9DC tests action12; calls00335F20 and clears interaction vectors",
+    "current_provider": "right-stick horizontal thresholds emit61/62; LB emits12",
+    "limits": "Presence in executable is not proof of active map usage or Wii parity; identify actual usage before implementation."
+  },
+  "data_check": "Storm Castle and permanent fightstyle/rev packages: fffgunexit found only as authored node, no explicit incoming chain in scanned XMLB/ENGB members. Script .py scan found no literal fffgunexit.",
+  "decision": "Do not use unrelated Block-to-Exit prompt as turret evidence. Keep turret exit open; no speculative binding patch.",
+  "priority": "Do not resume statue/fusion replay. Continue turret/hacking/lock-on work.",
+  "installed_changed": false,
+  "followup_20261008": {
+    "PS2_turret_update": "0040C650..0040CEEC reviewed, including previously unread tail. Aim/rotation update does not establish a manual-exit action.",
+    "PS2_0040D1D0": "Resolves actor+0x3CC category31 at0040D224, then calls00427C10; not category4. Handler identity and invoking path must be resolved before associating with exit.",
+    "literal_check": "No null-terminated fffgunexit literal in PS2 executable. Authored move exists in packaged fightstyle; this alone is not a binding.",
+    "decision": "Manual exit remains unproven; no invented mapping or runtime change. Single controller only.",
+    "next_trace": "Identify virtual owner/callers of0040D1D0 and category31 authored alias, rather than rescan aim routine."
+  },
+  "handler_identity": {
+    "vtable": "007D9E40",
+    "RTTI": "00782EA0 -> name00782E80 CCHBFGEnd",
+    "method": "0040D1D0",
+    "finding": "Category31 transition is in turret end handler. No direct input query in inspected method. This does not establish manual exit or prove it absent.",
+    "disposition": "No speculative mapping; gameplay acceptance delegated to beta testers per user."
+  }
+}

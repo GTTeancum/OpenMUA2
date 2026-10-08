@@ -1,0 +1,34 @@
+{
+  "scope": "Read-only binary/source audit; not encounter acceptance",
+  "ps2_code": "0040C850..0040C964: left axes, native delta, deadzone, pitch limits and reset-relative yaw clamp",
+  "ps2_gp": "0x7fc370",
+  "ps2_constants": {
+    "-0x79b0": -0.10000000149011612,
+    "-0x7a68": 0.10000000149011612,
+    "-0x79ac": 2.0071287155151367,
+    "-0x79a8": 3.0019662380218506,
+    "-0x7e44": 0.01745329238474369,
+    "-0x7d6c": 1.3089969158172607
+  },
+  "candidate": "project/lib/ModernGekko/tools/mua2_gamepad_turret.hpp",
+  "prompt": {
+    "gamepad_text_address": "80563D38",
+    "pointer_text_address": "80563DC4",
+    "selection": "Exact-hash hook at8024DBBC selects8024DBD0 only when gamepad turret hook installed",
+    "meaning": "Shipped analog-stick aiming instruction, defend Captain America from enemy turrets and Doombots, ATTACK confirmation. No asserted exit binding.",
+    "boundary": "Code/text selection verified, actual rendered turret tutorial not inspected this turn"
+  },
+  "web_corrob": {
+    "url": "https://gamefaqs.gamespot.com/ps2/959201-marvel-ultimate-alliance-2/answers/115589-how-do-i-get-past-the-turrets-on-the-storming-the-castle-level",
+    "scope": "Player report corroborates PS2 turret cover-fire encounter and recoil; not a control specification or acceptance test"
+  },
+  "remaining": [
+    "Normal scripted turret entry",
+    "Native aim/fire/recoil and release",
+    "Exit/re-entry if supported by encounter",
+    "Actual tutorial rendering",
+    "Four-controller ownership"
+  ],
+  "runtime_changed": false,
+  "installed_changed": false
+}

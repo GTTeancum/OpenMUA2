@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-07",
+  "status": "Private opt-in candidate, not installed or accepted",
+  "implementation": "Direct local gamepad turret rotation derived from PS2 CCHWeapon behavior; native angle setter, firing, damage, entry/exit and eligibility remain native. No pointer ray produced by turret replacement.",
+  "reference": {
+    "PS2_update": "0040C650",
+    "axis_reads": [
+      "0040C818 action0",
+      "0040C848 action1"
+    ],
+    "rotation_and_limits": "0040C850..0040C964",
+    "deadzone": 0.1,
+    "pitch_radians_per_second": 2.0071287155151367,
+    "yaw_radians_per_second": 3.0019662380218506,
+    "yaw_limit_degrees": 75,
+    "pitch_limits": "Per-weapon down/up degrees, relative to reset entity",
+    "Wii_update": "810CDDF4",
+    "replacement_call": "810CE0C0",
+    "native_rotation_continuation": "810CEAD4",
+    "native_delta": "80629490+1468 via native getter800F3144; observed0.033s",
+    "tutorial_call": "8024DBBC selects native analog text at8024DBD0; leaves NetPlay flags intact"
+  },
+  "build": {
+    "result": "Windows MSVC Release exit0",
+    "runner_sha256": "37a116a8253ba305290d5c81ac41e278de2cf29fd75d018b7b989ec90fde56df",
+    "runner_bytes": 16218624,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib",
+      "moderngekko_mua2_gamepad_actions_test.exe (first build; unchanged in second)"
+    ],
+    "warnings_errors": "No compiler/linker warnings/errors in either successful build log",
+    "focused": "4/4 in2.48s",
+    "regression": "50/50 in12.16s",
+    "tests": "Direct rotation rate, equal elapsed-time partitions, clamping, disconnected/neutral/deadzone retention, invalid inputs; existing regression suite"
+  },
+  "failure_preserved": "First build passed tests but native replacement registration failed: selected site810CE0B4 was not a supported branch instruction. Corrected to existing call810CE0C0. First run is not functional evidence.",
+  "native": {
+    "entry": "Original new-game script reaches cinematic with same input flow. loadMapAddTeam route failed; native loadMapKeepTeam route reaches Storm Castle with all four heroes visible. Earlier campaign skipped for diagnostic access; no entity/prerequisite/completion flags forced.",
+    "fixture": "work/turret-keep-team-entry/stormcastle-entry.sav",
+    "fixture_bytes": 50121320,
+    "private_wad_sha256": "3b65450e10cd692a65a8081d4895a0bc6db76c358b6f111e9c605147981e33e0",
+    "private_wad_note": "KeepTeam diagnostic new-game script retained in existing private test WAD to match this state; original script retained for exact restoration. Installed/original WAD unchanged. Do not use this private route as user-facing New Game.",
+    "r2_exit": 0,
+    "verified": "Both replacement registrations succeed; saved encounter entry restores with expected four heroes and world visibly rendered.",
+    "not_verified": [
+      "Actual turret entry/rotation/fire/exit",
+      "Turret tutorial text rendered in context",
+      "Four-player turret ownership",
+      "Nullifier and hacking controls",
+      "Physical gamepad, audio and performance acceptance"
+    ]
+  },
+  "captures": {
+    "turret-stock-route-final.png": "102541950c78f21ad5765bee861cabe0c7d29d853c248abdb966c4dc08b1d646",
+    "turret-keep-team-level.png": "2ebfd2238574abed383df11ef713fb33cbe6373ac8e52a64c787395b2860179d",
+    "direct-turret-entry.png": "5872b032b4935f5aa3cdfd3bcc0320a51611aba3472038cea7c33478cf25258f",
+    "direct-turret-r2-entry.png": "230e086cdf4d3f0d0fedea2b6543584d6a5f08b816245436389c92db5b320be0"
+  },
+  "next": "Reach generator and turret with process-local gameplay inputs from the retained entry fixture. Check native rotations, fire/exit, cancellation and player ownership plus in-context tutorial. Keep eligibility intact.",
+  "goal_complete": false
+}

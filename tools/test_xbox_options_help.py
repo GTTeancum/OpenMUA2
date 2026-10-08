@@ -19,7 +19,7 @@ class OptionsHelpTests(unittest.TestCase):
         for ext, original in self.tables.items():
             with self.subTest(extension=ext):
                 result = target.patch_options_help(original)
-                self.assertEqual(len(original), len(result))
+                self.assertGreaterEqual(len(result), len(original))
                 before, after = target.read_nodes(original), target.read_nodes(result)
                 self.assertEqual(len(before), len(after))
                 matched = set()
@@ -48,18 +48,39 @@ class OptionsHelpTests(unittest.TestCase):
         replacement = dict(target.REPLACEMENTS, **{'5517': 'X' * 1000})
         with patch.object(target, 'REPLACEMENTS', replacement):
             for original in self.tables.values():
-                with self.assertRaisesRegex(ValueError, 'exceeds available allocation'):
+                with self.assertRaisesRegex(ValueError, 'exceeds UI text limit'):
                     target.patch_options_help(original)
 
-    def test_long_chords_relocate_without_changing_other_nodes(self):
-        original = self.tables['engb']
-        result = target.patch_options_help(original)
-        def location(data):
-            return next(loc['text'] for _, attrs, loc, _ in target.read_nodes(data)
-                        if attrs.get('id') == '5517')
-        self.assertNotEqual(location(original), location(result))
-        self.assertIn(b'$XRT + $XA/$XX/$XB/$XY Powers\0', result)
-        self.assertIn(b'$XLT + $XA/$XB/$XX/$XY Fusion\0', result)
+    def test_complete_control_reference(self):
+        from xbox_options_layout import PACKAGE, patch_options_package
+        with zipfile.ZipFile(self.source_wad) as archive:
+            original = archive.read(PACKAGE)
+        result = patch_options_package(original)
+        import struct
+        def members(data):
+            out = {}; offset = 0
+            while offset < len(data):
+                name = data[offset:offset+192].split(b'\0')[0].decode('ascii')
+                size = struct.unpack_from('<I', data, offset+192)[0]
+                out[name] = data[offset+196:offset+196+size]
+                offset += 196+size
+            self.assertEqual(offset, len(data))
+            return out
+        before, after = members(original), members(result)
+        self.assertEqual(before.keys(), after.keys())
+        changed = {n for n in before if before[n] != after[n]}
+        self.assertEqual(changed, {'ui/menus/options_rev.engb', 'ui/menus/options_rev.itab',
+                                   'ui/menus/cw_pausemenu.igb'})
+        for name in sorted(changed - {'ui/menus/cw_pausemenu.igb'}):
+            nodes = {a.get('name'): a for _, a, *_ in target.read_nodes(after[name])}
+            self.assertEqual(nodes['controls']['model'], 'ui/models/m_invis')
+            self.assertIn('Powers', nodes['label_button02']['text'])
+            self.assertIn('Fusion', nodes['label_button03']['text'])
+            self.assertFalse(nodes['label_click01']['text'])
+            for i in ([1] + list(range(4,13))):
+                self.assertFalse(nodes['label_button%02d' % i].get('text'))
+        with self.assertRaises(ValueError):
+            patch_options_package(result)
 
 
 if __name__ == '__main__':

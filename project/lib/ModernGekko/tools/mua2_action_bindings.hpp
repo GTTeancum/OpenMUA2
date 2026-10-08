@@ -66,7 +66,7 @@ inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
 // the joined-player profile screen whose Ready prompt starts the game.
 // Caller already guards the exact game executable and evaluator instructions.
 template<typename Reader>
-inline bool IsStartAcceptScreen(Reader read) {
+inline std::uint32_t ActiveMenuType(Reader read) {
   const auto ram=[&](std::uint32_t address,std::size_t size) {
     const auto end=std::uint64_t(address)+size;
     if (!(address&3) && ((address>=0x80000000 && end<=0x81800000) ||
@@ -81,7 +81,14 @@ inline bool IsStartAcceptScreen(Reader read) {
   const auto menu=ram(ReadBE(manager,25860),10408);
   if (menu.size()!=10408) return false;
   const auto type=ReadBE(menu,10404);
-  return type==0x8118bae8 || type==0x811942f0 || type==0x8118f008;
+  return type;
+}
+template<typename Reader>
+inline bool IsStartAcceptScreen(Reader read) {
+  const auto type=ActiveMenuType(read);
+  // CW_Results_Hack uses MENU_OK (105) for Continue Game.
+  return type==0x8118bae8 || type==0x811942f0 || type==0x8118f008 ||
+    type==0x81194460;
 }
 
 // Start emits native continue/accept on the title and profile screens. Elsewhere

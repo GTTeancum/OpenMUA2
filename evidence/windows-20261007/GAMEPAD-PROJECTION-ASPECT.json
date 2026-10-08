@@ -1,0 +1,59 @@
+{
+  "status": "Source correction built and regression-tested; encounter acceptance pending",
+  "reason": "Candidate forced mode1 projection, selecting fixed aspect/alternate scale. PS2 gamepad projection passes0 and uses display fields44/48.",
+  "ps2_call_sites": [
+    "00523154",
+    "0052329C",
+    "0052342C",
+    "00523460"
+  ],
+  "ps2_getters": [
+    "0010B1A0 uses object44",
+    "0010BD90 selector0 uses object44",
+    "0010BDB0 selector0 uses object48"
+  ],
+  "native_getters": [
+    "80017260 selector0 uses object68; nonzero fixed constant",
+    "80017FAC selector0 uses object68",
+    "80017FC4 selector0 uses object72; nonzero object76"
+  ],
+  "verified_guards_and_zero_selector_instructions": [
+    {
+      "site": "0x80ffb38c",
+      "target": "0x80ffb3c4",
+      "sha1": "2A00CD46DAAE28AE46BEDEF221E4EA3605E22A27",
+      "native_instruction": "0x3be00000"
+    },
+    {
+      "site": "0x80ffb51c",
+      "target": "0x80ffb554",
+      "sha1": "46284EF5A981DD2297A5142774DAC6B3D64908A9",
+      "native_instruction": "0x3be00000"
+    },
+    {
+      "site": "0x80ffb748",
+      "target": "0x80ffb780",
+      "sha1": "2DBE55B4236F0D53E33755273B35850BD9D882E9",
+      "native_instruction": "0x3b800000"
+    }
+  ],
+  "build": {
+    "exit": 0,
+    "focused": "4/4 in2.07s",
+    "full": "50/50 in8.54s",
+    "warnings_errors": 0,
+    "sha256": "692ce3f8b334f0fc21fae238cb072a0f718ec154ba7cac23e51da345ad3f475e",
+    "bytes": 16223232,
+    "outputs": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ]
+  },
+  "installed_changed": false,
+  "not_verified": [
+    "In-context hacking/Nullifier targeting and completion",
+    "Four joined players",
+    "Remaining aim lifecycle reset condition"
+  ],
+  "goal_complete": false
+}

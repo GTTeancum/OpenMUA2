@@ -1,0 +1,35 @@
+{
+  "method": "Restored retained native state; entered Hero Details using contained Back/A/X input and native captures; no gameplay values changed",
+  "confirmed": {
+    "Captain America": {
+      "level": 1,
+      "points": 0,
+      "available": "Shield Throw",
+      "locked": {
+        "Energy Shield": 2,
+        "Shield Charge": 13,
+        "Shield Bash": 20
+      }
+    },
+    "Iron Man": {
+      "level": 1,
+      "points": 0,
+      "available": "Plasma Disc",
+      "locked": {
+        "Micro-Pulse Barrage": 2,
+        "Nano Assault": 10,
+        "Uni-Beam": 13
+      }
+    }
+  },
+  "fixture": "KeepTeam diagnostic map entry skipped earlier campaign; not normally progressed Storm Castle save",
+  "interpretation": "Explains single available power. Does not prove enemy scaling, attack-binding failure or cause of defeat. Stop repeating this fixture as end-to-end combat acceptance.",
+  "captures": {
+    "outputs\\turret-progression-details-ready.png": "ac703244b5029f7f49ee0b5333c4ed866fb02d5f939e7214869a47c205e81fed",
+    "outputs\\turret-progression-iron-details.png": "5b7f37b30225ed9a2bf05b7dfec6f625056b7d7a7249232365a3c13b936bfe66"
+  },
+  "installed_saves_readonly": "Game1 header: -Auto- 00:01 - Latveria S (E); Game2..10 header Blank. No proven later campaign save found in installed data.",
+  "next": "Use normally progressed campaign for combat acceptance; inspect provenance of retained plaza continuation states before choosing one. Do not add levels/health/eligibility to manufacture pass.",
+  "exit": 0,
+  "installed_changed": false
+}

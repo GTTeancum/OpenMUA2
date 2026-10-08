@@ -28,6 +28,9 @@ namespace HLE
 static std::map<u32, u32> s_hooked_addresses;
 
 // clang-format off
+// Address-keyed maps share two fixed HLE dispatch identities; this bound is
+// a registration budget, not an opcode-index or fixed-array capacity.
+constexpr std::size_t MAX_EXTERNAL_HOOKS = 64;
 static std::map<u32, HookFunction> s_external_observers;
 // Execute dispatches this reserved hook by the actual instruction address.
 static void ObserveExternal(const Core::CPUThreadGuard&) {}
@@ -182,7 +185,7 @@ void PatchFunctions(Core::System& system)
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer)
 {
-  if (!observer || !address || (address & 3) || s_external_observers.size() + s_external_branches.size() >= 20 ||
+  if (!observer || !address || (address & 3) || s_external_observers.size() + s_external_branches.size() >= MAX_EXTERNAL_HOOKS ||
       s_hooked_addresses.contains(address) || s_external_observers.contains(address))
     return false;
   s_external_observers.emplace(address, observer);
@@ -194,7 +197,7 @@ bool SetExternalBranchReplacement(const Core::CPUThreadGuard& guard, u32 address
                                   BranchReplacement replacement)
 {
   if (!replacement || !address || (address & 3) ||
-      s_external_observers.size() + s_external_branches.size() >= 20 ||
+      s_external_observers.size() + s_external_branches.size() >= MAX_EXTERNAL_HOOKS ||
       s_hooked_addresses.contains(address)) return false;
   auto& memory = guard.GetSystem().GetMemory();
   if (!memory.GetPointerForRange(address, 4)) return false;
@@ -209,7 +212,7 @@ bool SetExternalFunctionReplacement(const Core::CPUThreadGuard& guard, u32 addre
                                     BranchReplacement replacement)
 {
   if (!replacement || !address || (address & 3) ||
-      s_external_observers.size() + s_external_branches.size() >= 20 ||
+      s_external_observers.size() + s_external_branches.size() >= MAX_EXTERNAL_HOOKS ||
       s_hooked_addresses.contains(address)) return false;
   auto& memory = guard.GetSystem().GetMemory();
   if (!memory.GetPointerForRange(address, 4)) return false;
@@ -258,10 +261,14 @@ void Execute(const Core::CPUThreadGuard& guard, u32 current_pc, u32 hook_index)
     // Dispatch by stable hook identity, never by their function pointers.
     if (std::string_view(os_patches[hook_index].name) == "RuntimeExternalBranch")
     {
+      // JIT passes the hook PC explicitly; its cached state.pc may still name
+      // an earlier block. External callbacks select guarded sites using state.pc.
+      guard.GetSystem().GetPPCState().pc = current_pc;
       RunExternalBranch(guard, current_pc);
     }
     else if (std::string_view(os_patches[hook_index].name) == "RuntimeExternalObserver")
     {
+      guard.GetSystem().GetPPCState().pc = current_pc;
       const auto it = s_external_observers.find(current_pc);
       if (it != s_external_observers.end())
         it->second(guard);

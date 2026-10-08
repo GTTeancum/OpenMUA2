@@ -1,0 +1,46 @@
+{
+  "status": "PASS port0 native tank rapid-X and lock-on A/B/X/Y behavior; Y prompt readability and joined multiplayer remain open",
+  "source_fix": "HLE external branch/observer dispatch synchronizes PPC state.pc to explicit current_pc. JIT callback state.pc was stale, so guarded lock-on switch sites fell through despite successful registration. Shared fix also affects site-dispatched aiming observers; regression remains needed.",
+  "fixture_correction": "CCoopEntity checks heaviness2 against actor strength. Captain America strength0 fails; Iron Man strength2 qualifies. Select Iron Man, place behind tank trigger, walk toward it before pressing X. Do not infer broken binding from immediate post-warp use. Tank completes with existing repeated-X implementation.",
+  "verified": [
+    "Tilted rapid-X prompt and native tank animation",
+    "Native gamepad instruction replaces Click on targets wording",
+    "Native random sets [X,A,A] and [B,X,Y]; no assignment modification",
+    "LB leaves X target present; X removes it",
+    "A/B/X/Y each clear matching assigned targets",
+    "Native boss HP48000 ->43200 after tank ->31200 after lock-on success",
+    "Native timeout keeps HP43200 and returns to encounter",
+    "Left-stick movement after success"
+  ],
+  "not_verified": [
+    "Y glyph partly covered by a star effect; unreadable enough to require correction",
+    "Four joined players and simultaneous ownership; unjoined port1 did not clear X, so stopped unjoined-port test without calling it a multiplayer failure",
+    "Physical controller acceptance",
+    "Shared aiming regression after dispatcher PC fix",
+    "Installed package and final reviewed source push"
+  ],
+  "build": {
+    "configuration": "Windows Release existing VS2022/MSVC14.44 toolchain",
+    "compile_link": "completed without printed compiler/linker warnings or errors",
+    "runner_sha256": "11c69585d846c32340ecba0f22384663d92beb094c39c4dd6af4ba8e22ddec66",
+    "runner_bytes": 16226304,
+    "tests": "68 passed; fullbench/fuzzer/zstreamtest unavailable (Not Run); playTests disabled. Full CTest invocation nonzero; not a full-suite pass.",
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hook-pc-build.log"
+  },
+  "proofs": {
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-iron-walk-use.png": "a23f9c5adb7cd4ad0addaae5980fa547d1c13a2743077cc704a7e7c03fe610e6",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-iron-tap.png": "1137ecae8cfa39394f30dc68f8d8afb56c37fd5c9cd5997627add2d5f9e399b2",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-fixed-lockon-instruction.png": "7c4bda73ab4acfc7edd6b771e46a4e26559caa3b0b9bf4ee02e487b02deb9a8d",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-fixed-lockon-target.png": "897964a2f99779f93b048a03479845ed6b2f37b25ab72fa15db83b51dd739284",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-lockon-complete.png": "0655c234a960c6e7e8f5b139b96dd7d00cb3fde416a67a53ddcb48be4898320c",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-lockon-expired.png": "e385628fc5f418edc3910dcbd7aefe4c745efc523bb37a5a9364eaea2a244883",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-lockon-bxy.png": "bec7588122aed792415fc2d88083c0e8f31f22a3e0640bce5479c2ec8aec6b78",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-lockon-y-settled.png": "8c32a26f318320d7e47b2419fe5af82778d297127f65d153e3fa53b6d660d0ab"
+  },
+  "runtime_stopped": true,
+  "private_WAD_unchanged": true,
+  "installed_unchanged": true,
+  "host_input": false,
+  "audio": "Null; no audio/FPS claim",
+  "goal_complete": false
+}

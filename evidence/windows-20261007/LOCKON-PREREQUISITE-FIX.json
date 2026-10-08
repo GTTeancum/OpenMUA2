@@ -1,0 +1,26 @@
+{
+  "change": "Require s_direct_qte_enabled before activating lock-on because ObserveRapidTapPrompt otherwise exits without drawing static X. Partial hook failure cannot enable mismatched target controls/prompts.",
+  "build_exit": 0,
+  "runner_sha256": "4A67B357F172688E2BC13E232A37478C8D933622D50B15DE829739AAD6123C33",
+  "runner_bytes": 16225792,
+  "build_outputs": [
+    ".local/build/windows-x64/runtime/moderngekko-run.exe",
+    ".local/build/windows-x64/runtime/moderngekko_runtime.lib"
+  ],
+  "warnings_errors": "None in compiler/linker output",
+  "focused_tests": "4/4,2.03s",
+  "full_tests": "50/50,9.67s",
+  "runtime": {
+    "pid": 41452,
+    "exit": 0,
+    "verified": "Cold startup installs direct QTE, shared aiming and complete lock-on group",
+    "unverified": "Failed-hook scenario was source-reviewed, not fault-injected; actual lock-on encounter still pending"
+  },
+  "logs": [
+    "work/lockon-prerequisite-build.log",
+    "work/lockon-prerequisite-tests.log",
+    "work/lockon-prerequisite-registration/runtime.log"
+  ],
+  "installed": "Unchanged",
+  "cleanup": "Reused supported build tree; no duplicate GameData or savestate; retained compact logs only."
+}

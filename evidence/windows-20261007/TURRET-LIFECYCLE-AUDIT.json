@@ -1,0 +1,60 @@
+{
+  "scope": "Read-only audit of authored Storm Castle encounter; no game launched or state changed",
+  "entry": [
+    "Destroy west generator, which exposes/enables east generator",
+    "Destroy east generator; native objective count2 enables mm_turret and TRIG_turretEvent",
+    "Use trigger as activating hero; script records gunner ownership and disables hero switching"
+  ],
+  "fire": [
+    "interact_fffgun.xmlb fffgun_idle chains attack and smash to power1",
+    "Current gamepad provider maps attack to A and smash to B",
+    "power1 schedules two projectile events and supports attack/smash repeats; no live firing acceptance yet"
+  ],
+  "exit": [
+    "fffgunexit drops weapon and releases victim",
+    "turretevent_dropturret restores gunner collision/gravity, moves to authored off-turret waypoint, resets camera and re-enables use if unfinished",
+    "Exact input consumer selecting fffgunexit still requires tracing",
+    "turretevent_end restores hero switching, opens bridge/level exit and sets completion flag"
+  ],
+  "four_players": "Script records activating hero, not fixed player0; actual four-pad operation remains unverified",
+  "fixture": "Private work/turret-fightstyle.json contains parsed proprietary data; do not commit",
+  "next": "Trace exit action consumer, then use native generator checkpoint for entry/fire/exit/re-entry test; do not directly invoke scripts or set completion flags",
+  "installed": "Unchanged",
+  "handler_trace": {
+    "ps2_idle_vtable": "007D9EE0 RTTI resolves CCHBFG",
+    "ps2_fire_vtable": "007D9F30 RTTI resolves CCHBFGFire",
+    "shared_update": "Both vtables point to0040C650; current rotation reference applies to idle and firing",
+    "shared_action_dispatch": "Both route through0040CFE0 to0041C1A0",
+    "drop_candidate": "0041C2BC tests action21 via0041D5D0, then invokes001B1AD0; current X emits21",
+    "caution": "001B1AD0 contains context/type guards including turret string. This call alone does not establish fffgunexit. Do not label X exit verified.",
+    "remaining": "Resolve fightmove transition/guard behavior at mounted turret with native input; no input override added"
+  },
+  "exit_callback_trace": {
+    "pickup_weapon_rtti": "0076C480 CPickupWeaponEntity; vtable007D05F0",
+    "action21_callback": "001B1AD0 invokes held entity slotBC =>00191FC0 =>slotE8 =>00192C90 (generic activation), not a directly proven fffgunexit selector",
+    "distinct_jump_candidate": "Shared handler0041C9CC tests action41 and resolves node category4 via001AC0D0/00427E20. Current Y emits41. The node-name resolution has not yet been tied to fffgunexit.",
+    "conclusion": "Do not equate Action21/use with exit. Need live transition evidence or complete node-alias resolution. No new binding applied."
+  },
+  "weapon_definition_check": {
+    "package": "packages/generated/maps/act1/latveria/stormcastle_1.fb",
+    "member": "data/weapons/wp_fffgun.engb",
+    "finding": "Declares beam/gun weapon and interact_fffgun fightstyle, but no exit input or exit-node binding. Fightstyle defines fffgunexit with ea_jump_start; this does not prove an incoming input transition.",
+    "next_action": "Mounted-encounter transition test now preferred over further generic drop-routine tracing. Do not assign X or Y exit based solely on current evidence."
+  },
+  "chain_lookup_trace": {
+    "ps2_current_node": "CActor+0x3cc set by00199970; default resolution001AC120",
+    "node_vtable": "007D9AF0 CCombatNode, slot164=00412DC0",
+    "category4": "00427E20 calls current node slot164 with4. Getter validates chain-bank handle node+0x18 and returns manager+0x20+(index*240)+(action*4). This is an authored chain lookup, not a fixed jump-exit alias.",
+    "setter": "00412F00 stores target token in same bank; zero category uses node+0x1c",
+    "conclusion": "Action41 cannot be called turret exit without a mounted node chain4 resolving to fffgunexit. Read mounted node chain bank next; avoid tracing generic entity activation further.",
+    "generic_use": "00192C90 dispatches CPickupWeaponEntity slot100=0024E100; activation is guarded by weapon ownership. It does not independently establish exit."
+  },
+  "authored_entity_distinction": {
+    "package": "packages/generated/maps/act1/latveria/stormcastle_1.fb",
+    "member": "maps/act1/latveria/stormcastle_1.engb",
+    "ordinary_turrets": "turret - latverian and turret - latverian02 have actonuse=true; their presence does not establish the scripted encounter behavior.",
+    "scripted_turret": "mm_turret has actonuse=false, actdistance=20, dropscript=act1/latveria/stormcastle_1/turretevent_dropturret, hinttype=usetoggle, interaction_node=fffgunstart.",
+    "consequence": "Validate entry and exit against the authored mm_turret trigger and drop callback, not a generic spawned turret. No binding inferred from hinttype.",
+    "method": "Read-only original extracted WAD; no state or asset writes."
+  }
+}

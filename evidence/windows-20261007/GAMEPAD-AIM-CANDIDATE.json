@@ -1,0 +1,43 @@
+{
+  "status": "Private opt-in candidate; NOT installed or gameplay-validated",
+  "change": "Shared local gamepad aim mode, guarded sampler and three native projection adapters. Network Game state is not read as a gamepad capability or written. Menu/aim-disabled contexts retain original behavior. Native collision/hit testing and interaction outcomes untouched.",
+  "opt_in": "OPENMUA2_GAMEPAD_AIM=1 with OPENMUA2_GAMEPAD_PROVIDER=1",
+  "build": {
+    "result": "MSVC Release exit0; focused4/4 in3.41s",
+    "runtime_bytes": 16216576,
+    "runtime_sha256": "b41b04e687cb4150b34c2aa2a81a97a624fbaedce7682c959d01bbafc211e41e",
+    "warnings_errors": "No compiler/linker warnings or errors in successful build log",
+    "regression": "Supported runtime/codegen suite50/50 in10.46s",
+    "failed_validation_attempt": "Initial unfiltered ctest outside msvc-env: three unbuilt vendor benchmark executables not run; codegen_compile failed missing string.h. Corrected invocation used existing msvc-env wrapper and supported test selection."
+  },
+  "unit_coverage": [
+    "Four native72-byte aim records",
+    "Signed stick axes and deadzone/nonfinite handling",
+    "Disconnected and unjoined pads clear samples and validity",
+    "Projected ray fields preserved",
+    "Reject active native menu, invalid native mode, disabled aiming, bad record length and out-of-range port"
+  ],
+  "native_probe": {
+    "exit_code": 0,
+    "pid": 40888,
+    "hooks_installed": true,
+    "state": "existing fresh-assets-statue-active.sav",
+    "result": "NOT exercising aim: native manager aiming flag0x40 was clear; all four records remained invalid for right/left/up/release. No flags or context were forced to make the test pass.",
+    "screenshots": false,
+    "gameplay_acceptance": false
+  },
+  "next_fixture": {
+    "turret": "act1/latveria/stormcastle_1: generator_destroyed enables mm_turret and TRIG_turretEvent; turretevent_start uses the native turret; turretevent_dropturret covers exit",
+    "Nullifier": "act3/prison/prison_break_4",
+    "hacking": "act2/rebelhideout/rebel_anti_2 or rebel_pro_1/2; other maps also contain hack observer entities",
+    "caution": "Asset presence is a route lead, not evidence of reached/working interaction."
+  },
+  "outstanding": [
+    "Native interaction entry/aim/fire/exit",
+    "Matching gameplay prompts",
+    "Four-player ownership/release/reconnection in a real aim session",
+    "Full end-to-end controls acceptance and staging"
+  ],
+  "installed_changed": false,
+  "goal_complete": false
+}

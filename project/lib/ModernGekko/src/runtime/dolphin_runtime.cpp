@@ -6,13 +6,18 @@
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
+#include "mua2_gamepad_aim.hpp"
+#include "mua2_gamepad_turret.hpp"
 #include "gamepad_port_state.hpp"
 #include "mua2_gamepad_provider.hpp"
+#include "mua2_tutorial_ready.hpp"
 #include "mua2_xbox_prompts.hpp"
 #include "managed_xbox_profile.hpp"
 #include "mua2_interaction_context.hpp"
+#include "mua2_wave_qte_context.hpp"
 #include "moderngekko/gameplay/button_qte.hpp"
 #include "mua2_fusion_buttons.hpp"
+#include "mua2_fusion_entry.hpp"
 #include "mua2_hero_buttons.hpp"
 #include "Common/HookableEvent.h"
 #include "Common/IOFile.h"
@@ -81,6 +86,7 @@ std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 
 std::uint8_t s_direct_gamepad_ports = 0;
 std::array<moderngekko::controls::GamepadActions,4> s_gamepad_actions;
+std::array<moderngekko::controls::FusionEntryState,4> s_fusion_entry;
 std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
 struct GamepadTutorialClock { u32 object=0; unsigned owner=4; float seconds=0; u64 ticks=0; };
 GamepadTutorialClock s_gamepad_tutorial_clock;
@@ -114,7 +120,82 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   return s_gamepad_ports[port].sample;
 }
 
+bool s_gamepad_provider=false;
 std::uint8_t s_xbox_prompt_ports = 0;
+std::uint8_t s_tutorial_ready_ports = 0;
+bool s_tutorial_ready_attempted = false;
+bool s_tutorial_ready_experiment = false;
+bool ConfirmTutorialReady(const Core::CPUThreadGuard& guard, bool single_icon) {
+  auto& system=guard.GetSystem(); auto& state=system.GetPPCState();
+  const unsigned port=state.gpr[single_icon?30:25];
+  if (port>=4 || !(s_tutorial_ready_ports & (1u<<port))) return false;
+  const u32 entry=single_icon?0x8024d2f4:0x8024d1fc;
+  const char* expected=single_icon?"28D8438ED1C800DBD893700DC4D78BAB255B4BDD":
+                                    "5E69D8E42E6B59B9D4193C946A2E54493BA309DD";
+  auto& memory=system.GetMemory();
+  const auto* code=memory.GetPointerForRange(entry,64);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,64))!=expected) return false;
+  auto* help=memory.GetPointerForRange(state.gpr[31],80);
+  const u32 input=0x81313274+port*0xbe00;
+  const auto* device=memory.GetPointerForRange(input,0xbe00);
+  if (!help || !device || moderngekko::controls::ReadBE(std::span<const u8>(device,4),0)!=0x811b4398) return false;
+  const auto* hud=memory.GetPointerForRange(moderngekko::controls::ReadBE(std::span<const u8>(help,80),0),4);
+  if (!hud || moderngekko::controls::ReadBE(std::span<const u8>(hud,4),0)!=0x81190a08) return false;
+  const u64 slot_address=single_icon?u64(state.gpr[31])+32:u64(state.gpr[28])+32;
+  if (slot_address<state.gpr[31] || slot_address-u64(state.gpr[31])>56) return false;
+  const auto slot=moderngekko::controls::TutorialReadySlot(
+      std::span<const u8>(help,80),port,unsigned(slot_address-state.gpr[31]),single_icon);
+  if (!slot) return false;
+  // Replace pointer hit-testing with confirmation, without synthesizing pointer
+  // coordinates. Original ready aggregation, delay, close and callbacks follow.
+  state.npc=single_icon?0x8024d374:0x8024d294;
+  if (!s_gamepad_actions[port].ready_confirm) return true;
+  help[*slot]=0; help[*slot+1]=1;
+  if (single_icon) state.gpr[27]=1;
+  std::fprintf(stderr,"[openmua2] tutorial A confirmation port=%u type=%u slot=%u\n",port,help[67],*slot);
+  return true;
+}
+bool ObserveTutorialReady(const Core::CPUThreadGuard& guard) { return ConfirmTutorialReady(guard,false); }
+bool ObserveTutorialReadySingle(const Core::CPUThreadGuard& guard) { return ConfirmTutorialReady(guard,true); }
+
+void ObserveGamepadPointerWarning(const Core::CPUThreadGuard& guard) {
+  if (!s_tutorial_ready_ports) return;
+  auto& system=guard.GetSystem(); auto& state=system.GetPPCState(); auto& memory=system.GetMemory();
+  const auto* code=memory.GetPointerForRange(0x8024c82c,64);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,64))!=
+      "7A4730FD80D75B8484EFA7B51783143C867D34CB") return;
+  const auto* object=memory.GetPointerForRange(state.gpr[3],36);
+  const auto* manager=memory.GetPointerForRange(0x80669a88,12828);
+  if (!object || !manager ||
+      moderngekko::controls::ReadBE(std::span<const u8>(object,36),24)!=0x80564290 ||
+      moderngekko::controls::ReadBE(std::span<const u8>(manager,12828),0)!=0x805404f0) return;
+  const auto* hud=memory.GetPointerForRange(moderngekko::controls::ReadBE(std::span<const u8>(object,36),0),4);
+  if (!hud || moderngekko::controls::ReadBE(std::span<const u8>(hud,4),0)!=0x81190a08) return;
+  if (moderngekko::controls::GamepadOnlyProfiles(s_tutorial_ready_ports,
+      std::span<const u8>(manager+12812,16))) state.gpr[4]=0;
+}
+
+void ObserveTutorialText(const Core::CPUThreadGuard& guard) {
+  if (!s_tutorial_ready_ports || !s_xbox_prompt_ports) return;
+  auto& memory=guard.GetSystem().GetMemory();
+  const auto* code=memory.GetPointerForRange(0x8024d740,64);
+  if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,64))!=
+      "CCE872A2BC08E81DCB1844AEE58EBA812AEF7521") return;
+  const auto replace=[&](u32 address,std::size_t size,const char* hash,std::string_view text) {
+    auto* bytes=memory.GetPointerForRange(address,size);
+    if (!bytes || text.size()>=size ||
+        Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(bytes,size))!=hash) return;
+    std::memset(bytes,0,size); std::memcpy(bytes,text.data(),text.size());
+  };
+  replace(0x80564038,178,"09F66445DAD15BA89FFA9EF54FAF36F53AE9559E",
+          "Press $XA to confirm that you are ready.\n\nPress $XB to return to the instructions.");
+  replace(0x80563bd8,344,"207D7AB1D4C0AF0F2666F20AE8784D70DC7E0403",
+          "Combine Your Powers!\n4 Fusion Stars required.\nHold $XLT and press $XA/$XB/$XX/$XY to choose a Fusion partner.\n"
+          "This also revives all downed heroes!\n\nDown But Not Out!\n%s required.\n"
+          "Choose a downed hero for a Fusion Revival!\n\nPress $XA to continue...");
+}
+
+
 void ObserveXboxPrompt(const Core::CPUThreadGuard& guard) {
   auto& system = guard.GetSystem();
   auto& state = system.GetPPCState();
@@ -142,14 +223,15 @@ void ObserveXboxPrompt(const Core::CPUThreadGuard& guard) {
     token.push_back(static_cast<char>(*byte));
   }
   bool start_accept_screen = false;
-  if (token == "MENU_OK" && moderngekko::controls::XboxPromptPort(s_hero_ports,state.gpr[25])) {
+  if ((token == "MENU_OK" || token == "MenuExit") &&
+      moderngekko::controls::XboxPromptPort(s_hero_ports,state.gpr[25])) {
     const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
       const auto* bytes = memory.GetPointerForRange(address,size);
       return bytes ? std::span<const u8>(bytes,size) : std::span<const u8>{};
     };
     start_accept_screen = moderngekko::controls::IsStartAcceptScreen(read);
   }
-  const auto replacement=moderngekko::controls::XboxActionPrompt(token,start_accept_screen);
+  const auto replacement=moderngekko::controls::XboxActionPrompt(token,start_accept_screen,s_gamepad_provider);
   const auto original=state.gpr[3];
   if (replacement) state.gpr[3]=static_cast<u8>(*replacement);
   static std::ofstream trace([] {
@@ -169,7 +251,9 @@ void ObserveMenuActionQuery(const Core::CPUThreadGuard& guard)
   auto& system = guard.GetSystem();
   const auto& state = system.GetPPCState();
   const u32 action = state.gpr[4];
-  if (action < 89 || action > 105) return;
+  const bool gameplay_trace=std::getenv("OPENMUA2_GAMEPLAY_TRACE")!=nullptr;
+  if (gameplay_trace ? !(action==9 || (action>=15 && action<=18) || action==28 || action==33) :
+                       (action < 89 || action > 105)) return;
   auto& memory = system.GetMemory();
   const auto* code = memory.GetPointerForRange(0x801d566c, 64);
   if (!code || Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 64)) !=
@@ -182,10 +266,16 @@ void ObserveMenuActionQuery(const Core::CPUThreadGuard& guard)
   }());
   if (!trace) return;
   const auto data = std::span<const u8>(bits, 20);
+  if(gameplay_trace) {
+    static std::map<std::tuple<u32,u32,u32,u32>,unsigned> counts;
+    const u32 bit=(moderngekko::controls::ReadBE(data,4*(action/32))>>(action%32))&1;
+    if(++counts[{state.spr[8],state.gpr[3],action,bit}]>4)return;
+  }
   trace << system.GetCoreTiming().GetTicks() << ',' << state.spr[8] << ','
         << state.gpr[3] << ',' << action << ','
         << ((moderngekko::controls::ReadBE(data, 4 * (action / 32)) >> (action % 32)) & 1)
         << ',' << state.gpr[29] << ',' << state.gpr[30] << ',' << state.gpr[31] << '\n';
+  if(gameplay_trace) trace.flush();
 }
 
 void ObserveHeroCandidate(const Core::CPUThreadGuard& guard)
@@ -286,17 +376,83 @@ struct DirectQteSession {
   u64 last_update = 0;
   u64 last_clock = 0;
 };
-bool s_gamepad_provider=false;
+
 bool s_direct_qte_enabled = false;
 std::array<DirectQteSession, 4> s_direct_qtes;
 
-void ResetDirectQtes() { s_direct_qtes = {}; s_gamepad_actions = {}; s_gamepad_ports = {}; s_gamepad_tutorial_clock = {}; }
+struct WaveQteSession {
+  moderngekko::controls::WaveQteActor context;
+  moderngekko::game::ButtonQte progress;
+  u32 data = 0, config = 0;
+  bool down = false;
+  u64 last_update = 0;
+};
+bool s_wave_qte_enabled = false;
+std::array<WaveQteSession, 4> s_wave_qtes;
+void ResetDirectQtes() { s_direct_qtes = {}; s_wave_qtes = {}; s_gamepad_actions = {}; s_fusion_entry = {}; s_gamepad_ports = {}; s_gamepad_tutorial_clock = {}; }
 
 
 bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
                    std::string_view expected) {
   const auto* code = guard.GetSystem().GetMemory().GetPointerForRange(address, 64);
   return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code, 64)) == expected;
+}
+
+// Experimental until native challenge lifecycle and UI acceptance pass.
+// Select the shared completion path directly; never synthesize a wave action.
+void ObserveWaveQte(const Core::CPUThreadGuard& guard) {
+  if (!s_wave_qte_enabled ||
+      !DirectQteCode(guard, 0x8105c4c0, "631BCA4FA399550451583406F513A6AF1F7AD28C") ||
+      !DirectQteCode(guard, 0x8105cb64, "6902BD64FF297A26161E5E2A8FEC809594196C80") ||
+      !DirectQteCode(guard, 0x8105cc9c, "D0CFCB928F937987DCFB326FA1673A3A92E9445D")) return;
+  auto& system = guard.GetSystem();
+  auto& state = system.GetPPCState();
+  if (state.gpr[3] != 8) return;
+  const auto read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto end = u64(address) + size;
+    if ((address & 3) || !((address >= 0x80000000 && end <= 0x81800000) ||
+                          (address >= 0x90000000 && end <= 0x94000000))) return {};
+    const auto* bytes = system.GetMemory().GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  // String pool offsets can be unaligned; FindWaveQteActor bounds them itself.
+  const auto actor_read = [&](u32 address, std::size_t size) -> std::span<const u8> {
+    const auto* bytes = system.GetMemory().GetPointerForRange(address, size);
+    return bytes ? std::span<const u8>(bytes, size) : std::span<const u8>{};
+  };
+  for (unsigned port = 0; port < s_wave_qtes.size(); ++port) {
+    auto& session = s_wave_qtes[port];
+    if (!session.context.actor || session.context.actor != state.gpr[24]) continue;
+    moderngekko::controls::WaveQteActor live;
+    if (!moderngekko::controls::FindWaveQteActor(actor_read, port, &live) ||
+        live != session.context) { session = {}; return; }
+    const auto data = read(state.gpr[27], 48);
+    if (data.size() != 48 || moderngekko::controls::ReadBE(data, 0) != live.handle) return;
+    const auto config_address = moderngekko::controls::ReadBE(data, 44);
+    const auto config = read(config_address, 64);
+    if (config.size() != 64 || moderngekko::controls::ReadBE(config, 56) != 8) return;
+    const u64 identity = (u64(live.handle) << 32) | state.gpr[27];
+    if (session.data != state.gpr[27] || session.config != config_address) {
+      session.data = state.gpr[27]; session.config = config_address;
+      session.progress.Begin(identity, port, 12, session.down);
+      session.last_update = 0;
+    }
+    const auto ticks = system.GetCoreTiming().GetTicks();
+    if (session.last_update && (ticks < session.last_update || ticks - session.last_update >
+        system.GetSystemTimers().GetTicksPerSecond() / 10))
+      session.progress.Update(identity, port, session.down, false);
+    session.last_update = ticks;
+    const auto result = session.progress.Update(identity, port, session.down, true);
+    if (result.advanced)
+      std::fprintf(stderr, "[openmua2] direct wave QTE actor=%08x port=%u presses=%u/%u\n",
+                   live.handle, port, result.presses, result.required);
+    // Skip motion sampling. Block automatic animation-end success, then select
+    // the original Win/participant-cleanup branch only after twelve fresh presses.
+    state.gpr[3] = 0;
+    state.gpr[26] = 1;
+    state.gpr[28] = result.presses == result.required ? 1 : 0;
+    return;
+  }
 }
 
 DirectQteSession* FindDirectQte(const Core::CPUThreadGuard& guard, u32 target,
@@ -403,6 +559,20 @@ void UpdateButtonQteInput(const Core::CPUThreadGuard& guard,unsigned port,u8* ac
     const auto* bytes=guard.GetSystem().GetMemory().GetPointerForRange(address,size);
     return bytes?std::span<const u8>(bytes,size):std::span<const u8>{};
   };
+  if (s_wave_qte_enabled) {
+    moderngekko::controls::WaveQteActor wave;
+    auto& session = s_wave_qtes[port];
+    if (moderngekko::controls::FindWaveQteActor(read, port, &wave)) {
+      const auto down = moderngekko::controls::ConsumeButtonQteInput(
+          std::span<u8>(active, 20), std::span<u8>(values, value_bytes));
+      if (!down) { session = {}; return; }
+      if (session.context != wave) { session = {}; session.context = wave; }
+      session.down = *down;
+      s_direct_qtes[port] = {};
+      return;
+    }
+    session = {};
+  }
   moderngekko::controls::CoopInteraction live;
   const bool context = moderngekko::controls::HasCoopInteraction(read, port, &live);
   if (s_direct_qte_enabled) {
@@ -428,11 +598,75 @@ void UpdateButtonQteInput(const Core::CPUThreadGuard& guard,unsigned port,u8* ac
   }
 }
 
+// Only a live button-QTE session may animate the paired tilted-X HUD cells.
+// This is presentation only: press edges and native completion stay independent.
+std::array<bool,2> s_gamepad_power_prompt_hooks{};
+bool ReplaceGamepadPowerPrompt(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_xbox_prompt_ports || !s_direct_qte_enabled)return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  const auto sprite=moderngekko::controls::XboxPowerHudSprite(
+      state.gpr[3],state.gpr[4]!=0,state.gpr[5]!=0);
+  if(!sprite)return false;
+  if(std::getenv("OPENMUA2_POINTER_DRAW_TRACE")) {
+    static unsigned seen=0;
+    const unsigned bit=1u<<(state.gpr[3]-29);
+    if(!(seen&bit)) {
+      seen|=bit;
+      std::fprintf(stderr,"[openmua2] PS2 power prompt action=%u alternate=%u static=%u sprite=%u\n",
+                   state.gpr[3],state.gpr[4],state.gpr[5],*sprite);
+    }
+  }
+  state.gpr[3]=*sprite;state.npc=state.pc+4;return true;
+}
+bool s_rapid_tap_prompt_installed=false;
+bool s_gamepad_lockon_active=false;
+std::array<bool,7> s_gamepad_lockon_hooks{};
+void ObserveRapidTapPrompt(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_xbox_prompt_ports || !s_direct_qte_enabled)return;
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  const auto sprite=state.gpr[6];
+  // The restored PS2 grab target uses X. Keep shared block/LB sprite40 intact.
+  // Sprite99 is the paired pack's static X; do not apply rapid-tap animation.
+  if(s_gamepad_lockon_active && state.spr[8]==0x8024e7e8 && sprite==40) {
+    state.gpr[6]=99;return;
+  }
+  if(std::getenv("OPENMUA2_POINTER_DRAW_TRACE")) {
+    static std::array<u64,64> seen{};
+    static unsigned count=0;
+    const u64 key=(u64(state.spr[8])<<32)|sprite;
+    if(count<seen.size() && std::find(seen.begin(),seen.begin()+count,key)==seen.begin()+count) {
+      seen[count++]=key;
+      std::fprintf(stderr,"[openmua2] HUD draw caller=%08x sprite=%u object=%08x slot=%u\n",state.spr[8],sprite,state.gpr[3],state.gpr[7]);
+    }
+  }
+  if(!((sprite>=95 && sprite<=99) || sprite==104 || sprite==108))return;
+  const auto* code=system.GetMemory().GetPointerForRange(0x80fa770c,16);
+  const auto* hud=system.GetMemory().GetPointerForRange(state.gpr[3],4);
+  static unsigned diagnostic_calls=0;
+  if(std::getenv("OPENMUA2_RAPID_TAP_TRACE") && diagnostic_calls++<24)
+    std::fprintf(stderr,"[openmua2] rapid cue sprite=%u object=%08x vtable=%08x target=%08x clock=%llu ticks=%llu\n",sprite,state.gpr[3],hud?moderngekko::controls::ReadBE(std::span<const u8>(hud,4),0):0,s_direct_qtes[0].context.target,static_cast<unsigned long long>(s_direct_qtes[0].last_clock),static_cast<unsigned long long>(system.GetCoreTiming().GetTicks()));
+  if(!code || !hud || moderngekko::controls::ReadBE(std::span<const u8>(hud,4),0)!=0x81190a08 ||
+     Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,16))!="2B58B32A4737B01C8D8D74A363EA16C6F699F32A")return;
+  for(auto& session:s_direct_qtes) {
+    if(!session.context.target || FindDirectQte(guard,session.context.target)!=&session)continue;
+    const auto ticks=system.GetCoreTiming().GetTicks();
+    const auto frequency=system.GetSystemTimers().GetTicksPerSecond();
+    if(!frequency || !session.last_clock || ticks<session.last_clock || ticks-session.last_clock>frequency/10)return;
+    // Four complete presses per second, using game time (pauses stop the cue).
+    state.gpr[6]=95+((ticks/(frequency/8))&1);
+    return;
+  }
+}
+
 // Shared CInputManager boundary, deliberately separate from the compatibility
 // evaluator. Both polling callers can skip that evaluator when KPad is absent.
 bool s_provider_update_installed=false, s_provider_query_installed=false;
 bool s_provider_connected_installed=false, s_provider_ready_installed=false;
+bool s_fusion_query_installed=false, s_fusion_selector_installed=false;
+bool s_fusion_prompt_panel_installed=false;
+bool s_fusion_prompt_background_installed=false, s_fusion_prompt_color_installed=false, s_gamepad_fusion_panel_show_installed=false;
 bool s_provider_capabilities_installed=false;
+bool s_fusion_screen_gate_installed=false, s_fusion_world_gate_installed=false;
 bool s_gamepad_tutorial_clock_installed=false, s_gamepad_tutorial_accept_installed=false;
 std::array<int,8> s_provider_status_last{-1,-1,-1,-1,-1,-1,-1,-1};
 std::array<u64,4> s_provider_status_queries{};
@@ -441,6 +675,213 @@ bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size
                   const char* expected) {
   const auto* code=guard.GetSystem().GetMemory().GetPointerForRange(address,size);
   return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,size))==expected;
+}
+// Candidate shared local-gamepad aiming. No CNetPlayManager flag is modified.
+bool s_gamepad_aim_requested=false, s_gamepad_aim_active=false;
+std::array<bool,6> s_gamepad_aim_hooks{};
+bool s_gamepad_turret_installed=false, s_gamepad_turret_prompt_installed=false;
+bool s_gamepad_nullifier_prompt_installed=false;
+bool ReplaceGamepadAimInstruction(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_gamepad_aim_requested)return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  // Select the shipped stick wording only within each original tutorial's
+  // own branch. Do not replace tutorial identity, owner, or NetPlay state.
+  if(state.pc==0x8024dbbc && s_gamepad_turret_installed) {
+    state.npc=0x8024dbd0;return true;
+  }
+  if(state.pc==0x8024dd08 && s_gamepad_aim_active) {
+    state.npc=0x8024dd1c;return true;
+  }
+  return false;
+}
+bool ReplaceGamepadTurretRotation(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_gamepad_aim_requested || !s_gamepad_turret_installed)return false;
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  auto& memory=system.GetMemory();
+  const auto* actor=memory.GetPointerForRange(state.gpr[26],1748);
+  const auto* origin=memory.GetPointerForRange(state.gpr[31],100);
+  const auto* clock=memory.GetPointerForRange(0x80629490,1472);
+  if(!actor || !origin || !clock || (actor[1232]&0x80))return false;
+  const auto a=std::span<const u8>(actor,1748), c=std::span<const u8>(clock,1472);
+  if(moderngekko::controls::ReadBE(a,156)!=0x8052a748 ||
+     moderngekko::controls::ReadBE(c,256)!=0x80534c90)return false;
+  const unsigned port=moderngekko::controls::ReadBE(a,1116);
+  if(port>=4 || !(s_direct_gamepad_ports&(1u<<port)))return false;
+  const auto read_float=[](std::span<const u8> bytes,unsigned offset) {
+    return std::bit_cast<float>(moderngekko::controls::ReadBE(bytes,offset));
+  };
+  const auto o=std::span<const u8>(origin,100);
+  const auto rotation=moderngekko::controls::RotateGamepadTurret(
+    {read_float(a,92),read_float(a,96)}, {read_float(o,92),read_float(o,96)},
+    read_float(a,1740),read_float(a,1744),read_float(c,1468),ReadGamepadSample(port));
+  if(!rotation)return false;
+  state.ps[30].SetPS0(rotation->pitch);state.ps[31].SetPS0(rotation->yaw);
+  // Preserve the original rotation setter and cleanup. No cursor validity,
+  // world ray, target hit, damage, fire, or exit state is synthesized.
+  state.npc=0x810cead4;
+  return true;
+}
+
+u32 GamepadAimManager(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_gamepad_aim_active)return 0;
+  auto& memory=guard.GetSystem().GetMemory();
+  const auto* global=memory.GetPointerForRange(0x8081736c,4);
+  if(!global)return 0;
+  const u32 address=moderngekko::controls::ReadBE(std::span<const u8>(global,4),0);
+  const auto* bytes=memory.GetPointerForRange(address,25864);
+  return bytes && moderngekko::controls::GamepadAimContext({bytes,25864})?address:0;
+}
+void ObserveGamepadAimModeChange(const Core::CPUThreadGuard& guard) {
+  auto& system=guard.GetSystem();const auto& state=system.GetPPCState();
+  const u32 manager=GamepadAimManager(guard);
+  if(!manager || state.gpr[3]!=0x80629490)return;
+  auto& memory=system.GetMemory();
+  const auto* game=memory.GetPointerForRange(0x80629490,36272);
+  const auto* next=memory.GetPointerForRange(state.gpr[4],4);
+  // Native initializer80101744..80101924 interns "mazehack" in this slot.
+  const auto* maze=memory.GetPointerForRange(state.gpr[13]-22240,4);
+  auto* bytes=memory.GetPointerForRange(manager,25864);
+  if(!game || !next || !maze || !bytes ||
+     moderngekko::controls::ReadBE({game,36272},256)!=0x80534c90)return;
+  moderngekko::controls::CenterGamepadAimOnModeChange({bytes,25864},
+    moderngekko::controls::ReadBE({game,36272},36268),
+    moderngekko::controls::ReadBE({next,4},0),
+    moderngekko::controls::ReadBE({maze,4},0));
+}
+bool ReplaceGamepadAimMode(const Core::CPUThreadGuard& guard) {
+  auto& state=guard.GetSystem().GetPPCState();
+  const u32 manager=GamepadAimManager(guard);
+  if(!manager || state.gpr[3]!=manager)return false;
+  state.gpr[3]=1;state.npc=LR(state);return true;
+}
+bool ReplaceGamepadAimSample(const Core::CPUThreadGuard& guard) {
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  const u32 manager=GamepadAimManager(guard);const unsigned port=state.gpr[28];
+  if(!manager || port>=4 || state.gpr[31]!=manager+4904+72*port)return false;
+  auto& memory=system.GetMemory();
+  auto* record=memory.GetPointerForRange(state.gpr[31],72);
+  const auto* inputs=memory.GetPointerForRange(0x81313238,60);
+  const auto* players=memory.GetPointerForRange(0x80635648,128);
+  if(!record || !inputs || !players)return false;
+  const bool joined=moderngekko::controls::GamepadHasJoinedPlayer({inputs,60},{players,128},port);
+  // Native HUD getter80FB9030 returns singleton+0x6ec0 (CHudPointerError).
+  // Its visible flag is the PS2 producer's additional centering predicate.
+  const auto* help=memory.GetPointerForRange(0x812d9ea0,80);
+  const auto* hud=memory.GetPointerForRange(0x812d2fe0,4);
+  if(!help || !hud || moderngekko::controls::ReadBE({hud,4},0)!=0x81190a08 ||
+     moderngekko::controls::ReadBE({help,80},0)!=0x812d2fe0 ||
+     moderngekko::controls::ReadBE({help,80},24)!=0x80564248)return false;
+  if(!moderngekko::controls::WriteGamepadAim({record,72},ReadGamepadSample(port),joined,help[20]!=0))return false;
+  state.npc=0x80ffbd5c;return true;
+}
+bool ReplaceGamepadAimProjection(const Core::CPUThreadGuard& guard) {
+  if(!GamepadAimManager(guard))return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  // PS2 00523154/0052329C/0052342C/00523460 use display aspect (0).
+  // Wii mode1 instead selects a fixed aspect in 80017260 and related getters.
+  // Enter each native zero-selector instruction; preserve all projection math.
+  switch(state.pc) {
+  case 0x80ffb38c:state.npc=0x80ffb3c4;return true;
+  case 0x80ffb51c:state.npc=0x80ffb554;return true;
+  case 0x80ffb748:state.npc=0x80ffb780;return true;
+  default:return false;
+  }
+}
+std::array<bool,3> s_profile_dispatch_hooks{};
+std::array<unsigned,3> s_profile_dispatch_counts{};
+void ObserveProfileDispatch(const Core::CPUThreadGuard& guard) {
+  const auto& state=guard.GetSystem().GetPPCState();
+  auto& memory=guard.GetSystem().GetMemory();
+  const auto* global=memory.GetPointerForRange(0x8081736c,4);
+  if(!global)return;
+  const u32 manager=moderngekko::controls::ReadBE({global,4},0);
+  const auto* data=memory.GetPointerForRange(manager,27456);if(!data)return;
+  const u32 active=moderngekko::controls::ReadBE({data,27456},25860);
+  const auto* menu=memory.GetPointerForRange(active,10488);
+  if(!menu || moderngekko::controls::ReadBE({menu,10488},10404)!=0x8118f008)return;
+  const unsigned site=state.pc==0x81000a90?0:state.pc==0x80f94214?1:2;
+  const auto pad=ReadGamepadSample(0);
+  const bool a=pad.Down(moderngekko::controls::GamepadInput::A);
+  const bool start=pad.Down(moderngekko::controls::GamepadInput::Start);
+  if(s_profile_dispatch_counts[site]>=64 ||
+     (s_profile_dispatch_counts[site]>=8 && !a && !start))return;
+  ++s_profile_dispatch_counts[site];
+  std::fprintf(stderr,"[openmua2] profile-dispatch pc=%08x lr=%08x menu=%08x r3=%08x flags=%02x mode=%u ready=%u a=%u start=%u\n",
+    state.pc,LR(state),active,state.gpr[3],menu[0],
+    moderngekko::controls::ReadBE({data,27456},27452),menu[10408],unsigned(a),unsigned(start));
+}
+void InstallProfileDispatchTrace(const Core::CPUThreadGuard& guard) {
+  const char* trace=std::getenv("OPENMUA2_PROFILE_DISPATCH_TRACE");
+  // Diagnostic-only. Full aiming uses the remaining observer capacity.
+  if(s_gamepad_aim_requested || !trace || std::strcmp(trace,"1")!=0)return;
+  constexpr std::array<u32,3> sites{0x81000a90,0x80f94214,0x80fc8738};
+  constexpr std::array<const char*,3> hashes{
+    "711BF556F3D0B8A9A42EE56B61EEC2FD30BD1186","24FEFB1AD0D10BBCB2EDE37A8DFE4EE400D036D3",
+    "AA623108F9FDF6E6BE31DF12BC52C5F180542453"};
+  for(unsigned i=0;i<3;++i)if(!s_profile_dispatch_hooks[i] && ProviderCode(guard,sites[i],32,hashes[i])) {
+    s_profile_dispatch_hooks[i]=HLE::SetExternalStartObserver(guard,sites[i],ObserveProfileDispatch);
+    if(s_profile_dispatch_hooks[i])std::fprintf(stderr,"[openmua2] profile-dispatch installed site=%08x\n",sites[i]);
+  }
+}
+void InstallGamepadAim(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_aim_requested || s_gamepad_aim_active)return;
+  constexpr std::array<u32,6> sites{0x81015b08,0x80ffbb58,0x80ffb38c,0x80ffb51c,0x80ffb748,0x80100454};
+  constexpr std::array<unsigned,6> sizes{80,104,60,60,60,16};
+  constexpr std::array<const char*,6> hashes{
+    "ACA962EA4C7DC74CDF5F929914DA94966E56D0B1","B2845CF93C6BD62BA4AB83FC116F294C86AFDF97",
+    "2A00CD46DAAE28AE46BEDEF221E4EA3605E22A27","46284EF5A981DD2297A5142774DAC6B3D64908A9",
+    "2DBE55B4236F0D53E33755273B35850BD9D882E9","BD6EC3E04F9C6E96F9765DAF12A3B7DA2C7673F7"};
+  for(unsigned i=0;i<6;++i)if(!ProviderCode(guard,sites[i],sizes[i],hashes[i]))return;
+  if(!s_gamepad_aim_hooks[0])s_gamepad_aim_hooks[0]=HLE::SetExternalFunctionReplacement(guard,sites[0],ReplaceGamepadAimMode);
+  if(!s_gamepad_aim_hooks[1])s_gamepad_aim_hooks[1]=HLE::SetExternalBranchReplacement(guard,sites[1],ReplaceGamepadAimSample);
+  for(unsigned i=2;i<5;++i)if(!s_gamepad_aim_hooks[i])
+    s_gamepad_aim_hooks[i]=HLE::SetExternalBranchReplacement(guard,sites[i],ReplaceGamepadAimProjection);
+  if(!s_gamepad_aim_hooks[5])s_gamepad_aim_hooks[5]=HLE::SetExternalStartObserver(guard,sites[5],ObserveGamepadAimModeChange);
+  s_gamepad_aim_active=std::all_of(s_gamepad_aim_hooks.begin(),s_gamepad_aim_hooks.end(),[](bool value){return value;});
+  if(s_gamepad_aim_active)std::fprintf(stderr,"[openmua2] shared local gamepad aiming installed\n");
+}
+// Complete opt-in CHudTargetPoints path, preserving native timers, callbacks,
+// random selection and all four input owners. Never changes NetPlay state.
+bool ReplaceGamepadLockonGate(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_lockon_active)return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  switch(state.pc) {
+    case 0x8024fed0: state.npc=0x8024fee4;return true; // assign target button
+    case 0x8024f43c: state.npc=0x8024f450;return true; // consume assigned action
+    case 0x8024e72c: state.npc=0x8024e740;return true; // draw assigned button
+    case 0x8024de54: state.npc=0x8024de68;return true; // instruction4 gamepad text
+    default:return false;
+  }
+}
+void ObserveGamepadLockonAction(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_lockon_active)return;
+  auto& state=guard.GetSystem().GetPPCState();
+  // Translate the Wii table's block entry to PS2 grab when the target is born.
+  // The render comparison alone aliases grab back to its original sprite arm;
+  // target storage stays action11, so LB cannot satisfy the X target.
+  if(state.pc==0x8024ff2c && state.gpr[0]==12)state.gpr[0]=11;
+  else if(state.pc==0x8024e7b4 && state.gpr[0]==11)state.gpr[0]=12;
+  // The separate native star model overlays the face glyph. Keep its lifecycle
+  // and the circle model, but give the star zero scale for every gamepad target.
+  else if(state.pc==0x8024ea98)state.ps[1].SetPS0(0.0);
+}
+void InstallGamepadLockon(const Core::CPUThreadGuard& guard) {
+  const auto* requested=std::getenv("OPENMUA2_GAMEPAD_LOCKON");
+  if(s_gamepad_lockon_active || !requested || std::strcmp(requested,"1") ||
+     !s_gamepad_provider || s_direct_gamepad_ports!=15 || !s_xbox_prompt_ports ||
+     !s_rapid_tap_prompt_installed || !s_direct_qte_enabled)return;
+  constexpr std::array<u32,7> sites{0x8024fed0,0x8024f43c,0x8024e72c,0x8024de54,0x8024ff2c,0x8024e7b4,0x8024ea98};
+  constexpr std::array<const char*,7> hashes{
+    "497903D9559A70FE50D584F5D6599100883EAA6B","B0E99921F95949A967A3FC8427A4356FCDB3E344",
+    "30FE7119B906903967C316449B74A04EBC717CEF","1AFE29EE3A954E99A3173F214A03EC7983BDEB31",
+    "9D8EA19A9A977EA5A24546111E548A7B5EAEE672","42BEC3A15C7BADFDF896CDAE87F1FE7A512962CB","A7780F517910EC6E31F2214A39243220D9AF419D"};
+  for(unsigned i=0;i<sites.size();++i)if(!ProviderCode(guard,sites[i],16,hashes[i]))return;
+  for(unsigned i=0;i<sites.size();++i)if(!s_gamepad_lockon_hooks[i])
+    s_gamepad_lockon_hooks[i]=i<4 ? HLE::SetExternalBranchReplacement(guard,sites[i],ReplaceGamepadLockonGate) :
+      HLE::SetExternalStartObserver(guard,sites[i],ObserveGamepadLockonAction);
+  // Partially registered hooks remain inert; never enable only the consumer.
+  s_gamepad_lockon_active=std::all_of(s_gamepad_lockon_hooks.begin(),s_gamepad_lockon_hooks.end(),[](bool b){return b;});
+  if(s_gamepad_lockon_active)std::fprintf(stderr,"[openmua2] complete gamepad lock-on candidate installed; paired Xbox HUD pack required\n");
 }
 void TraceProvider(const char* kind,unsigned port,u64& count) {
   ++count;
@@ -487,7 +928,9 @@ bool PublishProvider(const Core::CPUThreadGuard& guard,unsigned port,u32 bits_ad
   auto& actions=s_gamepad_actions[port];
   actions=moderngekko::controls::BuildGamepadActions(ReadGamepadSample(port),
       moderngekko::controls::IsStartAcceptScreen(read),request,
-      moderngekko::controls::GamepadHasJoinedPlayer(read(0x81313238,60),read(0x80635648,128),port));
+      moderngekko::controls::GamepadHasJoinedPlayer(read(0x81313238,60),read(0x80635648,128),port),
+      moderngekko::controls::ActiveMenuType(read)!=0);
+  s_fusion_entry[port].Apply(actions,moderngekko::controls::ReadFusionActor(read,port));
   std::copy(actions.active.begin(),actions.active.end(),active);
   std::copy(actions.values.begin(),actions.values.end(),values);
   UpdateButtonQteInput(guard,port,active,values);
@@ -559,6 +1002,47 @@ bool ReplaceGamepadStatus(const Core::CPUThreadGuard& guard, bool ready) {
   TraceProvider(ready?"ready":"connected",logical,s_provider_status_queries[logical]);
   return true;
 }
+// PS2 CCHBlock queries FusionPower as held (CInput +20, 0x3d3a78..a8).
+// The Wii caller queries a transient edge instead. Supply the gamepad action's
+// held semantics at the shared input boundary; other actions retain native edges.
+// Development-only consumer inventory. Observe reads without changing actions,
+// guest registers, ownership, deadlines, or gameplay. Bounded per process.
+bool s_action_held_trace_installed=false, s_action_scalar_trace_installed=false;
+std::array<u64,1024> s_action_consumer_seen{};
+unsigned s_action_consumer_count=0;
+void TraceActionConsumer(const Core::CPUThreadGuard& guard, unsigned kind) {
+  const char* enabled=std::getenv("OPENMUA2_ACTION_CONSUMER_TRACE");
+  if(!enabled || std::strcmp(enabled,"1")!=0) return;
+  const auto& state=guard.GetSystem().GetPPCState();
+  const u32 input=state.gpr[3], action=state.gpr[4];
+  if(input<0x81313274 || input>=0x81313274+4*0xbe00 ||
+     (input-0x81313274)%0xbe00 || action>=124) return;
+  const unsigned port=(input-0x81313274)/0xbe00;
+  const u64 key=(u64(LR(state))<<32)|(kind<<16)|(port<<8)|action;
+  for(unsigned i=0;i<s_action_consumer_count;++i)
+    if(s_action_consumer_seen[i]==key) return;
+  if(s_action_consumer_count==s_action_consumer_seen.size()) return;
+  s_action_consumer_seen[s_action_consumer_count++]=key;
+  std::fprintf(stderr,"[openmua2] action consumer kind=%u port=%u action=%u caller=%08x\n",
+               kind,port,action,LR(state));
+}
+void ObserveHeldActionConsumer(const Core::CPUThreadGuard& guard) {TraceActionConsumer(guard,0);}
+void ObserveScalarActionConsumer(const Core::CPUThreadGuard& guard) {TraceActionConsumer(guard,1);}
+bool ReplaceGamepadFusionQuery(const Core::CPUThreadGuard& guard) {
+  TraceActionConsumer(guard,2);
+  auto& state=guard.GetSystem().GetPPCState();
+  const u32 input=state.gpr[3];
+  if(!s_gamepad_provider || state.gpr[4]!=33 || input<0x81313274 ||
+     input>=0x81313274+4*0xbe00 || (input-0x81313274)%0xbe00 ||
+     !ProviderCode(guard,0x810f92bc,0xf4,"46E64FD6009BC2D2271DA7DD2624AF772B144FCA"))return false;
+  const unsigned port=(input-0x81313274)/0xbe00;
+  if(!(s_direct_gamepad_ports&(1u<<port)))return false;
+  const auto* data=guard.GetSystem().GetMemory().GetPointerForRange(input,0xbe00);
+  if(!data || moderngekko::controls::ReadBE(std::span<const u8>(data,4),0)!=0x811b4398)return false;
+  state.gpr[3]=(data[0x5f08+7]&2)?1:0;
+  state.npc=LR(state);
+  return true;
+}
 bool ReplaceGamepadConnected(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,false);}
 bool ReplaceGamepadReady(const Core::CPUThreadGuard& guard) {return ReplaceGamepadStatus(guard,true);}
 
@@ -590,6 +1074,9 @@ bool ReplaceGamepadCapabilities(const Core::CPUThreadGuard& guard) {
   return true;
 }
 
+// Both native fusion pickers used to reject missing IR before the late Xbox
+// candidate hook. Replace their shared selection boundary, retaining the native
+// actor/type/eligibility/resource and request lifecycle code after selection.
 void ObserveGamepadTutorialClock(const Core::CPUThreadGuard& guard) {
   s_gamepad_tutorial_clock={};
   if(!s_gamepad_provider || !ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))return;
@@ -615,8 +1102,160 @@ void ObserveGamepadTutorialAccept(const Core::CPUThreadGuard& guard) {
   std::fprintf(stderr,"[openmua2] gamepad tutorial accepted kind=%u owner=%u clock=%.6f\n",help[67],clock.owner,clock.seconds);
 }
 
+// Select a roster partner before either platform-specific pointer picker.
+// Continue at the common roster validation; native pair eligibility, resources,
+// animation and completion remain owned by CCHPowFusion_Choose.
+bool ReplaceGamepadFusionSelector(const Core::CPUThreadGuard& guard) {
+  auto& state=guard.GetSystem().GetPPCState();auto& memory=guard.GetSystem().GetMemory();
+  if(!s_gamepad_provider || !ProviderCode(guard,0x810679b4,0xc4,"46C2174D2C1D47ACFF1685E16BDEA8FD7128A9AF"))return false;
+  const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
+    const auto* data=memory.GetPointerForRange(address,size);
+    return data?std::span<const u8>(data,size):std::span<const u8>{};
+  };
+  const u32 owner=state.gpr[19];
+  const auto actor=read(owner,0xa38);
+  if(actor.size()!=0xa38)return false;
+  const unsigned port=moderngekko::controls::ReadBE(actor,0x45c);
+  if(port>=4 || !(s_direct_gamepad_ports&(1u<<port)))return false;
+  const auto candidate=moderngekko::controls::FusionCandidate(read,owner,0x81313274+port*0xbe00,s_gamepad_actions[port].fusion_slot);
+  if(!candidate)return false;
+  state.gpr[18]=*candidate;
+  state.npc=0x81067a78;
+  if(*candidate && std::getenv("OPENMUA2_PROVIDER_TRACE"))
+    std::fprintf(stderr,"[openmua2] gamepad fusion partner port=%u owner=%08x candidate=%08x\n",port,owner,*candidate);
+  return true;
+}
+// The native pointer-warning panel becomes the gamepad fusion instruction panel.
+// Its visibility follows fusion selection, never physical pointer availability.
+bool GamepadFusionPromptActive(const Core::CPUThreadGuard& guard) {
+  auto& memory=guard.GetSystem().GetMemory();
+  const auto* globals=memory.GetPointerForRange(0x80816a20,24);
+  if(!s_gamepad_provider || !s_xbox_prompt_ports || !globals ||
+     moderngekko::controls::ReadBE(std::span<const u8>(globals,24),0)!=1)return false;
+  const auto* actor=memory.GetPointerForRange(moderngekko::controls::ReadBE(std::span<const u8>(globals,24),16),0xa38);
+  if(!actor || moderngekko::controls::ReadBE(std::span<const u8>(actor,0xa38),0x9c)!=0x8052a748 || (actor[0x4d0]&128))return false;
+  const unsigned port=moderngekko::controls::ReadBE(std::span<const u8>(actor,0xa38),0x45c);
+  return port<4 && (s_direct_gamepad_ports&(1u<<port));
+}
+void ObserveGamepadFusionPromptPanel(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_xbox_prompt_ports ||
+     !ProviderCode(guard,0x8024c82c,64,"7A4730FD80D75B8484EFA7B51783143C867D34CB"))return;
+  auto& state=guard.GetSystem().GetPPCState();
+  const auto* panel=guard.GetSystem().GetMemory().GetPointerForRange(state.gpr[3],36);
+  if(!panel || moderngekko::controls::ReadBE(std::span<const u8>(panel,36),24)!=0x80564290)return;
+  const bool active=GamepadFusionPromptActive(guard);
+  state.gpr[4]=active?1:0;
+
+}
+// Native Xbox glyph pixels must retain their RGB channels. The old red warning
+// tint erased the blue X. A neutral tint preserves all channels on the white panel.
+void ObserveGamepadFusionPromptColor(const Core::CPUThreadGuard& guard) {
+  if(!GamepadFusionPromptActive(guard) || !ProviderCode(guard,0x8024c604,0x228,"64E2F7F541C94F3CE2558BBF964C79B06E9E37E1"))return;
+  auto& state=guard.GetSystem().GetPPCState();
+  const bool background=state.pc==0x8024c77c;
+  const u32 address=state.gpr[1]+(background?32:16);
+  auto* color=guard.GetSystem().GetMemory().GetPointerForRange(address,16);
+  if(!color)return;
+  const std::array<float,4> rgba=background?std::array<float,4>{1,1,1,1}:std::array<float,4>{0.4f,0.4f,0.4f,1.0f};
+  for(unsigned i=0;i<4;++i) {
+    const u32 word=std::bit_cast<u32>(rgba[i]);
+    for(unsigned j=0;j<4;++j)color[i*4+j]=u8(word>>(24-j*8));
+  }
+}
+bool ReplaceGamepadFusionPanelShow(const Core::CPUThreadGuard& guard) {
+  if(!GamepadFusionPromptActive(guard) || !ProviderCode(guard,0x8024c82c,64,"7A4730FD80D75B8484EFA7B51783143C867D34CB"))return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  auto* panel=guard.GetSystem().GetMemory().GetPointerForRange(state.gpr[31],36);
+  if(!panel || moderngekko::controls::ReadBE(std::span<const u8>(panel,36),24)!=0x80564290)return false;
+  panel[20]=1;state.npc=0x8024c988;return true;
+}
+// Shared native labels for the gamepad provider. One source serves all players.
+// Exact original hashes reject other executable layouts; restored states reapply safely.
+void ApplyGamepadPromptText(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_xbox_prompt_ports)return;
+  struct Label { u32 address, allocation; const char* digest; const char* text; bool requires_aim=false; };
+  static constexpr std::array<Label,11> labels{{
+    {0x8118cd00,24,"BD79D08488A368D5CC1174546A808785D9A58EE7","$MenuAccept Assign"},
+    // Both native tutorial branches and the persistent mounted HUD must agree.
+    // The scripted Storm Castle encounter can select the pointer-text branch.
+    {0x80563d38,140,"4D34988B785D69A53833BBA33ADBA1620A079B22",
+     "Use the left stick to aim the turret.\nDefend Captain America from enemy turrets\nand incoming Doombots!\n\n\n\nPress $ATTACK to continue...",true},
+    {0x80563dc4,140,"99E42FA9AE35E9E21DAA679053674ABCBCDC1B5A",
+     "Use the left stick to aim the turret.\nDefend Captain America from enemy turrets\nand incoming Doombots!\n\n\n\nPress $ATTACK to continue...",true},
+    {0x8053eadc,49,"1C39818079EB3169797ED344280F1557D35099F1",
+     "Left stick: Aim   $ABUTTON or $BBUTTON: Fire",true},
+    {0x805636b4,32,"4B29FACF1A44BBFC58D915ABBB9C09875850A9C6","Fusion: Hold \xe1 + \xa4/\xa5/\xea/\xa6"},
+    {0x80563bd8,344,"207D7AB1D4C0AF0F2666F20AE8784D70DC7E0403","Combine Your Powers!\n4 Fusion Stars required.\nHold $XLT and press $XA/$XB/$XX/$XY\nto choose a Fusion partner.\nThis also revives all downed heroes!\n\n\nDown But Not Out!\n%s required.\nFuse with a downed hero to perform a\nFusion Revival and get them back into the action!\n\n\nPress     to continue..."},
+    {0x8118e590,27,"0DA37C975401238F0F7FD36445245BD617DCE7BE","Connect gamepad to join"},
+    {0x805390b8,296,"362D67E815D15607B115085C9D87E00D3FC9ED0D",
+     "Hack the Computer!\n\nMove the left stick to steer your signal. Avoid walls and obstacles. The first player to gain access earns 1000 EXP.",true},
+    {0x80563708,404,"618E3F98BEBCC94A3F38F22079702DEA3E0098F9",
+     "Hack the Computer!\nSteer your signal with the left stick.\nAvoid walls and obstacles.\nBe the first player to gain access!\n\nCollect coins for extra points.\nTouch power-ups to change speed or grow your signal.\nPausing resets your hacking attempt.",true},
+    {0x8056389c,427,"8E98A933ADF651BDE57F4E9B0DF3B740C26D5567",
+     "Hack the Computer!\nSteer your signal with the left stick.\nAvoid walls and obstacles.\nBe the first player to gain access!\n\nCollect coins for extra points.\nTouch $HACK2 and $HACK3 to change speed.\nTouch $HACK4 to grow your signal.\nPausing resets your hacking attempt.\n\nPress $ATTACK to continue...",true},
+    {0x80563a48,363,"3302BB2CCACCE36A13BBF2F36C7CDF4FBC70BB3D",
+     "Hack the Computer!\n\nSteer your signal with the left stick.\nAvoid walls and obstacles to gain access.\n\nCollect coins for extra points.\nTouch $HACK2 and $HACK3 to change speed.\nTouch $HACK4 to grow your signal.",true},
+  }};
+  for(const auto& label:labels) {
+    if(label.requires_aim && !s_gamepad_aim_active)continue;
+    auto* destination=guard.GetSystem().GetMemory().GetPointerForRange(label.address,label.allocation);
+    const auto size=std::strlen(label.text)+1;
+    if(!destination || size>label.allocation || !std::memcmp(destination,label.text,size))continue;
+    if(Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(destination,label.allocation))!=label.digest)continue;
+    std::memset(destination,0,label.allocation);std::memcpy(destination,label.text,size);
+  }
+}
 void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
   if(!s_gamepad_provider) return;
+  InstallGamepadAim(guard);
+  InstallProfileDispatchTrace(guard);
+  InstallGamepadLockon(guard);
+  if(s_gamepad_aim_requested && !s_gamepad_turret_installed &&
+     ProviderCode(guard,0x810ce0b4,44,"41C617B68DCDCA7A98209485EBEF8FB7FA1B7AE1")) {
+    s_gamepad_turret_installed=HLE::SetExternalBranchReplacement(guard,0x810ce0c0,ReplaceGamepadTurretRotation);
+    if(s_gamepad_turret_installed)std::fprintf(stderr,"[openmua2] direct gamepad turret rotation installed\n");
+  }
+  if(s_gamepad_turret_installed && !s_gamepad_turret_prompt_installed &&
+     ProviderCode(guard,0x8024dbbc,56,"0218E6EA8CD35A6C792F2A27FDC8EAF6836EFEDA")) {
+    s_gamepad_turret_prompt_installed=HLE::SetExternalBranchReplacement(guard,0x8024dbbc,ReplaceGamepadAimInstruction);
+    if(s_gamepad_turret_prompt_installed)std::fprintf(stderr,"[openmua2] native analog turret instruction installed\n");
+  }
+  if(s_gamepad_aim_active && !s_gamepad_nullifier_prompt_installed &&
+     ProviderCode(guard,0x8024dd08,56,"4C2D412B50CB147F69053565F10A450534F3AC59")) {
+    s_gamepad_nullifier_prompt_installed=HLE::SetExternalBranchReplacement(guard,0x8024dd08,ReplaceGamepadAimInstruction);
+    if(s_gamepad_nullifier_prompt_installed)std::fprintf(stderr,"[openmua2] native analog Nullifier instruction installed\n");
+  }
+  ApplyGamepadPromptText(guard);
+  const char* consumers=std::getenv("OPENMUA2_ACTION_CONSUMER_TRACE");
+  if(consumers && std::strcmp(consumers,"1")==0) {
+    if(!s_action_held_trace_installed && ProviderCode(guard,0x810f9218,8,"C198DADE616B555716E99769E3AAB984E017A523"))
+      s_action_held_trace_installed=HLE::SetExternalStartObserver(guard,0x810f9218,ObserveHeldActionConsumer);
+    if(!s_action_scalar_trace_installed && ProviderCode(guard,0x810f9294,20,"C53FD7832029A6CA543C0525EE9A66309CE46504"))
+      s_action_scalar_trace_installed=HLE::SetExternalStartObserver(guard,0x810f9294,ObserveScalarActionConsumer);
+  }
+
+  const char* rapid_tap=std::getenv("OPENMUA2_RAPID_TAP_GLYPHS");
+  if(rapid_tap && std::strcmp(rapid_tap,"1")==0 &&
+     ProviderCode(guard,0x80f5d938,0xe0,"6EF1900036030E466B4B4A7C64630D87A20DF087")) {
+    constexpr std::array<u32,2> sites{0x80f5daf0,0x80f5db4c};
+    for(unsigned i=0;i<sites.size();++i)
+      if(!s_gamepad_power_prompt_hooks[i])
+        s_gamepad_power_prompt_hooks[i]=HLE::SetExternalBranchReplacement(guard,sites[i],ReplaceGamepadPowerPrompt);
+  }
+  if(!s_rapid_tap_prompt_installed && rapid_tap && std::strcmp(rapid_tap,"1")==0 &&
+     ProviderCode(guard,0x80fa770c,16,"2B58B32A4737B01C8D8D74A363EA16C6F699F32A"))
+    s_rapid_tap_prompt_installed=HLE::SetExternalStartObserver(guard,0x80fa770c,ObserveRapidTapPrompt);
+
+  if(ProviderCode(guard,0x8024c604,0x228,"64E2F7F541C94F3CE2558BBF964C79B06E9E37E1")) {
+    if(!s_fusion_prompt_background_installed)s_fusion_prompt_background_installed=HLE::SetExternalStartObserver(guard,0x8024c77c,ObserveGamepadFusionPromptColor);
+    if(!s_fusion_prompt_color_installed)s_fusion_prompt_color_installed=HLE::SetExternalStartObserver(guard,0x8024c800,ObserveGamepadFusionPromptColor);
+  }
+  if(!s_gamepad_fusion_panel_show_installed && ProviderCode(guard,0x8024c82c,64,"7A4730FD80D75B8484EFA7B51783143C867D34CB"))
+    s_gamepad_fusion_panel_show_installed=HLE::SetExternalBranchReplacement(guard,0x8024c870,ReplaceGamepadFusionPanelShow);
+  if(!s_fusion_prompt_panel_installed && ProviderCode(guard,0x8024c82c,64,"7A4730FD80D75B8484EFA7B51783143C867D34CB"))
+    s_fusion_prompt_panel_installed=HLE::SetExternalStartObserver(guard,0x8024c82c,ObserveGamepadFusionPromptPanel);
+  if(!s_fusion_query_installed && ProviderCode(guard,0x810f92bc,0xf4,"46E64FD6009BC2D2271DA7DD2624AF772B144FCA"))
+    s_fusion_query_installed=HLE::SetExternalFunctionReplacement(guard,0x810f92bc,ReplaceGamepadFusionQuery);
   if(!s_provider_connected_installed && ProviderCode(guard,0x810fd174,0x78,"C9A5AA566837F05C9DB7D66FADE23D5A3305951D")) {
     s_provider_connected_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd174,ReplaceGamepadConnected);
     std::fprintf(stderr,"[openmua2] shared gamepad connection method %s\n",s_provider_connected_installed?"installed":"rejected");
@@ -629,6 +1268,8 @@ void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
     s_provider_capabilities_installed=HLE::SetExternalFunctionReplacement(guard,0x810fd7b4,ReplaceGamepadCapabilities);
     std::fprintf(stderr,"[openmua2] shared gamepad capabilities method %s\n",s_provider_capabilities_installed?"installed":"rejected");
   }
+  if(!s_fusion_selector_installed && ProviderCode(guard,0x810679b4,0xc4,"46C2174D2C1D47ACFF1685E16BDEA8FD7128A9AF"))
+    s_fusion_selector_installed=HLE::SetExternalBranchReplacement(guard,0x81067a2c,ReplaceGamepadFusionSelector);
   if(!s_gamepad_tutorial_clock_installed && ProviderCode(guard,0x8024ced8,64,"B2D520DA2D2678F5EF1EE88FF81283B63C800D57"))
     s_gamepad_tutorial_clock_installed=HLE::SetExternalStartObserver(guard,0x8024ced8,ObserveGamepadTutorialClock);
   if(!s_gamepad_tutorial_accept_installed && ProviderCode(guard,0x8024d054,64,"E8536E72613B812C2BBFFDDFFA3FC31DF79BE89A"))
@@ -655,6 +1296,22 @@ void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
 void ObserveMua2InputBindings(const Core::CPUThreadGuard& guard)
 {
   if(s_gamepad_provider) return; // shared provider owns these action buffers
+  // BootCore starts asynchronously. Validate/install DOL branch hooks only
+  // once the real input evaluator is running and guest RAM is initialized.
+  if (s_tutorial_ready_experiment && s_direct_gamepad_ports && !s_tutorial_ready_attempted) {
+    s_tutorial_ready_attempted=true;
+      if (s_direct_gamepad_ports) {
+        const bool ready=HLE::SetExternalBranchReplacement(guard,0x8024d1fc,ObserveTutorialReady);
+        const bool single=HLE::SetExternalBranchReplacement(guard,0x8024d2f4,ObserveTutorialReadySingle);
+        if (ready && single) {
+          s_tutorial_ready_ports=s_direct_gamepad_ports;
+          HLE::SetExternalStartObserver(guard,0x8024d740,ObserveTutorialText);
+          HLE::SetExternalStartObserver(guard,0x8024c82c,ObserveGamepadPointerWarning);
+        }
+        std::fprintf(stderr,"[openmua2] shared gamepad readiness %s\n",ready&&single?"installed":"rejected");
+      }
+  }
+
   auto& system = guard.GetSystem();
   auto& memory = system.GetMemory();
   constexpr u32 entry = 0x810f8544;
@@ -2017,7 +2674,10 @@ RuntimeRunResult Runtime::Run() {
   s_hero_buttons_enabled = false;
   s_control_ports=s_hero_ports=s_fusion_ports=s_direct_gamepad_ports=0;
   s_xbox_prompt_ports=0;
+  s_tutorial_ready_ports=0;
+  s_tutorial_ready_attempted=false;
   s_direct_qte_enabled = false;
+  s_wave_qte_enabled = false;
   ResetDirectQtes();
   std::ifstream profile(m_impl->config.user_directory / "Config" / "WiimoteNew.ini");
   const std::string profile_text{std::istreambuf_iterator<char>(profile),std::istreambuf_iterator<char>()};
@@ -2026,13 +2686,26 @@ RuntimeRunResult Runtime::Run() {
     const char* value=std::getenv(name);return value && std::string_view(value)=="1";
   };
   s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
+  s_gamepad_aim_requested=s_gamepad_provider && enabled("OPENMUA2_GAMEPAD_AIM");
+  s_profile_dispatch_hooks={};s_profile_dispatch_counts={};
+  s_gamepad_aim_active=false;s_gamepad_aim_hooks={};s_gamepad_turret_installed=false;s_gamepad_turret_prompt_installed=false;
+  s_gamepad_nullifier_prompt_installed=false;
   s_provider_update_installed=s_provider_query_installed=false;
   s_provider_connected_installed=s_provider_ready_installed=false;
+  s_fusion_query_installed=s_fusion_selector_installed=false;
+  s_fusion_prompt_panel_installed=false;
+  s_rapid_tap_prompt_installed=false;s_gamepad_power_prompt_hooks={};
+  s_gamepad_lockon_active=false;s_gamepad_lockon_hooks={};
+  s_action_held_trace_installed=s_action_scalar_trace_installed=false;
+  s_action_consumer_count=0;s_action_consumer_seen={};
+  s_fusion_prompt_background_installed=s_fusion_prompt_color_installed=s_gamepad_fusion_panel_show_installed=false;
   s_provider_capabilities_installed=false;
+  s_fusion_screen_gate_installed=s_fusion_world_gate_installed=false;
   s_provider_status_queries={};
   s_provider_status_last.fill(-1);
   s_gamepad_tutorial_clock_installed=s_gamepad_tutorial_accept_installed=false;
   s_provider_updates={};s_provider_queries={};
+  s_tutorial_ready_experiment=enabled("OPENMUA2_TUTORIAL_READY_EXPERIMENT");
   const auto want_hero_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_HERO_BUTTONS")?15:0));
   const auto want_fusion_ports=std::uint8_t((s_gamepad_provider?15:managed_ports) | (enabled("OPENMUA2_FUSION_BUTTONS")?15:0));
   const auto want_control_ports=std::uint8_t(want_hero_ports | want_fusion_ports |
@@ -2078,13 +2751,19 @@ RuntimeRunResult Runtime::Run() {
         std::fprintf(stderr, "[openmua2] direct button QTE %s\n",
                      s_direct_qte_enabled ? "installed" : "rejected");
       }
+      if (installed && managed_ports && enabled("OPENMUA2_WAVE_QTE")) {
+        s_wave_qte_enabled = HLE::SetExternalStartObserver(guard, 0x8105c4c0, ObserveWaveQte);
+        std::fprintf(stderr, "[openmua2] experimental direct wave QTE %s\n",
+                     s_wave_qte_enabled ? "installed" : "rejected");
+      }
       if (installed && want_hero_ports) {
         s_hero_buttons_enabled = HLE::SetExternalStartObserver(guard, 0x80052fac, ObserveHeroCandidate);
         if (s_hero_buttons_enabled) s_hero_ports=want_hero_ports;
         std::fprintf(stderr, "[openmua2] experimental hero-button observer %s\n",
                      s_hero_buttons_enabled ? "installed" : "rejected");
       }
-      if (installed && want_fusion_ports) {
+      if (installed && s_gamepad_provider) s_fusion_ports=want_fusion_ports;
+      if (installed && !s_gamepad_provider && want_fusion_ports) {
         const bool screen = HLE::SetExternalStartObserver(guard, 0x81068a60, ObserveFusionScreenCandidate);
         const bool world = HLE::SetExternalStartObserver(guard, 0x810692c4, ObserveFusionWorldCandidate);
         s_fusion_buttons_enabled = screen && world;

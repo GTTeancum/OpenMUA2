@@ -1,0 +1,10 @@
+{
+  "change": "Resolve icon and validate optional Xbox UI manifest before allocating packaging directory or archiving runtime",
+  "validation": "Missing icon and missing manifest both rejected; before/after temporary packaging directory sets identical",
+  "candidate_rebuilt": false,
+  "reason": "Preflight ordering only; existing candidate bytes and runtime behavior unchanged",
+  "installed_changed": false,
+  "retained_checkpoint": "Only turret-keep-team-entry/stormcastle-entry.sav found in retained turret run directories; fixture provenance does not establish mounted or normally progressed encounter",
+  "open_requirement": "Need valid encounter route/checkpoint for live turret verification; user later-save availability question pending",
+  "cleanup": "No new packaging directories, game-data copies, profiles or savestates created"
+}

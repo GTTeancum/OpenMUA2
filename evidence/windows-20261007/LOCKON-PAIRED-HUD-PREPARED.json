@@ -1,0 +1,14 @@
+{
+  "before_wad_sha256": "8e252f232d51597e3252ef361af2a2451d124d58b33243099d2c7e62cfecd6b8",
+  "after_wad_sha256": "532c8f5654f41601947c54252fcf24a0b1169fcae707856ec8fd876009027260",
+  "package": "packages/generated/maps/package/permanent_rev.fb",
+  "before_texture_sha256": "063851661539a31dfc467f83e12a051b8bac822c0215b942de63556834995774",
+  "after_texture_sha256": "141a7cccfda3879dfc5dd9538f44cd86b76ce82b4d4a168c80c2caff547be50e",
+  "scope": "Private candidate; only 11 shared HUD button cells changed. Prison diagnostic route and all other package/archive bytes retained. Installed GameData untouched.",
+  "status": "Private paired HUD prepared; actual lock-on encounter still pending",
+  "route": "Private new-game route remains act3/prison/prison_break_4; not changed to Chemical Plant yet",
+  "authored_entry": "Chemical Plant chem_anti_2 win_boss_safeguard.py chooses lockon_observerent01/02/03 from safeguard owner. This is the native route to test; do not directly invoke lock-on or set completion flags.",
+  "cleanup": "Verified temporary WAD replaced existing private candidate; no duplicate retained. No game process was running during mutation.",
+  "installed": "Unchanged",
+  "goal_complete": false
+}

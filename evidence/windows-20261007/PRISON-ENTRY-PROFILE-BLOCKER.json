@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-07",
+  "status": "Failed native entry attempt; actionable profile-menu blocker",
+  "route": "Private new-game script uses native KeepTeam loader for act3/prison/prison_break_4; only destination changed. Campaign skipped; no interaction eligibility, health, actor positions or completion changed.",
+  "script_findings": [
+    "Prison HackPanel starts disabled; guard_death enables it after three guard deaths.",
+    "Normal hacking completion leads to Nullifier-console activation.",
+    "Rebel anti2 alternative Armory Terminal starts disabled and follows a boss encounter."
+  ],
+  "native_result": "Single-core headless run exited0. Intro/title/Main->Play->difficulty->profile reached through contained XInput. Native captures inspected: title start glyph and four-slot profile screen, player1 Guest with A Select/B Back. Repeated150ms A,1000ms A and Start did not advance profile. No hacking encounter reached.",
+  "repro_state": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\prison-native-entry\\profile-stuck.sav",
+  "repro_state_bytes": 13197097,
+  "fixture_receipt": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\rapid-tap-game\\prison-route-receipt.json",
+  "captures": [
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\prison-encounter-startup.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\prison-encounter-profile.png"
+  ],
+  "source_investigation": "PublishProvider now uses menu-specific BuildGamepadActions when any menu active. Profile accept semantics need consumer trace; cause not yet established. Do not assume timing or force past menu.",
+  "next": "Replay saved exact profile state with bounded action-query tracing, identify native accept/ready consumer and fix root cause before encounter navigation.",
+  "build_changed": false,
+  "installed_changed": false,
+  "goal_complete": false
+}

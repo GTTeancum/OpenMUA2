@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-07",
+  "priority": "Gameplay progression: turrets, hacking, Nullifier and QTEs before menu polish.",
+  "correction": "Prior profile-blocker diagnosis was unsupported. Native screenshot shows Autospend modal over profile; A accepts it and loads prison. Top-level menu metadata omitted the dialog.",
+  "evidence": [
+    "workspace outputs/profile-registration-after-input.png",
+    "workspace outputs/prison-encounter-entry.png",
+    "workspace work/profile-dispatch-registration/runtime.log"
+  ],
+  "dispatch": "All three diagnostic hooks registered; native parent dispatch executed. No remapping change needed.",
+  "build": {
+    "exit": 0,
+    "focused": "4/4 in 2.29s",
+    "previous_full_suite": "50/50 in 11.90s before registration-log-only change",
+    "sha256": "dffa8c0b52563f39de016d185cd50f87a13ed063ad632f705f2b86e34060be21"
+  },
+  "limits": [
+    "Diagnostic run has gamepad aiming disabled for hook capacity; not hacking/Nullifier acceptance.",
+    "Native screenshot verifies prison introduction only.",
+    "Installed executable and real saves unchanged."
+  ],
+  "goal_complete": false
+}

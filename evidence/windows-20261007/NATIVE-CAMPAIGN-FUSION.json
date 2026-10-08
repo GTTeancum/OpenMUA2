@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-07",
+  "method": "Existing cold-start campaign PID21228, process-local port0 controls only. No state loading, actor placement, resource or eligibility writes.",
+  "result": "Captain America + Iron Man Beam Split completion banner: 1294 total damage, 10 total KOs",
+  "prompt": "Hold LT + A/B/X/Y to choose a Fusion partner",
+  "input_sequence": "LT+B500ms, release; LT+B1000ms, release; neutral5000ms; LT1500ms held then LT+B1800ms held; capture neutral150ms; neutral5000ms. Earlier request timing/which request first latched not isolated.",
+  "native_partner_snapshot": [
+    {
+      "label": "unseeded-fusion-attempt",
+      "fusion_words": [
+        "0x2",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x0",
+        "0x2",
+        "0x4310f47b",
+        "0x0"
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 1,
+        "owner": 0
+      },
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "health": 31.59545135498047,
+          "target": "0x1a02"
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "health": 42.0,
+          "target": "0x1a01"
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 47.0,
+          "target": "0x0"
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "health": 60.0,
+          "target": "0x0"
+        }
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "path": "outputs/native-campaign-plaza-intro.png",
+      "sha256": "a58a55e5a8f1b85d0364bea2cfc26942b4782fb46a8452f78ff72581780d75f1",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs/native-campaign-native-fusion-select.png",
+      "sha256": "39235a803239f35a08d4286500fc42b0322a4211921bd174328d373add7f3e86",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs/native-campaign-fusion-resolve.png",
+      "sha256": "fb56b6df0ce0825d6e9415c556770a523afbfd4db8130085ee149e6cc0ab251d",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs/native-campaign-fusion-held-result.png",
+      "sha256": "ea3084b9cf436d710c243c20888353099d1852623c77f2046358fc7609d97ed7",
+      "visually_inspected": true
+    },
+    {
+      "path": "outputs/native-campaign-fusion-followthrough.png",
+      "sha256": "bfaaa6ce12da86c2cb79866cd46b3f33d1656cc5b665cebcf03d86737d4d5ee5",
+      "visually_inspected": true
+    }
+  ],
+  "limits": [
+    "One pairing on port0 only",
+    "Physical-controller acceptance unverified",
+    "Statue QTE, later turret/hacking/lock-on and Nullifier not yet validated in this normal campaign",
+    "No FPS/audio claim from this headless Null-audio test"
+  ],
+  "installed_changed": false,
+  "continuation": "PID21228 paused in plaza after Beam Split. Native campaign helper; all heroes alive."
+}

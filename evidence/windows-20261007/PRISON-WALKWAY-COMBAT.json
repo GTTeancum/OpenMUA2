@@ -1,0 +1,124 @@
+{
+  "result": "Combat approach failed before hacking/Nullifier; no interaction acceptance",
+  "exit": 0,
+  "observed": "Native capture identifies Light Nanite Mutant / Endopsychic Tether. Two heroes fell; D-pad left selected Wolverine before his defeat. These immediate enemies are not established to be the three boss-room guard spawns that unlock HackPanel.",
+  "health_evidence": {
+    "team_start_max": [
+      54,
+      51,
+      51,
+      60
+    ],
+    "nearby_mutant_max": 168,
+    "opponents_after": [
+      {
+        "address": "0x934c06b8",
+        "hp": 88.0639419555664,
+        "pos": [
+          2498.706298828125,
+          3024.802001953125,
+          0.35927504301071167
+        ]
+      },
+      {
+        "address": "0x934e16b0",
+        "hp": 151.750244140625,
+        "pos": [
+          2552.821044921875,
+          3113.57177734375,
+          1.2519501447677612
+        ]
+      }
+    ],
+    "last_team": {
+      "label": "melee",
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": true,
+          "health": -15.088983535766602,
+          "position": [
+            2382.193115234375,
+            2967.998779296875,
+            0.6529049277305603
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            3.1928422451019287
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": false,
+          "health": 33.21458053588867,
+          "position": [
+            2580.1298828125,
+            3091.537109375,
+            0.30365872383117676
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            3.8729398250579834
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 18.235031127929688,
+          "position": [
+            2560.48974609375,
+            3042.83544921875,
+            0.5792561769485474
+          ],
+          "angles": [
+            0.0,
+            -0.0,
+            3.456170082092285
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "health": -11.217524528503418,
+          "position": [
+            2491.369873046875,
+            3028.218994140625,
+            0.5960272550582886
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            0.6231818199157715
+          ],
+          "weapon": 0
+        }
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 0,
+        "kind": 0,
+        "owner": 0
+      }
+    }
+  },
+  "limits": "Enemy damage occurred during mixed player/AI combat; not an isolated attack-binding proof. No native hero level was measured. Do not label difficulty mismatch proven from health alone.",
+  "helper_result": "Bounded actor data reads completed without the prior invalid-address failure. No string-handle dereference used.",
+  "available_save_read_only": "Installed Game1.dat exposes Latveria S / act1/latveria/latveria1 header. Other Game*.dat files yielded no matching campaign strings; this alone does not establish they are empty.",
+  "next": "Find or establish a representative campaign setup and combat approach before repeating the late-game entry. Later-save availability asked asynchronously; other source/ownership verification can continue independently.",
+  "installed_changed": false,
+  "new_states": 0,
+  "goal_complete": false
+}

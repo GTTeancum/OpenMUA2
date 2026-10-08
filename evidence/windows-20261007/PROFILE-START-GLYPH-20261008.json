@@ -1,0 +1,20 @@
+{
+  "result": "PASS developer build profile-ready Xbox Start/Menu glyph and Start advance",
+  "cause": "MenuExit legacy prompt token fell through to Wii plus (icon8). Shared resolver now maps it to Start(icon1) only with direct provider and established Start-accept context.",
+  "build": {
+    "exit": 0,
+    "bytes": 16226304,
+    "sha256": "740226f9be9fcc985272fd52bb081e89daff2c8706afe7ecc65d73a3fd54156c",
+    "warnings_errors": "None printed",
+    "focused_test": "moderngekko.mua2_xbox_prompts 1/1 passed"
+  },
+  "verification": "Fresh boot, one process-local controller, normal title/main/difficulty/profile confirmation. Native ready capture reviewed: Xbox Menu beside Start Game. Start reached overwrite confirmation; stopped without accepting overwrite. A/B glyphs correct.",
+  "captures": [
+    "outputs/native-campaign-profile-start-ready-fixed.png",
+    "outputs/native-campaign-profile-start-advanced.png"
+  ],
+  "trace": "81313274,MenuExit,8,1",
+  "installed_changed": false,
+  "host_input": false,
+  "proprietary_data_changed": false
+}

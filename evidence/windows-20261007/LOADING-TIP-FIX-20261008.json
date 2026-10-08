@@ -1,0 +1,19 @@
+{
+  "changed_members": [
+    "data/vv_tips.engb",
+    "data/vv_tips.itab",
+    "data/vv_tips.xmlb",
+    "packages/generated/maps/package/permanent.fb"
+  ],
+  "checks": "Reopened archives independently: exactly four members changed; CRC verified. Three loose and two embedded tip copies, only rev tip30 semantic text changed.",
+  "sha256": "d202ed66580c59174095be8f6d665e7801677bd87f9b82ba682c87826f003c74",
+  "result": "Closed: loading tip corrected; user explicitly ended screenshot pursuit",
+  "binding": "Gameplay LB+D-pad blocks/selects a hero; RT+A/X/B/Y supplies power actions29/30/31/32. Replaced unsupported quick-assignment claim with verified power controls.",
+  "text": "Hold RT + A/X/B/Y to use powers.",
+  "tests": "2/2 passed: mua2_gamepad_actions and mua2_xbox_prompts. All five loose/embedded tip copies verified; unrelated archive members unchanged.",
+  "visual_verification": "Specific loading tip not captured. User explicitly requested closure without further capture attempts.",
+  "installed_changed": false,
+  "runtime_stopped": true,
+  "build": "No C++ changes or rebuild required; existing Windows runner used.",
+  "scope": "Section1 closed. Sections2/3 remain deferred."
+}

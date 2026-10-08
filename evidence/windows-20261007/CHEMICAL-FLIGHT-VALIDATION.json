@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-07",
+  "pid": 29748,
+  "exit_code": 0,
+  "scope": "Private single-core headless candidate; process-local Xbox input; native captures inspected",
+  "verified": [
+    "Cold title/main/Play/Load Game navigation",
+    "Guest private Punish Pym autosave loaded successfully",
+    "Double Y with short released interval activates Iron Man flight",
+    "Flight tutorial shows Xbox Y ascend and LB descend",
+    "Y raised actor Z from344.45 to397.01; LB returned to242.47",
+    "Flight movement on walkway; later yard encounter caused health loss"
+  ],
+  "unverified": [
+    "Lock-on encounter",
+    "Nullifier gameplay",
+    "Turret gameplay",
+    "Physical controller acceptance",
+    "Audio (Null backend)"
+  ],
+  "limitations": [
+    "Individual diagnostic snapshots between taps delayed initial double-tap attempt; continuous sequence succeeded",
+    "No gameplay state/health/completion overrides",
+    "Installed executable and actual saves unchanged"
+  ],
+  "artifacts": [
+    "work/chemical-flight-route/encounter.json",
+    "work/chemical-flight-route/runtime.log",
+    "outputs/chemical-flight-continuous-double-Y.png",
+    "outputs/chemical-flight-load-confirm.png",
+    "outputs/chemical-flight-yard-flight.png"
+  ],
+  "cleanup": "No new build tree, WAD copy or savestate created. Compact unique evidence retained. Free C194045841408 D89822334976 bytes."
+}

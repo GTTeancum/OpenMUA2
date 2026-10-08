@@ -92,10 +92,10 @@ std::optional<std::uint32_t> FusionCandidate(Reader read, std::uint32_t owner,
       ++owners;
     }
     if(i==static_cast<unsigned>(slot)) {
-      // Other human players and self are ineligible. Dead AI targets remain
-      // subject to the game's existing revival and resource checks.
+      // Human and AI partners share native eligibility/resource checks.
+      // Self-selection is invalid; dead partners retain native revival checks.
       const float target_health=std::bit_cast<float>(ReadBE(member,0x2a0));
-      if(address==owner || !ai || !std::isfinite(target_health) || target_health<0)
+      if(address==owner || (!ai && member_port>=4) || !std::isfinite(target_health) || target_health<0)
         return 0;
       candidate=address;
     }

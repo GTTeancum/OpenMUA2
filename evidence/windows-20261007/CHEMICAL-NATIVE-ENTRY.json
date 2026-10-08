@@ -1,0 +1,59 @@
+{
+  "status": "Cold entry and traversal observed; safeguard/lock-on not reached",
+  "process": {
+    "pid": 33784,
+    "exit": 0,
+    "single_core": true,
+    "headless": true,
+    "audio": "Null; not audio acceptance"
+  },
+  "private_route": {
+    "before": "532c8f5654f41601947c54252fcf24a0b1169fcae707856ec8fd876009027260",
+    "after": "a9b1b239fbaf549a3bb1799d0b3cd64ffab26d0236c1d414e4ff1ac2abe083f2",
+    "member": "scripts/menus/new_game.py",
+    "old": "loadMapKeepTeam(\"act3/prison/prison_break_4\")\r\n",
+    "replacement": "loadMapKeepTeam(\"act2/chemical_plant/chem_anti_2\")\r\n",
+    "scope": "Private new-game route only; no flags, health, enemy, position or completion overrides"
+  },
+  "flow": "Cold boot -> title Start -> Play A -> Begin Story A -> Easy with D-pad Left/A -> decline profile creation -> A join/select/confirm Guest -> Start -> accept private autosave overwrite -> accept automatic Autospend -> Chemical Plant",
+  "evidence": "Native captures outputs/chemical-encounter-*.png; bounded actor samples work/chemical-native-entry/encounter.json; menu samples targeted-model.json",
+  "observed": [
+    "Correct title/main/Play/profile/dialog screen content inspected.",
+    "Movement advanced along walkway and stairs; D-pad Right changed ownership to Iron Man.",
+    "SRU Soldier/Sniper and burning yard visible. Iron Man health fell below zero and game transferred control to Spider-Man.",
+    "Final image shows Spider-Man in fire; this does not establish a level-scaling defect. Route planning must avoid hazards rather than repeat the same traversal."
+  ],
+  "unverified": [
+    "Boss safeguard",
+    "Lock-on input and prompts",
+    "Physical controller",
+    "Audio",
+    "Full four-player ownership",
+    "Long idle and reconnect on this candidate"
+  ],
+  "remaining_prompt": "Profile Ready Start Game still has Wii + glyph; recorded in PERFORMANCE-GOAL.md and deferred per gameplay priority.",
+  "installed": "Unchanged; only private diagnostic profile autosave affected",
+  "cleanup": "No new state/build/GameData copy; verified temporary WAD replaced prior private route. Compact logs and native captures retained.",
+  "next": "Resume from private chemical autosave and plan safe yard route from map geometry/camera-relative movement. Do not force success, health or actor position.",
+  "goal_complete": false,
+  "hazard_followup": {
+    "definition": "HARM_ALL_FIRE_07, affectableharment, damage10, dmg_fire, reactpower extinguish",
+    "fire_origin": [
+      2296.63,
+      -299.076,
+      12.7549
+    ],
+    "horizontal_half_extents": [
+      53.7043,
+      52.8781
+    ],
+    "iron_man_final_origin": [
+      2258.37841796875,
+      -320.5869445800781,
+      1.4558805227279663
+    ],
+    "finding": "Final XY lies inside this authored fire footprint. Actor origin below volume base does not prove collision overlap by itself; native captured fire and damage support hazard exposure, not a level-scaling diagnosis.",
+    "private_save": "work/gamepad-independent-profile/user/Wii/title/00010000/524d5345/data/Game1.dat: -Auto- 00:00 - Punish Pym GUEST (E); act2/chemical_plant/chem_anti_2",
+    "next": "Load this private save via native Load Game, avoid the burning yard footprint using shorter observed movement steps; do not repeat prior held-up traversal."
+  }
+}

@@ -430,6 +430,23 @@ void StaticRecompCore::HookInstructionFallback(CPUState* cpu, u32 raw, u32 cia)
       const u32 ra = (raw >> 16) & 31u;
       const u32 rb = (raw >> 11) & 31u;
       const u32 ea = (ra ? cpu->gpr[ra] : 0u) + cpu->gpr[rb];
+      u32 linked_ea = ea;
+      const bool resolved = core->ResolveNativeAddress(ea, &linked_ea, nullptr, false);
+      bool native_code_ea = false;
+      if (resolved)
+      {
+        const int lookup_index = core->GetAddressLookupIndex(linked_ea);
+        native_code_ea = lookup_index >= 0 &&
+                         lookup_index < static_cast<int>(core->m_chunk_lookup_table.size()) &&
+                         core->m_chunk_lookup_table[lookup_index] >= 0;
+      }
+      if (native_code_ea)
+        ++core->m_hook_fallback_fast_cache_code_ea;
+      else
+        ++core->m_hook_fallback_fast_cache_noncode_ea;
+      if (core->m_collect_fallback_samples)
+        IncrementSample(core->m_hook_fallback_fast_cache_ea_samples,
+                        (static_cast<u64>(xo) << 32) | (linked_ea & ~31u));
       if (xo == 982u)
         ppc.iCache.Invalidate(system.GetMemory(), system.GetJitInterface(), ea);
       else

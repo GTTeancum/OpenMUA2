@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-07",
+  "status": "Private candidate; not installed, packaged or pushed",
+  "change": "Shared active-native-menu routing using PS2 action initializer groups; suppress gameplay/camera/fusion/QTE actions while a native menu is active. Existing native menu consumer retains eligibility, ownership and limits.",
+  "menu_map": {
+    "A": "accept/assign",
+    "B": "back",
+    "X": "details/remove boost/delete profile/cycle heroes as selected by native page",
+    "Y": "minimize/prioritize",
+    "LB": "remove skill point119",
+    "RB": "add skill point118",
+    "LT": "previous hero104/reallocate122",
+    "RT": "next hero103",
+    "left_right": "native navigation/profile117/116"
+  },
+  "reference": "Private PS2 action-initializers.json; signal10/11 remove/add,8 reallocate/previous,9 next. No proprietary code copied.",
+  "build": {
+    "result": "MSVC Release exit0; focused3/3 in3.44s",
+    "runtime_sha256": "fc741d7dc24e2b9c1630602ac7745ec2dd3a57c55ca7cb5295b68c8001d69408",
+    "runtime_bytes": 16212480,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib",
+      "moderngekko_mua2_gamepad_actions_test.exe",
+      "moderngekko_mua2_fusion_buttons_test.exe",
+      "moderngekko_mua2_action_bindings_test.exe"
+    ],
+    "warnings_errors": "No compiler/linker warning/error in successful build log",
+    "regression": "50/50 passed in11.36s; action-bindings test rebuilt for changed header"
+  },
+  "native": {
+    "run_exit": 0,
+    "setup": "Existing genuine hero-powers state, headless Vulkan, Null audio, CPU2 mask4; process-local controller input; no additional guest writes/forced menus in this run",
+    "verified": [
+      "RB reaches normal allocation help with auto-spend on",
+      "A dismisses help; next A opens hero_power_assign",
+      "B returns to hero_powers",
+      "Y changes selected power priority from3 to0; visually inspected"
+    ],
+    "not_verified": [
+      "Point spending/refund: fixture has zero spare points and auto-spend enabled. No points or levels injected.",
+      "LT redistribution effect: no visible allocation change in this zero-point fixture",
+      "RT next hero: no visible hero change on this page; consumer coverage incomplete",
+      "Fresh startup and four-port menu regression after this change",
+      "Physical controller acceptance"
+    ],
+    "prompts": "Still incomplete: LB Assign is stale (now A); minus/plus allocation and Wii1 redistribute remain; assignment wheel is D-pad. Do not stage."
+  },
+  "overlay_issue": "Deferred at explicit user request; no further overlay investigation this turn",
+  "captures": {
+    "OpenMUA2-menu-map-add.png": "0b9a7e91ed929635644db92b7fdbf6c2ea018679bc23c462f3f7f9cab9fc59ad",
+    "OpenMUA2-menu-map-assign.png": "a4b94706f3c8b40ce5f459da4fc6715f50098fec9606fce55450f85eb9982c77",
+    "OpenMUA2-menu-map-back-powers.png": "b55195083ecd10d5c6409cb40d45c89427cd38678b125789e254dd3f24d5d449",
+    "OpenMUA2-menu-map-dismiss.png": "eb28f778656036aa78a7ad0f9f18672a3dfaee75590fc4f948fbaf7c66543b9e",
+    "OpenMUA2-menu-map-initial.png": "dbbbb7c800a63d13cd49e635e078323a6b9c3c28c1f2c2421a0cde0a763a35ff",
+    "OpenMUA2-menu-map-next-hero.png": "745919394e044b604d444590c95fb41b54a437708dc3debcb507fa0ac0dcdfbe",
+    "OpenMUA2-menu-map-priority.png": "018e192a5af68826172f72e00ff0db5a4ca2924b248a5157836e4b3ebbb85d40",
+    "OpenMUA2-menu-map-redistribute-after-help.png": "27ed49bc821c1bddf29d34a325b21eb9c2bdc9028c86c38e17e2ab897502c6ea",
+    "OpenMUA2-menu-map-redistribute.png": "71536fc28c9648afb7333d74b6684e985bf07d9f407628480909df843d1ac543",
+    "OpenMUA2-menu-map-remove.png": "4937e2e1431da1d87b26511521794e42faf2b88ff3808e192c1c02ab134c903c"
+  },
+  "goal_complete": false
+}

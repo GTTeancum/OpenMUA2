@@ -1,0 +1,90 @@
+{
+  "status": "Additional gameplay family identified; implementation and encounter validation pending",
+  "ps2": {
+    "entry": "00268E90 CLockonEntity opens instruction4 at00268F6C",
+    "class_evidence": "vtable007CDC20 RTTI00768EA0 names CLockonEntity",
+    "hud": "CHudTargetPoints, vtable007DE250, update004CE960",
+    "consumer": "004CE98C..004CEA78 loops ports0..3 and tests target+40 action through input vtable+20 before hit handling"
+  },
+  "native": {
+    "hud_rtti": "80564240 -> CHudTargetPoints",
+    "vtable": "80564200",
+    "update": "8024F408",
+    "gamepad_gate": "8024F43C..8024F44C queries CNetPlayManager mask2; local false branches8024F654",
+    "button_consumer": "8024F48C..8024F4A4 target+64 action; four-port loop",
+    "warning": "Do not spoof network state or enable one branch without auditing target button generation, rendering, lifecycle and ownership."
+  },
+  "actual_map_usage": [
+    "act2/chemical_plant/chem_anti_2 lockonent entities with win/fail scripts",
+    "act2/chemical_plant/chem_pro_2 lockonent entities with win/fail scripts",
+    "act4/wakanda/wakanda_2 lockon_manape01..05 with win/fail scripts"
+  ],
+  "scope": "Map definitions establish authored use, not completed runtime encounter. Raw extracted data stays workspace-private.",
+  "other_entry_points": {
+    "type1": "003F1070 CCHPowFusion_Choose",
+    "type2": "0040C5EC turret",
+    "type3": "001DB7D0 Nullifier",
+    "dynamic": "002CC9A0 script ingamehelp"
+  },
+  "next": "Provide shared Xbox HUD sprite mapping/pack alongside coherent PS2 lock-on assignment, draw and consumer routes. Audit computed sprite users and instruction4 before enabling; retain native timing, win/fail, four-port loop and code guards. Resolve hook capacity without silently dropping existing controls.",
+  "goal_complete": false,
+  "target_assignment": {
+    "native_table": "80564100: [9,10,12,19]",
+    "ps2_table": "00736200: [9,10,11,19]",
+    "native_gate": "8024FED0..8024FEE0 skips random assignment for local play; default constructor action9 at8024E578/8024E5BC",
+    "ps2_creation": "004CEC30; unconditional random assignment004CEED8..004CEF2C",
+    "mapping_difference": "Current XInput maps9=A,10=B,11=X,12=LB,19=Y. Native retained table does not reproduce PS2 four-face-button path."
+  },
+  "target_rendering": {
+    "native": "8024E698; network mask2 gate8024E72C..8024E73C",
+    "action_to_draw_id": {
+      "9": 38,
+      "10": 44,
+      "12": 40,
+      "19": 41
+    },
+    "ps2": "004CDCB0; no equivalent network gate before action switch004CDD4C",
+    "provider": "Retained native HUD vtable capture81190A08 +152 ->80FA770C; function passes sprite throughr29 tobatch80252EE4 asr9, HUDtexture slotr7=1; no text-font resolver.",
+    "ps2_action_to_draw_id": {
+      "9": 38,
+      "10": 39,
+      "11": 40,
+      "19": 41
+    },
+    "native_coordinates": {
+      "38": [
+        0,
+        0,
+        60,
+        60
+      ],
+      "40": [
+        120,
+        0,
+        180,
+        60
+      ],
+      "41": [
+        180,
+        0,
+        240,
+        60
+      ],
+      "44": [
+        120,
+        110,
+        180,
+        160
+      ]
+    },
+    "coordinate_format": "[left,top,right,bottom] in512x512 stock data/hud_coords_rev.xmlb; atlas uses bottom-origin coordinates.",
+    "replacement_constraint": "Existing Xbox menu font does not replace these HUD cells. Native ID40 is Wii Z; global X overwrite requires auditing other users. PS2 B uses39, not native44.",
+    "caller_scan": "Direct-immediate r6 sprite scan located lock-on four callsites plus8102EB64 sprite38. This is not exhaustive for computed/table-driven callers."
+  },
+  "lifecycle": {
+    "consumer_exit": "Button loop exits8024F650 directly to8024F900, bypassing pointer-hit loop. Preserve this separation.",
+    "success": "8024F938..8024F97C removes completed targets; when count reaches0 calls8011EAB4 on owner+144.",
+    "failure": "8024F984..8024F9AC calls8011EB88 on owner+144 for expired unhit target.",
+    "timing": "8024E838 updates elapsed time/radius/fade and expiry flag; do not replace timing or force completion."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "exe_sha256": "3B91B747C4B3E3DC3A58703F3A6034DFB32F49514E23A7C2112EE32398ABB617",
+  "wad_sha256": "AB9981D631D591C2A37E680F018E8ADB1310A710B04551F162306A26E80043B0",
+  "saves_unchanged": 55,
+  "root_items": [
+    "GameData",
+    "saves",
+    "OpenMUA2.exe"
+  ],
+  "game_launched": false,
+  "build": "Windows MSVC Release passed; stopped live runtime after initial file-lock link failure and rebuilt",
+  "tests": "68/68 built tests passed under VsDevCmd; 3 unbuilt vendor programs excluded, playTests disabled; Options 4/4, font 2/2, launcher 58 checks",
+  "visuals": [
+    "Native Options capture: aligned columns, no QTE row, no controller drawing",
+    "Fresh campaign Powers capture: rank stars and priority dots restored"
+  ],
+  "limits": [
+    "Final native Assign-label correction built but not recaptured",
+    "Point spending/refund, redistribution and hero cycling remain unverified on level-1 zero-point profile",
+    "Null audio used; no audio/performance claim"
+  ],
+  "installed_verification": "PASS"
+}

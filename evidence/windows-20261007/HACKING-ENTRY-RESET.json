@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-07",
+  "status": "Private candidate; not installed or gameplay accepted",
+  "change": "Exact-hash native special-mode setter observer centers all four aim targets only on transition into native mazehack identifier. Leaves original setter execution intact; no forced state and no host history flag. Preserves validity and projection fields.",
+  "native_sites": {
+    "setter": "80100454",
+    "setter_sha1": "BD6EC3E04F9C6E96F9765DAF12A3B7DA2C7673F7",
+    "special_mode": "80629490+36268",
+    "mazehack_identifier": "r13-22240",
+    "identifier_initializer": "80101744..80101924; string80535AFC"
+  },
+  "build": {
+    "exit": 0,
+    "runner_sha256": "62ba3942ddbe3ec5c270f2dfc3b20d639392ec0c85f903938d0c1712fed6453f",
+    "runner_bytes": 16221184,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ],
+    "focused": "4/4 in2.40s",
+    "supported": "50/50 in10.53s",
+    "compiler_linker_warnings_errors": 0
+  },
+  "regression_scope": [
+    "Four independent target resets on entry",
+    "Same mode and exit retain target",
+    "Steering after entry does not repeatedly center",
+    "Re-entry resets",
+    "Uninitialized identifier and malformed manager rejected",
+    "Validity and projection bytes preserved"
+  ],
+  "native_scope": "Single-core contained input from existing Storm Castle entry, all six aim hooks registered; accumulation/neutral/unjoined isolation/reversal pass. No actual hacking transition was entered or forced. Process exit0.",
+  "native_probe": [
+    {
+      "label": "loaded",
+      "manager": "0x9002c628",
+      "vtable": "0x81198830",
+      "flags": 161,
+      "mode": 0,
+      "menu": "0x0",
+      "records": [
+        {
+          "port": 0,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 1,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 2,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 3,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        }
+      ]
+    },
+    {
+      "label": "right",
+      "manager": "0x9002c628",
+      "vtable": "0x81198830",
+      "flags": 161,
+      "mode": 0,
+      "menu": "0x0",
+      "records": [
+        {
+          "port": 0,
+          "x": 0.30000001192092896,
+          "y": 0.0,
+          "valid": 1
+        },
+        {
+          "port": 1,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 2,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 3,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        }
+      ]
+    },
+    {
+      "label": "neutral",
+      "manager": "0x9002c628",
+      "vtable": "0x81198830",
+      "flags": 161,
+      "mode": 0,
+      "menu": "0x0",
+      "records": [
+        {
+          "port": 0,
+          "x": 0.30000001192092896,
+          "y": 0.0,
+          "valid": 1
+        },
+        {
+          "port": 1,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 2,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 3,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        }
+      ]
+    },
+    {
+      "label": "unjoined-port1",
+      "manager": "0x9002c628",
+      "vtable": "0x81198830",
+      "flags": 161,
+      "mode": 0,
+      "menu": "0x0",
+      "records": [
+        {
+          "port": 0,
+          "x": 0.30000001192092896,
+          "y": 0.0,
+          "valid": 1
+        },
+        {
+          "port": 1,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 2,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 3,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        }
+      ]
+    },
+    {
+      "label": "left",
+      "manager": "0x9002c628",
+      "vtable": "0x81198830",
+      "flags": 161,
+      "mode": 0,
+      "menu": "0x0",
+      "records": [
+        {
+          "port": 0,
+          "x": 7.450580596923828e-09,
+          "y": 0.0,
+          "valid": 1
+        },
+        {
+          "port": 1,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 2,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        },
+        {
+          "port": 3,
+          "x": 0.0,
+          "y": 0.0,
+          "valid": 0
+        }
+      ]
+    }
+  ],
+  "not_verified": [
+    "Hacking native transition observer execution in actual encounter",
+    "Hacking success/failure/cancel/pause lifecycle and visuals",
+    "Second PS2 reset predicate and projection dimension parity",
+    "Turret/Nullifier encounters",
+    "Four joined players",
+    "Physical controller/audio/FPS"
+  ],
+  "goal_complete": false
+}

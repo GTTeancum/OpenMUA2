@@ -1,0 +1,143 @@
+{
+  "purpose": "Restore native campaign entry; eliminate skipped-campaign fixture for end-to-end tests",
+  "changed_member": "scripts/menus/new_game.py",
+  "before": "loadMapKeepTeam(\"act2/chemical_plant/chem_anti_2\")\r\n",
+  "after": "startMovie(\"prc01\",\"waitSignal\")\r\nwaitsignal(\"waitSignal\")\r\nloadMapStartGame()\r\n",
+  "source": "Authoritative .local/game WAD and retained original script agree",
+  "sha256": "6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec",
+  "installed_changed": false,
+  "other_members": "Byte-identical to previous private WAD, including candidate Xbox UI",
+  "retained_duplicate_wads": 0,
+  "rejected_continuations": {
+    "work/statue-entry-audit/fresh-assets-statue-active.sav": "Creation helper statue-entry-spider.py changes actor positions before save",
+    "work/shared-font-cold-recheck/fresh-font-fusion.sav": "Creation helper capture-fresh-shared-LT.py changes positions and fusion resources"
+  },
+  "new_run": {
+    "pid": 21228,
+    "root": "work/native-campaign-validation",
+    "method": "Cold start, existing private profile, no load_state or gameplay writes; single core headless Vulkan, Null audio",
+    "status": "Paused at initial Latveria street, all four heroes alive; native capture inspected"
+  },
+  "verified_flow": [
+    "Start from title to main menu",
+    "A to Play / Begin Story / difficulty",
+    "Guest profile selection and confirmation",
+    "Start, autosave confirmation and AI autospend acceptance",
+    "Original Latveria intro, normal skip flow and level load"
+  ],
+  "limitations": [
+    "Contained synthetic input only, no physical acceptance",
+    "No audio/FPS acceptance",
+    "Campaign combat, statue, fusion and later interactions still pending"
+  ],
+  "captures": {
+    "outputs\\native-campaign-main.png": "fbdcba7b124a1e753de7c5fd335606f75b3482605b6426237fd6e492562a11ce",
+    "outputs\\native-campaign-play.png": "05ab711b6dd52d876fea13912b6fc8b3e6663ff8c674566f7fd595c03c776cb5",
+    "outputs\\native-campaign-profile.png": "dd28531ede8b6e52fbe146f5d66daf10ed6b3afb08110d4b6ed36e74405de217",
+    "outputs\\native-campaign-ready.png": "a2b299d7d87f1a8c1471ce973f5a277040284d03a505108c94fdd9ad04b87ea9",
+    "outputs\\native-campaign-save-dialog.png": "89e3877c00e34630a0b92b821781e4bb6b3796cf41f78b087484ad4c4fa336b0",
+    "outputs\\native-campaign-intro.png": "804f3f407bfcac6ce1885ebb968eac250fa3a2e4e1b7aaf76083d65dab936296",
+    "outputs\\native-campaign-after-intro.png": "5193661c6e286bd00598e047f4342109ea7e5b08101e493299875016480a1494",
+    "outputs\\native-campaign-initial-level.png": "b6d9dd1b7e3743607710c590fc59139b56082873fdc53db5648b10bb34f7ad5c"
+  },
+  "first_combat": {
+    "observed": "Reached initial Doombots normally; native tutorial explicitly shows A light attack and B charged heavy attack; damaged/downed enemies visible during mixed player/AI combat",
+    "input": "Repeated A and held/released B; RT+A also exercised but power execution not isolated",
+    "limits": "AI contributes damage; no isolated per-action effectiveness claim. Camera-relative traversal needs shorter corrective steps. First encounter completion not proven.",
+    "last_state": {
+      "label": "street-progress",
+      "heroes": [
+        {
+          "slot": 0,
+          "actor": "0x934b9d20",
+          "port": 0,
+          "ai": false,
+          "health": 51.720001220703125,
+          "position": [
+            2816.064208984375,
+            -16.552188873291016,
+            1.0728939771652222
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            1.7165262699127197
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 1,
+          "actor": "0x934ba758",
+          "port": 0,
+          "ai": true,
+          "health": 47.0,
+          "position": [
+            2710.316162109375,
+            -140.64801025390625,
+            -4.852324485778809
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            1.7948901653289795
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 2,
+          "actor": "0x934bb190",
+          "port": 0,
+          "ai": true,
+          "health": 51.0,
+          "position": [
+            2536.04443359375,
+            -128.4989013671875,
+            -4.526028633117676
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            5.27488899230957
+          ],
+          "weapon": 0
+        },
+        {
+          "slot": 3,
+          "actor": "0x934bbbc8",
+          "port": 0,
+          "ai": true,
+          "health": 59.47256088256836,
+          "position": [
+            2560.5947265625,
+            -92.73358154296875,
+            -4.2157087326049805
+          ],
+          "angles": [
+            0.0,
+            0.0,
+            0.48255231976509094
+          ],
+          "weapon": 0
+        }
+      ],
+      "help": {
+        "visible": 0,
+        "phase": 0,
+        "kind": 0,
+        "owner": 0
+      }
+    },
+    "process": "PID21228 paused and alive at last command",
+    "captures_inspected": [
+      "street-forward",
+      "street-turn",
+      "street-corner",
+      "first-enemies",
+      "first-combo",
+      "first-power",
+      "combat-advance",
+      "release-heavy",
+      "street-progress"
+    ]
+  }
+}

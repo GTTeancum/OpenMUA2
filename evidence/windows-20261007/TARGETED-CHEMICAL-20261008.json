@@ -1,0 +1,45 @@
+{
+  "status": "NOT PASSED: Chemical Plant tank entry prevents lock-on acceptance",
+  "map": "act2/chemical_plant/chem_anti_2",
+  "authored_path": [
+    "trig_BossConvoBegin / boss_convo_begin",
+    "trig_Boss_SafeGuard01 -> script_Boss_SafeGuard01",
+    "win_boss_safeguard -> lockon_observerent01",
+    "win_boss_lockon / fail_boss_lockon"
+  ],
+  "fixture": "Private new-game route sets ChemAnti_2 OpeningScene=1 and BossFightStarted=1 before loadMapKeepTeam. Authored startup checkpoint path invokes complete boss script. Party placement only; no boss HP, target timers, QTE progress or win callbacks changed.",
+  "findings": [
+    "Direct placement at boss trigger did not activate introduction; first fixture let an ally fall. Discarded and used authored boss checkpoint route.",
+    "Checkpoint route visibly created Hank Pym, Storm/Goliath cinematic, fuel tanks and boss health bar.",
+    "X Throw Fuel Tank prompt appears; X invokes fade_safeguards (selected tank translucent, other triggers disabled).",
+    "Captain America and Iron Man did not enter generic_sequence; sampled combat node idle, actor target+0x6e8 zero. Repeated X cannot progress an interaction that did not start.",
+    "Spreading allies to remove collision overlap did not resolve entry.",
+    "Lock-on instruction, face-button targets, success/failure and four-player ownership remain untested."
+  ],
+  "runtime_sha256": "389c19ef09c7ddc7ab10aa53b8032d9037f386bff6f5a5a53dcd885a4b4b8e9c",
+  "source_changes_this_checkpoint": false,
+  "installed_changed": false,
+  "host_input": false,
+  "stopped": true,
+  "private_route": {
+    "before": "6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec",
+    "after": "de965d42f0bf22d3bd2df93e260285f5402290198630824174a6a8a5eed69a97",
+    "member": "scripts/menus/new_game.py",
+    "replacement": "setGameFlag(\"ChemAnti_2\", 1, 1)\r\nsetGameFlag(\"ChemAnti_2\", 5, 1)\r\nloadMapKeepTeam(\"act2/chemical_plant/chem_anti_2\")\r\n",
+    "restore_required": false,
+    "checkpoint_fixture": "OpeningScene and BossFightStarted set before loading map; does not prove campaign access",
+    "restored_sha256": "6c3f21c07c4c386c2f61b2a11820a4b5b028138b8a1e997ac444ce043254feec"
+  },
+  "states": {
+    "chemical-boss-checkpoint.sav": 41730523,
+    "chemical-tank-before.sav": 52023873,
+    "chemical-tank-entry-failure.sav": 47048318
+  },
+  "proofs": {
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-boss-checkpoint.png": "029624508ec11827ede56aea56de62eb4ffe6109326dc3797552a09a507f9184",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-tank-clearance.png": "e342bb0ec02bb3372359c596c8485c0dd27a0d4d60cca30c2ee6a4d9c2a7470b",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\outputs\\native-campaign-chemical-tank-tapped.png": "09c2968fc848f58cc3e4b97c572cb1088a24f06a3aeca0cb0f6dde1b70c75ee7"
+  },
+  "next": "Trace CCoopEntity activation from the tank acttargets call to actor generic_sequence entry, using retained tank-before state. Do not return to statue/fusion or repeat campaign navigation. Resolve entry before evaluating lock-on.",
+  "goal_complete": false
+}

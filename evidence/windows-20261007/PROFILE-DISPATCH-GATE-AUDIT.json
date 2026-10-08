@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-07",
+  "status": "Diagnostic checkpoint; profile blocker unresolved",
+  "read_only_gates": {
+    "manager_mode27452": 0,
+    "netplay_flags1864": 0,
+    "inference": "Neither modal mode1/2 nor network mask1 explains suppression in the retained state."
+  },
+  "trace_change": "Opt-in bounded profile dispatcher observers at81000A90,80F94214,80FC8738, exact32-byte hashes, disabled by default and rejected when full aiming requested to avoid capacity competition. No mapping/state changes.",
+  "trace_result": "No profile-dispatch entries emitted in replay. Loaded32-byte hashes independently matched all3 sites. Registration success was not logged; empty trace is inconclusive and must not establish unreachable code. Next add/verify registration evidence before interpreting absence.",
+  "build": {
+    "exit": 0,
+    "runner_sha256": "283078996f18af4823d8d7664c7da43612aab1e2e8fe7eaf558a0c8884430006",
+    "runner_bytes": 16223232,
+    "focused": "4/4 in2.45s",
+    "supported": "50/50 in11.90s",
+    "compiler_linker_warnings_errors": 0,
+    "produced": [
+      "moderngekko-run.exe",
+      "moderngekko_runtime.lib"
+    ]
+  },
+  "runs": {
+    "profile-dispatch-gates": "0",
+    "profile-dispatch-trace": "0",
+    "profile-dispatch-code": "0"
+  },
+  "not_verified": [
+    "Diagnostic hook registration/execution",
+    "Profile root cause/fix",
+    "Gameplay encounter acceptance",
+    "Physical input"
+  ],
+  "installed_changed": false,
+  "goal_complete": false
+}

@@ -1,0 +1,47 @@
+{
+  "result": "CHECK COMPLETE: visible D-pad mismatches implemented left-stick steering; glyph replacement not implemented",
+  "authored": "captainamerica_fightstyles.fb: talent captam_p1 describes LEFT_STICK steering; shield_shot returningprojectileent has steerable=true.",
+  "provider": "BuildGamepadActions emits action0/1 from left stick even with RT held. D-pad selects roster slots.",
+  "native_comparison": [
+    {
+      "direction": "left_left",
+      "entities": [
+        {
+          "name": "shield_shot",
+          "address": 2471401504,
+          "position": [
+            -432.3839416503906,
+            -415.4285583496094,
+            48.58572769165039
+          ],
+          "health": 1.0,
+          "flags": "24513dbe4000c0200000010804000000"
+        }
+      ]
+    },
+    {
+      "direction": "left_right",
+      "entities": [
+        {
+          "name": "shield_shot",
+          "address": 2471401504,
+          "position": [
+            -439.2369689941406,
+            -351.20330810546875,
+            48.58572769165039
+          ],
+          "health": 1.0,
+          "flags": "24513dbe4000c0200000010804000000"
+        }
+      ]
+    }
+  ],
+  "hud": "Observed power HUD draw caller80F5E9AC sprite56, shared renderer passes sprite in r30 at80F5E98C. HUD coordinates52..56 contain directional-pad states; global replacement would affect unrelated uses.",
+  "proof": "outputs/native-campaign-shield-steering-before.png",
+  "next": "Replace the steering-context HUD cue with an Xbox left-stick glyph while preserving actual D-pad prompts.",
+  "runtime_changed": false,
+  "installed_changed": false,
+  "runtime_stopped": true,
+  "superseded_by": "evidence/windows-20261007/SHIELD-POWER-PROMPT-FIX-20261008.json",
+  "correction": "Left-stick steering was verified, but identifying this HUD cue as steering was incorrect. Authored samepowerhold and PS2 mapper establish a held-power face-button prompt."
+}
