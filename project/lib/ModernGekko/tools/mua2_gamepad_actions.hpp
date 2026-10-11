@@ -35,7 +35,7 @@ struct GamepadActions {
 };
 inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
                                           bool start_accept, bool fusion_request, bool gameplay=true,
-                                          bool menu_active=false) {
+                                          bool menu_active=false, bool costume_browse=false) {
   using K=GamepadInput;
   GamepadActions out;
   if(!pad.connected) return out;
@@ -47,8 +47,13 @@ inline GamepadActions BuildGamepadActions(const GamepadSample& pad,
     if(pad.Down(K::Start)) {out.Set(39);out.Set(start_accept?105:90);return out;}
     if(pad.Down(K::A)) {out.Set(89);out.Set(102);}
     if(pad.Down(K::B)) out.Set(90);
-    if(pad.Down(K::X)) for(unsigned id:{100u,101u,121u,123u}) out.Set(id);
-    if(pad.Down(K::Y)) {out.Set(106);out.Set(109);}
+    if(costume_browse) {
+      if(pad.Down(K::X)) out.Set(106);
+      if(pad.Down(K::Y)) out.Set(101);
+    } else {
+      if(pad.Down(K::X)) for(unsigned id:{100u,101u,121u,123u}) out.Set(id);
+      if(pad.Down(K::Y)) {out.Set(106);out.Set(109);}
+    }
     if(pad.Down(K::LB)) out.Set(119);
     if(pad.Down(K::RB)) out.Set(118);
     if(pad.Down(K::LT)) {out.Set(104);out.Set(122);}

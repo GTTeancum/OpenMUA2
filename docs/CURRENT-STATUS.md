@@ -1,5 +1,31 @@
 # Current status â€” GitHub main
 
+## Costume switching staged - 2026-10-11
+
+Active Characters now shows X Skin / Y Details. X cycles herostat `skin`,
+`skin_02` through `skin_10` in slot order, skips missing full/menu packages,
+and wraps to default without unlock gates. Additional definitions live outside
+retail's six-entry array. Native model refresh preserves animation resources;
+preview animation is restored after switching. Hooks retain code-hash guards
+and wait for loaded code before registration.
+
+Windows x64 MSVC Release build passed; final incremental build printed no
+warnings/errors. CTest: 69/69 passed (three unbuilt vendor tools excluded,
+playTests disabled). A fresh, single-core, port-0 contained run verified sparse
+03/07/10 cycling, absent 04 skipping, held-X single advance, default wrap,
+Y Details, no-alternate no-op, and the selected model after returning to world.
+Native captures were individually reviewed. Borrowed-model fixture assets and
+private saves were used only for testing; none were installed or committed.
+No physical-controller, audio/FPS, or save/reload persistence claim.
+
+Staged EXE: C:/Games/MUA2/OpenMUA2.exe, SHA256
+`4d64deb6421d674c9ba82cedd4f0def3db6f987586eaa620147201fe855a6513`.
+Embedded runtime verification and all 14 paired v8 UI entries passed. All 400
+installed game-data files and 55 saves remained byte-identical. Root contains
+only OpenMUA2.exe, GameData and saves. Test process stopped normally.
+Personal TODO #3 removal remains pending: its file has not been located.
+Evidence: evidence/windows-20261011/COSTUME-SWITCHING.json.
+
 ## Controls and Powers-page completion - 2026-10-08
 
 TODO #2 is complete and removed. Both native Options copies now use the shared

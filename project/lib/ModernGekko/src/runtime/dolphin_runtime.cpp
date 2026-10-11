@@ -3,9 +3,13 @@
 #include "AudioCommon/AudioCommon.h"
 #include "Common/Config/Config.h"
 #include "Common/Crypto/SHA1.h"
+#include "Common/MsgHandler.h"
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
+#include "mua2_costumes.hpp"
+#include <map>
+#include <cctype>
 #include "mua2_gamepad_aim.hpp"
 #include "mua2_gamepad_turret.hpp"
 #include "gamepad_port_state.hpp"
@@ -676,6 +680,7 @@ bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size
   const auto* code=guard.GetSystem().GetMemory().GetPointerForRange(address,size);
   return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,size))==expected;
 }
+#include "mua2_costumes.inl"
 // Candidate shared local-gamepad aiming. No CNetPlayManager flag is modified.
 bool s_gamepad_aim_requested=false, s_gamepad_aim_active=false;
 std::array<bool,6> s_gamepad_aim_hooks{};
@@ -929,7 +934,7 @@ bool PublishProvider(const Core::CPUThreadGuard& guard,unsigned port,u32 bits_ad
   actions=moderngekko::controls::BuildGamepadActions(ReadGamepadSample(port),
       moderngekko::controls::IsStartAcceptScreen(read),request,
       moderngekko::controls::GamepadHasJoinedPlayer(read(0x81313238,60),read(0x80635648,128),port),
-      moderngekko::controls::ActiveMenuType(read)!=0);
+      moderngekko::controls::ActiveMenuType(read)!=0,CostumeBrowseMenu(guard)!=0);
   s_fusion_entry[port].Apply(actions,moderngekko::controls::ReadFusionActor(read,port));
   std::copy(actions.active.begin(),actions.active.end(),active);
   std::copy(actions.values.begin(),actions.values.end(),values);
@@ -1207,6 +1212,7 @@ void ApplyGamepadPromptText(const Core::CPUThreadGuard& guard) {
 }
 void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
   if(!s_gamepad_provider) return;
+  InstallCostumeHooks(guard);
   InstallGamepadAim(guard);
   InstallProfileDispatchTrace(guard);
   InstallGamepadLockon(guard);
@@ -2490,6 +2496,11 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   impl->controllers_initialized = true;
   EnsureAutomationDirectories(impl->config.automation.directory);
   if (!impl->config.automation.directory.empty()) {
+    Common::RegisterMsgAlertHandler([](const char* caption,const char* text,bool,Common::MsgType)->bool {
+      std::fprintf(stderr,"[automation-fatal] %s: %s\n",caption,text);
+      std::fflush(nullptr);
+      std::_Exit(70);
+    });
     for (int port = 0; port < 4; ++port)
     {
       ciface::Touch::RegisterGameCubeInputOverrider(port);
@@ -2731,6 +2742,7 @@ RuntimeRunResult Runtime::Run() {
                      idle_installed ? "installed" : "rejected");
       }
       if(installed && s_gamepad_provider) {
+        InstallCostumes(guard,m_impl->metadata.root);
         const bool update=HLE::SetExternalStartObserver(guard,0x810fc770,ObserveProviderEntry);
         const bool query=HLE::SetExternalStartObserver(guard,0x810fc5f8,ObserveProviderEntry);
         std::fprintf(stderr,"[openmua2] four-port gamepad provider entry hooks %s\n",update&&query?"installed":"rejected");

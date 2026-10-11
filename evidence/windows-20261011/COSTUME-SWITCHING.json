@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-11",
+  "feature": "Active Characters: X Skin, Y Details",
+  "definition_slots": [
+    "skin",
+    "skin_02",
+    "skin_03",
+    "skin_04",
+    "skin_05",
+    "skin_06",
+    "skin_07",
+    "skin_08",
+    "skin_09",
+    "skin_10"
+  ],
+  "selection": "numeric herostat slot order; available full and _nc packages; no unlock gate; wraps to default",
+  "reference": "OpenXML1xbox/scripts/guard-character-limits.py costume parser/cycle boundaries; adapted to MUA2 slot order and user-requested unlocked availability",
+  "build": {
+    "platform": "Windows x64 MSVC Release",
+    "result": "passed",
+    "final_incremental_warnings": 0,
+    "ctest_passed": 69,
+    "ctest_failed": 0,
+    "ctest_seconds": 11.27,
+    "excluded": [
+      "fullbench",
+      "fuzzer",
+      "zstreamtest",
+      "playTests"
+    ],
+    "exclusion_reason": "three unbuilt vendor tools; playTests disabled"
+  },
+  "runtime": {
+    "native_exit": 0,
+    "single_core_affinity_mask": 4,
+    "port": 0,
+    "entry": "normal boot and Load Game using private profile; no forced menu",
+    "fixture": "private CaptainAmerica skin_03/07/10 use borrowed SpiderMan/Ironman/Thor models; skin_04 declared but absent; not staged or committed",
+    "cycle": [
+      "skin",
+      "skin_03",
+      "skin_07",
+      "skin_10",
+      "skin"
+    ],
+    "held_x": "2200ms advances once",
+    "details": "Y opens hero_powers; B returns",
+    "no_alternates": "Ironman X leaves selected slot unchanged",
+    "world": "selected replacement visibly retained after leaving menu",
+    "visual_review": [
+      "default",
+      "slot03",
+      "slot07-held-once",
+      "slot10",
+      "wrapped-default",
+      "world-verified"
+    ],
+    "limitations": [
+      "no physical-controller acceptance",
+      "no FPS/audio evaluation",
+      "no save/reload persistence test",
+      "not an exhaustive playthrough"
+    ]
+  },
+  "staging": {
+    "installed_exe_sha256": "4d64deb6421d674c9ba82cedd4f0def3db6f987586eaa620147201fe855a6513",
+    "previous_exe_sha256": "f8cfaafee1e849ca51a31183a3e07b0ac6b8039f2aed9549ba7a06b10f5ae4fb",
+    "data_and_saves_unchanged": true,
+    "save_files": 55,
+    "data_files": 400,
+    "paired_ui_manifest": "v8 passed (14 entries)",
+    "root_entries": [
+      "GameData",
+      "OpenMUA2.exe",
+      "saves"
+    ]
+  },
+  "todo": "Personal TODO file not located; removal of item #3 pending user-provided location"
+}
