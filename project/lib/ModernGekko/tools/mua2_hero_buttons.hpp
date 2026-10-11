@@ -4,6 +4,17 @@
 #include <optional>
 
 namespace moderngekko::controls {
+// Never unload resources during a transition to a parent/queued menu, for an
+// unknown layout, or after the menu already requested native unload-on-exit.
+inline bool NeedsHeroMenuSceneRelease(std::span<const std::uint8_t> manager,
+                                     std::span<const std::uint8_t> menu) {
+  return manager.size()>=27720 && menu.size()>=10408 &&
+    ReadBE(manager,0)==0x81198830 && ReadBE(menu,10404)==0x8118f978 &&
+    ReadBE(manager,25860)==0 && ReadBE(manager,27304)==0 &&
+    manager[6063]==0 && manager[27460]==0 && !(menu[1]&8) &&
+    ReadBE(manager,200)>0;
+}
+
 // Experimental profile: plus marks an unmodified D-pad press. Keep menu
 // directions available while consuming the corresponding gameplay powers and
 // synthetic plus-button menu exit/skill-point actions.

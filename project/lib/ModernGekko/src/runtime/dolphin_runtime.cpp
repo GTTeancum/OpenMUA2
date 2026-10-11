@@ -681,6 +681,30 @@ bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size
   return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,size))==expected;
 }
 #include "mua2_costumes.inl"
+// A direct Hero Management exit has no parent menu to replace its cached
+// scene. Finish the native resource-unload path once the menu stack is empty.
+// This runs only after ordinary menu navigation has completed OnClose.
+bool s_hero_menu_release_installed=false;
+bool ReplaceHeroMenuFinalRelease(const Core::CPUThreadGuard& guard) {
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();
+  constexpr u32 resume=0x81008bf0;
+  // The native unload returns here; let the original resume-world call run.
+  if(!s_gamepad_provider || LR(state)==resume)return false;
+  auto& memory=system.GetMemory();
+  const auto* global=memory.GetPointerForRange(0x8081736c,4);
+  if(!global || moderngekko::controls::ReadBE({global,4},0)!=state.gpr[27])return false;
+  const auto* manager=memory.GetPointerForRange(state.gpr[27],27720);
+  const auto* menu=memory.GetPointerForRange(state.gpr[28],10408);
+  if(!manager || !menu ||
+     !moderngekko::controls::NeedsHeroMenuSceneRelease({manager,27720},{menu,10408}))return false;
+  // CMenuManager::Unload, with no active menu, releases cached scene roots and
+  // menu resources. The following original instructions restore world input.
+  state.gpr[3]=state.gpr[27];state.gpr[4]=1;
+  LR(state)=resume;state.npc=0x80fff8f4;
+  std::fprintf(stderr,"[openmua2] released Hero Management scene on final exit\n");
+  return true;
+}
+
 // Candidate shared local-gamepad aiming. No CNetPlayManager flag is modified.
 bool s_gamepad_aim_requested=false, s_gamepad_aim_active=false;
 std::array<bool,6> s_gamepad_aim_hooks{};
@@ -1213,6 +1237,8 @@ void ApplyGamepadPromptText(const Core::CPUThreadGuard& guard) {
 void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
   if(!s_gamepad_provider) return;
   InstallCostumeHooks(guard);
+  if(!s_hero_menu_release_installed && ProviderCode(guard,0x81008bf0,48,"46C2E920A2C36D41C6D2E83AD8F6B7A7B61647DC"))
+    s_hero_menu_release_installed=HLE::SetExternalBranchReplacement(guard,0x81008bf0,ReplaceHeroMenuFinalRelease);
   InstallGamepadAim(guard);
   InstallProfileDispatchTrace(guard);
   InstallGamepadLockon(guard);
@@ -2698,6 +2724,7 @@ RuntimeRunResult Runtime::Run() {
   };
   s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
   s_gamepad_aim_requested=s_gamepad_provider && enabled("OPENMUA2_GAMEPAD_AIM");
+  s_hero_menu_release_installed=false;
   s_profile_dispatch_hooks={};s_profile_dispatch_counts={};
   s_gamepad_aim_active=false;s_gamepad_aim_hooks={};s_gamepad_turret_installed=false;s_gamepad_turret_prompt_installed=false;
   s_gamepad_nullifier_prompt_installed=false;

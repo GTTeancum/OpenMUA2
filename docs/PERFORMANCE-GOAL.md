@@ -10,7 +10,6 @@ These are deferred items, not authorization to resume the blocked controls goal.
 
 Deferred at the user's request. Check earlier hooks and test setup before changing rendering behavior; the cause is not established.
 
-- [ ] Fix retained menu graphics over gameplay after View ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Hero Management ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Back. Start ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Hero Details ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Back ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ Back restored the world in the recorded test.
 - [ ] Review gameplay elements appearing over menu/instruction panels, including the signal marker over hacking tutorial text. Do not assume every instance has the same cause.
 
 Evidence: [Hero Management graphics audit](../evidence/windows-20261007/HERO-MENU-GRAPHICS-AUDIT.json).

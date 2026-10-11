@@ -1,5 +1,32 @@
 # Current status â€” GitHub main
 
+## Hero Management return fixed - 2026-10-11
+
+Normal player navigation reproduced TODO #1's retained background/stat bars:
+cold boot, profile selection, Load Game, Back/View, Active Characters, B.
+Only contained port-0 controller input and native screenshots were used;
+no forced menus, warps, savestates or guest-memory test mutations.
+
+A code-hash-guarded final menu exit now releases the closed Hero Management
+scene through the native unloader, only when no parent/pending menu remains.
+Fresh normal navigation verified direct exit, a five-second clean-world wait,
+reopening, Y Details/B, another direct exit, and the complete pause-menu route.
+Each native capture was inspected. Both test processes exited normally.
+The separate hacking-tutorial signal-marker report remains open and unverified.
+
+Windows x64 MSVC Release build passed with no compiler warnings/errors.
+CTest: 69/69 passed in 10.69 seconds; established vendor/disabled exclusions.
+Runtime retained existing unsupported-formatter fallback diagnostics, with no
+formatter mismatches. Audio was disabled; no audio/FPS or hardware claim.
+
+Staged C:/Games/MUA2/OpenMUA2.exe SHA256:
+`10e009fce1f7e2ebc2230507f90fec98594e8afddc3887661555f58673df293f`.
+Embedded package verification and all 14 paired v8 UI entries passed.
+All 400 installed game-data files and 55 saves remained byte-identical.
+Only the completed retained-scene bullet was removed from the personal TODO.
+Evidence: evidence/windows-20261011/HERO-MENU-NORMAL-NAVIGATION.json.
+
+
 ## Costume switching staged - 2026-10-11
 
 Active Characters now shows X Skin / Y Details. X cycles herostat `skin`,

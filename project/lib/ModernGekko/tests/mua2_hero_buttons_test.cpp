@@ -34,6 +34,24 @@ struct Fixture {
   }
 };
 int main() {
+  std::vector<std::uint8_t> manager(27720), menu(10408);
+  put(manager,0,0x81198830);put(menu,10404,0x8118f978);put(manager,200,2);
+  if(!NeedsHeroMenuSceneRelease(manager,menu))return 20;
+  for(unsigned offset:{25860u,27304u}) {
+    auto pending=manager;put(pending,offset,1);
+    if(NeedsHeroMenuSceneRelease(pending,menu))return 21;
+  }
+  for(unsigned offset:{6063u,27460u}) {
+    auto pending=manager;pending[offset]='m';
+    if(NeedsHeroMenuSceneRelease(pending,menu))return 26;
+  }
+  auto other=menu;put(other,10404,0x8118ed94);
+  if(NeedsHeroMenuSceneRelease(manager,other))return 22;
+  other=menu;other[1]=8;
+  if(NeedsHeroMenuSceneRelease(manager,other))return 23;
+  if(NeedsHeroMenuSceneRelease({},menu) || NeedsHeroMenuSceneRelease(manager,{}))return 24;
+  put(manager,200,0);
+  if(NeedsHeroMenuSceneRelease(manager,menu))return 25;
   Fixture f;
   auto& array=f.memory[0x80800000];array.resize(16);
   for(unsigned i=0;i<4;++i) put(array,4*i,0x90010000+i*0x1000);

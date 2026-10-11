@@ -1,0 +1,312 @@
+{
+  "date": "2026-10-11",
+  "issue": "TODO 1: retained Hero Management scene after direct Back/View entry and B exit",
+  "reproduced_before_fix": true,
+  "navigation": "Cold boot -> title -> Play -> profile join/select/Ready -> Load Game -> existing Latveria autosave -> Back/View -> tutorial A -> Active Characters -> B. No forced menus, warps, savestates or guest-memory test commands.",
+  "fix": "Hash-guarded final native menu exit calls the native resource unloader for CMenuTeam only when no active, parent, pending or queued menu remains, resources are cached, and native unload-on-exit was not already requested.",
+  "verified": [
+    "Direct B exit restores visible world; five-second neutral wait stays clean",
+    "Reopening Hero Management restores models and menu",
+    "Y Details and B return display correctly",
+    "Second direct exit restores world",
+    "Start -> Hero Details -> B -> pause -> B -> world displays correctly"
+  ],
+  "unverified": [
+    "Separate signal marker overlapping hacking tutorial",
+    "Physical controller acceptance",
+    "Audio and combat FPS"
+  ],
+  "test_configuration": {
+    "single_logical_cpu": 2,
+    "affinity_mask": "0x4",
+    "input_port": 0,
+    "graphics": "Vulkan",
+    "audio": "Null",
+    "game_data": "C:/Games/MUA2/GameData",
+    "saves": "Private bytecopy at launch; installed saves untouched"
+  },
+  "build": {
+    "toolchain": "Windows x64 MSVC Release, existing Ninja build",
+    "exit": 0,
+    "compiler_warnings_errors": 0,
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\build-menu-release-staged.log",
+    "runner_sha256": "7bc2e7ff9f09d981e4bef211aa3c52517c0c9e4982239acca9108836997b21e4"
+  },
+  "tests": {
+    "passed": 69,
+    "failed": 0,
+    "seconds": 10.69,
+    "excluded": [
+      "fullbench",
+      "fuzzer",
+      "zstreamtest",
+      "playTests"
+    ],
+    "exclusion_reason": "Three unbuilt vendor tools and disabled playTests; same established suite",
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\test-menu-release-staged.log"
+  },
+  "runtime_notes": "Both runs exited normally. Existing unsupported-formatter fallback diagnostics remain; no formatter mismatches reported. No audio output was enabled.",
+  "staging": {
+    "installed_exe_sha256": "10e009fce1f7e2ebc2230507f90fec98594e8afddc3887661555f58673df293f",
+    "previous_exe_sha256": "4d64deb6421d674c9ba82cedd4f0def3db6f987586eaa620147201fe855a6513",
+    "data_and_saves_unchanged": true,
+    "save_files": 55,
+    "data_files": 400,
+    "paired_ui_manifest": "v8 passed (14 entries)",
+    "root_entries": [
+      "GameData",
+      "OpenMUA2.exe",
+      "saves"
+    ]
+  },
+  "runs": [
+    {
+      "directory": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\menu-player-check-r2-20261011",
+      "normal_exit": 0,
+      "command_counts": {
+        "pause": 61,
+        "resume": 60,
+        "screenshot": 19,
+        "stop": 1,
+        "xbox_time": 61
+      },
+      "command_manifest_sha256": "93d7351f43a22c220837827362d4248e858bd00174dae9ae9d2d8510c4af852c",
+      "captures": [
+        {
+          "file": "01-boot.png",
+          "sha256": "bcac89c60e9aa18d2c23d363966ff0f5b353ae66c57dbe0fb45d125c2dc1358a",
+          "individually_inspected": true
+        },
+        {
+          "file": "02-title.png",
+          "sha256": "ed2c3e5f0ba2a5b7150e8de869fe3c550e5f5973a3a70a4d22abb673983d9fd6",
+          "individually_inspected": true
+        },
+        {
+          "file": "03-main.png",
+          "sha256": "343b20c9c2d5926f71673afbb8d614a2f2209bfbddb34de93221bd985c7b6db4",
+          "individually_inspected": true
+        },
+        {
+          "file": "04-play.png",
+          "sha256": "da6d38adc6a6bd72081d05a41426b0cfbd263e3967aa9c71e8e437bb516629e5",
+          "individually_inspected": true
+        },
+        {
+          "file": "05-profile.png",
+          "sha256": "427c9474a52e77a306c4f5e4e267fd905db48a28fb520d44e2e268fc3729bf44",
+          "individually_inspected": true
+        },
+        {
+          "file": "06-join.png",
+          "sha256": "6d3dc5dbbe6bd006f48b70d2e2ff44b084a59dcbecc0ee8dd550d09e507f3bde",
+          "individually_inspected": true
+        },
+        {
+          "file": "07-selected.png",
+          "sha256": "7b17b6493e3d8a4359f1c1c7aa3971f8fcfc3916dae427b1a66c67d2bebf2818",
+          "individually_inspected": true
+        },
+        {
+          "file": "08-ready.png",
+          "sha256": "8c99b55aeb396a7d2a603f2699b2a787ea971ee9c5214eadb25fba34f97610e6",
+          "individually_inspected": true
+        },
+        {
+          "file": "09-load-list.png",
+          "sha256": "5c71ab6a4f9485aa9dcb7ff3d7ba11d75adf0d88542865a14fe0d1f1f3c3b84f",
+          "individually_inspected": true
+        },
+        {
+          "file": "10-load-result.png",
+          "sha256": "72dac4ccf41ae18b86ecd4df51a54114ff087a460c2b15b043ee5e76acd52018",
+          "individually_inspected": true
+        },
+        {
+          "file": "11-world.png",
+          "sha256": "d090f83f9f1758b4e099f22a6a47349ecfbe3fa4dbb6ee7b8a4d4efe7480d18c",
+          "individually_inspected": true
+        },
+        {
+          "file": "12-view-entry.png",
+          "sha256": "b0da6ea0a1caa89a7f97a1924ccb444083fa18f1c275148465b2e6dbe6e72d38",
+          "individually_inspected": true
+        },
+        {
+          "file": "13-management.png",
+          "sha256": "81e7eb3c684aedc6fac549304ec42332cc9457b017eeeadd40e3c759c74940fd",
+          "individually_inspected": true
+        },
+        {
+          "file": "14-direct-return.png",
+          "sha256": "e8c5b3bb7e590d6587b53de733effbd8bba54de4fe494f7983afb7b3d00a6626",
+          "individually_inspected": true
+        },
+        {
+          "file": "15-persistent.png",
+          "sha256": "fabe3b56f7c7d1611ad179ae41e734df304b08199a56499a67cc714c951a494a",
+          "individually_inspected": true
+        },
+        {
+          "file": "16-pause.png",
+          "sha256": "5d29f16387584f1c85ad9a79b2209edcfb552a611a4496b8b2c4d43fd905c6a8",
+          "individually_inspected": true
+        },
+        {
+          "file": "17-pause-hero.png",
+          "sha256": "cecfddd9ae767208f3d4791a93634990533a0d228b29e017662b5c198be3f270",
+          "individually_inspected": true
+        },
+        {
+          "file": "18-return-pause.png",
+          "sha256": "27cb6a8b92d4160d13bb0e0feae54f2ae80eba2e77d447eccf9f584d4d5a4e35",
+          "individually_inspected": true
+        },
+        {
+          "file": "19-pause-return.png",
+          "sha256": "1cf8c3b5f6480a06581145fb10764610a45d072e389a4b8c539103fb458b9e3d",
+          "individually_inspected": true
+        }
+      ]
+    },
+    {
+      "directory": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\menu-player-fixed-20261011",
+      "normal_exit": 0,
+      "command_counts": {
+        "pause": 73,
+        "resume": 72,
+        "screenshot": 23,
+        "stop": 1,
+        "xbox_time": 73
+      },
+      "command_manifest_sha256": "d1f10c6ea780ee657e6b4eb2a41f43c3b7b841ef2f0e03ada8cc705d8e16eac1",
+      "captures": [
+        {
+          "file": "01-boot.png",
+          "sha256": "bcac89c60e9aa18d2c23d363966ff0f5b353ae66c57dbe0fb45d125c2dc1358a",
+          "individually_inspected": true
+        },
+        {
+          "file": "02-autosave.png",
+          "sha256": "ed2c3e5f0ba2a5b7150e8de869fe3c550e5f5973a3a70a4d22abb673983d9fd6",
+          "individually_inspected": true
+        },
+        {
+          "file": "03-main.png",
+          "sha256": "343b20c9c2d5926f71673afbb8d614a2f2209bfbddb34de93221bd985c7b6db4",
+          "individually_inspected": true
+        },
+        {
+          "file": "04-play.png",
+          "sha256": "564b3fafeee5b3eb7c4c7f38d2bdd4fdcc333ed9479bb97114c7eab76b84754b",
+          "individually_inspected": true
+        },
+        {
+          "file": "05-profile.png",
+          "sha256": "427c9474a52e77a306c4f5e4e267fd905db48a28fb520d44e2e268fc3729bf44",
+          "individually_inspected": true
+        },
+        {
+          "file": "06-join.png",
+          "sha256": "e72772a5f95a26fd7d69b1fb8add851f38c06351f5ff8d7392395bad8de629fd",
+          "individually_inspected": true
+        },
+        {
+          "file": "07-selected.png",
+          "sha256": "1d9cb1eef9551103d87b7f483877c6a970b6fa8ced89d56a8d9eb1fb9c510415",
+          "individually_inspected": true
+        },
+        {
+          "file": "08-ready.png",
+          "sha256": "d4f66154f1455a5dc7f22b065ef9d33ef6acb8d90823e82fa1ca0e7339dedad0",
+          "individually_inspected": true
+        },
+        {
+          "file": "09-load.png",
+          "sha256": "95f75052a382aa14b1312d6a8f671ec023831255da6d1206ea2b6762d8375317",
+          "individually_inspected": true
+        },
+        {
+          "file": "10-loaded.png",
+          "sha256": "305b6e6eb5781d90d42635a788a984d84e6bedb7b783bc71803f9e31ebf62a0e",
+          "individually_inspected": true
+        },
+        {
+          "file": "11-world.png",
+          "sha256": "6a6d4c18988e5e9136fceca90a6058a45a890ec9d270a5257c7656539b7227ac",
+          "individually_inspected": true
+        },
+        {
+          "file": "12-hero-tutorial.png",
+          "sha256": "f4576741874d194d30db9f34a5618c56e1fb9c271cbda00cf6737054b99f5002",
+          "individually_inspected": true
+        },
+        {
+          "file": "13-management.png",
+          "sha256": "02672b6a74a7e8116af8bf989825d31619e4c58fb15f0991b10e0fa6713013f3",
+          "individually_inspected": true
+        },
+        {
+          "file": "14-direct-return.png",
+          "sha256": "2f683ee59b3d618380dbe4851a1463927070fcff2be713b4573c80d26bd2b5fa",
+          "individually_inspected": true
+        },
+        {
+          "file": "15-persistent.png",
+          "sha256": "dfa06e5cb050f15ec6b3ffabb619c064860d58172bf10243fdd5a559298865c7",
+          "individually_inspected": true
+        },
+        {
+          "file": "16-reopen.png",
+          "sha256": "dbba7705181d8840903212c8d4f397893faffdd14c9944ca9552480086ed2b2e",
+          "individually_inspected": true
+        },
+        {
+          "file": "17-details.png",
+          "sha256": "3f0e31cd45b062478decfe508c89c413cbc31c051ebb253356c2128ff6f5096b",
+          "individually_inspected": true
+        },
+        {
+          "file": "18-details-return.png",
+          "sha256": "0e1c4df91f8d2fe93535f45439f51614bb5456fe70c9cc56ee0703ccffc89850",
+          "individually_inspected": true
+        },
+        {
+          "file": "19-second-return.png",
+          "sha256": "c80eb2015e6ad01fd2646878e79400eee7650487ea6fd6b9ced5a64af341f3a5",
+          "individually_inspected": true
+        },
+        {
+          "file": "20-pause.png",
+          "sha256": "e22494207199a473576f9bb3e207ae280e7882c5c1b4c4a88ded409d6c4087c9",
+          "individually_inspected": true
+        },
+        {
+          "file": "21-pause-hero.png",
+          "sha256": "cd3bc7fc0303cf4ec696b3396702583eab1f1bb69a4c7f6391e0c0537970418c",
+          "individually_inspected": true
+        },
+        {
+          "file": "22-pause-return.png",
+          "sha256": "27cb6a8b92d4160d13bb0e0feae54f2ae80eba2e77d447eccf9f584d4d5a4e35",
+          "individually_inspected": true
+        },
+        {
+          "file": "23-world-return.png",
+          "sha256": "c3b5b7cfe5308ca62a3062823114f42547fb08a827aa78ee1c5bf962004c82d4",
+          "individually_inspected": true
+        }
+      ]
+    }
+  ],
+  "source_backup": "outputs/OpenMUA2-source-hero-return.zip (task workspace; created after commit)",
+  "cleanup": {
+    "status": "Automatic approval review rejected deletion: blocked by policy",
+    "retained_bytes": 56803265,
+    "paths": [
+      "work/hero-return-package",
+      "work/menu-player-fixed-20261011/user",
+      "work/menu-player-check-r2-20261011/user"
+    ]
+  }
+}
