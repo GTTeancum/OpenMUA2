@@ -23,7 +23,7 @@ Staged EXE: C:/Games/MUA2/OpenMUA2.exe, SHA256
 Embedded runtime verification and all 14 paired v8 UI entries passed. All 400
 installed game-data files and 55 saves remained byte-identical. Root contains
 only OpenMUA2.exe, GameData and saves. Test process stopped normally.
-Personal TODO #3 removal remains pending: its file has not been located.
+Completed item #3 removed from docs/PERFORMANCE-GOAL.md; deferred item #1 retained.
 Evidence: evidence/windows-20261011/COSTUME-SWITCHING.json.
 
 ## Controls and Powers-page completion - 2026-10-08
