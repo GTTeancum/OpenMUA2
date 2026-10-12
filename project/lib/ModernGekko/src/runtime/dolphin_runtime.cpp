@@ -707,7 +707,7 @@ bool ReplaceHeroMenuFinalRelease(const Core::CPUThreadGuard& guard) {
 
 // Candidate shared local-gamepad aiming. No CNetPlayManager flag is modified.
 bool s_gamepad_aim_requested=false, s_gamepad_aim_active=false;
-std::array<bool,6> s_gamepad_aim_hooks{};
+std::array<bool,7> s_gamepad_aim_hooks{};
 bool s_gamepad_turret_installed=false, s_gamepad_turret_prompt_installed=false;
 bool s_gamepad_nullifier_prompt_installed=false;
 bool ReplaceGamepadAimInstruction(const Core::CPUThreadGuard& guard) {
@@ -803,6 +803,16 @@ bool ReplaceGamepadAimSample(const Core::CPUThreadGuard& guard) {
   if(!moderngekko::controls::WriteGamepadAim({record,72},ReadGamepadSample(port),joined,help[20]!=0))return false;
   state.npc=0x80ffbd5c;return true;
 }
+// PS2 CMenuManager slot0x30 (00523e60..00523f28) retains the shared
+// setup/texture cleanup but has no pointer sprite draw. Skip only Wii's
+// additional cursor pass; the hacking signal is a separate native entity.
+bool ReplaceGamepadPointerDraw(const Core::CPUThreadGuard& guard) {
+  if(!GamepadAimManager(guard))return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  // The common texture-cleanup loop has already completed at this call site.
+  state.npc=0x80ffc2a4;
+  return true;
+}
 bool ReplaceGamepadAimProjection(const Core::CPUThreadGuard& guard) {
   if(!GamepadAimManager(guard))return false;
   auto& state=guard.GetSystem().GetPPCState();
@@ -854,18 +864,20 @@ void InstallProfileDispatchTrace(const Core::CPUThreadGuard& guard) {
 }
 void InstallGamepadAim(const Core::CPUThreadGuard& guard) {
   if(!s_gamepad_aim_requested || s_gamepad_aim_active)return;
-  constexpr std::array<u32,6> sites{0x81015b08,0x80ffbb58,0x80ffb38c,0x80ffb51c,0x80ffb748,0x80100454};
-  constexpr std::array<unsigned,6> sizes{80,104,60,60,60,16};
-  constexpr std::array<const char*,6> hashes{
+  constexpr std::array<u32,7> sites{0x81015b08,0x80ffbb58,0x80ffb38c,0x80ffb51c,0x80ffb748,0x80100454,0x80ffc144};
+  constexpr std::array<unsigned,7> sizes{80,104,60,60,60,16,16};
+  constexpr std::array<const char*,7> hashes{
     "ACA962EA4C7DC74CDF5F929914DA94966E56D0B1","B2845CF93C6BD62BA4AB83FC116F294C86AFDF97",
     "2A00CD46DAAE28AE46BEDEF221E4EA3605E22A27","46284EF5A981DD2297A5142774DAC6B3D64908A9",
-    "2DBE55B4236F0D53E33755273B35850BD9D882E9","BD6EC3E04F9C6E96F9765DAF12A3B7DA2C7673F7"};
-  for(unsigned i=0;i<6;++i)if(!ProviderCode(guard,sites[i],sizes[i],hashes[i]))return;
+    "2DBE55B4236F0D53E33755273B35850BD9D882E9","BD6EC3E04F9C6E96F9765DAF12A3B7DA2C7673F7",
+    "D6A731EA95655F0238319EF4E9D31BCB11CF5A10"};
+  for(unsigned i=0;i<sites.size();++i)if(!ProviderCode(guard,sites[i],sizes[i],hashes[i]))return;
   if(!s_gamepad_aim_hooks[0])s_gamepad_aim_hooks[0]=HLE::SetExternalFunctionReplacement(guard,sites[0],ReplaceGamepadAimMode);
   if(!s_gamepad_aim_hooks[1])s_gamepad_aim_hooks[1]=HLE::SetExternalBranchReplacement(guard,sites[1],ReplaceGamepadAimSample);
   for(unsigned i=2;i<5;++i)if(!s_gamepad_aim_hooks[i])
     s_gamepad_aim_hooks[i]=HLE::SetExternalBranchReplacement(guard,sites[i],ReplaceGamepadAimProjection);
   if(!s_gamepad_aim_hooks[5])s_gamepad_aim_hooks[5]=HLE::SetExternalStartObserver(guard,sites[5],ObserveGamepadAimModeChange);
+  if(!s_gamepad_aim_hooks[6])s_gamepad_aim_hooks[6]=HLE::SetExternalBranchReplacement(guard,sites[6],ReplaceGamepadPointerDraw);
   s_gamepad_aim_active=std::all_of(s_gamepad_aim_hooks.begin(),s_gamepad_aim_hooks.end(),[](bool value){return value;});
   if(s_gamepad_aim_active)std::fprintf(stderr,"[openmua2] shared local gamepad aiming installed\n");
 }

@@ -1,5 +1,31 @@
 # Current status â€” GitHub main
 
+## Remaining tutorial overlay fixed - 2026-10-12
+
+The hacking instructions were covered by an extra Wii aiming pointer.
+The PS2 equivalent (CMenuManager slot0x30, 00523e60..00523f28) retains
+common setup/texture cleanup but does not draw that pointer. The guarded
+gamepad path now matches it, skipping only the Wii cursor pass.
+
+With the user's approved encounter checkpoint, native captures verified the
+overlap before the fix, clear instructions afterward, A dismissal, and the
+separate hacking signal rendering and turning with left-stick input.
+No gameplay state was forced after loading the checkpoint. All runs exited normally.
+A collision stopped frame production in both the old and fixed builds from
+this checkpoint; failure/retry remains unverified, and its cause is not proven.
+No full maze win, physical-controller, audio/FPS or four-port claim.
+
+Windows x64 MSVC Release passed without compiler warnings/errors; 69/69 tests
+passed in 19.29 seconds with established vendor/disabled exclusions. Runtime retains
+unsupported-formatter fallback diagnostics, without reported mismatches.
+Staged C:/Games/MUA2/OpenMUA2.exe SHA256:
+`a643a2f3a3fb2cf2953042a2aacc93e24e0d73b9996aaf75df1054621e6208fd`.
+Embedded package verification and paired v8 UI validation passed; all 400
+game-data files and 55 saves stayed byte-identical. The last completed TODO
+item was removed, leaving the controller reference intact.
+Evidence: evidence/windows-20261012/HACKING-OVERLAY.json.
+
+
 ## Hero Management return fixed - 2026-10-11
 
 Normal player navigation reproduced TODO #1's retained background/stat bars:

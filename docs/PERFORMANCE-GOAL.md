@@ -1,22 +1,10 @@
 # TODO
 
-## Tracked Items
-
-1. Hero Management and pause-menu overlays.
-
-These are deferred items, not authorization to resume the blocked controls goal. Gameplay acceptance and edge-case testing belong to the beta testers. Four-port testing, a fresh maze-win replay, Nullifier research, a broad interaction inventory, packaging, and installed-build regressions are outside the current pass.
-
-## 1. Hero Management and Pause-Menu Overlays
-
-Deferred at the user's request. Check earlier hooks and test setup before changing rendering behavior; the cause is not established.
-
-- [ ] Review gameplay elements appearing over menu/instruction panels, including the signal marker over hacking tutorial text. Do not assume every instance has the same cause.
-
-Evidence: [Hero Management graphics audit](../evidence/windows-20261007/HERO-MENU-GRAPHICS-AUDIT.json).
+No open items.
 
 ## Xbox / XInput Quick Reference
 
-Agreed gameplay mapping. Context-specific menu differences and unresolved prompts are tracked above; this table is not a claim that every installed UI label has been replaced.
+Agreed gameplay mapping. Context-specific menu controls may differ.
 
 | Input | Action |
 | --- | --- |

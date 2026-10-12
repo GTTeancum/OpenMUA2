@@ -1,0 +1,126 @@
+{
+  "date": "2026-10-12",
+  "result": "PASS: remaining tutorial-overlay item fixed",
+  "authorization": "User approved existing diagnostic encounter checkpoint, followed by controller-only navigation.",
+  "baseline": "Current staged predecessor visibly drew a green Wii aiming pointer over hacking instruction text.",
+  "diagnosis": "This is the extra Wii CMenuManager pointer sprite pass, not the hacking signal entity or a retained menu background.",
+  "ps2_reference": {
+    "executable": ".local/ps2-reference/SLUS_218.79",
+    "vtable": "007e0d10, slot30",
+    "routine": "00523e60..00523f28",
+    "sha256": "144b291ad5d95d0194cdc3045dfdd6bb1388ee668e0df2121db5a6b3c59a4463",
+    "behavior": "Shared aim-record checks, color/setup query and texture cleanup remain; no pointer sprite drawing follows."
+  },
+  "implementation": {
+    "site": "80ffc144",
+    "destination": "80ffc2a4",
+    "guard_sha1_16_bytes": "D6A731EA95655F0238319EF4E9D31BCB11CF5A10",
+    "behavior": "While the validated local-gamepad aiming context is active, retain common setup/cleanup and skip the Wii-only cursor drawing. Original fallback remains outside this context. No input, collision, scoring, text or signal-entity changes."
+  },
+  "live_verification": [
+    "Current build reproduced pointer overlapping instructions",
+    "Fixed build has unobstructed instructions",
+    "A dismisses instructions",
+    "Native hacking signal and level still render",
+    "Left-stick right turns the signal right; visible trail follows",
+    "All three processes exited normally through stop"
+  ],
+  "limits": [
+    "A wall collision stopped further frame production in both fixed and previously installed builds using the old checkpoint. Failure/retry not visually verified; no claim about its cause or normal campaign behavior.",
+    "No fresh maze win, four-port, physical-controller, audio or FPS acceptance.",
+    "Checkpoint was originally created using an encounter fixture; this is not normal campaign-access proof."
+  ],
+  "build": {
+    "exit": 0,
+    "toolchain": "Existing Windows x64 MSVC Release/Ninja path",
+    "warnings_errors": 0,
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-final-build.log",
+    "runner_sha256": "4e53bb928f11007758e441c4519cbcd3fe1f76e926b91b958cb4b1c99eb09455"
+  },
+  "tests": {
+    "passed": 69,
+    "failed": 0,
+    "seconds": 19.29,
+    "excluded": [
+      "fullbench",
+      "fuzzer",
+      "zstreamtest",
+      "playTests"
+    ],
+    "reason": "Established three unbuilt vendor tools and disabled playTests",
+    "log": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-tests.log"
+  },
+  "staging": {
+    "installed_exe_sha256": "a643a2f3a3fb2cf2953042a2aacc93e24e0d73b9996aaf75df1054621e6208fd",
+    "previous_exe_sha256": "10e009fce1f7e2ebc2230507f90fec98594e8afddc3887661555f58673df293f",
+    "data_and_saves_unchanged": true,
+    "save_files": 55,
+    "data_files": 400,
+    "paired_ui_manifest": "v8 passed (14 entries)",
+    "root_entries": [
+      "GameData",
+      "OpenMUA2.exe",
+      "saves"
+    ]
+  },
+  "captures": [
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-20261012\\01-tutorial.png",
+      "sha256": "1d682f15a8f6414268100d0cf52eb6402f18da4dbcf24e46daca4c935976b152",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-20261012\\02-active.png",
+      "sha256": "f8558772b3b3aaa6ba4443735ce340685424d79199863d4ada3194599d0bbb78",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-fixed-20261012\\01-tutorial.png",
+      "sha256": "ab59a903baee85fb43a7696d888c9d6eb706db21f5102fe2256893202dbf2d17",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-fixed-20261012\\02-active.png",
+      "sha256": "f8039d263d259e6137cad03235344215367291352fa67b9ea250387c7375805c",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-fixed-20261012\\03-steer-right.png",
+      "sha256": "9544ef64fbe1e1f56df3ce26d665d299e8b60d70dc28d45fbef655bb72ab169c",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-baseline2-20261012\\02-active.png",
+      "sha256": "d1c2ef42d8f1d328e72a6717d8897b258d06cca85dbd1a8196074df5eda2c135",
+      "visually_inspected": true
+    },
+    {
+      "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-baseline2-20261012\\04-result.png",
+      "sha256": "a3862ddbdf47121327d700d3b372f06c5eb2fd32a8233ac34c3b193d75fbe181",
+      "visually_inspected": true
+    }
+  ],
+  "runtime_notes": "Unsupported-formatter fallback counters remain; no formatter mismatches reported. Null audio. Single logical CPU2, port0 controller input. No test memory writes or additional warps.",
+  "cleanup": {
+    "status": "Automatic approval review rejected deletion: blocked by policy",
+    "retained": [
+      {
+        "Path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-package",
+        "Bytes": 22301289.0
+      },
+      {
+        "Path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-20261012\\user",
+        "Bytes": 151354724.0
+      },
+      {
+        "Path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-fixed-20261012\\user",
+        "Bytes": 151352864.0
+      },
+      {
+        "Path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\hacking-overlay-baseline2-20261012\\user",
+        "Bytes": 151356312.0
+      }
+    ],
+    "bytes_retained": 476365189.0
+  }
+}
