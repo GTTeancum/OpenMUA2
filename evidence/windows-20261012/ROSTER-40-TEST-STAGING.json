@@ -1,0 +1,39 @@
+{
+  "installed_test_data": true,
+  "playable_definitions": 40,
+  "test_aliases": 13,
+  "shared_donor": "Captain America",
+  "logical_locations": [
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43
+  ],
+  "private_access_point": "Early Latveria near the loaded team; X opens SHIELD menu then Change Team",
+  "stock_backup": "C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\staging-archive\\roster40-stock-data\\assetsfb.wad",
+  "stock_wad_sha256": "602702b7b332d33718d1223804b0503455b5aa601776c515d0537c5e707cc35d",
+  "test_wad_sha256": "8a0dd2633e5271608939a03d5aea05c768f872f5a311463058a6bdf2aabacb68",
+  "changed_files": [
+    "GameData/files/z/assetsfb.wad"
+  ],
+  "save_files_unchanged": 55,
+  "ui_manifest": "14/14 matching",
+  "root_entries": [
+    "GameData",
+    "OpenMUA2.exe",
+    "saves"
+  ],
+  "launcher_sha256": "6240e9d16e677ffebcf6d2c512f7b4bf077d3dc524552d7338735f67e2719017",
+  "installed_package_verification": "PASS; embedded file hashes, runner help exit0; one logical processor; saves C:/Games/MUA2/saves",
+  "gameplay_evidence": "Identical fixture WAD previously tested in r13/r14; final runner passed stock regression. Installed package verification does not launch gameplay.",
+  "prior_stock_only_delivery": "ROSTER-40-DELIVERY.json remains a historical receipt; this user-requested staging supersedes its installed-data/launcher state."
+}

@@ -1,5 +1,31 @@
 # MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## 40-slot test data staged at user request - 2026-10-12
+
+The installation now includes the tested 40-slot fixture, not only the expanded
+executable. It contains the original 27 declarations plus Roster28 through
+Roster40, thirteen Captain America resource aliases for capacity testing. All
+52 character packages and aliased talent member names are present. The test stage
+contains matching logical pads and authored neighbors; it reuses existing visual
+positions and is not a finished 40-character stage background.
+
+Load the existing early-Latveria save, approach the nearby test SHIELD access
+point and press X, then choose Change Team. The added entries are reachable via
+the native directional navigation. The access-point startup fade-in correction
+is included so accepting a changed team returns to a visible world.
+
+Only GameData/files/z/assetsfb.wad changed; all 55 save files remain unchanged.
+The original WAD is preserved outside the game folder at
+`%LOCALAPPDATA%/OpenMUA2/staging-archive/roster40-stock-data/assetsfb.wad`.
+The launcher has a paired manifest for the modified permanent character-info
+package. Installed EXE SHA256:
+`6240e9d16e677ffebcf6d2c512f7b4bf077d3dc524552d7338735f67e2719017`.
+Test WAD SHA256:
+`8a0dd2633e5271608939a03d5aea05c768f872f5a311463058a6bdf2aabacb68`.
+Embedded package verification passed. This is the identical test WAD accepted in
+r13/r14; package verification alone does not establish gameplay. Proprietary
+fixture data remains outside Git. See ROSTER-40-TEST-STAGING.json for the receipt.
+
 ## 40-character roster support delivered - 2026-10-12
 
 The default Windows runtime supports 40 selectable heroes with coordinated

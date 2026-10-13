@@ -1,13 +1,15 @@
 # Playable roster expansion to 40
 
-Status: implemented, validated and staged at `C:/Games/MUA2/OpenMUA2.exe`.
-Final receipt: `evidence/windows-20261012/ROSTER-40-DELIVERY.json`.
+Status: implemented and validated. The user-requested 40-slot test data is now
+staged with the paired executable at `C:/Games/MUA2/`. Source/build receipt:
+`evidence/windows-20261012/ROSTER-40-DELIVERY.json`; current installed state:
+`evidence/windows-20261012/ROSTER-40-TEST-STAGING.json`.
 
 ## Scope and implementation
 
 Support 40 selectable hero definitions with a four-character active team. Mods
-supply the characters, packages and selection-stage artwork. No test aliases or
-new character assets are delivered by this source change.
+supply the characters, packages and selection-stage artwork. Test aliases are installed locally at the user's explicit request; no proprietary
+character assets are included in the source commit.
 
 | Structure | Previous capacity | New capacity |
 | --- | ---: | ---: |
