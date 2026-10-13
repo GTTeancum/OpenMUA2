@@ -83,7 +83,8 @@ on map reload, because that map ordinarily has no team-change access at this
 stage. An earlier black-screen return reproduced without changing the team; it
 was fixture setup, not accepted as a passing visual check. Talent member filenames
 also needed complete aliasing; after correction the cold reload showed all four
-Captain America powers under Roster40. Neither fixture change is shipped.
+Captain America powers under Roster40. Both corrections are included in the locally staged test WAD; neither is
+part of the source distribution.
 
 Retail-save migration into the expanded fixture and stock data has passed.
 The scoped suite covers relocation/boundaries, nonoverlap, patch guards,
