@@ -1,0 +1,86 @@
+{
+  "date": "2026-10-12",
+  "status": "development_incomplete",
+  "feature_gate": "OPENMUA2_ROSTER_DEVELOPMENT=1",
+  "installed_release_changed": false,
+  "current_development_runner_sha256": "e8f1698d408e296e910b3129cfd5e7738cdd427f808abaec48608faeed01d86a",
+  "dol_instruction_sites": 691,
+  "menu_instruction_sites": 7,
+  "windows_release_build": "passed",
+  "focused_tests": {
+    "layout": "passed 0.05 seconds",
+    "save_framing": "passed 0.11 seconds"
+  },
+  "stock_data_validation": {
+    "normal_controller_route": [
+      "main menu",
+      "profile selection",
+      "Load Game",
+      "Latveria world",
+      "active team",
+      "Captain America powers",
+      "world return"
+    ],
+    "save": "private copy of existing Game1.dat",
+    "native_captures_inspected": [
+      "loaded-world.png",
+      "active-team.png",
+      "hero-powers.png",
+      "world-return.png"
+    ],
+    "capture_directory": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-stock-20261012",
+    "process_exit": 0,
+    "storage_readback": {
+      "character_info_tag": "0x4d32",
+      "character_info_pointer": "0x904a8c80",
+      "manager": "0x90359890",
+      "character_info_count": 27,
+      "character_info_vtable": "0x80530360",
+      "definition_count": 231,
+      "full_stats_active": 34,
+      "playable_count": 28
+    }
+  },
+  "forty_fixture": {
+    "content": "13 private Captain America definition/package aliases, not delivered characters",
+    "extra_menu_locations": [
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43
+    ],
+    "charinfo_copies_updated": [
+      "data/charinfo.xmlb",
+      "permanent.fb:data/charinfo.xmlb"
+    ],
+    "storage_readback": {
+      "character_info_tag": "0x4d32",
+      "character_info_pointer": "0x90493e00",
+      "manager": "0x9035a8a0",
+      "character_info_count": 40,
+      "character_info_vtable": "0x80530360",
+      "definition_count": 244,
+      "full_stats_active": 42,
+      "playable_count": 41
+    },
+    "native_definition_41": "Roster40"
+  },
+  "not_yet_verified": [
+    "selection/replacement of all 40 entries",
+    "extended save integration and reload",
+    "stock-save migration with expanded definitions",
+    "final installed build"
+  ],
+  "audio": "Null backend; no audio validation",
+  "performance": "no FPS claim",
+  "input": "contained process-local port 0; no host input"
+}

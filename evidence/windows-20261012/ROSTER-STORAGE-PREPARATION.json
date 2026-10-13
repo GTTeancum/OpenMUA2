@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "scope": "Inactive native storage patch preparation, not runtime or gameplay acceptance",
+  "compiled_plan_sites": 649,
+  "all_expected_instructions_match": true,
+  "compiled_plan_sha256": "4802971f8230924012c83825668342d1f3aa6561c930b7556c193cec9a77891b",
+  "code_guards": [
+    {
+      "address": "80098910",
+      "bytes": 34132,
+      "sha1": "8E4420A7405E954F2EC7669AFB24B233AE3CFFA4",
+      "matched": true
+    },
+    {
+      "address": "800b2d04",
+      "bytes": 540,
+      "sha1": "6DB452248C6A4C11B6F893C5CEA058FF3CB4E7FE",
+      "matched": true
+    }
+  ],
+  "windows_layout_test": "passed",
+  "compiler_warnings": 0,
+  "compiler_errors": 0,
+  "game_data_modified": false,
+  "runtime_integrated": false,
+  "staged": false,
+  "remaining_unedited_candidate_bounds": [
+    [
+      "80099d10",
+      "cmpwi   r29, 33"
+    ],
+    [
+      "80099e98",
+      "cmpwi   r27, 33"
+    ],
+    [
+      "8009afb0",
+      "li      r5, 44"
+    ],
+    [
+      "800a09e0",
+      "li      r5, 44"
+    ]
+  ],
+  "unimplemented": [
+    "character-info singleton relocation and 40-entry load bound",
+    "selection menu integration and bounds",
+    "versioned save compatibility",
+    "runtime installation and full guest execution",
+    "40-character player-style selection, save/reload, gameplay and staging"
+  ]
+}

@@ -30,7 +30,7 @@ static std::map<u32, u32> s_hooked_addresses;
 // clang-format off
 // Address-keyed maps share two fixed HLE dispatch identities; this bound is
 // a registration budget, not an opcode-index or fixed-array capacity.
-constexpr std::size_t MAX_EXTERNAL_HOOKS = 64;
+constexpr std::size_t MAX_EXTERNAL_HOOKS = 128;
 static std::map<u32, HookFunction> s_external_observers;
 // Execute dispatches this reserved hook by the actual instruction address.
 static void ObserveExternal(const Core::CPUThreadGuard&) {}
@@ -180,6 +180,11 @@ void PatchFunctions(Core::System& system)
   }
 
   Host_JitCacheInvalidation();
+}
+
+u32 GetExternalHookCount()
+{
+  return static_cast<u32>(s_external_observers.size() + s_external_branches.size());
 }
 
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,

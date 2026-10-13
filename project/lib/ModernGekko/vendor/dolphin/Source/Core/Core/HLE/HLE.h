@@ -59,6 +59,8 @@ void PatchFunctions(Core::System& system);
 void Clear();
 // Up to twenty runtime-owned observers, called before original instructions. Caller
 // must hold the CPU thread guard; Clear removes it at title shutdown.
+// Diagnostic count; hooks still use the bounded registration budget.
+u32 GetExternalHookCount();
 bool SetExternalStartObserver(const Core::CPUThreadGuard& guard, u32 address,
                               HookFunction observer);
 // Replace a verified relative branch-with-link site. A false callback result

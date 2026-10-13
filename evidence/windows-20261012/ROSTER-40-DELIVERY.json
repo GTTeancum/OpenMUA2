@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "date": "2026-10-12",
+  "feature": "40 playable heroes; four active team members",
+  "enabled_by_default": true,
+  "runner_sha256": "189639ef087a31ebfe4255c28f1da9b884a5f64cb3c4d2959c6627f844eb4eac",
+  "launcher_sha256": "d98ce7b078d1df663f82a6a001eb06b44f69ef476aef20d89a963675dfa66f77",
+  "fixture_runner_sha256": "8d803f99697e52ce0011677921a731f93fc19db0fe32264a24221a5c38c323e0",
+  "final_changes_from_fixture_binary": "Remove development opt-in and update diagnostic wording/counts; gameplay implementation unchanged",
+  "build": {
+    "configuration": "Windows x64 MSVC Release",
+    "exit": 0,
+    "observed_compiler_warnings": 0,
+    "observed_compiler_errors": 0
+  },
+  "tests": {
+    "passed": 71,
+    "failed": 0,
+    "seconds": 10.11,
+    "exclusions": [
+      "fullbench",
+      "fuzzer",
+      "zstreamtest",
+      "playTests"
+    ],
+    "focused_roster_tests": 2
+  },
+  "native_edits": {
+    "dol": 693,
+    "selection_rel": 7,
+    "shared_menu_rel": 327
+  },
+  "fixture": {
+    "playable": 40,
+    "full_stat_records": 42,
+    "additional_aliases": 13,
+    "donor": "Captain America",
+    "installed": false,
+    "new_locations_traversed": [
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43
+    ],
+    "wrap": [
+      43,
+      2
+    ],
+    "last_hero_selected": "Roster40",
+    "movement_attack": true,
+    "manual_save_and_cold_reload": true,
+    "hero_details_and_power_list": true,
+    "fixture_corrections": [
+      "Early-Latveria native access-point reload needed startup fade-in",
+      "Talent member resource names needed aliasing with package names"
+    ]
+  },
+  "stock_final_regression": {
+    "retail_save_records": 29,
+    "migration": true,
+    "world_team_powers_return": true,
+    "exit": 0
+  },
+  "staging": {
+    "installed_exe_sha256": "d98ce7b078d1df663f82a6a001eb06b44f69ef476aef20d89a963675dfa66f77",
+    "previous_exe_sha256": "a643a2f3a3fb2cf2953042a2aacc93e24e0d73b9996aaf75df1054621e6208fd",
+    "data_and_saves_unchanged": true,
+    "save_files": 55,
+    "data_files": 400,
+    "paired_ui_manifest": "v8 passed (14 entries)",
+    "root_entries": [
+      "GameData",
+      "OpenMUA2.exe",
+      "saves"
+    ]
+  },
+  "limitations": [
+    "No additional character content or finished selection stage shipped",
+    "Single contained port; no physical controller acceptance",
+    "No full-campaign, arbitrary mod-change or missing-resource recovery claim",
+    "Null audio; no audio/FPS claim",
+    "Named saves require this build or compatible newer builds"
+  ],
+  "runtime_diagnostics": "Existing unsupported/simple-formatter fallback counters; zero formatter/ABI/FPSCR mismatch counters. No roster guard failure in accepted runs.",
+  "cleanup": {
+    "removed": false,
+    "reason": "Automatic approval review rejected superseded test-profile and duplicate-package deletion as blocked by policy; not retried"
+  },
+  "artifacts": [
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-build.log",
+      "bytes": 1171,
+      "sha256": "c32d1808a2f1132cb20c7069046aa99fe01bbcc7e142509c61e2f22a33037168"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-focused.log",
+      "bytes": 703,
+      "sha256": "075eec8f550c85ddf2f67879cb0e91d427616adc09ac4858592a347f1b646f07"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-regressions.log",
+      "bytes": 8831,
+      "sha256": "230e54f7fffefa2b27ec71ca4f96b366d30052d0402d4cf4a97a59046c50826c"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-package.log",
+      "bytes": 431,
+      "sha256": "6ca9146b713cb9399e7b6899de50e3c22e70d18c3e9d6cfd0fb32a1c5e50b86b"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-package-verification.txt",
+      "bytes": 430,
+      "sha256": "c62c5b823003826548bc6b4ec47eda5d07f218e667a15562dbb231e8fa9a19ea"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-stock-20261012\\runtime.log",
+      "bytes": 4312,
+      "sha256": "01973a8c227b7700dd0e93f79400f61acf0efbf323fd31302f568e8cd353250b"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-stock-20261012\\world.png",
+      "bytes": 4289218,
+      "sha256": "d1de21e9ddadee0d9af027322ac75a0622f051df718491854fd10b3e37784121"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-stock-20261012\\team-clear.png",
+      "bytes": 910215,
+      "sha256": "74eeed0fc345229eea1d95920be96c408653ee4318ac6ee065af93e8a6ba32fb"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-stock-20261012\\powers.png",
+      "bytes": 1206359,
+      "sha256": "a9e2be3226fdd9d30059072872c5c038138f0b5cf5ee11dc5fd7689a4d4ddf08"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-final-stock-20261012\\returned.png",
+      "bytes": 4175257,
+      "sha256": "7a4612af8e4706e3d319df44a0c639ad86db605c69672aabcd6037f37249eef1"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\roster40.png",
+      "bytes": 1210893,
+      "sha256": "5d9f8e36245b7110fb5d7a8fbc31768d2c613633fb2379bf9c368e9b09c3457f"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\team40.png",
+      "bytes": 1255307,
+      "sha256": "801b1bf5dc2eddbf3fc36a0cfd6143fe61f999531b3294be5cacdda41f6365ec"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\world40.png",
+      "bytes": 4316827,
+      "sha256": "ea52c2df74f1aa764f34c5f68b9b700a428743649550b9b1f45e8ff0da261e98"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\moved40.png",
+      "bytes": 4157078,
+      "sha256": "8af6188a888adcc7fc1ddbe8e140c7061b8fd9bc1cce39783a0278973bd4e73a"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\attack40.png",
+      "bytes": 4167095,
+      "sha256": "a69ab3c12460c8b2c1ef1ffd047e6175198b768a50002601ee8937ea79f37d2c"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r13-20261012\\saved.png",
+      "bytes": 788969,
+      "sha256": "03fff43e52c153a447fd5ef5ec74c0d44f0660a64001f3203f2ceaae5af0f460"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r14-20261012\\reloaded-world.png",
+      "bytes": 4247024,
+      "sha256": "77cd08e98ff4263ea24086303a5060764832e7c06926a204d8a661ca4002fdff"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r14-20261012\\reload-team.png",
+      "bytes": 889022,
+      "sha256": "0dd19d803bd810da8f18679d542c7e53d7920d19961be9a786d91217bee124e6"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r14-20261012\\reload-powers.png",
+      "bytes": 1188593,
+      "sha256": "8b31d6c14733e4952dc341394c4b4293701781d09744c96c2355de82d4d6bcda"
+    },
+    {
+      "local_path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\roster-forty-r14-20261012\\runtime.log",
+      "bytes": 4299,
+      "sha256": "7334d2d3178e74dab98057ed452710e97d76f75b8950472a65c33147df185453"
+    }
+  ]
+}

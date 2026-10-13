@@ -1,5 +1,42 @@
 # Current status â€” GitHub main
 
+## 40-character roster support delivered - 2026-10-12
+
+The default Windows runtime supports 40 selectable heroes with coordinated
+character-info, full-stat, hero-state, snapshot, selection-location, shared menu
+object/item and UI-text capacity increases. The active team remains four.
+693 guarded DOL edits, seven selection REL edits and 327 shared-menu REL edits
+preserve the supported executable's layout checks and native navigation.
+
+A private 40-definition fixture traversed all 13 added locations and wraparound.
+Roster40 joined the team, returned to visible gameplay, moved/attacked, opened Hero
+Details, saved and survived a cold restart/load with its full power list. Native
+captures were inspected. The private fixture uses Captain America aliases and a
+native SHIELD access point; none of those asset changes are installed or tracked.
+The final default-enabled build also loaded the existing retail save and verified
+world, active-team menu, powers and return through contained controller navigation.
+No host desktop input or runtime menu/position forcing was used.
+
+Windows x64 MSVC Release build: exit 0; no compiler warnings/errors observed.
+Scoped regressions: 71/71 passed (10.11 seconds), including both new roster tests.
+Runner SHA256: `189639ef087a31ebfe4255c28f1da9b884a5f64cb3c4d2959c6627f844eb4eac`.
+Staged `C:/Games/MUA2/OpenMUA2.exe` SHA256:
+`d98ce7b078d1df663f82a6a001eb06b44f69ef476aef20d89a963675dfa66f77`.
+Embedded package verification passed. All 400 game files and 55 save files retained
+their hashes; the previous executable is the current rollback copy.
+
+Named roster saves migrate the verified retail ordering. Saves written by this
+build require this build or a compatible newer version; older builds cannot read
+them. See docs/ROSTER-40-PLAN.md for the modder's definition/package/stage contract.
+Mods still supply complete characters and matching authored stage positions.
+No full-campaign, arbitrary mod-change, missing-resource recovery, physical
+controller, four-port, audio or FPS acceptance is claimed. Existing formatter
+fallback counters remain, with zero mismatch counters in accepted runs.
+
+Evidence: evidence/windows-20261012/ROSTER-40-DELIVERY.json. Superseded development
+receipts are historical. Automatic approval review blocked pruning the obsolete
+private test profiles and duplicate package files; deletion was not retried.
+
 ## Remaining tutorial overlay fixed - 2026-10-12
 
 The hacking instructions were covered by an extra Wii aiming pointer.

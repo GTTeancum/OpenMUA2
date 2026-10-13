@@ -8,6 +8,10 @@
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
 #include "mua2_costumes.hpp"
+#include "mua2_roster_patch_plan.hpp"
+#include "mua2_roster_menu.hpp"
+#include "mua2_roster_menu_items.hpp"
+#include "mua2_roster_save.hpp"
 #include <map>
 #include <cctype>
 #include "mua2_gamepad_aim.hpp"
@@ -681,6 +685,7 @@ bool ProviderCode(const Core::CPUThreadGuard& guard,u32 address,std::size_t size
   return code && Common::SHA1::DigestToString(Common::SHA1::CalculateDigest(code,size))==expected;
 }
 #include "mua2_costumes.inl"
+#include "mua2_roster.inl"
 // A direct Hero Management exit has no parent menu to replace its cached
 // scene. Finish the native resource-unload path once the menu stack is empty.
 // This runs only after ordinary menu navigation has completed OnClose.
@@ -2782,6 +2787,7 @@ RuntimeRunResult Runtime::Run() {
       }
       if(installed && s_gamepad_provider) {
         InstallCostumes(guard,m_impl->metadata.root);
+        InstallRosterExpansion(guard, m_impl->metadata.root);
         const bool update=HLE::SetExternalStartObserver(guard,0x810fc770,ObserveProviderEntry);
         const bool query=HLE::SetExternalStartObserver(guard,0x810fc5f8,ObserveProviderEntry);
         std::fprintf(stderr,"[openmua2] four-port gamepad provider entry hooks %s\n",update&&query?"installed":"rejected");

@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "scope": "Inactive roster layout and native constructor patch preparation; not in-game acceptance",
+  "windows_test": {
+    "target": "moderngekko_mua2_roster_layout_test.exe",
+    "result": "passed",
+    "output": "roster member relocation, capacity boundaries and patch guards passed",
+    "sha256": "b0eec1d402c4c63411ea74e50f96ccb8613fd07769a47325ee1b121c49dd5d1a"
+  },
+  "constructor_plan": {
+    "sites": 75,
+    "all_original_words_match": true,
+    "sha256": "c5b8b5e94964db92670be8dd0ffaf540647ec3ab9fb2d5be7d70704bff511fd6",
+    "supported_function_spans": [
+      {
+        "address": "800a0c34",
+        "bytes": 560,
+        "sha256": "e00482f57846d3c2f20b77d5db2758ca9071e0d8a7d4326e9613b3c933414b35",
+        "matches": true
+      },
+      {
+        "address": "800a0678",
+        "bytes": 216,
+        "sha256": "ce3cea76d6da2dc78fb56ac3ed5b3466ed30c51f58288abf741812c97a6323c3",
+        "matches": true
+      }
+    ]
+  },
+  "layout": {
+    "playable": 40,
+    "active_team": 4,
+    "hero_state_capacity": 48,
+    "full_stats_capacity": 64,
+    "definition_capacity": 350,
+    "npc_auxiliary_capacity": 13,
+    "characters_allocation_bytes": 271264,
+    "character_info_bytes": 488,
+    "menu_flag_offset": 11200,
+    "menu_flag_bytes": 256,
+    "menu_pool_slot_bytes": 22400
+  },
+  "build": {
+    "compiler": "MSVC 19.44.35225.0",
+    "configuration": "Release",
+    "compiler_warnings": 0,
+    "compiler_errors": 0,
+    "cmake_configure_warnings": [
+      "Existing CMP0080 OLD-policy deprecation",
+      "Wayland unavailable on Windows",
+      "Vendor object-path length warnings",
+      "lz4 CMP0069 IPO-policy developer warning"
+    ]
+  },
+  "runtime_integration": false,
+  "game_build": false,
+  "staged": false,
+  "game_data_modified": false,
+  "limitations": [
+    "Remaining member accesses, allocation, reset, teardown, menu navigation and serialization are not yet integrated.",
+    "Existing save compatibility needs both roster-ordered full-stat records and fixed snapshot banks handled.",
+    "No 40-character gameplay, save/reload, performance or audio claim."
+  ]
+}

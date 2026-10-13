@@ -1,7 +1,5 @@
 # TODO
 
-No open items.
-
 ## Xbox / XInput Quick Reference
 
 Agreed gameplay mapping. Context-specific menu controls may differ.
