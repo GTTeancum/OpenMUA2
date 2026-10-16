@@ -272,6 +272,7 @@ void StaticRecompCore::Run()
     sample.downcount = ppc.downcount;
   };
   m_module_active = m_module && (initial_game_id.empty() || initial_game_id == m_module->game_id);
+  RefreshHostCallActivity();
 
   if (!m_module_active && m_fallback_jit && !m_guest.host_call)
   {
@@ -288,6 +289,8 @@ void StaticRecompCore::Run()
 
     do
     {
+      RefreshHostCallActivity();
+
       // MSR.FP needs no gate here: generated FPU instructions raise the
       // FP-unavailable exception themselves (ppc_fp_available).
       u32 entry_chunk_index = 0;
