@@ -1,0 +1,35 @@
+name: Export current-main patch
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/export-current-patch.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create baseline-to-current patch
+        shell: bash
+        run: |
+          git diff --binary cda021b5c63a79c13b8986380adb53a429acf744 HEAD -- . ':(exclude).github/workflows/export-current-patch.yml' > current-main.patch
+          test -s current-main.patch
+          sha256sum current-main.patch > current-main.patch.sha256
+          wc -c current-main.patch
+
+      - name: Upload patch
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-main-patch
+          path: |
+            current-main.patch
+            current-main.patch.sha256
+          if-no-files-found: error
