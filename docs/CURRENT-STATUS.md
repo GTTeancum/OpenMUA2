@@ -1,5 +1,17 @@
 # Current status â€” GitHub main
 
+## MUA1 model-only alternate costumes staged - 2026-10-17
+
+Installed WAD now has four MUA1 alternates plus the unchanged MUA2 default for
+17 shared playable characters (68 models, 204 full/combat/noncombat packages).
+All three herostats use skin_02 through skin_05. Source-only importer:
+`tools/import_mua1_costumes.py`; see `docs/MUA1-COSTUMES.md` for validation and rollback.
+All non-model package payloads remain byte-identical to their MUA2 templates.
+Existing executable, other game files, saves and roster-test aliases are unchanged.
+Archive/package validation passed; in-game appearance and animation compatibility
+have NOT been tested for these imported models.
+
+
 ## LT fusion isolation and results fix staged - 2026-10-17
 
 LT no longer emits Block (12). Normal character processing enters the original
