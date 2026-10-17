@@ -95,6 +95,9 @@ std::uint8_t s_control_ports=0, s_hero_ports=0, s_fusion_ports=0;
 std::uint8_t s_direct_gamepad_ports = 0;
 std::array<moderngekko::controls::GamepadActions,4> s_gamepad_actions;
 std::array<moderngekko::controls::FusionEntryState,4> s_fusion_entry;
+struct DirectFusionCall { u32 actor=0, stack=0; unsigned port=4; };
+DirectFusionCall s_direct_fusion_call;
+
 std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
 struct GamepadTutorialClock { u32 object=0; unsigned owner=4; float seconds=0; u64 ticks=0; };
 GamepadTutorialClock s_gamepad_tutorial_clock;
@@ -397,7 +400,7 @@ struct WaveQteSession {
 };
 bool s_wave_qte_enabled = false;
 std::array<WaveQteSession, 4> s_wave_qtes;
-void ResetDirectQtes() { s_direct_qtes = {}; s_wave_qtes = {}; s_gamepad_actions = {}; s_fusion_entry = {}; s_gamepad_ports = {}; s_gamepad_tutorial_clock = {}; }
+void ResetDirectQtes() { s_direct_qtes = {}; s_wave_qtes = {}; s_gamepad_actions = {}; s_fusion_entry = {}; s_direct_fusion_call = {}; s_gamepad_ports = {}; s_gamepad_tutorial_clock = {}; }
 
 
 bool DirectQteCode(const Core::CPUThreadGuard& guard, u32 address,
@@ -1074,6 +1077,49 @@ void TraceActionConsumer(const Core::CPUThreadGuard& guard, unsigned kind) {
 }
 void ObserveHeldActionConsumer(const Core::CPUThreadGuard& guard) {TraceActionConsumer(guard,0);}
 void ObserveScalarActionConsumer(const Core::CPUThreadGuard& guard) {TraceActionConsumer(guard,1);}
+// Enter the existing native fusion branch from the normal character handler,
+// without first entering CCHBlock. Reuse its ground-mode, availability, power,
+// partner and resource checks; never publish the Block action for LT.
+bool s_direct_fusion_entry_installed=false, s_direct_fusion_return_installed=false;
+void ObserveDirectFusionReturn(const Core::CPUThreadGuard& guard) {
+  const auto& state=guard.GetSystem().GetPPCState();
+  if(s_direct_fusion_call.actor && state.gpr[1]==s_direct_fusion_call.stack &&
+     state.gpr[31]==s_direct_fusion_call.actor) s_direct_fusion_call={};
+}
+bool ReplaceDirectFusionEntry(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider || !s_direct_fusion_return_installed || s_direct_fusion_call.actor)
+    return false;
+  auto& system=guard.GetSystem();auto& state=system.GetPPCState();auto& memory=system.GetMemory();
+  const auto read=[&](u32 a,std::size_t n)->std::span<const u8> {
+    const auto* p=memory.GetPointerForRange(a,n);return p?std::span<const u8>(p,n):std::span<const u8>{};
+  };
+  const auto actor=read(state.gpr[4],0xa38);
+  if(actor.size()!=0xa38 || moderngekko::controls::ReadBE(actor,0x9c)!=0x8052a748) return false;
+  const unsigned port=moderngekko::controls::ReadBE(actor,0x45c);
+  if(port>=4 || !(s_direct_gamepad_ports&(1u<<port)) ||
+     !s_fusion_entry[port].Pending(state.gpr[4])) return false;
+  const auto owner=moderngekko::controls::ReadFusionActor(read,port);
+  if(owner.actor!=state.gpr[4] || owner.handler!=0x811accd0 ||
+     !ProviderCode(guard,0x810c19cc,0x40,"4003A994DFC75B51D6451FFA6D93C96A588C4F68") ||
+     !ProviderCode(guard,0x8107dfc0,0xc10,"7778922574754389001E349AC612A9C106C7F581")) return false;
+  const u32 sp=state.gpr[1];
+  if((sp&15) || !((sp>=0x80000060 && sp<=0x817ffff8) ||
+                  (sp>=0x90000060 && sp<=0x93fffff8))) return false;
+  auto* frame=memory.GetPointerForRange(sp-0x60,0x68);
+  if(!frame || !s_fusion_entry[port].Consume(owner.actor)) return false;
+  // Match CCHBlock::Process's ABI frame and nonvolatile-register save, but
+  // skip its block preparation entirely. Its own epilogue restores the caller.
+  const auto put=[&](unsigned off,u32 value) {
+    for(unsigned i=0;i<4;++i) frame[off+i]=u8(value>>(24-i*8));
+  };
+  put(0,sp);put(0x64,LR(state));
+  for(unsigned r=24;r<32;++r) put(0x40+4*(r-24),state.gpr[r]);
+  state.gpr[1]=sp-0x60;state.gpr[31]=owner.actor;
+  state.gpr[28]=0x811a6028;state.gpr[29]=0x8116ac30;
+  s_direct_fusion_call={owner.actor,sp-0x60,port};
+  state.npc=0x8107e278; // Retain the native ground-mode and fusion-availability gates.
+  return true;
+}
 bool ReplaceGamepadFusionQuery(const Core::CPUThreadGuard& guard) {
   TraceActionConsumer(guard,2);
   auto& state=guard.GetSystem().GetPPCState();
@@ -1085,7 +1131,15 @@ bool ReplaceGamepadFusionQuery(const Core::CPUThreadGuard& guard) {
   if(!(s_direct_gamepad_ports&(1u<<port)))return false;
   const auto* data=guard.GetSystem().GetMemory().GetPointerForRange(input,0xbe00);
   if(!data || moderngekko::controls::ReadBE(std::span<const u8>(data,4),0)!=0x811b4398)return false;
-  state.gpr[3]=(data[0x5f08+7]&2)?1:0;
+  bool requested=(data[0x5f08+7]&2)!=0;
+  if(LR(state)==0x8107e30c) {
+    // A rejected native request must not replay activation audio every frame.
+    // The direct entry has already consumed this press before building its frame.
+    if(s_direct_fusion_call.actor && s_direct_fusion_call.port==port &&
+       state.gpr[1]==s_direct_fusion_call.stack) requested=true;
+    else requested=requested && s_fusion_entry[port].Consume(s_fusion_entry[port].owner);
+  }
+  state.gpr[3]=requested?1:0;
   state.npc=LR(state);
   return true;
 }
@@ -1303,6 +1357,15 @@ void ObserveProviderEntry(const Core::CPUThreadGuard& guard) {
     s_gamepad_fusion_panel_show_installed=HLE::SetExternalBranchReplacement(guard,0x8024c870,ReplaceGamepadFusionPanelShow);
   if(!s_fusion_prompt_panel_installed && ProviderCode(guard,0x8024c82c,64,"7A4730FD80D75B8484EFA7B51783143C867D34CB"))
     s_fusion_prompt_panel_installed=HLE::SetExternalStartObserver(guard,0x8024c82c,ObserveGamepadFusionPromptPanel);
+  if(ProviderCode(guard,0x8107dfc0,0xc10,"7778922574754389001E349AC612A9C106C7F581")) {
+    if(!s_direct_fusion_return_installed)
+      s_direct_fusion_return_installed=HLE::SetExternalStartObserver(guard,0x8107ebb8,ObserveDirectFusionReturn);
+    if(!s_direct_fusion_entry_installed && s_direct_fusion_return_installed &&
+       ProviderCode(guard,0x810c19cc,0x40,"4003A994DFC75B51D6451FFA6D93C96A588C4F68")) {
+      s_direct_fusion_entry_installed=HLE::SetExternalFunctionReplacement(guard,0x810c19cc,ReplaceDirectFusionEntry);
+      std::fprintf(stderr,"[openmua2] direct LT fusion entry without block: %s\n",s_direct_fusion_entry_installed?"installed":"rejected");
+    }
+  }
   if(!s_fusion_query_installed && ProviderCode(guard,0x810f92bc,0xf4,"46E64FD6009BC2D2271DA7DD2624AF772B144FCA"))
     s_fusion_query_installed=HLE::SetExternalFunctionReplacement(guard,0x810f92bc,ReplaceGamepadFusionQuery);
   if(!s_provider_connected_installed && ProviderCode(guard,0x810fd174,0x78,"C9A5AA566837F05C9DB7D66FADE23D5A3305951D")) {
@@ -2748,6 +2811,7 @@ RuntimeRunResult Runtime::Run() {
   s_provider_update_installed=s_provider_query_installed=false;
   s_provider_connected_installed=s_provider_ready_installed=false;
   s_fusion_query_installed=s_fusion_selector_installed=false;
+  s_direct_fusion_entry_installed=s_direct_fusion_return_installed=false;s_direct_fusion_call={};
   s_fusion_prompt_panel_installed=false;
   s_rapid_tap_prompt_installed=false;s_gamepad_power_prompt_hooks={};
   s_gamepad_lockon_active=false;s_gamepad_lockon_hooks={};

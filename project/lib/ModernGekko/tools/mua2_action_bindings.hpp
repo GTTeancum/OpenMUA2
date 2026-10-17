@@ -86,9 +86,11 @@ inline std::uint32_t ActiveMenuType(Reader read) {
 template<typename Reader>
 inline bool IsStartAcceptScreen(Reader read) {
   const auto type=ActiveMenuType(read);
-  // CW_Results_Hack uses MENU_OK (105) for Continue Game.
+  // Both hacking results and CMenuLoading's mission results use MENU_OK
+  // (105) for Continue Game. CMenuLoading inherits the native MENU_OK handler
+  // at 0x80fc92b0; sending MenuBack instead leaves mission results blocked.
   return type==0x8118bae8 || type==0x811942f0 || type==0x8118f008 ||
-    type==0x81194460;
+    type==0x81194460 || type==0x8118b9a8;
 }
 
 // Start emits native continue/accept on the title and profile screens. Elsewhere

@@ -89,7 +89,7 @@ int main() {
       if(target!=(owner==partner?0u:0x90010000+partner*0x1000))return 10;
     }
   }
-  // The activation edge must arrive after block entry, once per LT hold.
+  // LT must never publish Block, including after rejected/completed fusion.
   std::array<FusionEntryState,4> entry;
   GamepadSample lt;lt.connected=true;lt.inputs[unsigned(GamepadInput::LT)]=1;
   for(unsigned port=0;port<4;++port) {
@@ -100,21 +100,34 @@ int main() {
     const auto reader=[&](auto a,auto n){return humans.read(a,n);};
     auto who=ReadFusionActor(reader,port);if(who.actor!=owner || who.handler!=0x811accd0)return 20;
     auto a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
-    if(!(a.active[2]&16) || (a.active[7]&2) || ReadBE(a.values,33*4))return 21;
-    put(h,0,0x811a6e48);who=ReadFusionActor(reader,port);
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
-    if(!(a.active[7]&2) || ReadBE(a.values,33*4)!=0x3f800000)return 22;
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
-    if(!(a.active[7]&2))return 23;
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner,0x811a45e8});if(a.active[7]&2)return 30;
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 31;
+    if((a.active[2]&16) || ReadBE(a.values,12*4) || !(a.active[7]&2))return 21;
+    // Sampling alone does not lose an input before the native consumer runs.
+    for(unsigned frame=0;frame<10;++frame) {
+      a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+      if(!entry[port].Pending(owner) || ReadBE(a.values,12*4))return 22;
+    }
+    if(!entry[port].Consume(owner) || entry[port].Consume(owner))return 23;
+    // Failed resource/eligibility checks must not replay activation sound while held.
+    for(unsigned frame=0;frame<300;++frame) {
+      a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+      if(ReadBE(a.values,12*4) || ReadBE(a.values,33*4) || entry[port].Consume(owner))return 24;
+    }
     GamepadActions neutral;entry[port].Apply(neutral,who);
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(!(a.active[7]&2))return 24;
-    entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner,0x811accd0});
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner+4,0x811a6e48});if(a.active[7]&2)return 25;
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 26;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(!entry[port].Consume(owner))return 25;
+    entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner+4,0x811accd0});
+    if(entry[port].Consume(owner+4) || entry[port].Consume(owner))return 26;
     entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{});
-    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);if(a.active[7]&2)return 27;
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(entry[port].Consume(owner))return 27;
+    entry[port]={};a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,{owner,0x811a45e8});
+    a=BuildGamepadActions(lt,false,false);entry[port].Apply(a,who);
+    if(entry[port].Consume(owner))return 30;
+    // LB retains the actual block action.
+    GamepadSample lb;lb.connected=true;lb.inputs[unsigned(GamepadInput::LB)]=1;
+    a=BuildGamepadActions(lb,false,false);entry[port].Apply(a,who);
+    if(ReadBE(a.values,12*4)!=0x3f800000 || ReadBE(a.values,33*4))return 31;
     actor[0x4d0]=128;if(ReadFusionActor(reader,port).actor)return 28;actor[0x4d0]=0;
     put(actor,0x2a0,0);if(ReadFusionActor(reader,port).actor)return 29;put(actor,0x2a0,0x42480000);
   }

@@ -1,5 +1,29 @@
 # MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## LT fusion isolation and results fix staged - 2026-10-17
+
+LT no longer emits Block (12). Normal character processing enters the original
+fusion branch through a guarded adapter, preserving native mode, availability,
+partner and resource checks. One activation attempt is consumed per LT hold;
+rejected requests cannot replay activation sound every frame. LB remains Block.
+
+A contained port-0 checkpoint check observed normal -> fusion selection (mode 1)
+-> selected partner (mode 2), with Block action/flag zero. LB entered CCHBlock and
+cleared on release. Holding LT through the chooser timeout did not re-enter it.
+Native screenshots were inspected; this is not a complete fusion/playthrough or
+physical-controller acceptance. Audio was not auditioned; user listening remains.
+The fixture includes other joined players but only port 0 was exercised.
+
+Windows Release build and five focused tests passed with no compiler/linker
+warnings/errors observed. The installed self-contained EXE is
+C:/Games/MUA2/OpenMUA2.exe, SHA256
+`a6873ddbf4ac371f3bc1b4e9617a39609e6707515067ed2f75fa7d66aeabfcf5`.
+Embedded package verification passed. All 400 game files and 55 saves remained
+hash-identical. It also includes the mission-results Start/continue fix, whose
+in-game acceptance remains with the user. Camera delay and Results tabs remain open.
+Rollback: %LOCALAPPDATA%/OpenMUA2/staging-archive/pre-lt-fix-20261017/OpenMUA2.exe.
+
+
 ## 40-slot test data staged at user request - 2026-10-12
 
 The installation now includes the tested 40-slot fixture, not only the expanded

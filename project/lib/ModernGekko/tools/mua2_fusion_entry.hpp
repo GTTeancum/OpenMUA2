@@ -47,20 +47,25 @@ FusionActorState ReadFusionActor(Reader read, unsigned port) {
 }
 struct FusionEntryState {
   std::uint32_t owner=0;
-  bool held=false, fired=false, issued=false;
+  bool held=false, consumed=false;
   void Apply(GamepadActions& actions, FusionActorState actor) {
-    const bool requested=(actions.active[7]&2)!=0; // Logical action33 before sequencing.
+    const bool requested=(actions.active[7]&2)!=0;
     if(!requested) { *this={};return; }
     actions.active[7]&=std::uint8_t(~2u);
     for(unsigned i=0;i<4;++i)actions.values[33*4+i]=0;
     if(!held) {held=true;owner=actor.actor;}
-    if(!owner || owner!=actor.actor) {fired=true;return;}
-    // A held request cannot acquire a new actor or retrigger after completion.
-    if(actor.handler==0x811a45e8 || (issued && actor.handler!=0x811a6e48))fired=true;
-    actions.Set(12); // Shared native preparatory action, not a Wii button.
-    if(!fired && actor.handler==0x811a6e48) {
-      actions.Set(33);issued=true; // Retain the level until the native handler consumes the edge.
-    }
+    if(!owner || owner!=actor.actor || actor.handler==0x811a45e8) consumed=true;
+    // LT is exclusively fusion. Never synthesize Block (12) to reach its
+    // native fusion branch. The normal-state adapter enters that branch directly.
+    if(!consumed) actions.Set(33);
+  }
+  bool Pending(std::uint32_t actor) const {
+    return held && owner && owner==actor && !consumed;
+  }
+  bool Consume(std::uint32_t actor) {
+    if(!Pending(actor)) return false;
+    consumed=true;
+    return true;
   }
 };
 } // namespace moderngekko::controls

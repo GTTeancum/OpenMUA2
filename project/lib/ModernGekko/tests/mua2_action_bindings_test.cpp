@@ -1,5 +1,7 @@
 #include "managed_xbox_profile.hpp"
 #include "mua2_action_bindings.hpp"
+#include "mua2_gamepad_actions.hpp"
+#include "mua2_xbox_prompts.hpp"
 #include <array>
 #include <iostream>
 using namespace moderngekko::controls;
@@ -169,6 +171,26 @@ int main() {
   if(!IsStartAcceptScreen(read) ||
      !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
      ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 41;
+  put(menu,10404,0x8118bae8);
+  // Mission results share neither the title nor hacking-results class.
+  // Start must reach their native Continue Game handler, not MenuBack.
+  put(menu,10404,0x8118b9a8);
+  active.fill(0);values.fill(0);
+  put(active,4,1u<<7);put(values,39*4,0x3f800000);
+  if(!IsStartAcceptScreen(read) ||
+     !MapStartButton(active,values,IsStartAcceptScreen(read)) ||
+     ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 42;
+  GamepadSample pad;
+  pad.connected=true;
+  pad.inputs[unsigned(GamepadInput::Start)]=1;
+  const bool results_accept=IsStartAcceptScreen(read);
+  auto actions=BuildGamepadActions(pad,results_accept,false,true,true);
+  if(ReadBE(actions.values,105*4)!=0x3f800000 || ReadBE(actions.values,90*4)!=0 ||
+     XboxActionPrompt("MENU_OK",results_accept,true)!=XboxPrompt::Start) return 43;
+  pad.inputs.fill(0);
+  actions=BuildGamepadActions(pad,results_accept,false,true,true);
+  for(auto value:actions.active) if(value) return 44;
+  for(auto value:actions.values) if(value) return 45;
   put(menu,10404,0x8118bae8);
   truncated=true;if(IsStartAcceptScreen(read)) return 34;truncated=false;
   put(menu,10404,0x81190d98);if(IsStartAcceptScreen(read)) return 35;
