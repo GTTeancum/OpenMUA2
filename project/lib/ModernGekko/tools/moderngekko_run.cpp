@@ -504,7 +504,12 @@ int RunMain(int argc, char **argv) {
   if (dol_changed)
     std::cout << "Applied native DOL patches\n";
 #endif
+  const auto inspect_start = std::chrono::steady_clock::now();
   const auto inspected = moderngekko::InspectGame(config.game_root);
+  std::cerr << "[startup] runner game verification: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::steady_clock::now() - inspect_start).count()
+            << " ms\n";
   if (!inspected) {
     std::cerr << "invalid game: " << inspected.error << '\n';
     return 2;

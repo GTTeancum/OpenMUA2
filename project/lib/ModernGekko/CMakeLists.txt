@@ -202,6 +202,11 @@ add_library(moderngekko STATIC
 )
 add_library(ModernGekko::Runtime ALIAS moderngekko)
 
+if(WIN32)
+    target_link_libraries(moderngekko PRIVATE bcrypt)
+    target_link_libraries(moderngekko_legacy PRIVATE bcrypt)
+endif()
+
 add_library(moderngekko_dolphin_video STATIC
     src/gpu/dolphin_video_host.cpp
     src/gpu/dolphin_shader_compiler.cpp

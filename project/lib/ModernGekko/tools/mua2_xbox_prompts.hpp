@@ -15,7 +15,7 @@ inline std::optional<XboxPrompt> XboxActionPrompt(std::string_view token,
                                                 bool start_accept_screen = false,
                                                 bool direct_gamepad = false) {
   // MENU_OK is action 105, not ordinary A/accept. The managed Start adapter
-  // emits it only on verified title/profile/results screens. Keep other contexts
+  // emits it only on verified title/profile/results/team screens. Keep other contexts
   // unresolved rather than displaying a button that cannot perform the action.
   if (token == "MENU_OK")
     return start_accept_screen ? std::optional{XboxPrompt::Start} : std::nullopt;

@@ -66,7 +66,7 @@ inline bool NormalizeChordUse(std::span<const std::uint8_t> active,
 // the joined-player profile screen whose Ready prompt starts the game.
 // Caller already guards the exact game executable and evaluator instructions.
 template<typename Reader>
-inline std::uint32_t ActiveMenuType(Reader read) {
+inline std::span<const std::uint8_t> ActiveMenuData(Reader read) {
   const auto ram=[&](std::uint32_t address,std::size_t size) {
     const auto end=std::uint64_t(address)+size;
     if (!(address&3) && ((address>=0x80000000 && end<=0x81800000) ||
@@ -75,20 +75,32 @@ inline std::uint32_t ActiveMenuType(Reader read) {
     return std::span<const std::uint8_t>{};
   };
   const auto global=ram(0x8081736c,4);
-  if(global.size()!=4) return false;
+  if(global.size()!=4) return {};
   const auto manager=ram(ReadBE(global,0),25864);
-  if(manager.size()!=25864 || ReadBE(manager,0)!=0x81198830) return false;
+  if(manager.size()!=25864 || ReadBE(manager,0)!=0x81198830) return {};
   const auto menu=ram(ReadBE(manager,25860),10408);
-  if (menu.size()!=10408) return false;
-  const auto type=ReadBE(menu,10404);
-  return type;
+  return menu.size()==10408 ? menu : std::span<const std::uint8_t>{};
+}
+template<typename Reader>
+inline std::uint32_t ActiveMenuType(Reader read) {
+  const auto menu=ActiveMenuData(read);
+  return menu.empty() ? 0 : ReadBE(menu,10404);
 }
 template<typename Reader>
 inline bool IsStartAcceptScreen(Reader read) {
-  const auto type=ActiveMenuType(read);
+  const auto menu=ActiveMenuData(read);
+  if(menu.empty())return false;
+  const auto type=ReadBE(menu,10404);
   // Both hacking results and CMenuLoading's mission results use MENU_OK
   // (105) for Continue Game. CMenuLoading inherits the native MENU_OK handler
   // at 0x80fc92b0; sending MenuBack instead leaves mission results blocked.
+  // CMenuTeam's native Accept handler permits pages 0/1 (0x80f84c78),
+  // and commits a team only in selection mode (0x80f7aa00, flag 0x20).
+  // Preserve Start/Back for ordinary Hero Details and its power subpages.
+  if(type==0x8118f978) {
+    const auto flags=read(0x812d1050,4);
+    return flags.size()==4 && (flags[1]&0x20) && menu[0x14b4]<=1;
+  }
   return type==0x8118bae8 || type==0x811942f0 || type==0x8118f008 ||
     type==0x81194460 || type==0x8118b9a8;
 }

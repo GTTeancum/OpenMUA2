@@ -12,6 +12,7 @@ using System.Runtime.InteropServices;
 internal static class OpenMUA2
 {
     static string local = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OpenMUA2");
+    static string startupReport = "";
     static string Hash(Stream stream) { using (var sha = SHA256.Create()) return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-", "").ToLowerInvariant(); }
     static string FileHash(string path) { using (var f = File.OpenRead(path)) return Hash(f); }
     static string Quote(string path) { return "\"" + path + "\""; }
@@ -159,6 +160,7 @@ internal static class OpenMUA2
         {
             writer.WriteLine("OpenMUA2 session: " + DateTime.Now.ToString("O"));
             writer.WriteLine("Runtime SHA256: " + FileHash(info.FileName));
+            if (startupReport.Length != 0) writer.WriteLine(startupReport);
             writer.Flush();
             process.StartInfo = info;
             object gate = new object();
@@ -276,6 +278,7 @@ internal static class OpenMUA2
     [STAThread]
     static int Main(string[] args)
     {
+        var startup = Stopwatch.StartNew();
         bool verify = args.Length == 2 && args[0] == "--verify-package";
         try
         {
@@ -284,6 +287,7 @@ internal static class OpenMUA2
             if ((self.ProcessorAffinity.ToInt64() & 4) == 0) throw new InvalidOperationException("Logical CPU 2 is unavailable.");
             self.ProcessorAffinity = new IntPtr(4);
             string cache = Prepare();
+            long packageMilliseconds = startup.ElapsedMilliseconds;
             if (verify)
             {
                 string report = Path.GetFullPath(args[1]);
@@ -307,6 +311,8 @@ internal static class OpenMUA2
             EnsureControls(cache, saves, Path.Combine(logs, session + "-controller.log"));
             var info = StartInfo(cache, "--game " + Quote(game) + " --cpu jit --title OpenMUA2 --user-dir " + Quote(saves) + " --graphics Vulkan --audio Cubeb");
             ConfigureXboxUi(info, game);
+            startupReport = "[startup] launcher preparation: " + startup.ElapsedMilliseconds +
+                " ms (package verification: " + packageMilliseconds + " ms)";
             info.EnvironmentVariables["MODERNGEKKO_FRAME_TIMES"] = Path.Combine(logs, session + "-frames.csv");
             int exit = Run(info, log);
             if (exit != 0) MessageBox.Show("OpenMUA2 exited with code " + exit + ".\r\nDetails: " + log, "OpenMUA2", MessageBoxButtons.OK, MessageBoxIcon.Error);

@@ -137,11 +137,13 @@ int main() {
   std::array<std::uint8_t,4> global{};
   std::array<std::uint8_t,25864> manager{};
   std::array<std::uint8_t,10408> menu{};
+  std::array<std::uint8_t,4> team_flags{};
   put(global,0,0x90010000);put(manager,0,0x81198830);
   put(manager,25860,0x90020000);put(menu,10404,0x8118bae8);
   bool truncated=false;
   const auto read=[&](std::uint32_t address,std::size_t size)->std::span<const std::uint8_t> {
     if(address==0x8081736c && size==global.size()) return global;
+    if(address==0x812d1050 && size==team_flags.size()) return team_flags;
     if(address==0x90010000 && size==manager.size()) return manager;
     if(address==0x90020000 && size==menu.size())
       return truncated ? std::span<const std::uint8_t>(menu).first(menu.size()-1) : menu;
@@ -182,15 +184,35 @@ int main() {
      ReadBE(values,105*4)!=0x3f800000 || ReadBE(values,90*4)!=0) return 42;
   GamepadSample pad;
   pad.connected=true;
+  // Captured Bravo selection uses CMenuTeam (0x8118f978), not the pause/PDA
+  // menu. Both the action and its displayed glyph must agree, then release.
+  for(auto type:{0x8118b9a8u,0x8118f978u}) {
+    put(menu,10404,type);
+    team_flags[1]=0xa0; // Captured mandatory Bravo selection mode.
+    pad.inputs[unsigned(GamepadInput::Start)]=1;
+    const bool accept=IsStartAcceptScreen(read);
+    auto actions=BuildGamepadActions(pad,accept,false,true,true);
+    if(ReadBE(actions.values,105*4)!=0x3f800000 || ReadBE(actions.values,90*4)!=0 ||
+       XboxActionPrompt("MENU_OK",accept,true)!=XboxPrompt::Start) return 43;
+    pad.inputs.fill(0);
+    actions=BuildGamepadActions(pad,accept,false,true,true);
+    for(auto value:actions.active) if(value) return 44;
+    for(auto value:actions.values) if(value) return 45;
+  }
+  // The same class serves ordinary Hero Details; Start must still go Back.
+  team_flags[1]=0;
+  if(IsStartAcceptScreen(read)) return 46;
   pad.inputs[unsigned(GamepadInput::Start)]=1;
-  const bool results_accept=IsStartAcceptScreen(read);
-  auto actions=BuildGamepadActions(pad,results_accept,false,true,true);
-  if(ReadBE(actions.values,105*4)!=0x3f800000 || ReadBE(actions.values,90*4)!=0 ||
-     XboxActionPrompt("MENU_OK",results_accept,true)!=XboxPrompt::Start) return 43;
-  pad.inputs.fill(0);
-  actions=BuildGamepadActions(pad,results_accept,false,true,true);
-  for(auto value:actions.active) if(value) return 44;
-  for(auto value:actions.values) if(value) return 45;
+  auto back_actions=BuildGamepadActions(pad,IsStartAcceptScreen(read),false,true,true);
+  if(ReadBE(back_actions.values,90*4)!=0x3f800000 || ReadBE(back_actions.values,105*4)!=0) return 47;
+  team_flags[1]=0xa0;
+  for(auto page:{2u,3u,255u}) {
+    menu[0x14b4]=page;
+    if(IsStartAcceptScreen(read)) return 48;
+  }
+  menu[0x14b4]=1;
+  if(!IsStartAcceptScreen(read)) return 49;
+  menu[0x14b4]=0;
   put(menu,10404,0x8118bae8);
   truncated=true;if(IsStartAcceptScreen(read)) return 34;truncated=false;
   put(menu,10404,0x81190d98);if(IsStartAcceptScreen(read)) return 35;

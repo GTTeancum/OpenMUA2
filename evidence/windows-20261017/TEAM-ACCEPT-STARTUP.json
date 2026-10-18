@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-17",
+  "checkpoint": "Team-selection Start/Accept and Windows startup verification",
+  "installed_exe": "C:/Games/MUA2/OpenMUA2.exe",
+  "exe_sha256": "3ba2d6d21b7725309ef5dbd7d5116e5ca7e997a5ea787b7de1f5e9adb05eef05",
+  "runtime_sha256": "ed42a940eafb2c22adceeb43411fd162853205bfa750183beecc90cf535535d0",
+  "assetsfb_sha256": "70dd5b180de5390dade7434054c83db9d52f6dedbc536715f566acd5d1e7fa91",
+  "source_base": "66dea26ee15bfbfce141d759a1b6982139240f75",
+  "team_accept": {
+    "live_capture": "work/bravo-accept-20261017",
+    "menu_type": "0x8118f978",
+    "page": 0,
+    "selection_flags": "0xa0",
+    "fix": "Native MENU_OK (105) and Xbox Start prompt only for CMenuTeam selection mode (flag 0x20), pages 0/1; native readiness checks retained.",
+    "in_game": "Cold boot, ordinary load, walk to installed SHIELD point, X, Change Team, A to dismiss tutorial, Start Accept; native capture shows Xbox Start, then loading and return to world/pause. No direct menu/position forcing.",
+    "control_validation_runtime": "1b6c4a1648e34298fdd43ba58586a53f4670180453f6362b39124543692ae975",
+    "limitations": [
+      "Exact late-Latveria Bravo handoff not replayed.",
+      "Final startup runtime loaded real-save copy into Latveria with expected characters, environment and HUD. Hero Details tutorial displayed; Start did not dismiss the A-only tutorial. Ordinary Back action preserved by focused regression; no claim of navigating through that modal.",
+      "Earlier savestate shortcut did not progress and is not acceptance evidence."
+    ]
+  },
+  "startup": {
+    "changes": [
+      "Full file SHA-256 streamed through Windows CNG, 64 KiB input buffer; no hash bypass or persistent metadata-only cache.",
+      "Directory parent resolution and sort keys computed once per inspection; manifest bytes unchanged.",
+      "Startup timing lines added to the game log."
+    ],
+    "game_files": 385,
+    "game_bytes": 2345969945,
+    "same_assets_fingerprint": "9550e872dd5d1b91d3ed258e74a67183faf85ec07b81d7887279369077c22a0e",
+    "baseline_inspect_ms": [
+      72767,
+      75935
+    ],
+    "initial_candidate_inspect_ms": [
+      17062,
+      12478
+    ],
+    "final_standalone_inspect_ms": [
+      75206,
+      14155
+    ],
+    "measurement_caveat": "Standalone and baseline launch overlapped other build/IO work; the final standalone first scan was a slow outlier. Do not present these as a controlled end-to-end launch ratio.",
+    "final_runtime_runner_verification_ms": 4570,
+    "final_runtime_second_verification_ms": 9024,
+    "final_boot_to_first_presentation_ms": 3199,
+    "process_to_first_simulated_second_s": 20.25,
+    "first_capture": "Initial frame was black; 20.25 s is not a title-screen-ready measurement. Normal opening sequence continued; title, main menu and loaded world later captured and inspected.",
+    "baseline_launch": "Timed out at 240 seconds during concurrent work; no clean old end-to-end boot time claimed.",
+    "unchanged": [
+      "Single logical host CPU",
+      "3x internal rendering",
+      "Asynchronous ubershaders with precompile wait",
+      "Game speed/timing",
+      "GameData and original saves"
+    ],
+    "validation": "Final runtime cold boot through title, main menu and normal save loading; screenshots inspected; process exit 0. Null audio, no FPS/audio claim."
+  },
+  "tests": {
+    "windows_release_build": "PASS",
+    "runtime_regressions": "6/6 PASS including SHA vectors, stream boundaries, same-size same-time edits, manifest order/path compatibility and menu context/release behavior",
+    "launcher_profile": "9 PASS",
+    "xbox_ui_hash_version_gate": "67 PASS",
+    "embedded_package": "PASS; extracted runtime SHA matches tested binary"
+  },
+  "warnings": {
+    "compiler_linker": [],
+    "cmake": [
+      "Vendored policy/minimum-version deprecation notices",
+      "Wayland unavailable on Windows",
+      "Long object-path warnings",
+      "CMP0069 IPO policy warning"
+    ]
+  },
+  "cleanup": {
+    "removed": [
+      {
+        "bytes": 10692608,
+        "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\OpenMUA2-bravo-accept.exe"
+      },
+      {
+        "bytes": 10693120,
+        "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\OpenMUA2-bravo-final.exe"
+      },
+      {
+        "bytes": 25782653,
+        "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\bravo-accept-20261017\\fixed\\normal-hero-details.sav"
+      }
+    ],
+    "remaining": "Automatic approval review blocked additional current-turn temporary cache/package/SD cleanup: blocked by policy. Not retried."
+  },
+  "private_evidence": [
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\bravo-accept-20261017\\cold-fixed\\shot-100237.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\bravo-accept-20261017\\cold-fixed\\shot-100261.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\bravo-accept-20261017\\cold-fixed\\shot-100319.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\startup-20261017\\after\\shot-100001.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\startup-20261017\\after\\shot-100018.png",
+    "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\startup-20261017\\after\\shot-100155.png"
+  ]
+}

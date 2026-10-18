@@ -2504,7 +2504,11 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
         RuntimeError{RuntimeErrorCode::AlreadyActive,
                      "only one ModernGekko runtime may be active per process"}};
 
+  const auto inspect_start = std::chrono::steady_clock::now();
   GameInspectResult inspected = InspectGame(config.game_root);
+  std::fprintf(stderr, "[startup] runtime game verification: %lld ms\n",
+               static_cast<long long>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::steady_clock::now() - inspect_start).count()));
   if (!inspected)
     return {{}, RuntimeError{RuntimeErrorCode::InvalidGame, inspected.error}};
 
@@ -2744,6 +2748,7 @@ void Runtime::StopAutomation() {
 }
 
 RuntimeRunResult Runtime::Run() {
+  const auto boot_start = std::chrono::steady_clock::now();
   if (m_impl->running.exchange(true))
     return {RuntimeExitReason::BootFailed,
             RuntimeError{RuntimeErrorCode::InvalidState,
@@ -2944,7 +2949,13 @@ RuntimeRunResult Runtime::Run() {
         }
       });
   m_impl->present_hook =
-      GetVideoEvents().after_present_event.Register([this](const PresentInfo &info) {
+      GetVideoEvents().after_present_event.Register([this, boot_start, first_frame = true](const PresentInfo &info) mutable {
+        if (first_frame) {
+          first_frame = false;
+          std::fprintf(stderr, "[startup] first presentation after boot: %lld ms\n",
+                       static_cast<long long>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                           std::chrono::steady_clock::now() - boot_start).count()));
+        }
         if (m_impl->presentation_timing) {
           const auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
               Clock::now().time_since_epoch()).count();

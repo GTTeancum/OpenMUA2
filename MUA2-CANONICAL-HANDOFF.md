@@ -1,5 +1,44 @@
 # MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Team-selection acceptance and faster startup staged - 2026-10-17
+
+Captured the user's blocked Bravo-team screen read-only before closing OpenMUA2.
+It was CMenuTeam (0x8118f978), page 0, selection flags 0xa0. Xbox Start now
+sends native MENU_OK (105) and displays the Start glyph for selection pages 0/1.
+Ordinary Hero Details and power subpages retain Back behavior. Native team
+readiness checks remain in place. A cold boot and ordinary player navigation
+through the installed SHIELD point verified the shared team-selection screen's
+Start prompt and acceptance into loading/world. The exact Bravo handoff was not
+replayed and remains user confirmation.
+
+Startup no longer resolves the same filesystem paths inside every sort comparison
+or allocates/hashes entire WADs with the portable scalar SHA implementation on
+Windows. It uses cached directory keys and streamed Windows SHA-256. Every file
+is still hashed on each inspection; full asset fingerprints match the old code.
+The old standalone inspection took 72.767/75.935 s. Final runtime inspections
+measured 4.570/9.024 s; boot-to-first-presentation was 3.199 s. Process-to-first
+simulated second was 20.25 s, with an initially black capture; this is NOT a
+measurement of time until the title menu. Opening movies remain unchanged.
+An old end-to-end run timed out at 240 s during concurrent work, and one final
+standalone scan was a 75.206 s outlier; do not claim a controlled total-launch ratio.
+The final runtime's title, main menu and ordinary save load into Latveria were
+captured and inspected. Single-core, render settings and game timing are unchanged.
+No audio or combat-FPS claim; these contained checks used Null audio.
+
+Windows Release build, six runtime regressions, nine profile checks, 67 Xbox UI
+gate checks and embedded-package verification passed. No compiler/linker warnings
+or errors observed. CMake reported existing vendor deprecations, long object
+paths, CMP0069 and unavailable Wayland. Logs now include startup phase timings.
+Installed C:/Games/MUA2/OpenMUA2.exe SHA256:
+`3ba2d6d21b7725309ef5dbd7d5116e5ca7e997a5ea787b7de1f5e9adb05eef05`.
+Runtime SHA256: `ed42a940eafb2c22adceeb43411fd162853205bfa750183beecc90cf535535d0`.
+GameData and original saves were not written by these tests; the installed WAD hash
+remains `70dd5b180de5390dade7434054c83db9d52f6dedbc536715f566acd5d1e7fa91`.
+Rollback: LocalAppData/OpenMUA2/staging-archive/pre-bravo-startup-20261017/.
+Evidence: evidence/windows-20261017/TEAM-ACCEPT-STARTUP.json.
+Removed 47,168,381 bytes of superseded candidates/state. Automatic approval review
+blocked further temporary cache/package/SD cleanup with "blocked by policy".
+
 ## Costume-cycle crash fixed and staged - 2026-10-17
 
 Captain America's second X press (slot 3 / model 9006) exhausted the original

@@ -8,8 +8,14 @@
 #include <cctype>
 #include <fstream>
 #include <iomanip>
+#include <map>
 #include <sstream>
 #include <vector>
+
+#if defined(_WIN32)
+#include <windows.h>
+#include <bcrypt.h>
+#endif
 
 namespace moderngekko
 {
@@ -20,10 +26,49 @@ using detail::ReadBE32;
 
 std::optional<std::string> HashFileSha256(const std::filesystem::path& path)
 {
+#if defined(_WIN32)
+  // Keep verifying every byte on every inspection. Windows' SHA-256 provider
+  // uses the available CPU acceleration and accepts bounded streaming input;
+  // the old whole-file buffer also doubled large WAD allocations for padding.
+  std::ifstream file(path, std::ios::binary);
+  if (!file)
+    return std::nullopt;
+  struct HashHandles
+  {
+    BCRYPT_ALG_HANDLE algorithm = nullptr;
+    BCRYPT_HASH_HANDLE hash = nullptr;
+    ~HashHandles()
+    {
+      if (hash) BCryptDestroyHash(hash);
+      if (algorithm) BCryptCloseAlgorithmProvider(algorithm, 0);
+    }
+  } handles;
+  if (BCryptOpenAlgorithmProvider(&handles.algorithm, BCRYPT_SHA256_ALGORITHM,
+                                 nullptr, 0) < 0 ||
+      BCryptCreateHash(handles.algorithm, &handles.hash, nullptr, 0, nullptr, 0, 0) < 0)
+    return std::nullopt;
+  std::array<unsigned char, 64 * 1024> buffer{};
+  while (file.read(reinterpret_cast<char*>(buffer.data()), buffer.size()) || file.gcount() > 0)
+  {
+    if (BCryptHashData(handles.hash, buffer.data(), static_cast<ULONG>(file.gcount()), 0) < 0)
+      return std::nullopt;
+  }
+  if (file.bad() || !file.eof())
+    return std::nullopt;
+  std::array<unsigned char, 32> digest{};
+  if (BCryptFinishHash(handles.hash, digest.data(), static_cast<ULONG>(digest.size()), 0) < 0)
+    return std::nullopt;
+  std::ostringstream out;
+  out << std::hex << std::setfill('0');
+  for (const auto byte : digest)
+    out << std::setw(2) << static_cast<unsigned int>(byte);
+  return out.str();
+#else
   auto bytes = ReadFileBytes(path);
   if (!bytes)
     return std::nullopt;
   return Sha256(std::move(*bytes));
+#endif
 }
 
 std::optional<std::string> HashDirectorySha256(const std::filesystem::path& root)
@@ -31,30 +76,63 @@ std::optional<std::string> HashDirectorySha256(const std::filesystem::path& root
   std::error_code ec;
   if (!std::filesystem::is_directory(root, ec) || ec)
     return std::nullopt;
-  std::vector<std::filesystem::path> files;
+  struct FileEntry
+  {
+    std::filesystem::path path;
+    std::string relative;
+  };
+  std::vector<FileEntry> files;
+  std::map<std::filesystem::path, std::filesystem::path> relative_directories;
   std::filesystem::recursive_directory_iterator iterator(
       root, std::filesystem::directory_options::skip_permission_denied, ec);
   const std::filesystem::recursive_directory_iterator end;
   while (!ec && iterator != end)
   {
     if (iterator->is_regular_file(ec) && !ec)
-      files.push_back(iterator->path());
+    {
+      const auto path = iterator->path();
+      std::filesystem::path relative;
+      if (iterator->is_symlink(ec))
+      {
+        // Preserve the original fingerprint's handling of file symlinks.
+        relative = std::filesystem::relative(path, root, ec);
+      }
+      else if (!ec)
+      {
+        // All ordinary files in a directory share the same resolved parent.
+        // Resolve that parent once (including junctions), not once per file.
+        const auto parent = path.parent_path();
+        auto found = relative_directories.find(parent);
+        if (found == relative_directories.end())
+        {
+          const auto parent_relative = std::filesystem::relative(parent, root, ec);
+          if (ec)
+            return std::nullopt;
+          found = relative_directories.emplace(parent, parent_relative).first;
+        }
+        relative = (found->second / path.filename()).lexically_normal();
+      }
+      if (ec)
+        return std::nullopt;
+      files.push_back({path, relative.generic_string()});
+    }
+    if (ec)
+      return std::nullopt;
     iterator.increment(ec);
   }
   if (ec)
     return std::nullopt;
-  std::ranges::sort(files, [&](const auto& left, const auto& right) {
-    return std::filesystem::relative(left, root).generic_string() <
-           std::filesystem::relative(right, root).generic_string();
+  // relative() queries the filesystem. Resolve each name once, rather than
+  // repeating those system calls for both sides of every sort comparison.
+  std::ranges::sort(files, [](const auto& left, const auto& right) {
+    return left.relative < right.relative;
   });
   std::vector<std::uint8_t> manifest;
-  for (const auto& path : files)
+  for (const auto& entry : files)
   {
-    const std::string relative = std::filesystem::relative(path, root, ec).generic_string();
-    if (ec)
-      return std::nullopt;
-    const auto size = std::filesystem::file_size(path, ec);
-    const auto hash = HashFileSha256(path);
+    const auto& relative = entry.relative;
+    const auto size = std::filesystem::file_size(entry.path, ec);
+    const auto hash = HashFileSha256(entry.path);
     if (ec || !hash)
       return std::nullopt;
     const auto append_u64 = [&](std::uint64_t value) {
