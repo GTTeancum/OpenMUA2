@@ -1,5 +1,34 @@
 # MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+## Luke PC costumes converted and staged - 2026-10-18
+
+Four Luke Cage MUA1 PC models (15701-15704) now replace alternate models
+90000-90003 in C:/Games/MUA2/GameData/files/z/assetsfb.wad. The Blender
+igb-blender actor importer and skin exporter rebuild each complete skinned graph.
+A small add-on patch supplies Wii tiled RGB5A3 textures (256x256 diffuse only);
+normal/specular/gloss maps are omitted. Geometry, skin weights and the exported
+bone palette are retained through the add-on. No template mesh transplant is used.
+
+All four alternates rendered correctly in native team-menu captures. Process-local
+port-0 X input completed two five-costume cycles, wrapping to default 25101 twice,
+without a fatal error. Slot 3 then loaded visibly into Stormcastle with the party
+and environment. The runtime exited normally. Tests used a private copied profile
+and startup routing to the Bravo menu, followed by ordinary menu button input;
+no direct character/menu state writes. Null audio; no audio/combat-FPS claim,
+full-campaign, exhaustive-animation or four-controller guarantee.
+
+Only actor IGB members in eight Luke FB packages changed. All other WAD entry
+payloads, package members, executable and real saves were verified unchanged.
+The private routing scripts were not installed. Installed WAD SHA256:
+`e221ba220bfedf63b68053d27e5e78f2ee0d7afebeddbce20b1f3900db7ab665`.
+Windows Release build and all 52 CTests passed during diagnosis. The unused
+synthetic-device diagnostic change was removed; no new EXE is required.
+Re-exporting through the retained Blender entry point produced four byte-identical
+models. See `docs/LUKE-PC-COSTUME-CONVERSION.md` and
+`evidence/windows-20261018/LUKE-PC-COSTUMES.json`.
+
+
+
 ## Luke costume crash fix staged - 2026-10-18
 
 The user's third Luke costume (model 90001) failed a 128 KiB texture allocation

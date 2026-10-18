@@ -1,0 +1,175 @@
+{
+  "date": "2026-10-18",
+  "result": "PASS: four PC donor costumes converted and installed",
+  "pipeline": {
+    "blender": "4.5.8 LTS",
+    "addon_commit": "a509dcc69438b53bdfe8daeaa793db68fec960b0",
+    "addon_patch": "tools/patches/igb-blender-wii-rgb5a3.patch",
+    "whole_scene_import_export": true,
+    "format": "IGB V6 geometry, Wii RGB5A3 format 21/order 103",
+    "diffuse_size": "256x256",
+    "normal_specular_gloss_maps": false,
+    "mipmaps": false
+  },
+  "models": [
+    {
+      "model": 90000,
+      "sha256": "df2d7f9b197cb8d63fa6b43d0738a06e271456ec80846f0b0d1aa73b56088aa5",
+      "bytes": 342461,
+      "images": [
+        {
+          "width": 256,
+          "height": 256,
+          "format": 21,
+          "bytes": 131072
+        }
+      ],
+      "geometry": [
+        {
+          "vertices": 2749,
+          "triangles": 4466,
+          "weighted_vertices": 2749
+        }
+      ]
+    },
+    {
+      "model": 90001,
+      "sha256": "e04f0451095585cafac974b34b607c9eed2b09b843999ffef086787ff4dccbd4",
+      "bytes": 461801,
+      "images": [
+        {
+          "width": 256,
+          "height": 256,
+          "format": 21,
+          "bytes": 131072
+        }
+      ],
+      "geometry": [
+        {
+          "vertices": 4642,
+          "triangles": 6208,
+          "weighted_vertices": 4642
+        }
+      ]
+    },
+    {
+      "model": 90002,
+      "sha256": "78ef64b7a326d1dbe7ed6255339c91e9f3f14793179879bc00d3879456a23de0",
+      "bytes": 342489,
+      "images": [
+        {
+          "width": 256,
+          "height": 256,
+          "format": 21,
+          "bytes": 131072
+        }
+      ],
+      "geometry": [
+        {
+          "vertices": 2750,
+          "triangles": 4464,
+          "weighted_vertices": 2750
+        }
+      ]
+    },
+    {
+      "model": 90003,
+      "sha256": "413a156727ef5c2217c61ad66996453713a0a5729f0d51b49bf76f96f37b9911",
+      "bytes": 370749,
+      "images": [
+        {
+          "width": 256,
+          "height": 256,
+          "format": 21,
+          "bytes": 131072
+        }
+      ],
+      "geometry": [
+        {
+          "vertices": 2618,
+          "triangles": 4050,
+          "weighted_vertices": 2618
+        },
+        {
+          "vertices": 534,
+          "triangles": 876,
+          "weighted_vertices": 534
+        }
+      ]
+    }
+  ],
+  "installation": {
+    "installed": "C:\\Games\\MUA2\\GameData\\files\\z\\assetsfb.wad",
+    "before": "70dd5b180de5390dade7434054c83db9d52f6dedbc536715f566acd5d1e7fa91",
+    "after": "e221ba220bfedf63b68053d27e5e78f2ee0d7afebeddbce20b1f3900db7ab665",
+    "changed_packages": [
+      "packages/generated/characters/lukecage_90000.fb",
+      "packages/generated/characters/lukecage_90000_nc.fb",
+      "packages/generated/characters/lukecage_90001.fb",
+      "packages/generated/characters/lukecage_90001_nc.fb",
+      "packages/generated/characters/lukecage_90002.fb",
+      "packages/generated/characters/lukecage_90002_nc.fb",
+      "packages/generated/characters/lukecage_90003.fb",
+      "packages/generated/characters/lukecage_90003_nc.fb"
+    ],
+    "only_actor_members_changed": true,
+    "saves_unchanged": true,
+    "exe_unchanged": "9552ba184e6699e1d1acd1dfc5c39671dfc44fc63b90cc2464c2b5451674f1da",
+    "test_script_changes_installed": false
+  },
+  "validation": {
+    "first_cycle": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      1
+    ],
+    "second_cycle": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      1
+    ],
+    "additional_world_slot": 3,
+    "exit_code": 0,
+    "fatal_errors": false,
+    "captures_inspected": [
+      "first-costume.png",
+      "costume-3.png",
+      "costume-4.png",
+      "costume-5.png",
+      "world-costume-3.png"
+    ],
+    "controls": "process-local port 0, normal team menu buttons; read-only focus queries",
+    "private_fixture": "copied profile and two map-startup script changes route to native Bravo menu; not installed",
+    "reproducible_exports": true
+  },
+  "build": {
+    "windows_release": "passed",
+    "ctest": "52/52 passed",
+    "runtime_sha256": "d697eee2a334f75da2e6aa3b9ac3327bea433cb9aa1cad29aa057c0f9fc85b30",
+    "note": "Runtime used a diagnostic synthetic-device refresh guard that never fired; removed from source. Installed EXE unchanged.",
+    "warnings": "Existing CMake vendor policies/paths/CMP0069/Wayland; SDL D9025 /W3 overridden by /W0."
+  },
+  "limits": [
+    "No full campaign or exhaustive animation coverage",
+    "Null audio; no audio or combat FPS claim",
+    "No four-controller validation"
+  ],
+  "private_evidence": ".local/luke-pc-20261018/run-blender-rgb5a3",
+  "rollback": ".local/luke-pc-20261018/rollback-packages.zip",
+  "cleanup": {
+    "removed_files": {
+      "candidate.wad": 382786882,
+      "verified-models.wad": 370401514,
+      "alchemy-batch-source.zip": 9316509,
+      "Alchemy5PortableFull.zip": 7353923
+    },
+    "directory_cleanup": "Automatic approval review rejected batch and explicit obsolete run-directory cleanup with blocked by policy; directories retained.",
+    "reclaimed_bytes": 769858828
+  }
+}
