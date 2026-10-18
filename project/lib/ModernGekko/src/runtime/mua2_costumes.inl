@@ -320,12 +320,25 @@ void ObserveCostumeWidgetText(const Core::CPUThreadGuard& guard) {
   auto* dest=guard.GetSystem().GetMemory().GetPointerForRange(st.gpr[4],sizeof(text));
   if(dest)std::memcpy(dest,text,sizeof(text));
 }
+void ReserveCostumeModelHeadroom(const Core::CPUThreadGuard& guard) {
+  if(!s_gamepad_provider ||
+     !ProviderCode(guard,0x801e325c,64,"FAACA13657523698646B3D505E92A9E3A50438CF"))return;
+  auto& st=guard.GetSystem().GetPPCState();
+  const auto bytes=moderngekko::controls::CostumeArenaReservation(
+      st.gpr[3],st.gpr[4],st.gpr[5],st.gpr[6],st.gpr[7],st.spr[8]);
+  if(bytes==st.gpr[5])return;
+  // The native allocator reserves actual MEM2 backing and advances its arena
+  // boundary. Never enlarge the bounds of an already allocated pool.
+  st.gpr[5]=bytes;
+  std::fprintf(stderr,"[openmua2] costume arena pool=%u reserved=%u bytes\n",st.gpr[4],bytes);
+}
 void InstallCostumes(const Core::CPUThreadGuard& guard,const std::filesystem::path& root) {
   s_costume_drafts.clear();s_costumes.clear();s_costume_files.clear();s_costume_root=root/"files";
   std::error_code error;
   for(const auto& entry:std::filesystem::directory_iterator(s_costume_root/"z",error))
     if(entry.is_regular_file() && entry.path().extension()==".wad")moderngekko::controls::ReadCostumeArchiveNames(entry.path(),s_costume_files);
   HLE::SetExternalStartObserver(guard,0x8018b690,ObserveCostumeReset);
+  HLE::SetExternalStartObserver(guard,0x801e325c,ReserveCostumeModelHeadroom);
   s_costume_hooks=false;s_costume_menu_hooks=false;s_costume_registered_hooks.clear();
   s_costume_preview_widgets.clear();s_costume_preview_animations.clear();s_costume_refresh={};s_costume_restore_base=false;s_costume_changed=0;s_costume_refresh_actor=0;s_costume_actor_stack=0;s_costume_actor_phase=0;
 }

@@ -12,6 +12,22 @@
 #include <string_view>
 
 namespace moderngekko::controls {
+// Reserve backing memory at pool creation. Imported skins must coexist with
+// the resident default and combat resources; a 128 KiB texture can otherwise
+// fail despite enough total free bytes in the fragmented retail arena. Balance
+// their growth against pool 11 so later pools and the system IPC area do not
+// move. Native alignment includes four padding bytes across the retail pools.
+inline std::uint32_t CostumeArenaReservation(std::uint32_t manager, std::uint32_t pool,
+    std::uint32_t bytes, std::uint32_t alignment, std::uint32_t mem2,
+    std::uint32_t caller) {
+  if(manager==0x806a3b60 && pool>=7 && pool<=10 && bytes==0x159999 &&
+     alignment==4 && mem2==1 && caller==0x801e37fc+(pool-7)*0x18)
+    return 2*1024*1024;
+  if(manager==0x806a3b60 && pool==11 && bytes==0x110cccc &&
+     alignment==4 && mem2==1 && caller==0x801e3860)
+    return 0x110cccc-(4*2*1024*1024-(4*0x159999+4));
+  return bytes;
+}
 // Herostat slot order, not physical model number order. The native saved byte
 // remains the selected zero-based slot. Extra definitions live outside the
 // six-entry retail object, so skin_07..10 cannot overwrite adjacent fields.

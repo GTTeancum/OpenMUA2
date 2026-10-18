@@ -1,5 +1,48 @@
 # Current status â€” GitHub main
 
+## Luke costume crash fix staged - 2026-10-18
+
+The user's third Luke costume (model 90001) failed a 128 KiB texture allocation
+in a fragmented 1,415,576-byte character arena. The preceding alternate and
+portrait were already released. All 12 Luke packages passed model-only auditing.
+Four active character pools now reserve 2 MiB each at creation. Pool 11 supplies
+the extra 2,726,296 bytes, retaining every subsequent pool address and the system
+IPC region. An unbalanced first candidate failed and was rejected, never staged.
+The scene pool is now 15,151,924 bytes; later-level worst cases are untested.
+This is bounded extra headroom, not a guarantee for arbitrarily large mod models.
+
+40 independent ten-costume definitions passed cycling/wrap regression coverage.
+Models are loaded as selected, not all 400 at once. A private test WAD reaches
+the native Bravo handoff and adds Luke slots 6-10 as unique test aliases of the
+installed alternates. Normal process-local port-0 buttons then cycled ten slots
+twice; no direct menu/character writes or host input. Earlier alternates left
+the active resource table. Used character memory returned to exactly 1,001,512
+bytes at both wraps; the highest sampled value was 1,211,024 bytes. First-cycle
+native captures were inspected sequentially; second-cycle checks used recorded
+state/resources/memory. A final native capture confirmed Luke's third skin in
+the correctly rendered Stormcastle world with the party, background and HUD.
+The test exited normally. This fixture is not a campaign playthrough, all-400-model
+or four-controller test. Null audio was used; no audio or combat-FPS claim.
+
+Windows x64 Release build, five focused runtime regressions and embedded-package
+verification passed. No compiler/linker warnings or errors observed. Existing
+CMake warnings remain vendor deprecations, long paths, CMP0069 and Wayland.
+Installed C:/Games/MUA2/OpenMUA2.exe SHA256:
+`9552ba184e6699e1d1acd1dfc5c39671dfc44fc63b90cc2464c2b5451674f1da`.
+Runtime SHA256: `57bdf46879438568a0f52b6a2933b41e855641324b4b94824ec50239a87cb78b`.
+GameData and real saves were hash-verified unchanged. The test aliases were not
+installed. Rollback: LocalAppData/OpenMUA2/staging-archive/pre-luke-costume-20261018/.
+Evidence: evidence/windows-20261018/LUKE-COSTUME-ARENA.json.
+Automatic approval review blocked temporary test/package cleanup with "blocked
+by policy" before execution; no bytes were reclaimed by that attempt.
+
+Exported installed data/herostat.xmlb losslessly to C:/Games/MUA2/herostat.json
+(42 records: 40 playable plus default/team); JSON-to-tree round trip passed.
+All 17 shared heroes have equal herostat scale_factor values across MUA1/MUA2,
+including Luke 1.15 and Thing 1.3. This excludes differing herostat values as the
+explanation for smaller imported skins, but model proportions versus runtime
+refresh scaling remain unverified. The proprietary JSON stays outside Git.
+
 ## Team-selection acceptance and faster startup staged - 2026-10-17
 
 Captured the user's blocked Bravo-team screen read-only before closing OpenMUA2.

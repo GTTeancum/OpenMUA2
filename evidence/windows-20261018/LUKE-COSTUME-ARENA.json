@@ -1,0 +1,218 @@
+{
+  "checkpoint": "Luke costume allocator headroom",
+  "date_utc": "2026-10-18",
+  "base_commit": "14a0f0a6e011813ffb0783204e0397463ef52d90",
+  "original_failure": {
+    "failed_model": "90001",
+    "failed_slot": 3,
+    "failed_allocation": 131072,
+    "pool": "0x80a36480",
+    "pool_capacity": 1415576,
+    "pool_used": 1094856,
+    "previous_alternate_and_portrait_removed": true
+  },
+  "model_package_audit": "All 12 Luke alternate packages match MUA2 templates except model identity/path aliases; donor bytes verified after fixed-width renaming.",
+  "memory": {
+    "active_character_pools": 4,
+    "per_character_capacity_bytes": 2097152,
+    "scene_pool_capacity_bytes": 15151924,
+    "scene_budget_reduction_bytes": 2726296,
+    "later_pool_13_base": "0x92073b38",
+    "later_pool_bases_unchanged": true,
+    "only_selected_alternate_resident": true,
+    "max_definition_slots": 400
+  },
+  "build": {
+    "configuration": "Windows x64 Release, existing MSVC/Ninja toolchain",
+    "build_exit": 0,
+    "compiler_linker_warnings_or_errors_observed": false,
+    "existing_cmake_warnings": [
+      "vendor deprecations",
+      "long object paths",
+      "CMP0069",
+      "Wayland unavailable on Windows"
+    ],
+    "focused_tests": {
+      "passed": 5,
+      "failed": 0,
+      "elapsed_seconds": 0.16,
+      "names": [
+        "mua2_xbox_prompts",
+        "mua2_costumes",
+        "mua2_gamepad_actions",
+        "mua2_action_bindings",
+        "mua2_fusion_buttons"
+      ]
+    },
+    "definition_capacity_test": "40 independent character definitions, ten unique models each, three full cycles per definition; existing sparse-slot and availability tests retained. This is not 400 runtime model tests.",
+    "embedded_package_hash_verification": "passed",
+    "runner_help_exit": 0
+  },
+  "rejected_experiment": {
+    "description": "Unbalanced growth moved following pools into system IPC memory; rejected and never staged. Final fix preserves subsequent pool addresses.",
+    "runtime_exit": 70
+  },
+  "live": {
+    "passed": true,
+    "runtime_exit": 0,
+    "runtime_sha256": "57bdf46879438568a0f52b6a2933b41e855641324b4b94824ec50239a87cb78b",
+    "fixture": "Private WAD redirects level startup to native Bravo handoff. Luke slots 6-10 use five unique test aliases of installed models; installed data unchanged.",
+    "input": "Process-local port 0 button presses; no host input or direct menu/character writes.",
+    "cycles": {
+      "presses": 20,
+      "slots": 10,
+      "wraps": 2,
+      "observed_peak_used_bytes": 1211024,
+      "used_after_wrap_bytes": [
+        1001512,
+        1001512
+      ],
+      "prior_alternates_absent_from_active_resources": true,
+      "all_following_pool_bases_preserved": true
+    },
+    "visual_inspection": "First full ten-slot cycle inspected sequentially; second cycle checked from state/resource/memory samples. Final world native capture shot-101952.png inspected: Luke third skin, other heroes, background and HUD correctly rendered.",
+    "final_world": {
+      "map": "Stormcastle",
+      "luke_slot": 3,
+      "luke_model": "90001",
+      "active_menu": false,
+      "healthy_heroes": 4,
+      "capture_sha256": "f1af629f9807121274b7d772b9785fd772c5abda67f6516898dc4c70cb90ed72"
+    },
+    "limits": [
+      "Not a campaign playthrough",
+      "No audio or combat FPS validation (Null audio)",
+      "No all-four-controller test",
+      "Not all 400 possible model packages tested",
+      "Later-level scene memory worst cases and arbitrary mod sizes untested"
+    ]
+  },
+  "staging": {
+    "installed_sha256": "9552ba184e6699e1d1acd1dfc5c39671dfc44fc63b90cc2464c2b5451674f1da",
+    "previous_sha256": "3ba2d6d21b7725309ef5dbd7d5116e5ca7e997a5ea787b7de1f5e9adb05eef05",
+    "rollback": "C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\staging-archive\\pre-luke-costume-20261018",
+    "data_and_saves_unchanged": true
+  },
+  "herostat_export": {
+    "output": "C:\\Games\\MUA2\\herostat.json",
+    "source_member": "data/herostat.xmlb",
+    "member_sha256": "f80c96c1f857bc0e1a7bfb044898ca6f723608225d6f16fe693f5c4f86f624ef",
+    "node_count": 42,
+    "lossless_json_round_trip": true,
+    "scale_factors": {
+      "Blade": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "CaptainAmerica": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Daredevil": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Deadpool": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "HumanTorch": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Iceman": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "InvisibleWoman": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Ironman": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "LukeCage": {
+        "MUA1": "1.15",
+        "MUA2": "1.15"
+      },
+      "MrFantastic": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "NickFury": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Spiderman": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Storm": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Thing": {
+        "MUA1": "1.3",
+        "MUA2": "1.3"
+      },
+      "Thor": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Warbird": {
+        "MUA1": "1 (implicit)",
+        "MUA2": "1 (implicit)"
+      },
+      "Wolverine": {
+        "MUA1": "1",
+        "MUA2": "1"
+      }
+    }
+  },
+  "private_evidence_root": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\luke-costume-20261018",
+  "proprietary_data_committed": false,
+  "known_limitations": [
+    "Scene pool gives 2,726,296 bytes to four character pools; later-level worst cases untested.",
+    "Maximum arbitrary model/package size is not guaranteed.",
+    "Observed smaller MUA1 models: shared herostat scale_factor values match; model proportions versus runtime refresh scaling not yet distinguished."
+  ],
+  "cleanup": {
+    "attempted": [
+      {
+        "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\luke-costume-20261018\\fixture-game",
+        "files": 400,
+        "logical_bytes": 2358954414,
+        "single_link_bytes": 376092923
+      },
+      {
+        "path": "C:\\Users\\smmel\\AppData\\Local\\Temp\\OpenMUA2-package-96be4d5793d2467091cc5b11a533482d",
+        "files": 2,
+        "logical_bytes": 10484038,
+        "single_link_bytes": 10484038
+      },
+      {
+        "path": "C:\\Users\\smmel\\AppData\\Local\\Temp\\OpenMUA2-package-8460b4afe4574056931970cb6919a27a",
+        "files": 2,
+        "logical_bytes": 10483871,
+        "single_link_bytes": 10483871
+      },
+      {
+        "path": "C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\runtime\\9a3655e50ea3dab869586c5d769825c3c8402955d88ba23923e42e32f04ac9a9",
+        "files": 2634,
+        "logical_bytes": 22393449,
+        "single_link_bytes": 22393449
+      },
+      {
+        "path": "C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\luke-costume-20261018\\OpenMUA2.exe",
+        "files": 1,
+        "logical_bytes": 10697728,
+        "single_link_bytes": 10697728
+      }
+    ],
+    "status": "Automatic approval review rejected before execution: blocked by policy",
+    "reclaimed_file_content_bytes": 0,
+    "repository_bytes_before_checkpoint": 14410110881,
+    "retained": "Unique actual-crash RAM, compact reports and logs, current runtime, rollback, all installed assets and saves."
+  }
+}
