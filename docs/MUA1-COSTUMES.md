@@ -35,7 +35,7 @@ Only each donor actor IGB is imported. Same-width model/skeleton identity change
 
 Validated every package member against its MUA2 template, preserving order, metadata and all non-model payload bytes. Checked all 68 donor identities and new model hashes, all 204 package paths, all three herostats by semantic round-trip, the entire output ZIP CRC, all 1,097 unchanged original archive entries, and all 14 paired Xbox UI manifest hashes. No embedded herostat copies were present in the source packages. Other installed files and saves were hash-compared before/after staging. Existing 40-slot test roster data is preserved.
 
-No in-game visual or animation validation was performed. This data installation is ready for user testing; static package checks do not establish model/rig compatibility.
+At initial import, validation covered the packages only. The subsequent costume-cache fix verified all five Captain America costumes through two complete cycles and a return to gameplay using native captures. Other imported characters and full animation compatibility remain unverified; see the current handoff and evidence/windows-20261017/COSTUME-CACHE-FIX.json.
 
 ## Recovery
 
@@ -43,4 +43,4 @@ Rollback WAD: `C:\Users\smmel\AppData\Local\OpenMUA2\staging-archive\pre-mua1-co
 Installed SHA-256: `70dd5b180de5390dade7434054c83db9d52f6dedbc536715f566acd5d1e7fa91`.
 Previous SHA-256: `8a0dd2633e5271608939a03d5aea05c768f872f5a311463058a6bdf2aabacb68`.
 
-The executable is unchanged; no build or repack was required. Candidate WAD was moved into place after validation and backup, leaving no duplicate candidate. Proprietary inputs, output and rollback remain outside Git. Compact private audit receipts are in the task workspace `work/mua1-costumes-report.json` and `work/mua1-costumes-staging.json`.
+The initial data import did not change the executable. The subsequent costume-cache fix ships in the rebuilt executable documented in the current handoff. Candidate WAD was moved into place after validation and backup, leaving no duplicate candidate. Proprietary inputs, output and rollback remain outside Git. Compact private audit receipts are in the task workspace `work/mua1-costumes-report.json` and `work/mua1-costumes-staging.json`.

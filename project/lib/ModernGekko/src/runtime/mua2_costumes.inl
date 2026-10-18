@@ -6,7 +6,8 @@ std::set<std::string> s_costume_files;
 std::filesystem::path s_costume_root;
 bool s_costume_hooks=false, s_costume_menu_hooks=false;
 std::set<u32> s_costume_registered_hooks;
-struct CostumeRefresh {u32 menu=0, object=0, widget=0, pool=0, stack=0; unsigned phase=0;};
+struct CostumeRefresh {u32 menu=0, object=0, widget=0, pool=0, stack=0; unsigned phase=0; std::string old_model, base_model;};
+bool s_costume_restore_base=false;
 CostumeRefresh s_costume_refresh;
 std::map<u32,u32> s_costume_preview_widgets;
 struct CostumeAnimation {std::string name;double start=0,blend=0;};
@@ -129,10 +130,53 @@ bool ReplaceCostumeMenuInput(const Core::CPUThreadGuard& guard) {
   if(!ProviderCode(guard,state.pc,64,browse?"656677E4D275C5CEA50C157A8C3AD28C9DFA200D":"164A4C1088EF5C531D7C19ECFAF982FF438D6276"))return false;
   // Execute the native ownership sequence on the game thread. In particular,
   // no menu preview may retain the old skeleton while the live actor is rebuilt.
-  if(s_costume_refresh.phase && s_costume_refresh.menu==menu && (s_costume_refresh.stack==state.gpr[1] || (s_costume_refresh.phase==5 && s_costume_refresh.stack==state.gpr[1]+0x100))) {
+  if(s_costume_refresh.phase && s_costume_refresh.menu==menu && (s_costume_refresh.stack==state.gpr[1] || ((s_costume_refresh.phase==5 || s_costume_refresh.phase==7 || s_costume_refresh.phase==8) && s_costume_refresh.stack==state.gpr[1]+0x100))) {
     auto& pending=s_costume_refresh;
     state.spr[8]=state.pc;
-    if(pending.phase==1) {
+    if(pending.phase==1 && !pending.old_model.empty() && pending.old_model!=pending.base_model) {
+      // The default stays resident with the shared animation data. Move the
+      // live actor back to it before releasing the previous alternate; the
+      // selected preview has already been detached by the native widget call.
+      pending.phase=6;s_costume_restore_base=true;s_costume_changed=pending.object;
+      auto* dirty=guard.GetSystem().GetMemory().GetPointerForRange(0x812d0e44,4);
+      if(dirty) {
+        const u32 value=moderngekko::controls::ReadBE(std::span<const u8>(dirty,4),0)|(1u<<(pending.pool-7));
+        for(unsigned i=0;i<4;++i)dirty[i]=u8(value>>(24-8*i));
+      }
+      state.gpr[3]=menu;state.npc=0x80f836d4;return true;
+    }
+    if(pending.phase==6 || pending.phase==7) {
+      const bool portrait=pending.phase==7;
+      // Use the game's single-resource removal, not its whole-pool teardown:
+      // shared animations and the live default model must remain resident.
+      const auto path=(portrait?"HUD/hud_head_":"actors/")+pending.old_model+".igb";
+      auto* scratch=guard.GetSystem().GetMemory().GetPointerForRange(pending.stack-0x100,0x100);
+      std::memset(scratch,0,0x100);
+      for(unsigned i=0;i<4;++i)scratch[i]=u8(pending.stack>>(24-8*i));
+      std::memcpy(scratch+0x10,path.c_str(),path.size()+1);
+      const auto* manager=guard.GetSystem().GetMemory().GetPointerForRange(0x80816f78,4);
+      state.gpr[1]=pending.stack-0x100;
+      state.gpr[3]=moderngekko::controls::ReadBE(std::span<const u8>(manager,4),0);
+      state.gpr[4]=state.gpr[1]+0x10;state.gpr[5]=pending.pool;
+      state.gpr[6]=portrait?0x806c0940:0x806b5550;
+      pending.phase=portrait?8:7;s_costume_restore_base=false;
+      state.npc=0x801d862c;return true;
+    }
+    if(pending.phase==8) {
+      // Native pool cleanup also drops animation-to-skeleton binding caches.
+      // Those bindings can retain the previous skin after its database is gone.
+      state.gpr[1]=pending.stack;pending.phase=9;
+      state.gpr[3]=0x806b5550;state.npc=0x80203c44;return true;
+    }
+    if(pending.phase==9) {
+      // CImageCache retains pixel buffers independently of model databases.
+      // Drop this pool's cache references using native ref-counted cleanup;
+      // textures still owned by live models remain valid.
+      pending.phase=10;state.gpr[3]=0x806c06a0;state.gpr[4]=pending.pool;
+      state.npc=0x80200e90;return true;
+    }
+    if(pending.phase==1 || pending.phase==10) {
+      state.gpr[1]=pending.stack;
       pending.phase=2;
       state.gpr[3]=pending.object;state.gpr[4]=pending.pool;
       state.gpr[5]=u32(-1);state.gpr[6]=2;state.npc=0x801945f8;return true;
@@ -186,8 +230,17 @@ bool ReplaceCostumeMenuInput(const Core::CPUThreadGuard& guard) {
   if(animation==s_costume_preview_animations.end() || animation->second.name.empty() || animation->second.name.size()>127 ||
      state.gpr[1]<0x80000100 || state.gpr[1]>=0x81800000 || (state.gpr[1]&15) ||
      !guard.GetSystem().GetMemory().GetPointerForRange(state.gpr[1]-0x100,0x100))return false;
+  const auto* definition=CostumeDefinition(guard,object);
+  const auto* current_slot=guard.GetSystem().GetMemory().GetPointerForRange(object+0x2ac,1);
+  const auto* resource_manager=guard.GetSystem().GetMemory().GetPointerForRange(0x80816f78,4);
+  if(!definition || !current_slot || !resource_manager ||
+     !moderngekko::controls::ReadBE(std::span<const u8>(resource_manager,4),0) ||
+     !ProviderCode(guard,0x801d862c,64,"98CCDC6C840B2F84C88DE84F4DAFC3A20F9DC2D7") ||
+     !ProviderCode(guard,0x80203c44,64,"545AC1B062160389EF659D03498343593E96A361") ||
+     !ProviderCode(guard,0x80200e90,64,"4F40D9854730F23871ED9094BBFFC4F646988758"))return false;
+  const auto old_model=definition->Model(*current_slot),base_model=definition->Model(0);
   if(!CycleCostume(guard,object)) {state.gpr[3]=0;state.npc=state.pc+4;return true;}
-  s_costume_refresh={menu,object,widget,u32(7+((*flags>>5)&7)),state.gpr[1],1};
+  s_costume_refresh={menu,object,widget,u32(7+((*flags>>5)&7)),state.gpr[1],1,old_model,base_model};
   state.gpr[3]=widget;state.gpr[4]=0;state.gpr[5]=s_costume_refresh.pool;
   state.spr[8]=state.pc;state.npc=0x80fe4c74;return true;
 }
@@ -233,7 +286,7 @@ bool ReplaceCostumeActorRefresh(const Core::CPUThreadGuard& guard) {
   const auto* definition=CostumeDefinition(guard,s_costume_changed);
   const auto* slot=guard.GetSystem().GetMemory().GetPointerForRange(s_costume_changed+0x2ac,1);
   if(!definition || !slot)return false;
-  const auto model=definition->Model(*slot);if(model.empty() || model.size()>63)return false;
+  const auto model=definition->Model(s_costume_restore_base?0:*slot);if(model.empty() || model.size()>63)return false;
   if(!ProviderCode(guard,0x80045510,64,"6763E66321FAB2D039D5C0D79D32D408D87B1189") ||
      !ProviderCode(guard,0x80068738,64,"A0235E2896E1ACE0D863E906E6D2373CFA354372"))return false;
   const u32 stack=state.gpr[1];
@@ -274,7 +327,7 @@ void InstallCostumes(const Core::CPUThreadGuard& guard,const std::filesystem::pa
     if(entry.is_regular_file() && entry.path().extension()==".wad")moderngekko::controls::ReadCostumeArchiveNames(entry.path(),s_costume_files);
   HLE::SetExternalStartObserver(guard,0x8018b690,ObserveCostumeReset);
   s_costume_hooks=false;s_costume_menu_hooks=false;s_costume_registered_hooks.clear();
-  s_costume_preview_widgets.clear();s_costume_preview_animations.clear();s_costume_refresh={};s_costume_changed=0;s_costume_refresh_actor=0;s_costume_actor_stack=0;s_costume_actor_phase=0;
+  s_costume_preview_widgets.clear();s_costume_preview_animations.clear();s_costume_refresh={};s_costume_restore_base=false;s_costume_changed=0;s_costume_refresh_actor=0;s_costume_actor_stack=0;s_costume_actor_phase=0;
 }
 void InstallCostumeHooks(const Core::CPUThreadGuard& guard) {
   // BootCore is asynchronous: install only after each code region is present.

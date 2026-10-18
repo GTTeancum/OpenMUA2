@@ -157,6 +157,9 @@ internal static class OpenMUA2
         using (var writer = new StreamWriter(log, false))
         using (var process = new Process())
         {
+            writer.WriteLine("OpenMUA2 session: " + DateTime.Now.ToString("O"));
+            writer.WriteLine("Runtime SHA256: " + FileHash(info.FileName));
+            writer.Flush();
             process.StartInfo = info;
             object gate = new object();
             DataReceivedEventHandler receive = delegate(object sender, DataReceivedEventArgs e) { if (e.Data != null) lock (gate) { writer.WriteLine(e.Data); writer.Flush(); } };
@@ -166,6 +169,7 @@ internal static class OpenMUA2
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
+            writer.WriteLine("Runtime exit code: " + process.ExitCode);
             return process.ExitCode;
         }
     }
@@ -298,7 +302,8 @@ internal static class OpenMUA2
             string logs = Path.Combine(local, "Logs");
             Directory.CreateDirectory(logs);
             string session = DateTime.Now.ToString("yyyyMMdd-HHmmss-fff");
-            string log = Path.Combine(logs, session + "-runtime.log");
+            string log = Path.Combine(root, "OpenMUA2.log");
+            if (File.Exists(log)) File.Copy(log, Path.Combine(logs, "previous-runtime.log"), true);
             EnsureControls(cache, saves, Path.Combine(logs, session + "-controller.log"));
             var info = StartInfo(cache, "--game " + Quote(game) + " --cpu jit --title OpenMUA2 --user-dir " + Quote(saves) + " --graphics Vulkan --audio Cubeb");
             ConfigureXboxUi(info, game);

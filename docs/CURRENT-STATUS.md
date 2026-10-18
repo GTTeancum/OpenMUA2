@@ -1,5 +1,34 @@
 # Current status â€” GitHub main
 
+## Costume-cycle crash fixed and staged - 2026-10-17
+
+Captain America's second X press (slot 3 / model 9006) exhausted the original
+1.35 MB character pool. Removing the old model alone left its pixel buffers in
+the native image cache. Costume replacement now detaches the menu preview,
+refreshes the live actor onto the resident default, releases the old model/HUD
+resources and stale skeleton bindings, then releases the pool's cached image
+references before loading the next costume. Live textures and shared animations
+retain their native ownership. The original character memory budget is unchanged.
+
+Cold boot and normal contained player navigation loaded the installed game data
+and a private save copy. Ten X presses traversed all five Captain America costumes
+twice, including both wraps to default. All ten native menu captures were inspected
+sequentially; an eleventh selection returned to a correctly rendered world. Pool
+usage returned to 667,352 bytes after each full cycle. No desktop input or direct
+menu/character forcing was used. Other characters' imported costumes, audio,
+combat FPS and physical-controller acceptance were not tested in this check.
+
+Windows Release build passed without compiler/linker warnings or errors observed.
+Four focused runtime regressions and nine launcher profile checks passed. Embedded
+package verification passed; the staged runtime hash matches the tested binary.
+Installed C:/Games/MUA2/OpenMUA2.exe SHA256:
+`ba190f90ff57c0526ccf9912458f463803c4521523c4e217bf3e0e8d5ac70a0d`.
+GameData and real saves were not modified by this fix. The current game log now
+writes to C:/Games/MUA2/OpenMUA2.log and includes the runtime hash; the previous
+log is retained under LocalAppData/OpenMUA2/Logs/previous-runtime.log.
+Rollback EXE: LocalAppData/OpenMUA2/staging-archive/pre-costume-cache-fix-20261017/.
+Evidence: evidence/windows-20261017/COSTUME-CACHE-FIX.json.
+
 ## MUA1 model-only alternate costumes staged - 2026-10-17
 
 Installed WAD now has four MUA1 alternates plus the unchanged MUA2 default for

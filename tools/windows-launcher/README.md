@@ -1,8 +1,10 @@
 # Windows user package
 
 This source packages the supported Windows runner and its runtime resources into
-one root OpenMUA2.exe. GameData and saves stay beside it; the runtime payload and
-logs live under LocalAppData. Supply the user-provided icon separately.
+one root OpenMUA2.exe. GameData, saves and the current OpenMUA2.log stay beside it.
+The runtime payload and auxiliary diagnostics live under LocalAppData. The previous
+game log is retained there as Logs/previous-runtime.log. Supply the user-provided
+icon separately.
 
 ```powershell
 ./tools/windows-launcher/Build-Launcher.ps1 -RuntimeDirectory <prepared-runtime> -OutputExe <output-exe> -IconPath <icon.ico>

@@ -1,0 +1,122 @@
+{
+  "date": "2026-10-17",
+  "failure": "Second X press, slot 3 / model 9006: old image-cache references retained pixel buffers, 128 KiB allocation exhausted character pool.",
+  "fix": "Native per-resource, skeleton-binding and pool image-cache reference cleanup, preserving live resources and original arena size.",
+  "original_pool_capacity_bytes": 1415576,
+  "runtime_sha256": "ec82088b658925f59d02d65a505a16103e0268d6054e941a0d6416adb8c29cbe",
+  "installed_exe_sha256": "ba190f90ff57c0526ccf9912458f463803c4521523c4e217bf3e0e8d5ac70a0d",
+  "installed_wad_sha256": "70dd5b180de5390dade7434054c83db9d52f6dedbc536715f566acd5d1e7fa91",
+  "build": "Windows MSVC Release: pass; no compiler/linker warnings/errors observed",
+  "runtime_tests": {
+    "passed": 4,
+    "failed": 0,
+    "names": [
+      "mua2_costumes",
+      "mua2_xbox_prompts",
+      "mua2_gamepad_actions",
+      "mua2_fusion_buttons"
+    ]
+  },
+  "launcher_profile_tests": {
+    "passed": 9
+  },
+  "package_verification": "Pass; extracted runtime hash matches tested build; runner help exit 0",
+  "navigation": "Cold boot, normal menu input via contained process-local controller harness, private user copy, installed GameData, no menu or character forcing",
+  "cycles": [
+    {
+      "press": 1,
+      "slot": 2,
+      "screenshot": "cycle-01-slot-2.png",
+      "pool_used_bytes": 927600,
+      "screenshot_sha256": "c397b827f85e040abb17254491e3c9113e255cb92bbf16af4c04508bd1b60922"
+    },
+    {
+      "press": 2,
+      "slot": 3,
+      "screenshot": "cycle-02-slot-3.png",
+      "pool_used_bytes": 1065656,
+      "screenshot_sha256": "6d23de532c74359065872172fd42db252d8dcf9d1b2b92556df44799e4e4d295"
+    },
+    {
+      "press": 3,
+      "slot": 4,
+      "screenshot": "cycle-03-slot-4.png",
+      "pool_used_bytes": 1065664,
+      "screenshot_sha256": "e87c9dc40bc60bcc9b720373a55fcf83306310880b2b599b5abe68b0ec1cd140"
+    },
+    {
+      "press": 4,
+      "slot": 5,
+      "screenshot": "cycle-04-slot-5.png",
+      "pool_used_bytes": 1105368,
+      "screenshot_sha256": "a01bb4feb85773d7e34697d1ed10cb500f04cb106e632ffc0b95189a52946e97"
+    },
+    {
+      "press": 5,
+      "slot": 1,
+      "screenshot": "cycle-05-slot-1.png",
+      "pool_used_bytes": 667352,
+      "screenshot_sha256": "28348ae59943ccefd37df8fe3c08820af5fb77e3c2bb3f1078046f5fb15bd079"
+    },
+    {
+      "press": 6,
+      "slot": 2,
+      "screenshot": "cycle-06-slot-2.png",
+      "pool_used_bytes": 1068888,
+      "screenshot_sha256": "2c1e9b033a2cea8ed56aea7dc4c84229781cbe3453d87dce2c464784eb7e13ca"
+    },
+    {
+      "press": 7,
+      "slot": 3,
+      "screenshot": "cycle-07-slot-3.png",
+      "pool_used_bytes": 1065712,
+      "screenshot_sha256": "a85897ceadb0bb0cf1ff697a364dfe23bdff3ad03540100a86e09aa162fb6022"
+    },
+    {
+      "press": 8,
+      "slot": 4,
+      "screenshot": "cycle-08-slot-4.png",
+      "pool_used_bytes": 1065664,
+      "screenshot_sha256": "5d83cd94738fe9b5b5fa22b9b32bee3a7e47ee24b35cd87086e788ad39b3d0fd"
+    },
+    {
+      "press": 9,
+      "slot": 5,
+      "screenshot": "cycle-09-slot-5.png",
+      "pool_used_bytes": 1105368,
+      "screenshot_sha256": "b5b2b822d244b181aff3388fe318b3cd2a719120cfe84bc5eeb66f9336148b23"
+    },
+    {
+      "press": 10,
+      "slot": 1,
+      "screenshot": "cycle-10-slot-1.png",
+      "pool_used_bytes": 667352,
+      "screenshot_sha256": "f75d617483e7be696d02ea7821dcecd684895378f7e43737108cd5d19cf8dc07"
+    }
+  ],
+  "world_return": {
+    "slot": 2,
+    "capture": "returned-world.png",
+    "sha256": "69c1a1608a999a2b4b0e10c9f770dc4a354f54ed3a95278dfd906d5f73fbc507",
+    "visually_inspected": true
+  },
+  "all_ten_menu_captures_inspected_sequentially": true,
+  "harness_shutdown": "Paused test process subsequently ended by its 600-second watchdog; gameplay sequence had completed.",
+  "existing_diagnostics": "Unsupported formatter fallback diagnostics remain; no formatter mismatch reported.",
+  "limits": [
+    "Only Captain America imported costumes exercised",
+    "No audio validation (Null backend)",
+    "No combat FPS or physical-controller claim",
+    "Some unrelated menu stat text clipping/position differences visible; not addressed here"
+  ],
+  "private_artifacts": "Task workspace work/costume-images-20261017",
+  "staging": {
+    "log_path": "C:/Games/MUA2/OpenMUA2.log",
+    "sha256": "BA190F90FF57C0526CCF9912458F463803C4521523C4E217BF3E0E8D5AC70A0D",
+    "runtime_sha256": "EC82088B658925F59D02D65A505A16103E0268D6054E941A0D6416ADB8C29CBE",
+    "installed_exe": "C:\\Games\\MUA2\\OpenMUA2.exe",
+    "rollback": "C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\staging-archive\\pre-costume-cache-fix-20261017\\OpenMUA2.exe",
+    "package_report": "PASS: All embedded runtime files verified against SHA256 manifest.\r\nRunner --help exit: 0\r\nAffinity mask: 4\r\nRuntime cache: C:\\Users\\smmel\\AppData\\Local\\OpenMUA2\\runtime\\ef053923ec07c8ab9ec50367e9dcf2755e373712c52cc7d0ff510234b169e95f\r\nSaves path: C:\\Users\\smmel\\Documents\\Codex\\2026-09-29\\continue-openmua2-from-d-programming-github\\work\\saves\r\nGameplay was not launched. Visuals, audio and controller behavior were not tested.\r\n"
+  },
+  "log": "OpenMUA2.log beside the EXE; initially copied last old-build session, replaced on next launch"
+}
