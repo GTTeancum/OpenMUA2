@@ -1,5 +1,16 @@
 # Current status â€” GitHub main
 
+## Alchemy Batch Converter Windows app — 2026-10-20
+
+Built `.local/AlchemyBatchConverter/AlchemyBatchConverter.exe`: native batch GUI,
+15 igb-blender import profiles, supported character/static-scene exporters,
+copy/skip for unsupported types, separate output, progress/cancel, JSON settings
+and reports. Four Wii model outputs match the previously game-tested binaries.
+Other export paths passed file validation, not destination-game testing.
+See [checkpoint evidence](ALCHEMY-BATCH-20261020.md) and
+[app instructions](../tools/alchemy_batch/README.md). Game installation unchanged.
+
+
 ## Luke PC costumes converted and staged - 2026-10-18
 
 Four Luke Cage MUA1 PC models (15701-15704) now replace alternate models
