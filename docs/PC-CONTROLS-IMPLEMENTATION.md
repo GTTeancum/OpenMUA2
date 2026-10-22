@@ -73,8 +73,8 @@ keyboard state, and pointer leave releases mouse buttons.
 `ReadGamepadSample` now supports keyboard-only play, profile mapping and separate
 device assignment. Physical hotplug arming happens before keyboard merging.
 An explicit process-local Xbox test device still overrides only its own port.
-The native provider update latches keyboard events once; its query and gameplay
-consumers read that snapshot. This timing still needs a running-game check.
+The native provider update and pre-join query share a 30 Hz sample interval;
+gameplay consumers read that snapshot. This timing still needs a running-game check.
 
 The runtime loads `Config/OpenMUA2Controls.ini` beneath its configured user
 directory; malformed settings produce a log message and use defaults. Native
@@ -89,7 +89,38 @@ Paths and package associations are preserved. These are private authoring
 inputs, including reference-only XML1 models, not installable MUA2 replacements.
 Red authoring, MUA2-compatible resource conversion and native menu hooks remain.
 
-A Windows runtime build is in progress, with its log at
-`.local/pc-controls/runtime-build.log`. No completed runtime-build or live-input
-claim is made at this checkpoint. The installed executable and game data remain
-unchanged. No source backups were created.
+## Build and private menu conversion checkpoint
+
+Both the Windows Release runtime build and final incremental build completed
+successfully. Binary: `.local/build/windows-x64/runtime/moderngekko-run.exe`.
+Logs: `.local/pc-controls/runtime-build.log` and `incremental-build.log`.
+The first build reported dependency warnings (including SDL warning-level
+overrides and LZ4 inline notices); the incremental compile/link had no warnings
+or errors. Four focused CTests passed: PC controls, gamepad actions, button QTE
+and automation protocol. Test temporary files were confined under
+`.local/pc-controls/temp`. This is not a live-input or gameplay validation claim.
+
+`tools/convert_pc_menu_assets.py` uses the retained igb-blender complete graph
+reader/writer, DXT3 decoder and Wii RGB5A3 encoder. It produced 29 candidate files
+under `.local/pc-controls/red-menu-validated`, converting 46 image nodes and
+recoloring 482 UI vertex colors. Original names, geometry, animation, object
+identities and package paths are retained. Reference-only controller/button
+artwork retains its colors. All serialized object fields and memory blocks were
+read back and compared against the authored graph. Native rendering is unverified.
+
+The first conversion stopped because its validation compared Python field
+descriptor identities. The corrected check compares field slots and values.
+Automatic approval review blocked deletion of that failed partial output with
+"blocked by policy"; `.local/pc-controls/red-menu-candidate` remains. It is not
+the candidate to test or install. No deletion workaround was attempted.
+
+The original MUA2 options package was inspected read-only. Its native scene
+contains named `background_red`, `background_white`, `Stars_And_Stripes` and
+other background/animation nodes. Their private inventory and source models are
+under `.local/pc-controls/retail-scene-nodes.json` and `retail-menu-models` for
+integrating the new panel while retaining MUA2's background. No menu package
+has been installed or tested in-game yet. The user's requested screenshot must
+come from actual native rendering after that integration, not the asset files.
+
+The installed executable and game data remain unchanged. No source backups
+were created. TODO #1 remains open.

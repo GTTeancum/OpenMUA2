@@ -1,5 +1,15 @@
 # Current status â€” GitHub main
 
+## PC runtime build and menu asset candidate - 2026-10-22
+
+Windows Release runtime and final incremental build succeeded. Four focused
+input/automation CTests passed. A private native-menu candidate now contains
+46 Wii-format images and red UI tints, rebuilt with the igb-blender graph writer
+and checked after serialization. MUA2 background integration, native menu hooks,
+live input validation and the requested in-game screenshot remain pending.
+Installed game unchanged; TODO #1 stays open. See PC-CONTROLS-IMPLEMENTATION.md.
+
+
 ## PC window input integration - 2026-10-22 (validation pending)
 
 Connected window-local keyboard/mouse events, settings loading and keyboard-only
