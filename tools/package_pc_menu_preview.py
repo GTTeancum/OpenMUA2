@@ -142,7 +142,9 @@ def main():
 
     menu=ET.parse(assets/f'ui/menus/{source_name}.eng').getroot()
     menu.set('name',output_name)
-    if a.page=='options':menu.set('no_stack','false')
+    if a.page=='options':
+        menu.set('no_stack','false')
+        menu.set('updownonly','true')
     # XML2 stores static model bindings in the scene's user properties. MUA2
     # requires those same resource names explicitly on its menu items.
     model_bindings={}
@@ -221,12 +223,15 @@ def main():
             value.set('neverfocus','true')
         # XML1-specific extension commands must not swallow the native camera-shake
         # field or leave a blank focusable row. Its functionality is above.
-        for name in ('label_view_shake','view_shake'):
+        for name in ('label_view_shake','view_shake','label_subtitles','subtitles',
+                     'label_vibration','vibration'):
             items[name].set('opacity','0');items[name].set('neverfocus','true')
             items[name].set('text','');items[name].attrib.pop('gamevar',None)
             items[name].attrib.pop('usecmd',None)
-        items['label_view_follow'].set('down','label_subtitles')
-        items['label_subtitles'].set('up','label_view_follow')
+        items['label_view_follow'].set('down','label_accept')
+        items['label_accept'].set('up','label_view_follow')
+        items['label_accept'].set('usecmd','saveoptions')
+        items['label_click02'].attrib.pop('gamevar',None)
         items['label_click02'].set('usecmd','openmenu options_controller_xbox')
     background=[]
     for tag,attrs,_,_ in native_nodes:

@@ -1,5 +1,41 @@
 # Current status â€” GitHub main
 
+## Main Options navigation and volume investigation - 2026-10-22
+
+The private Options packer now skips the unsupported subtitle/vibration rows and
+unused duplicate camera-shake row, preserving named objects required by native
+initialization. The last real option links directly to Accept; Accept uses native
+saveoptions instead of the unsupported imported pcnative_shake_accept prefix.
+Advanced no longer carries an unsupported XML1 prompt gamevar. Retained the
+original updownonly=true after testing false; that experiment did not solve exit.
+
+Run 32 used contained keyboard navigation from fresh boot. Read-only inspection
+of the native options manager confirmed effects volume 10,9,8,7,8; its native
+capture showed the corresponding 80% bar. The manager lives at 806356e0; getter
+8014d26c reads bits 3..7 of byte +0x21. Item+0x3c is not the authoritative volume.
+Run 33 reached zero with left presses, restored 6, and visually showed the 60%
+bar. Run 34 fresh boot read initial 6, proving persistence across this restart.
+No audible validation: all runs used Null audio, one CPU and a 180s watchdog.
+All three game processes were explicitly stopped and returned exit 0.
+
+Accept/exit is NOT fixed: runs 33 and 34 remained on options_rev after changing
+volume and selecting Accept; Back also remained there in run 34. Earlier run 30
+closed with no volume change. Native saveoptions (81020500) has a conditional
+confirmation-dialog path before closing; inspect that path next, including an
+actual capture after Accept rather than equating the active-menu pointer with
+visible dialog state. No direct calls or state writes were used in these tests.
+The attempted footer text change remained blank and was removed. Footer help,
+layout polish, mouse navigation, HD output and broader controls validation remain.
+
+Evidence: .local/pc-controls/preview-run-32/volume-values.json,
+preview-run-33/accept-retry.json, preview-run-34/options-save-observation.json and
+back-result.json, plus native captures/runtime logs in those folders.
+Native XMLB regression passes (1/1). Assets rebuilt successfully in the isolated
+WAD; C++ unchanged since the last successful build. Installed game untouched.
+No new builds/profiles/backups duplicated. Main-menu state was reused/overwritten;
+compact evidence retained, D: free 100.85 GiB. TODO #1 remains open.
+
+
 ## XML1 HD resolution parity checked - 2026-10-22
 
 Compared XML1 commit c4e1c6f with the existing OpenMUA2 implementation. Both
