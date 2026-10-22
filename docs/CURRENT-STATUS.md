@@ -1,5 +1,35 @@
 # Current status â€” GitHub main
 
+## Native Save Options flow verified; terminology scan deferred - 2026-10-22
+
+Correction to the prior checkpoint: an unchanged active-menu pointer did not prove
+Accept was stuck. Run 35's native captures show the normal save confirmation,
+Saving, then Save Successful dialogs over Options. Enter confirmed Yes. They
+were visible and responsive, not hidden. No save/exit runtime patch was needed.
+The text still says Wii system memory; at the user's request, manual platform
+terminology review is recorded as TODO #4 and deferred while finishing #1.
+
+The contained test was corrected to acknowledge both confirmation and success.
+Run 36 then changed effects volume to 7, selected Accept, confirmed Yes, continued
+past Save Successful, and returned naturally to cw_main. Read-only observations
+are in .local/pc-controls/preview-run-36/options-save-result.json. Run 37 cold boot
+read volume 7 (startup-volume.json), confirming persistence. All runtimes were
+explicitly stopped and exited 0; no host input, menu forcing or memory writes.
+No audio acceptance: Null audio remained configured.
+
+Navigation timing remains a test-harness weakness: run 36's first attempt missed
+Options and was stopped by its value assertion, then ordinary Right/Enter opened
+Options and the full flow passed in the same process. Run 37's attempted focused
+item-name navigation also failed before entering Options; its separate startup
+read verifies persistence only. No claim of a passed run-37 menu flow. The private
+verification script now rejects an unexpected initial focused item before input.
+
+Source/runtime unchanged this turn; reused the prior passing Windows build and
+isolated WAD. Three native screenshots inspected, no full backups/new profiles.
+Mouse navigation, footer/layout polish, actual HD rendering and remaining input
+acceptance still prevent TODO #1 completion. Installed game remains unchanged.
+
+
 ## Main Options navigation and volume investigation - 2026-10-22
 
 The private Options packer now skips the unsupported subtitle/vibration rows and

@@ -23,6 +23,10 @@
 - Add first-run conversion through the game EXE, with progress, cancellation and retry, preserving installed mods, saves and the source archive.
 - Support configurable loose-file loading without silently falling back to archived resources; retain packaged mode as an option.
 
+## 4. Platform terminology scan
+
+- Manually review player-facing text for Wii, Nintendo, Wii system memory, Wii Remote, Nunchuk, pointer and console-specific system messages. Replace obsolete instructions with accurate PC/gamepad wording; review each match in context.
+
 ## Xbox / XInput Quick Reference
 
 Agreed gameplay mapping. Context-specific menu controls may differ.
