@@ -1,5 +1,24 @@
 # Current status â€” GitHub main
 
+## Red PC panel binding and HD settings checkpoint - 2026-10-22
+
+Native Options now attaches the exact model resources from the XML2 scene's
+Model properties. Hidden named items must remain for native initialization;
+removing them caused a null read in run 13. Keeping them with zero opacity and
+empty text opens successfully in run 14. Its native capture shows red panel
+models and no legacy Wii control labels, but incorrect panel placement/animation
+and incomplete settings remain. This is not an acceptable finished UI.
+Evidence: `.local/pc-controls/preview-run-14/options-result.png`. A Backspace
+probe still reported Options immediately afterward; back navigation is unproven.
+
+Added XML1's 720p/1080p/1440p/4K mode list, cycling and persisted dimensions to
+the PC settings model, following reference commit c4e1c6f. Existing settings
+without dimensions retain their previous display configuration. Windows focused
+test build and CTest passed: mode cycle/wrap, 4K manual parsing, round trips,
+invalid dimension rejection, and older-settings compatibility. Renderer/menu
+application of the dimensions is NOT implemented yet; do not claim HD output
+validation. TODO #1 remains open and the installed game is unchanged.
+
 ## PC Options first rendering checkpoint - 2026-10-22
 
 Converted legacy menu geometry to native typed arrays and corrected graph-transfer

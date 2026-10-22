@@ -4,6 +4,7 @@
 
 - Adapt OpenXML1xbox's XML2 PC keyboard/mouse controls and options framework to OpenMUA2's existing gamepad actions, including powers, fusions, block and repeated-X QTEs.
 - Reuse configurable primary/secondary bindings, presets, per-player profiles, mouse sensitivity, device assignment and saved settings.
+- Include XML1's resolution choices: 720p, 1080p, 1440p and 4K; verify saved selection, actual render/output dimensions and menu layout at higher resolutions.
 - Adapt the actual XML2 Options/Advanced menu assets and mouse navigation, recoloring them red to match MUA2 while preserving native backgrounds and animations.
 - Verify MUA2-specific menu integration, gameplay controls and rebinding; do not carry over XML1-specific addresses or camera behavior blindly.
 - Show an in-game screenshot of the converted UI once it is rendering.

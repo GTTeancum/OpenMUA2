@@ -121,6 +121,30 @@ def main():
 
     menu=ET.parse(assets/'ui/menus/options.eng').getroot()
     menu.set('name','options_rev');menu.set('no_stack','true')
+    # XML2 stores static model bindings in the scene's user properties. MUA2
+    # requires those same resource names explicitly on its menu items.
+    model_bindings={}
+    for i,obj in enumerate(panel.objects):
+        if not hasattr(obj,'raw_fields') or panel.meta_objects[obj.type_index].name!=b'igHashedUserInfo':
+            continue
+        properties=field(panel,i,8)
+        if properties<0:continue
+        values={field(panel,field(panel,p,2),2):field(panel,field(panel,p,3),2)
+                for p in refs(panel,field(panel,properties,4))}
+        if 'Model' in values:
+            model_bindings[values['ItemName']]='ui/models/'+values['Model']
+    for item in list(menu.findall('item')):
+        if item.get('hide')=='true':
+            # Keep named objects required by native Options initialization,
+            # but use MUA2's opacity rather than XML1's custom hide extension.
+            item.set('opacity','0')
+            item.set('neverfocus','true')
+            item.set('text','')
+            continue
+        if item.get('type')=='MENU_ITEM_MODEL':
+            if item.get('name') in model_bindings:
+                item.set('model',model_bindings[item.get('name')])
+            item.set('neverfocus','true')
     styles={'STYLE_TITLE':'STYLE_TITLE_MED',
             'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'SMALL_WHITE'}
     for node in menu.iter():

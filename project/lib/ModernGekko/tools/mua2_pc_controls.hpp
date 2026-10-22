@@ -34,6 +34,8 @@ struct PcProfile {
   bool operator==(const PcProfile&) const = default;
 };
 struct PcSettings {
+  // Zero preserves the existing display configuration until explicitly changed.
+  unsigned output_width = 0, output_height = 0;
   bool keyboard_enabled = true;
   unsigned keyboard_player = 0;
   bool separate_controllers = false, invert_camera_y = false;
@@ -41,6 +43,24 @@ struct PcSettings {
   std::array<PcProfile, 4> profiles{};
   bool operator==(const PcSettings&) const = default;
 };
+struct PcOutputMode { unsigned width, height; };
+inline constexpr std::array<PcOutputMode,4> PcOutputModes{{
+  {1280,720},{1920,1080},{2560,1440},{3840,2160}
+}};
+inline bool PcOutputSupported(unsigned width,unsigned height) {
+  if ((width==0 && height==0) || (width==640 && height==480)) return true;
+  return std::any_of(PcOutputModes.begin(),PcOutputModes.end(),[&](const auto& mode) {
+    return mode.width==width && mode.height==height;
+  });
+}
+inline void PcNextOutputMode(PcSettings& settings) {
+  unsigned next=0;
+  for(unsigned i=0;i<PcOutputModes.size();++i)
+    if(settings.output_width==PcOutputModes[i].width && settings.output_height==PcOutputModes[i].height)
+      next=(i+1)%PcOutputModes.size();
+  settings.output_width=PcOutputModes[next].width;
+  settings.output_height=PcOutputModes[next].height;
+}
 inline bool PcPreset(PcProfile& profile, unsigned preset) {
   if (preset < 1 || preset > 3) return false;
   profile = {};
@@ -84,6 +104,7 @@ inline int PcBindingConflict(const std::array<PcBinding,PcActionCount>& bindings
   return -1;
 }
 inline std::string_view ValidatePcSettings(const PcSettings& s) {
+  if (!PcOutputSupported(s.output_width,s.output_height)) return "Unsupported output resolution";
   if (s.keyboard_player>=4) return "Keyboard player must be 1 through 4";
   if (s.mouse_sensitivity<10 || s.mouse_sensitivity>300) return "Mouse sensitivity must be 10 through 300";
   for (const auto& p:s.profiles) for (unsigned i=0;i<PcActionCount;++i) {

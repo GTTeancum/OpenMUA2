@@ -107,6 +107,22 @@ int main() {
   CHECK(MapPcInput(s,0,{},physical,false,1.0/60).Down(GamepadInput::A));
   CHECK(MapPcInput(s,1,{},physical,false,1.0/60).Down(GamepadInput::X));
   std::string error;
+  auto display=DefaultPcSettings();
+  for(const auto mode:PcOutputModes) {
+    PcNextOutputMode(display);
+    CHECK(display.output_width==mode.width && display.output_height==mode.height);
+    auto loaded=DefaultPcSettings();
+    CHECK(DecodePcSettings(EncodePcSettings(display),loaded,error));
+    CHECK(loaded==display);
+  }
+  PcNextOutputMode(display);
+  CHECK(display.output_width==1280 && display.output_height==720);
+  CHECK(DecodePcSettings("Version=1\nOutputWidth=3840\nOutputHeight=2160\n",display,error));
+  CHECK(display.output_width==3840 && display.output_height==2160);
+  CHECK(!DecodePcSettings("Version=1\nOutputWidth=3840\nOutputHeight=1440\n",display,error));
+  CHECK(display.output_width==3840 && display.output_height==2160);
+  CHECK(DecodePcSettings("Version=1\n",display,error));
+  CHECK(display.output_width==0 && display.output_height==0);
   auto restored=DefaultPcSettings();
   CHECK(DecodePcSettings(EncodePcSettings(s),restored,error));
   CHECK(restored==s);
