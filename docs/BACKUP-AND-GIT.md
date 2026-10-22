@@ -6,13 +6,18 @@
 
 Local `core.autocrlf=false`, `core.longpaths=true` and Windows `core.filemode=false` avoid unintended source transformations. No global setting is modified. Your configured Git identity is used. If none exists, the initial/snapshot commit uses a command-local descriptive fallback identity; it does not assign you a fake global identity or create a remote account.
 
-## Snapshot and backup are different
+## Source checkpoints: Git only
 
-`Snapshot.cmd -m "message"` commits allowed source changes. It notices tracked deletions and new files in code directories. Unknown new files in the root are not silently committed; place development files in a documented source directory or review/stage them explicitly with Git. It refuses currently tracked game/private files instead of silently including them.
+User instruction, 2026-10-22: no more full source backups. Use Git commits for
+source checkpoints. Do not run `Backup.cmd` or create equivalent source/history
+ZIPs or bundles during development or handoff. This supersedes older backup
+instructions elsewhere in the repository.
 
-`Backup.cmd` does **not** make a commit. It writes a ZIP containing all local Git references/history plus the source worktree as it exists, including uncommitted edits, untracked allowed source files and tracked deletions. It verifies ZIP CRCs, records per-file hashes, rechecks source bytes and detects changes to Git status/HEAD during creation. Save files and the WBFS are excluded.
+`Snapshot.cmd -m "message"` commits allowed source changes. Alternatively, review
+and stage focused paths with Git. Preserve unrelated user changes and never
+commit proprietary game data. Pushing still requires user authorization.
 
-Do not edit files or run another Git operation while backing up. A failed backup leaves no final named ZIP. Destination collisions are rejected. Source backup can be large because the complete vendored dependencies and their Git history are retained. `.backups` is ignored and is not recursively packed into itself.
+The restoration instructions below apply only to existing legacy archives.
 
 ## Restore testable local history
 

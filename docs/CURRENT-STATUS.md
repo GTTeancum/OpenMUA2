@@ -1,5 +1,13 @@
 # Current status â€” GitHub main
 
+## Git-only source checkpoints - 2026-10-22
+
+Per user instruction, full source/history backups are prohibited. The running
+TODO-rename backup was cancelled. AGENTS.md and recovery guidance now require
+Git checkpoints only. Automatic approval review rejected temporary backup
+cleanup with "blocked by policy"; incomplete artifacts remain under .backups.
+
+
 ## TODO list renamed - 2026-10-22
 
 The personal task list is now `docs/TODO.md` (formerly `docs/PERFORMANCE-GOAL.md`).
