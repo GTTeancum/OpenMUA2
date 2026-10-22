@@ -1,5 +1,21 @@
 # Current status â€” GitHub main
 
+## PC panel transform investigation - 2026-10-22
+
+Extended the independent conversion check to compare every imported transform's
+local matrix, flags and animation payload against the XML2 source. This passes,
+alongside the 124-mesh / 2,534-triangle comparison. Serialized transforms and
+animation data therefore survive conversion; this does not establish correct
+runtime interpretation or hierarchy composition.
+
+Run 15 tested enabling model animation on all visible panel items. It opened
+Options but its native capture still showed the same displaced/thin panels.
+Reverted that ineffective change. Run closed with the process-local stop command.
+Next investigation should trace native model placement/render transforms rather
+than repeat that flag change. Current private package still contains the run-15
+experiment; rebuild it from the source packer before the next test. TODO #1 and
+HD renderer integration remain open; installed game unchanged.
+
 ## Red PC panel binding and HD settings checkpoint - 2026-10-22
 
 Native Options now attaches the exact model resources from the XML2 scene's

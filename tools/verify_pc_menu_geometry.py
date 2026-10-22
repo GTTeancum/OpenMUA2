@@ -18,6 +18,26 @@ extract=importlib.import_module('menu_igb_addon.scene_graph.sg_geometry').extrac
 profile=importlib.import_module('menu_igb_addon.game_profiles').get_profile
 sys.path.insert(0,str(repo/'tools'))
 from convert_pc_menu_assets import red
+
+def transforms(path,source):
+ r=Reader(str(path));r.read();out=collections.Counter()
+ def field(obj,slot):return next(v for k,v,t in obj._raw_fields if k==slot)
+ def track(index):
+  if index<0:return None
+  obj=r.objects[index]
+  if not hasattr(obj,'_raw_fields'):return bytes(obj.data)
+  values=[]
+  for slot,value,definition in obj._raw_fields:
+   if definition.short_name in (b'ObjectRef',b'MemoryRef'):value=track(value)
+   if isinstance(value,list):value=tuple(value)
+   values.append((slot,value))
+  return tuple(values)
+ for obj in r.objects:
+  if not hasattr(obj,'is_type') or not obj.is_type(b'igTransform'):continue
+  # Exact local matrices and animation payloads must survive serialization.
+  out[(field(obj,2),field(obj,5),tuple(field(obj,8)),field(obj,9),
+       track(field(obj,11 if source else 10)))]+=1
+ return out
 def fingerprint(path,source):
  r=Reader(str(path));r.read();out=collections.Counter();meshes=0
  reachable=set()
@@ -56,10 +76,12 @@ records=[]
 for source in sorted(source_root.rglob('*.igb')):
  target=converted/source.relative_to(source_root)
  before,n=fingerprint(source,True);after,m=fingerprint(target,False)
+ if transforms(source,True)!=transforms(target,False):
+  raise ValueError('Transform or animation mismatch: '+source.name)
  if before!=after or n!=m:
   print('MISMATCH',source.name,n,m,sum(before.values()),sum(after.values()))
   print('missing',list((before-after).items())[:1]);print('extra',list((after-before).items())[:1]);raise SystemExit(1)
  records.append(dict(file=source.relative_to(source_root).as_posix(),meshes=n,triangles=sum(after.values())))
 report.parent.mkdir(parents=True,exist_ok=True)
 report.write_text(json.dumps(records,indent=2)+'\n')
-print('Verified',sum(x['meshes'] for x in records),'meshes and',sum(x['triangles'] for x in records),'triangles, including winding, positions, normals, UVs and intended recolored vertex colors')
+print('Verified transforms/animation,',sum(x['meshes'] for x in records),'meshes and',sum(x['triangles'] for x in records),'triangles, including winding, positions, normals, UVs and intended recolored vertex colors')
