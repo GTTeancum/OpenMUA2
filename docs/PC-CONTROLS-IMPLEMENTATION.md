@@ -124,3 +124,26 @@ come from actual native rendering after that integration, not the asset files.
 
 The installed executable and game data remain unchanged. No source backups
 were created. TODO #1 remains open.
+
+## Native preview checkpoint - 2026-10-22
+
+Normalized the PC igTransform animation reference from field 11 to Wii field 10.
+The preview packer transfers five original MUA2 background branches and animation
+to the red Options scene. The 29-resource FB passes structural readback.
+
+An isolated `.local/pc-controls/preview-game` fixture contains a separate WAD
+with only Options replaced. Other immutable files are hardlinks: never edit them
+through this fixture. Config, caches, logs and native captures remain in the repo.
+The runtime used one logical processor, Vulkan, null audio and a 180-second
+watchdog. Process-local keyboard events navigated normal main/profile menus;
+native screenshots confirmed those screens. No menu was forced.
+
+Returning from Profiles and selecting Options exited 70: invalid read 0x32a0ca78
+at guest PC 0x802e8d3c. The converted panel is NOT visually verified. The last
+capture, provisionally named `red-options.png`, actually shows Profiles and must
+not be presented as conversion proof. One prior command-file read failed;
+subsequent navigation commands succeeded. Evidence is under
+`.local/pc-controls/preview-run` (runtime.log, launch.json, commands, captures).
+Do not install this candidate. Diagnose native scene loading next, then inspect
+the red panels and preserved background before completing menu hooks.
+Installed files and real saves remain unchanged. TODO #1 remains open.

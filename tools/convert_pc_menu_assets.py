@@ -67,8 +67,18 @@ def main():
     for path in (source, output, addon):
         if not path.is_relative_to(repo / '.local'):
             raise ValueError('Conversion inputs, writer and output must stay in repository/.local')
-    if output.exists() or output.is_relative_to(source):
-        raise ValueError('Use a new output directory separate from the input')
+    if output.is_relative_to(source):
+        raise ValueError('Output must be separate from the input')
+    if output.exists():
+        # Rebuild only our previously verified candidate, never arbitrary files
+        # or user edits. No removal or backup copy is needed for an incremental run.
+        previous = json.loads((output/'conversion-manifest.json').read_text())
+        expected = {'conversion-manifest.json'} | {r['path'] for r in previous}
+        if {p.relative_to(output).as_posix() for p in output.rglob('*') if p.is_file()} != expected:
+            raise ValueError('Unexpected files in output directory')
+        for row in previous:
+            if hashlib.sha256((output/row['path']).read_bytes()).hexdigest() != row['output_sha256']:
+                raise ValueError('Candidate was changed outside this converter')
     sys.dont_write_bytecode = True
     sys.path.insert(0, str(addon))
     from igb_format.igb_reader import IGBReader
@@ -94,6 +104,21 @@ def main():
             writer = from_reader(reader)
             if writer.version != 6 or writer.endian != '<':
                 raise ValueError(f'Unsupported graph format: {relative}')
+            # Retail MUA2 v6 igTransform places the same igTransformSequence1_5
+            # reference in slot 10; XML2 PC uses 11. Other shared scene schemas
+            # matched the retail layout. Convert the declared field and every
+            # instance together, preserving the animation object/reference.
+            for meta in writer.meta_objects:
+                if meta.name == b'igTransform':
+                    for definition in meta.fields:
+                        if definition.slot == 11:
+                            if definition.short_name != b'ObjectRef':
+                                raise ValueError('Unexpected transform animation field')
+                            definition.slot = 10
+            for obj in writer.objects:
+                if hasattr(obj,'raw_fields') and writer.meta_objects[obj.type_index].name == b'igTransform':
+                    obj.raw_bytes = None
+                    obj.raw_fields = [(10 if k==11 else k,v,t) for k,v,t in obj.raw_fields]
             # Reference-only button/controller artwork retains its original colors.
             tint = path.stem.startswith(('m_options_', 'm_pda_', 'm_share_', 'm_team_', 'x2m_'))
             changes = {}

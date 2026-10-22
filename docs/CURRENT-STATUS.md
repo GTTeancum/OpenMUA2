@@ -1,5 +1,13 @@
 # Current status â€” GitHub main
 
+## Native PC Options preview failure - 2026-10-22
+
+Prepared red panel assets and merged original MUA2 background/animation branches.
+Structural package checks passed. Normal keyboard menu navigation worked in the
+isolated runtime, but entering converted Options exited 70: invalid read
+0x32a0ca78 at PC 0x802e8d3c. No converted-panel screenshot yet. Do not install the
+preview. TODO #1 stays open; installed game unchanged. See the implementation doc.
+
 ## PC runtime build and menu asset candidate - 2026-10-22
 
 Windows Release runtime and final incremental build succeeded. Four focused
