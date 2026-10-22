@@ -689,7 +689,7 @@ bindings or extra comments remain untouched. All six forms are regression-tested
 a copy of the actual prior run's v3 profile also upgraded with an exact backup.
 Legacy templates contain only our own controller configuration, not game assets.
 
-Replaced the bottom quick-reference table in docs/PERFORMANCE-GOAL.md with the
+Replaced the bottom quick-reference table in docs/TODO.md with the
 implemented layout. X grabs; LB handles the tested statue use; LT/RT cycle
 heroes; D-pad is menus/direct powers; Start pauses and B resumes. Contextual X,
 direct D-pad hero selection and full fusion/revive remain unfinished.

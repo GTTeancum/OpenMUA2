@@ -7,7 +7,7 @@
 > static path remains `Build.cmd --cpu staticrecomp --native-rel`, followed by
 > `Run.cmd --cpu staticrecomp`. `--native-rel` alone retains the static build path.
 > Separate backend receipts preserve module verification for static execution.
-> Sustained 30 FPS combat is still being validated; see `docs/PERFORMANCE-GOAL.md`
+> Sustained 30 FPS combat is still being validated; see `docs/TODO.md`
 > and the latest section of `MUA2-CANONICAL-HANDOFF.md`. The LOCAL01 description
 > below is historical background.
 

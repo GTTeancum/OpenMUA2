@@ -1,5 +1,11 @@
 # Current status â€” GitHub main
 
+## TODO list renamed - 2026-10-22
+
+The personal task list is now `docs/TODO.md` (formerly `docs/PERFORMANCE-GOAL.md`).
+Contents and item numbering are unchanged; documentation references were updated.
+
+
 ## Alchemy Batch Converter Windows app — 2026-10-20
 
 Built `.local/AlchemyBatchConverter/AlchemyBatchConverter.exe`: native batch GUI,
@@ -326,7 +332,7 @@ Staged EXE: C:/Games/MUA2/OpenMUA2.exe, SHA256
 Embedded runtime verification and all 14 paired v8 UI entries passed. All 400
 installed game-data files and 55 saves remained byte-identical. Root contains
 only OpenMUA2.exe, GameData and saves. Test process stopped normally.
-Completed item #3 removed from docs/PERFORMANCE-GOAL.md; deferred item #1 retained.
+Completed item #3 removed from docs/TODO.md; deferred item #1 retained.
 Evidence: evidence/windows-20261011/COSTUME-SWITCHING.json.
 
 ## Controls and Powers-page completion - 2026-10-08
@@ -1235,7 +1241,7 @@ The Hero Management overlay stays deferred. Menu prompt candidate source is
 preserved; its Windows rebuild and 50/50 tests passed, but latest visual
 verification was interrupted before menu acceptance. Diagnostic process stopped
 with exit0. Installed game and user saves are unchanged. The current priority
-checklist is in docs/PERFORMANCE-GOAL.md at the repository root.
+checklist is in docs/TODO.md at the repository root.
 
 
 ## Native menu gamepad mapping candidate - 2026-10-07
@@ -1284,7 +1290,7 @@ Graphics isolation: native menu/stack flags clear identically in failed and good
 returns. Four differing viewport drawing flags were temporarily cleared in the
 private process and restored; captures still fail. No corrective source patch
 was made. Investigation deferred at user request; see the open issue at the
-top of docs/PERFORMANCE-GOAL.md. Earlier hooks/test setup remain suspects, not
+top of docs/TODO.md. Earlier hooks/test setup remain suspects, not
 established causes. Continue remaining bindings and prompts instead.
 HERO-MENU-GRAPHICS-AUDIT.json retains evidence. Installation unchanged.
 
@@ -2801,7 +2807,7 @@ bindings or extra comments remain untouched. All six forms are regression-tested
 a copy of the actual prior run's v3 profile also upgraded with an exact backup.
 Legacy templates contain only our own controller configuration, not game assets.
 
-Replaced the bottom quick-reference table in docs/PERFORMANCE-GOAL.md with the
+Replaced the bottom quick-reference table in docs/TODO.md with the
 implemented layout. X grabs; LB handles the tested statue use; LT/RT cycle
 heroes; D-pad is menus/direct powers; Start pauses and B resumes. Contextual X,
 direct D-pad hero selection and full fusion/revive remain unfinished.
@@ -4752,7 +4758,7 @@ attack effects. All four entry, four intermediate and five corrected-selection
 captures were inspected sequentially. The tutorial banner remained. This proves
 the tested input path, not completed Xbox controls or every-frame correctness.
 
-The PS2-derived Xbox target table is at the bottom of docs/PERFORMANCE-GOAL.md.
+The PS2-derived Xbox target table is at the bottom of docs/TODO.md.
 Full mapping, camera and direct hero selection remain pending. No UI changes.
 The user does not need to test yet. Fusion now has a usable process-local route
 for extending combat: .local/automation/jit-fusion-ready-20260930/fusion-ready.sav.
@@ -5149,7 +5155,7 @@ correctness. No production speedup, audio pass, or sustained-30 pass is claimed.
 Goal remains active; no production speedup or sustained-30 pass is claimed.
 Added opt-in bounded unique-frame timing at after_present, independent of the
 status-file loop; no file I/O on the video thread. Added the replay runner and
-analyzer documented in PERFORMANCE-GOAL.md. Timestamp tests cover duplicate
+analyzer documented in TODO.md. Timestamp tests cover duplicate
 presents, rewind epochs and overflow; analyzer rejects lost/discontinuous data
 and reports frame tails, rolling FPS and normal-speed ratio. The optional
 status read tolerates transient Windows sharing errors; an aborted attempt was
@@ -5192,7 +5198,7 @@ restored after the telemetry build and remain excluded from tested binaries.
 
 The user requested major frame-rate improvements and will not accept less than
 solid 30 FPS in combat. The active goal and acceptance criteria are recorded in
-`docs/PERFORMANCE-GOAL.md`; small improvements do not complete it.
+`docs/TODO.md`; small improvements do not complete it.
 
 Planning is complete and execution has begun. GitHub main was checked at
 f14ea4a8. Existing runtime diagnostic edits remain untouched and excluded from
