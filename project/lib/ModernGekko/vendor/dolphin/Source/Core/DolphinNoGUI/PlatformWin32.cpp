@@ -348,6 +348,48 @@ LRESULT PlatformWin32::WndProc(const HWND hwnd, const UINT msg, const WPARAM wPa
                                const LPARAM lParam)
 {
   PlatformWin32* platform = reinterpret_cast<PlatformWin32*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+  if (platform)
+  {
+    if (msg == WM_KEYDOWN || msg == WM_KEYUP)
+    {
+      if (platform->HandleInput({InputEvent::Type::Key, static_cast<unsigned>(wParam),
+                                msg == WM_KEYDOWN,
+                                (static_cast<ULONG_PTR>(lParam) & (1u << 30)) != 0}))
+        return 0;
+    }
+    else if (msg == WM_SETFOCUS || msg == WM_KILLFOCUS)
+    {
+      platform->m_window_focus = msg == WM_SETFOCUS;
+      platform->HandleInput({InputEvent::Type::Focus, 0, msg == WM_SETFOCUS});
+    }
+    else if (msg == WM_MOUSEMOVE)
+    {
+      TRACKMOUSEEVENT tracking{sizeof(TRACKMOUSEEVENT), TME_LEAVE, hwnd, 0};
+      TrackMouseEvent(&tracking);
+      platform->HandleInput({InputEvent::Type::Pointer, 0, false, false,
+                            static_cast<double>(static_cast<short>(LOWORD(lParam))),
+                            static_cast<double>(static_cast<short>(HIWORD(lParam)))});
+    }
+    else if (msg == WM_MOUSELEAVE)
+      platform->HandleInput({InputEvent::Type::PointerLeave});
+    else if (msg == WM_MOUSEWHEEL)
+      platform->HandleInput({InputEvent::Type::Wheel, 0, false, false, 0,
+                            static_cast<double>(static_cast<short>(HIWORD(wParam))) / WHEEL_DELTA});
+    else if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP ||
+             msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP ||
+             msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP ||
+             msg == WM_XBUTTONDOWN || msg == WM_XBUTTONUP)
+    {
+      const unsigned key = (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP) ? VK_LBUTTON :
+          (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP) ? VK_RBUTTON :
+          (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP) ? VK_MBUTTON :
+          (HIWORD(wParam) == XBUTTON1 ? VK_XBUTTON1 : VK_XBUTTON2);
+      const bool down = msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN ||
+                        msg == WM_MBUTTONDOWN || msg == WM_XBUTTONDOWN;
+      if (platform->HandleInput({InputEvent::Type::Key, key, down}))
+        return (msg == WM_XBUTTONDOWN || msg == WM_XBUTTONUP) ? TRUE : 0;
+    }
+  }
   switch (msg)
   {
   case WM_NCCREATE:

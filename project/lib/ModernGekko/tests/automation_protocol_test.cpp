@@ -25,6 +25,25 @@ int main()
   const std::filesystem::path root = MakeTempDirectory();
   const std::filesystem::path commands = root / "commands";
   std::filesystem::create_directories(commands);
+  {
+    const auto path=root / "pc_key.txt";
+    automation::Command command;
+    std::string error;
+    for(const auto input:{"command=pc_key\nkey=69\ndown=1\n",
+                          "command=pc_key\nkey=69\ndown=0\n"}) {
+      {std::ofstream file(path);file << input;}
+      if(!automation::ParseCommandFile(path,&command,&error) ||
+         command.type!=automation::CommandType::PcKey || command.pc_key!=69) return 170;
+    }
+    if(command.pc_down) return 171;
+    for(const auto input:{"command=pc_key\nkey=256\ndown=1\n",
+                          "command=pc_key\nkey=0\ndown=1\n",
+                          "command=pc_key\nkey=69\ndown=2\n",
+                          "command=pc_key\nkey=69\ndown=1\nextra=1\n"}) {
+      {std::ofstream file(path);file << input;}
+      if(automation::ParseCommandFile(path,&command,&error)) return 172;
+    }
+  }
 
   {
     std::ofstream output(commands / "002_pad.txt");

@@ -7,6 +7,7 @@
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
+#include "mua2_pc_settings.hpp"
 #include "mua2_costumes.hpp"
 #include "mua2_roster_patch_plan.hpp"
 #include "mua2_roster_menu.hpp"
@@ -99,11 +100,68 @@ struct DirectFusionCall { u32 actor=0, stack=0; unsigned port=4; };
 DirectFusionCall s_direct_fusion_call;
 
 std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
+std::mutex s_pc_mutex;
+moderngekko::controls::PcSettings s_pc_settings=moderngekko::controls::DefaultPcSettings();
+moderngekko::controls::PcInputEvents s_pc_events;
+moderngekko::controls::PcInputFrame s_pc_frame;
+bool s_pc_enabled=false, s_pc_pointer_valid=false;
+double s_pc_pointer_x=0, s_pc_pointer_y=0, s_pc_seconds=1.0/30;
+u64 s_pc_ticks=0;
+bool PcWindowInput(const Platform::InputEvent& event) {
+  const std::lock_guard lock(s_pc_mutex);
+  if(!s_pc_enabled) return false;
+  using Type=Platform::InputEvent::Type;
+  switch(event.type) {
+  case Type::Focus:
+    s_pc_events.Focus(event.down);s_pc_frame={};s_pc_pointer_valid=false;
+    return false;
+  case Type::Key:
+    // Native fullscreen is reserved. All other game-window keys are owned by
+    // the PC control layer, including unbound keys during binding capture.
+    if(event.key==0x7a) return false;
+    if(!event.down || !event.repeat) s_pc_events.Key(event.key,event.down);
+    return s_pc_settings.keyboard_enabled;
+  case Type::Pointer:
+    if(s_pc_pointer_valid)
+      s_pc_events.MouseDelta(event.x-s_pc_pointer_x,event.y-s_pc_pointer_y);
+    s_pc_pointer_x=event.x;s_pc_pointer_y=event.y;s_pc_pointer_valid=true;
+    return false;
+  case Type::PointerLeave:
+    s_pc_pointer_valid=false;
+    for(unsigned key:{1u,2u,4u,5u,6u})s_pc_events.Key(key,false);
+    return false;
+  case Type::Wheel:
+    return false; // Native menu pointer routing is connected separately.
+  }
+  return false;
+}
+void AdvancePcInput(const Core::CPUThreadGuard& guard,unsigned port) {
+  const std::lock_guard lock(s_pc_mutex);
+  if(!s_pc_enabled || port!=s_pc_settings.keyboard_player) return;
+  const auto now=guard.GetSystem().GetCoreTiming().GetTicks();
+  const auto frequency=guard.GetSystem().GetSystemTimers().GetTicksPerSecond();
+  // Title/profile menus may query before a player joins the regular update
+  // loop. Both paths can sample, but cannot consume two queued edges within
+  // one 30 Hz game interval. Rewinding a state resets the interval naturally.
+  if(s_pc_ticks && now>=s_pc_ticks && now-s_pc_ticks<frequency/30) return;
+  s_pc_seconds=s_pc_ticks && now>s_pc_ticks ? double(now-s_pc_ticks)/frequency:1.0/30;
+  s_pc_ticks=now;
+  s_pc_frame=s_pc_events.AdvanceFrame();
+}
 struct GamepadTutorialClock { u32 object=0; unsigned owner=4; float seconds=0; u64 ticks=0; };
 GamepadTutorialClock s_gamepad_tutorial_clock;
 moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   moderngekko::controls::GamepadSample sample;
   if(port>=4) return sample;
+  moderngekko::controls::PcSettings settings;
+  moderngekko::controls::PcInputFrame keyboard;
+  double seconds=0;
+  bool pc_enabled=false;
+  {
+    const std::lock_guard pc_lock(s_pc_mutex);
+    settings=s_pc_settings;keyboard=s_pc_frame;seconds=s_pc_seconds;pc_enabled=s_pc_enabled;
+  }
+  const int physical=pc_enabled ? moderngekko::controls::PcPhysicalPort(settings,port):int(port);
   const auto lock=ControllerEmu::EmulatedController::GetStateLock();
   // Resolve stable physical ports directly; Wii profiles do not select or
   // transform the input source. Process-local test devices replace only their
@@ -112,23 +170,35 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   for (const auto& candidate:g_controller_interface.GetAllDevices()) {
     const auto source=candidate->GetSource();
     const auto id=candidate->GetPreferredId();
-    if (!id || *id!=static_cast<int>(port)) continue;
-    if (source=="OpenMUA2Test") { device=candidate; break; }
-    if (source=="XInput") device=candidate;
+    if (!id) continue;
+    if (source=="OpenMUA2Test" && *id==static_cast<int>(port)) { device=candidate; break; }
+    if (source=="XInput" && *id==physical) device=candidate;
   }
-  if (!device) { s_gamepad_ports[port].Update({}); return {}; }
   // Poll the selected gamepad directly, independent of Wii report generation.
-  device->UpdateInput();
-  const auto* connected=device->FindInput("Connected");
-  if(!connected || connected->GetState()<=0.5) { s_gamepad_ports[port].Update({}); return {}; }
-  for(unsigned i=0;i<sample.inputs.size();++i) {
-    const auto* input=device->FindInput(moderngekko::automation::XboxInputNames[i]);
-    if(!input) { s_gamepad_ports[port].Update({}); return {}; }
-    sample.inputs[i]=input->GetState();
+  if(device) {
+    device->UpdateInput();
+    const auto* connected=device->FindInput("Connected");
+    if(connected && connected->GetState()>0.5) {
+      sample.connected=true;
+      for(unsigned i=0;i<sample.inputs.size();++i) {
+        const auto* input=device->FindInput(moderngekko::automation::XboxInputNames[i]);
+        if(!input) {sample={};break;}
+        sample.inputs[i]=input->GetState();
+      }
+    }
   }
-  sample.connected=true;
+  // Hotplug arming belongs to physical devices, before keyboard merging. A
+  // permanently connected keyboard must not arm an unplugged controller.
   s_gamepad_ports[port].Update(sample);
-  return s_gamepad_ports[port].sample;
+  sample=s_gamepad_ports[port].sample;
+  if(!pc_enabled || (device && device->GetSource()=="OpenMUA2Test")) return sample;
+  auto& memory=Core::System::GetInstance().GetMemory();
+  const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
+    const auto* bytes=memory.GetPointerForRange(address,size);
+    return bytes ? std::span<const u8>(bytes,size):std::span<const u8>{};
+  };
+  return moderngekko::controls::MapPcInput(settings,port,keyboard,sample,
+      moderngekko::controls::ActiveMenuType(read)!=0,seconds);
 }
 
 bool s_gamepad_provider=false;
@@ -1001,6 +1071,7 @@ bool ReplaceProviderUpdate(const Core::CPUThreadGuard& guard) {
   if(!current || !previous) return false;
   std::array<u8,20> old;
   std::copy_n(current,20,old.begin());
+  AdvancePcInput(guard,port);
   if(!PublishProvider(guard,port,state.gpr[30],state.gpr[27])) return false;
   std::copy(old.begin(),old.end(),previous);
   // Remain inside the native update loop after the input-disabled gate. Keep
@@ -1021,6 +1092,7 @@ bool ReplaceProviderQuery(const Core::CPUThreadGuard& guard) {
     // Preserve native ownership/disabled-port rejection, including return value.
     state.gpr[3]=0;state.npc=0x810fc6fc;return true;
   }
+  AdvancePcInput(guard,port);
   if(!PublishProvider(guard,port,state.gpr[30],state.gpr[29])) return false;
   // Join the original activity bookkeeping with the offset register it expects.
   state.gpr[30]=port*0xbe00;
@@ -2132,6 +2204,12 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   auto& system = Core::System::GetInstance();
   switch (command.type)
   {
+  case automation::CommandType::PcKey:
+    // This calls the same local event consumer as the game window. No window
+    // messages, SendInput, physical device state or desktop focus are changed.
+    if(!PcWindowInput({Platform::InputEvent::Type::Key,command.pc_key,command.pc_down}))
+      return RuntimeError{RuntimeErrorCode::InvalidState,"PC keyboard input is disabled or key is reserved"};
+    break;
   case automation::CommandType::XboxSequence:
   case automation::CommandType::XboxFrames:
   case automation::CommandType::XboxTime:
@@ -2293,6 +2371,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
 {
   switch (type)
   {
+  case automation::CommandType::PcKey:
   case automation::CommandType::Pause:
   case automation::CommandType::Resume:
   case automation::CommandType::SaveState:
@@ -2593,6 +2672,20 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   else if (impl->config.window_system != WindowSystem::X11) impl->platform =
       Platform::CreateWaylandPlatform();
 #endif
+  {
+    const std::lock_guard lock(s_pc_mutex);
+    s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_ticks=0;
+    s_pc_pointer_valid=false;s_pc_settings=moderngekko::controls::DefaultPcSettings();
+    const auto path=impl->config.user_directory / "Config" / "OpenMUA2Controls.ini";
+    std::ifstream file(path,std::ios::binary);
+    if(file) {
+      std::string text{std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>()};
+      std::string error;
+      if(!moderngekko::controls::DecodePcSettings(text,s_pc_settings,error))
+        std::fprintf(stderr,"[openmua2] PC settings rejected; using defaults: %s\n",error.c_str());
+    }
+  }
+  if(impl->platform) impl->platform->SetInputHandler(PcWindowInput);
   if (!impl->platform || !impl->platform->Init()) {
     if (impl->ui_initialized)
       UICommon::Shutdown();
@@ -2808,6 +2901,11 @@ RuntimeRunResult Runtime::Run() {
     const char* value=std::getenv(name);return value && std::string_view(value)=="1";
   };
   s_gamepad_provider=enabled("OPENMUA2_GAMEPAD_PROVIDER");
+  {
+    const std::lock_guard lock(s_pc_mutex);
+    s_pc_enabled=s_gamepad_provider;
+    s_pc_events.Focus(m_impl->platform->IsWindowFocused());s_pc_frame={};
+  }
   s_gamepad_aim_requested=s_gamepad_provider && enabled("OPENMUA2_GAMEPAD_AIM");
   s_hero_menu_release_installed=false;
   s_profile_dispatch_hooks={};s_profile_dispatch_counts={};

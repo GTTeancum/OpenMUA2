@@ -16,6 +16,11 @@ int main() {
     CHECK(ValidatePcSettings(s).empty());
   }
   CHECK(!PcPreset(s.profiles[0],4));
+  for(unsigned reserved:{8u,13u,0x12u,0x5bu,0x5cu,0x79u,0x7au}) {
+    auto invalid=DefaultPcSettings();
+    invalid.profiles[0].keys[0].primary=reserved;
+    CHECK(!ValidatePcSettings(invalid).empty());
+  }
   s=DefaultPcSettings();
   s.profiles[0].keys[unsigned(PcAction::Block)].secondary='Q';
   CHECK(!ValidatePcSettings(s).empty()); // Must not repeat the LT/block double binding.

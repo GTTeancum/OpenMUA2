@@ -63,5 +63,33 @@ compile/link completed without errors or compiler warnings.
   runtime and red palette, then validate their native rendering.
 - Run the full supported Windows build and relevant regressions after integration.
 
-The input core is not yet connected to the live runtime. The installed executable
-and game data are unchanged. No source backups were created.
+## Window integration checkpoint (in progress)
+
+PlatformWin32 now forwards its own keyboard, focus, mouse button and pointer
+events to the runtime. It never injects OS input. F11 retains fullscreen; PC
+bindings own Space/Escape/F1 before emulator shortcuts. Focus loss clears the
+keyboard state, and pointer leave releases mouse buttons.
+
+`ReadGamepadSample` now supports keyboard-only play, profile mapping and separate
+device assignment. Physical hotplug arming happens before keyboard merging.
+An explicit process-local Xbox test device still overrides only its own port.
+The native provider update latches keyboard events once; its query and gameplay
+consumers read that snapshot. This timing still needs a running-game check.
+
+The runtime loads `Config/OpenMUA2Controls.ini` beneath its configured user
+directory; malformed settings produce a log message and use defaults. Native
+menu Apply and atomic file writing are still pending. The automation protocol
+has a `pc_key` command (`key=1..255`, `down=0|1`) calling the same local consumer;
+it neither posts window messages nor changes desktop focus.
+
+`tools/import_pc_menu_reference.py` copied 29 declared files (2,107,190 bytes)
+from the authorized OpenXML1xbox/XBOXgame reference into
+`.local/pc-controls/xml2-menu-reference`. All imported hashes were verified.
+Paths and package associations are preserved. These are private authoring
+inputs, including reference-only XML1 models, not installable MUA2 replacements.
+Red authoring, MUA2-compatible resource conversion and native menu hooks remain.
+
+A Windows runtime build is in progress, with its log at
+`.local/pc-controls/runtime-build.log`. No completed runtime-build or live-input
+claim is made at this checkpoint. The installed executable and game data remain
+unchanged. No source backups were created.

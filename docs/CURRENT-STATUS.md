@@ -1,5 +1,16 @@
 # Current status â€” GitHub main
 
+## PC window input integration - 2026-10-22 (validation pending)
+
+Connected window-local keyboard/mouse events, settings loading and keyboard-only
+input to the native gamepad provider; added a process-local pc_key test command.
+Imported and hash-checked 29 declared XML2 menu-reference files privately (2.01 MiB).
+Native red menu authoring and live behavior validation remain pending. Runtime
+build is linking; rerun the incremental build for the final sampling adjustment
+before testing. See docs/PC-CONTROLS-IMPLEMENTATION.md and
+.local/pc-controls/runtime-build.log. Installed game unchanged. TODO #1 remains open.
+
+
 ## Keyboard/mouse input core - 2026-10-22
 
 Added MUA2 action mapping, profiles/presets, buffered keyboard/mouse events,

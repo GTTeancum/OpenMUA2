@@ -88,7 +88,10 @@ inline std::string_view ValidatePcSettings(const PcSettings& s) {
   if (s.mouse_sensitivity<10 || s.mouse_sensitivity>300) return "Mouse sensitivity must be 10 through 300";
   for (const auto& p:s.profiles) for (unsigned i=0;i<PcActionCount;++i) {
     for (const auto k:{p.keys[i].primary,p.keys[i].secondary}) {
-      if (k>=256 || k==13 || k==8 || k==0x7a) return "Invalid or reserved keyboard binding";
+      // Enter/Backspace are menu fallbacks. Alt, Windows keys and F10/F11
+      // belong to window/system navigation, not configurable gameplay.
+      if (k>=256 || k==13 || k==8 || k==0x12 || k==0x5b || k==0x5c || k==0x79 || k==0x7a)
+        return "Invalid or reserved keyboard binding";
       if (PcBindingConflict(p.keys,i,k)>=0) return "Keyboard binding already assigned";
     }
     for (const auto k:{p.buttons[i].primary,p.buttons[i].secondary}) {

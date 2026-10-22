@@ -4,6 +4,8 @@
 #pragma once
 
 #include <memory>
+#include <functional>
+#include <utility>
 #include <string>
 
 #include "Common/Flag.h"
@@ -12,6 +14,19 @@
 class Platform
 {
 public:
+  struct InputEvent
+  {
+    enum class Type { Key, Focus, Pointer, PointerLeave, Wheel } type;
+    unsigned key = 0;
+    bool down = false, repeat = false;
+    double x = 0, y = 0;
+  };
+  // Installed before Init; invoked only by this application's window events.
+  // Returning true consumes an event before emulator keyboard shortcuts.
+  void SetInputHandler(std::function<bool(const InputEvent&)> handler)
+  {
+    m_input_handler = std::move(handler);
+  }
   virtual ~Platform();
 
   bool IsRunning() const { return m_running.IsSet(); }
@@ -57,6 +72,11 @@ public:
 #endif
 
 protected:
+  bool HandleInput(const InputEvent& event)
+  {
+    return m_input_handler && m_input_handler(event);
+  }
+  std::function<bool(const InputEvent&)> m_input_handler;
   void UpdateRunningFlag();
 
   Common::Flag m_running{true};

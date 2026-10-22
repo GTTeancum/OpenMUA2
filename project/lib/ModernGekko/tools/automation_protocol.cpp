@@ -164,6 +164,7 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
 {
   const std::string text = Trim(value);
   if (text == "xbox_frames") return CommandType::XboxFrames;
+  if (text == "pc_key") return CommandType::PcKey;
   if (text == "xbox_time") return CommandType::XboxTime;
   if (text == "xbox_sequence") return CommandType::XboxSequence;
   if (text == "check_memory") return CommandType::CheckMemory;
@@ -481,6 +482,18 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
 
   switch (*type)
   {
+  case CommandType::PcKey:
+  {
+    const auto key=values.find("key"),down=values.find("down");
+    const auto number=key==values.end() ? std::optional<std::uint32_t>{}:ParseUnsigned(key->second);
+    if(values.size()!=3 || !number || *number==0 || *number>=256 || down==values.end() ||
+       (down->second!="0" && down->second!="1")) {
+      if(error) *error="pc_key requires only key=1..255 and down=0|1";
+      return false;
+    }
+    parsed.pc_key=*number;parsed.pc_down=down->second=="1";
+    break;
+  }
   case CommandType::XboxFrames:
   case CommandType::XboxTime:
   {
