@@ -142,7 +142,10 @@ int main() {
   CHECK(MapPcInput(s,1,{},physical,false,1.0/60).Down(GamepadInput::X));
   std::string error;
   auto display=DefaultPcSettings();
-  for(const auto mode:PcOutputModes) {
+  // Pin the user-facing HD choices independently of the implementation table.
+  constexpr std::array<PcOutputMode,4> expected_modes{{
+      {1280,720},{1920,1080},{2560,1440},{3840,2160}}};
+  for(const auto mode:expected_modes) {
     PcNextOutputMode(display);
     CHECK(display.output_width==mode.width && display.output_height==mode.height);
     auto loaded=DefaultPcSettings();

@@ -1,5 +1,22 @@
 # Current status â€” GitHub main
 
+## XML1 HD resolution parity checked - 2026-10-22
+
+Compared XML1 commit c4e1c6f with the existing OpenMUA2 implementation. Both
+include 720p, 1080p, 1440p and 4K menu cycling and saved-setting validation.
+OpenMUA2 already applies saved dimensions before Windows platform construction
+and enables automatic integral internal rendering scale. No duplicate runtime
+implementation was needed. Added an independent expected-mode regression list
+and docs/HD-OUTPUT.md explaining configuration and verification limits.
+
+Windows moderngekko-run build succeeded; updated PC-controls test passed (1/1),
+with no reported warnings/errors. Actual HD output/layout still needs visual
+verification. TODO #1 remains open and C:/Games/MUA2 is unchanged. Retained the
+existing unrelated menu-packager edits without including them in this checkpoint.
+Reused the supported build directory; no backup, duplicate profile or capture
+was created. D: had 100.87 GiB free before the build.
+
+
 ## Advanced fields, controller rebinding and presets - 2026-10-22
 
 Added readable action/Xbox source labels and live assignment readouts for the four
