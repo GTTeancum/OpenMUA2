@@ -70,11 +70,47 @@ std::string KeyName(unsigned key) {
   case 0x10:return "Shift";case 0x11:return "Ctrl";case 0x20:return "Space";
   case 0x1b:return "Esc";case 0x25:return "Left";case 0x26:return "Up";
   case 0x27:return "Right";case 0x28:return "Down";
+  case 0x24:return "Home";case 0x23:return "End";case 0x2e:return "Delete";
+  case 0x22:return "Page Down";case 0x21:return "Page Up";
   default:return "Key "+std::to_string(key);
   }
 }
+constexpr std::array<std::string_view,22> PadNames{
+  "A","B","X","Y","LB","RB","LT","RT","Start","Back",
+  "D-pad Up","D-pad Down","D-pad Left","D-pad Right",
+  "LS Right","LS Left","LS Up","LS Down","RS Right","RS Left","RS Up","RS Down"
+};
+constexpr std::array<std::string_view,PcActionCount> ActionLabels{
+  "Light attack","Heavy attack","Grab / use","Jump","Block","Next page",
+  "Fusion modifier","Power modifier","Pause","Heroes",
+  "Hero up","Hero down","Hero left","Hero right",
+  "Move right","Move left","Move up","Move down",
+  "Camera right","Camera left","Camera up","Camera down",
+  "Power 1","Power 2","Power 3","Power 4",
+  "Fusion 1","Fusion 2","Fusion 3","Fusion 4","Walk","Camera drag"
+};
 std::string Value(std::string_view name) {
   const auto& s=model.draft;
+  if(name=="pc_window") {
+    const bool full=s.window_mode?s.window_mode==2:Config::Get(Config::MAIN_FULLSCREEN);
+    return full?"Borderless fullscreen":"Windowed";
+  }
+  if(name=="pc_fsaa_value") {
+    const auto samples=s.msaa?s.msaa:Config::Get(Config::GFX_MSAA);
+    return samples<=1?"Off":std::to_string(samples)+"x";
+  }
+  unsigned device=4;
+  if(name=="controls_list")device=0;
+  else if(name=="controls_list2")device=1;
+  else if(name=="pc_device_3")device=2;
+  else if(name=="pc_device_4")device=3;
+  if(device<4) {
+    const int pad=PcPhysicalPort(s,device);
+    std::string label="P"+std::to_string(device+1)+": ";
+    if(s.keyboard_enabled && s.keyboard_player==device)label+="Keys";
+    if(pad>=0) {if(label.back()!=' ')label+=" + ";label+="Pad "+std::to_string(pad+1);}
+    return label;
+  }
   if(name=="pc_resolution_value")return s.output_width ? std::to_string(s.output_width)+" x "+std::to_string(s.output_height):"Current";
   if(name=="label_combat_music")return "Keyboard player: "+std::to_string(s.keyboard_player+1);
   if(name=="label_view_angle")return "Mouse sensitivity: "+std::to_string(s.mouse_sensitivity)+"%";
@@ -88,12 +124,12 @@ std::string Value(std::string_view name) {
   constexpr std::array<std::string_view,7> labels{"label_button01","label_button02","label_button03","label_button04","label_button05","label_button06","label_stick01"};
   constexpr std::array<std::string_view,7> primary{"label_button07","label_button08","label_button09","label_button10","label_button11","label_button12","label_stick02"};
   for(unsigned row=0;row<7 && page+row<PcActionCount;++row) {
-    if(name==labels[row])return std::string(PcActionNames[page+row]);
+    if(name==labels[row])return std::string(ActionLabels[page+row]);
     if(name==primary[row] || name=="pc_secondary"+std::to_string(row)) {
       const auto& p=s.profiles[model.player];
       const auto& b=(controller?p.buttons:p.keys)[page+row];
       const auto key=name==primary[row]?b.primary:b.secondary;
-      return controller?(key?"Input "+std::to_string(key):"--"):KeyName(key);
+      return controller?(key && key<=PadNames.size()?std::string(PadNames[key-1]):"--"):KeyName(key);
     }
   }
   return {};
@@ -130,6 +166,14 @@ bool Use(const Core::CPUThreadGuard& guard) {
   auto& s=model.draft;
   bool handled=true;
   if(action=="resolution")PcNextOutputMode(s);
+  else if(action=="window") {
+    const bool full=s.window_mode?s.window_mode==2:Config::Get(Config::MAIN_FULLSCREEN);
+    s.window_mode=full?1:2;
+  }
+  else if(action=="fsaa")PcNextMsaa(s,g_backend_info.AAModes,s.msaa?s.msaa:Config::Get(Config::GFX_MSAA));
+  else if(action.starts_with("device_") && action.size()==8 && action.back()>='1' && action.back()<='4') {
+    model.player=action.back()-'1';controller=PcPhysicalPort(s,model.player)>=0;
+  }
   else if(action=="player")s.keyboard_player=(s.keyboard_player+1)%4;
   else if(action=="keyboard")s.keyboard_enabled=!s.keyboard_enabled;
   else if(action=="sharing")s.separate_controllers=!s.separate_controllers;

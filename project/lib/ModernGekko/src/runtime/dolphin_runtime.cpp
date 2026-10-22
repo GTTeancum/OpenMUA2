@@ -206,7 +206,7 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
       sample.inputs.fill(0);sample.connected=true;return sample;
     }
   }
-  if(!pc_enabled || (device && device->GetSource()=="OpenMUA2Test")) return sample;
+  if(!pc_enabled) return sample;
   auto& memory=Core::System::GetInstance().GetMemory();
   const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
     const auto* bytes=memory.GetPointerForRange(address,size);
@@ -2684,6 +2684,8 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
       if(!moderngekko::controls::DecodePcSettings(text,s_pc_settings,error))
         std::fprintf(stderr,"[openmua2] PC settings rejected; using defaults: %s\n",error.c_str());
     }
+    if(s_pc_settings.window_mode && !impl->config.fullscreen)
+      Config::SetBase(Config::MAIN_FULLSCREEN,s_pc_settings.window_mode==2);
     if (s_pc_settings.output_width != 0) {
       Config::SetBase(Config::MAIN_RENDER_WINDOW_WIDTH, static_cast<int>(s_pc_settings.output_width));
       Config::SetBase(Config::MAIN_RENDER_WINDOW_HEIGHT, static_cast<int>(s_pc_settings.output_height));
@@ -2762,6 +2764,7 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   if (impl->config.graphics.internal_resolution_scale)
     Config::SetBase(Config::GFX_EFB_SCALE,
                     *impl->config.graphics.internal_resolution_scale);
+  if(s_pc_settings.msaa)Config::SetBase(Config::GFX_MSAA,s_pc_settings.msaa);
   Config::SetBase(Config::GFX_SHADER_CACHE, true);
   Config::SetBase(Config::GFX_SHADER_COMPILATION_MODE,
                   ShaderCompilationMode::AsynchronousUberShaders);

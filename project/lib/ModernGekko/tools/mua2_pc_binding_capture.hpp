@@ -22,7 +22,7 @@ public:
     const bool edge=down && !keys[key] && !repeat;
     keys[key]=down;
     if(!active)return;
-    if(armed && edge && !pending && (!controller || key==0x1b))
+    if(armed && edge && !pending && (!controller || key==0x1b || key==0x2e))
       pending=Result{key==0x2e?0:key,key==0x1b};
     if(!armed && Neutral() && pad_neutral)armed=true;
   }

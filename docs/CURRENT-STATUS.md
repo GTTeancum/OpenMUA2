@@ -1,5 +1,40 @@
 # Current status â€” GitHub main
 
+## Advanced fields, controller rebinding and presets - 2026-10-22
+
+Added readable action/Xbox source labels and live assignment readouts for the four
+profiles, replacing remaining Loading fields. Window mode and MSAA now persist;
+MSAA cycling uses the active backend's supported modes. Saved nonzero selections
+apply at startup; the Windows startup path now enters borderless fullscreen when
+requested. These startup renderer changes are built but not visually validated
+in a windowed/fullscreen run yet. The current headless test does not prove them.
+
+Synthetic Xbox devices now follow the same PC binding mapper as physical devices.
+Controller capture accepts Delete to clear a binding. Run 28 proved clearing RB,
+binding RB to Attack, saving, and activating native Apply with RB. It exposed a
+preset-3 bug: gameplay camera arrows displaced menu navigation. Fixed menu arrows
+independently of gameplay bindings, excluding those keys from other mapped actions
+while in menus. Regression tests cover both navigation and absence of accidental
+confirm, while retaining the assigned action in gameplay.
+
+Run 29 cold-booted from saved preset 3 and completed ordinary native navigation,
+RB capture/live use, all three preset buttons (2,3,1) with saved-file checks,
+window/FSAA draft changes, and Cancel back to Options with the saved file unchanged.
+Exit 0. Evidence: .local/pc-controls/preview-run-29/controller-result.json and
+runtime.log. Visually inspected run 28's advanced-controller-fields.png: readable
+Xbox labels, device rows, Windowed and FSAA Off, red panels, no Loading fields.
+The bright native background and other layout defects remain visible.
+
+Windows runtime build and focused PC-controls/gamepad-actions CTests pass (2/2).
+Added settings round-trip/invalid-mode and supported-MSAA-cycle coverage. No new
+compiler warnings. Run 28's watchdog exit 1 remains a failed flow, superseded by
+run 29. Test profile restored to preset 1; only port 0 was exercised. Physical
+controller acceptance, other profile/device UI paths, mouse navigation, main
+Options fixes, HD output/layout and gameplay validation remain. TODO #1 stays
+open and installed game unchanged. No duplicate profile/build or source backups.
+A compact native-focus disassembly was retained for the mouse-navigation work.
+
+
 ## Native rebinding, Apply and Cancel verified - 2026-10-22
 
 Added release-to-arm/release-to-finish keyboard/controller capture, with no host

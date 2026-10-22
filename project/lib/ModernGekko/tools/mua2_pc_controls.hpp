@@ -36,6 +36,8 @@ struct PcProfile {
 struct PcSettings {
   // Zero preserves the existing display configuration until explicitly changed.
   unsigned output_width = 0, output_height = 0;
+  // Zero retains existing renderer settings; 1=windowed, 2=borderless.
+  unsigned window_mode = 0, msaa = 0;
   bool keyboard_enabled = true;
   unsigned keyboard_player = 0;
   bool separate_controllers = false, invert_camera_y = false;
@@ -60,6 +62,18 @@ inline void PcNextOutputMode(PcSettings& settings) {
       next=(i+1)%PcOutputModes.size();
   settings.output_width=PcOutputModes[next].width;
   settings.output_height=PcOutputModes[next].height;
+}
+inline bool PcMsaaSupported(unsigned samples) {
+  return samples==0 || samples==1 || samples==2 || samples==4 || samples==8 || samples==16;
+}
+inline void PcNextMsaa(PcSettings& settings,std::span<const unsigned> supported,unsigned current) {
+  unsigned first=0,next=0;
+  for(unsigned n:supported) {
+    if(!n || !PcMsaaSupported(n))continue;
+    if(!first || n<first)first=n;
+    if(n>current && (!next || n<next))next=n;
+  }
+  settings.msaa=next?next:(first?first:1);
 }
 inline bool PcPreset(PcProfile& profile, unsigned preset) {
   if (preset < 1 || preset > 3) return false;
@@ -104,6 +118,7 @@ inline int PcBindingConflict(const std::array<PcBinding,PcActionCount>& bindings
   return -1;
 }
 inline std::string_view ValidatePcSettings(const PcSettings& s) {
+  if(s.window_mode>2 || !PcMsaaSupported(s.msaa))return "Unsupported display setting";
   if (!PcOutputSupported(s.output_width,s.output_height)) return "Unsupported output resolution";
   if (s.keyboard_player>=4) return "Keyboard player must be 1 through 4";
   if (s.mouse_sensitivity<10 || s.mouse_sensitivity>300) return "Mouse sensitivity must be 10 through 300";
@@ -184,7 +199,8 @@ inline GamepadSample MapPcInput(const PcSettings& settings,unsigned player,
   const auto value=[&](unsigned action) {
     double v=0;
     for (auto key:{p.keys[action].primary,p.keys[action].secondary})
-      if(keyboard && key>0 && key<256 && frame.held[key]) v=1;
+      if(keyboard && key>0 && key<256 && frame.held[key] &&
+         !(menu && key>=0x25 && key<=0x28)) v=1;
     for (auto button:{p.buttons[action].primary,p.buttons[action].secondary})
       if(button>0 && button<=22) v=std::max(v,physical.Value(GamepadInput(button-1)));
     return v;
@@ -194,6 +210,13 @@ inline GamepadSample MapPcInput(const PcSettings& settings,unsigned player,
     auto& dst=result.inputs[unsigned(input)]; dst=std::max(dst,std::clamp(v,0.0,1.0));
   };
   if(menu) {
+    // Menu arrows are fixed navigation, independent of gameplay presets.
+    if(keyboard) {
+      if(frame.held[0x25])put(GamepadInput::Left,1);
+      if(frame.held[0x26])put(GamepadInput::Up,1);
+      if(frame.held[0x27])put(GamepadInput::Right,1);
+      if(frame.held[0x28])put(GamepadInput::Down,1);
+    }
     if(keyboard && frame.held[13]) put(GamepadInput::A,1);
     if(keyboard && frame.held[8]) put(GamepadInput::B,1);
     return result;

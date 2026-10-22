@@ -283,11 +283,8 @@ bool PlatformWin32::Init()
   if (!RegisterRenderWindowClass() || !CreateRenderWindow() || !CreateMenus())
     return false;
 
-  // TODO: Enter fullscreen if enabled.
   if (Config::Get(Config::MAIN_FULLSCREEN))
-  {
-    ProcessEvents();
-  }
+    ToggleFullscreen();
 
   if (Config::Get(Config::MAIN_DISABLE_SCREENSAVER))
     SetThreadExecutionState(ES_CONTINUOUS | ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED);

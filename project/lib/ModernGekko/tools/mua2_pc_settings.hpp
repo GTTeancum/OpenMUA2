@@ -12,6 +12,7 @@ inline std::string EncodePcSettings(const PcSettings& s) {
   std::ostringstream out;
   out << "Version=1\nKeyboardEnabled=" << s.keyboard_enabled
       << "\nOutputWidth=" << s.output_width << "\nOutputHeight=" << s.output_height
+      << "\nWindowMode=" << s.window_mode << "\nMSAA=" << s.msaa
       << "\nKeyboardPlayer=" << s.keyboard_player
       << "\nSeparateControllers=" << s.separate_controllers
       << "\nInvertCameraY=" << s.invert_camera_y
@@ -52,6 +53,8 @@ inline bool DecodePcSettings(std::string_view text,PcSettings& output,std::strin
     else if(name=="KeyboardPlayer") next.keyboard_player=number;
     else if(name=="OutputWidth") next.output_width=number;
     else if(name=="OutputHeight") next.output_height=number;
+    else if(name=="WindowMode") next.window_mode=number;
+    else if(name=="MSAA") next.msaa=number;
     else if(name=="MouseSensitivity") next.mouse_sensitivity=number;
     else if(name=="KeyboardEnabled" || name=="SeparateControllers" || name=="InvertCameraY") {
       if(number>1) return fail("Boolean setting must be zero or one");
