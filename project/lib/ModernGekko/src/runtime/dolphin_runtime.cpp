@@ -2701,6 +2701,12 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   if (!impl->config.automation.directory.empty()) {
     Common::RegisterMsgAlertHandler([](const char* caption,const char* text,bool,Common::MsgType)->bool {
       std::fprintf(stderr,"[automation-fatal] %s: %s\n",caption,text);
+      if (Core::IsCPUThread()) {
+        const auto& state = Core::System::GetInstance().GetPPCState();
+        std::fprintf(stderr,"[automation-fatal] pc=%08x lr=%08x\n",state.pc,state.spr[SPR_LR]);
+        for (unsigned i=0;i<32;++i)
+          std::fprintf(stderr,"r%u=%08x%c",i,state.gpr[i],i%4==3?'\n':' ');
+      }
       std::fflush(nullptr);
       std::_Exit(70);
     });

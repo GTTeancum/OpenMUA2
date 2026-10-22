@@ -1,5 +1,16 @@
 # Current status â€” GitHub main
 
+## PC Options asset-loader diagnosis - 2026-10-22
+
+Rebuilt the Windows diagnostic runtime successfully. The native menu candidate
+now uses v8 strings, corrected transform metadata, native slider commands and
+MUA2 text styles. Structural readback passes, but fresh-boot Options still fails
+with a solid-color screen. Saved thread/stack/loader data identifies the imported
+`m_pda_option_focus.igb` highlight model and an invalid -4-byte allocation.
+Investigate its legacy array conversion next. No converted-UI visual proof;
+TODO #1 remains open and the installed game is unchanged. Details/evidence are
+in PC-CONTROLS-IMPLEMENTATION.md. Test runtimes closed; no source backups.
+
 ## Native PC Options preview failure - 2026-10-22
 
 Prepared red panel assets and merged original MUA2 background/animation branches.

@@ -92,6 +92,8 @@ def main():
         reader=IGBReader(str(path));reader.read();return from_reader(reader)
     native=read(native_layout)
     panel=read(assets/'ui/menus/x2m_options.igb')
+    if panel.version != native.version or panel.endian != native.endian:
+        raise ValueError('Convert the PC scene to the native MUA2 IGB format before packaging')
     def named(writer,name):
         found=[i for i,o in enumerate(writer.objects) if hasattr(o,'raw_fields') and
                writer.meta_objects[o.type_index].name in (b'igTransform',b'igGroup') and
@@ -117,6 +119,25 @@ def main():
 
     menu=ET.parse(assets/'ui/menus/options.eng').getroot()
     menu.set('name','options_rev');menu.set('no_stack','true')
+    styles={'STYLE_TITLE':'STYLE_TITLE_MED',
+            'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'SMALL_WHITE'}
+    for node in menu.iter():
+        if node.get('style') in styles:
+            node.set('style',styles[node.get('style')])
+    items={item.get('name'):item for item in menu.findall('item')}
+    for item in menu.findall('item'):
+        if item.get('type')=='MENU_ITEM_SLIDER':
+            # MUA2 uses an ordinary focusable label with increment/decrement
+            # commands and a separate gamevar-driven model for its volume bar.
+            variable=item.attrib.pop('gamevar')
+            slider=items[item.attrib.pop('slidermodel')]
+            item.attrib.pop('type')
+            item.set('left',item.get('name'));item.set('right',item.get('name'))
+            item.set('leftcmd','setdecrement '+variable)
+            item.set('rightcmd','setincrement '+variable)
+            slider.set('gamevar',variable)
+            slider.set('model','ui/models/model_bar_sound')
+            slider.set('neverfocus','true')
     native_nodes=read_nodes(retail['ui/menus/options_rev.engb'][1])
     background=[]
     for tag,attrs,_,_ in native_nodes:

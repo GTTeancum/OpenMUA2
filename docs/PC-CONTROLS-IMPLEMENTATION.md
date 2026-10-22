@@ -147,3 +147,42 @@ subsequent navigation commands succeeded. Evidence is under
 Do not install this candidate. Diagnose native scene loading next, then inspect
 the red panels and preserved background before completing menu hooks.
 Installed files and real saves remain unchanged. TODO #1 remains open.
+
+## Native asset-loader diagnosis - 2026-10-22
+
+Windows runtime rebuilt successfully with CPU-thread register logging on fatal
+automation alerts (`fault-diagnostic-build.log`, exit 0). Run 2 reproduced the
+same 0x802e8d3c failure and captured registers. Converted menu assets now use
+native v8 pooled strings, reserializing all objects, and normalize both the
+igTransform animation slot and declared slot count. The packer rejects a scene
+whose version/endian differs from the original MUA2 layout.
+
+Adapted imported volume-slider items to MUA2's ordinary label plus native
+increment/decrement commands and a gamevar-driven model. MENU_ITEM_SLIDER is
+absent from the MUA2 DOL/REL strings; MENU_ITEM_LIST_CYCLE is present in the REL
+and retained. Mapped XML2 text styles to MUA2 title/selectable/small-white styles.
+The entire 29-file v8 conversion passes field/memory readback; the isolated WAD
+was checked to contain the exact rebuilt FB. These checks do not prove rendering.
+
+Fresh-boot runs 4, 7 and 8 still failed with a solid red screen when opening
+Options. Their normal menu navigation used only process-local keyboard events.
+The original invalid-read alert no longer occurs with v8, but the UI is NOT fixed.
+Run 3's restored main-menu state was not used as acceptance because the archive
+had changed. Runs 5/6 were stopped diagnostic profiling attempts, not FPS tests.
+The profiler was disabled after process exit before runs 7/8.
+
+The saved failure from run 8 was inspected read-only in runs 9/10, without an
+archive change. Its thread context and stack show an allocation of 0xfffffffc
+inside the Alchemy loader (80317630/8031b74c via 802fd150 and 802da3cc).
+The loader's buffer sizes/counts exactly match `m_pda_option_focus.igb`:
+entry bytes 1680/count 69, metadata bytes 3364/count 50, object bytes 1924/count
+57, memory bytes 66092/count 28. This identifies the imported highlight model
+as the failing load, rather than an ordinary menu navigation or memory-pool
+capacity failure. The responsible serialized array field is not identified yet.
+That model still uses legacy igVertexArray1_1/igGeometryAttr1_5, unlike the native
+Wii menu models; investigate its array/schema conversion next.
+
+Evidence: `.local/pc-controls/preview-run-8/failure.state`, context-5.bin;
+`preview-run-9/stack.bin`; `preview-run-10/0x920ffb68.bin` and 0x9210a390.bin.
+Current candidate: `red-menu-v8`, `native-options-v8`. Do not install it.
+No valid converted-UI screenshot exists yet. All test runtimes were closed.

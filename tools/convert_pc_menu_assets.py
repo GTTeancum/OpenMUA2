@@ -1,7 +1,8 @@
 """Author private red/Wii menu candidates with igb-blender's complete graph writer.
 
 Retain object identities, names, geometry, animation and package paths. Convert
-only image payloads/format fields and declared UI tint streams. Output is an
+v6 inline names to native v8, the transform animation field, image payloads and
+format fields, and declared UI tint streams. Output is an
 authoring candidate, not a claim of native rendering or an installed game pack.
 """
 import argparse
@@ -104,12 +105,23 @@ def main():
             writer = from_reader(reader)
             if writer.version != 6 or writer.endian != '<':
                 raise ValueError(f'Unsupported graph format: {relative}')
+            # MUA2 Wii assets use v8's name-pool string representation. All
+            # objects must be reserialized; retaining a v6 raw object would
+            # leave inline strings in a file declaring pooled names.
+            writer.version = 8
+            writer.name_pool = []
+            for obj in writer.objects:
+                if hasattr(obj, 'raw_fields'):
+                    obj.raw_bytes = None
             # Retail MUA2 v6 igTransform places the same igTransformSequence1_5
             # reference in slot 10; XML2 PC uses 11. Other shared scene schemas
             # matched the retail layout. Convert the declared field and every
             # instance together, preserving the animation object/reference.
             for meta in writer.meta_objects:
                 if meta.name == b'igTransform':
+                    if meta.slot_count != 12:
+                        raise ValueError('Unexpected PC transform slot count')
+                    meta.slot_count = 11
                     for definition in meta.fields:
                         if definition.slot == 11:
                             if definition.short_name != b'ObjectRef':
