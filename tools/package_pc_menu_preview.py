@@ -67,13 +67,16 @@ def main():
     p.add_argument('--writer-root',type=Path,required=True)
     p.add_argument('--reference-scripts',type=Path,required=True)
     p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--page',choices=('options','advanced'),default='options')
     a=p.parse_args()
+    source_name='options' if a.page=='options' else 'options_controller_xbox'
+    output_name='options_rev' if a.page=='options' else source_name
     repo=Path(__file__).resolve().parents[1]
     assets,wad,addon=(v.resolve(strict=True) for v in (a.assets,a.retail_wad,a.writer_root))
     output=a.output.resolve()
     if any(not v.is_relative_to(repo/'.local') for v in (assets,wad,addon,output)):
         raise ValueError('All game inputs and outputs must be private within this repository')
-    owned={'retail-layout.igb','x2m_options.igb','options_rev.fb','preview-manifest.json'}
+    owned={'retail-layout.igb','x2m_options.igb',output_name+'.fb','preview-manifest.json'}
     if output.exists() and (not output.is_dir() or any(p.name not in owned or not p.is_file() for p in output.iterdir())):
         raise ValueError('Output contains files not owned by this authoring step')
     sys.dont_write_bytecode=True
@@ -86,9 +89,9 @@ def main():
     from xml1_packages import read_pkgb
     from xbox_tutorials import read_nodes
     output.mkdir(parents=True,exist_ok=True)
-    package='packages/generated/maps/package/menus/options_rev.fb'
+    package=f'packages/generated/maps/package/menus/{output_name}.fb'
     with zipfile.ZipFile(wad) as archive:
-        original=archive.read(package)
+        original=archive.read('packages/generated/maps/package/menus/options_rev.fb')
     retail={name:(kind,data) for name,kind,data in decode_fb(original)}
     native_layout=output/'retail-layout.igb'
     native_layout.write_bytes(retail['ui/menus/cw_pausemenu.igb'][1])
@@ -137,8 +140,9 @@ def main():
     reread=read(layout)
     for name in branches:named(reread,name)
 
-    menu=ET.parse(assets/'ui/menus/options.eng').getroot()
-    menu.set('name','options_rev');menu.set('no_stack','true')
+    menu=ET.parse(assets/f'ui/menus/{source_name}.eng').getroot()
+    menu.set('name',output_name)
+    if a.page=='options':menu.set('no_stack','true')
     # XML2 stores static model bindings in the scene's user properties. MUA2
     # requires those same resource names explicitly on its menu items.
     model_bindings={}
@@ -169,8 +173,11 @@ def main():
                 item.set('model',model_bindings[item.get('name')])
             item.set('neverfocus','true')
     styles={'STYLE_TITLE':'STYLE_TITLE_MED',
-            'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'STYLE_SEL_SMALL_WHITE'}
+            'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'STYLE_SEL_SMALL_WHITE',
+            'STYLE_DESC':'STYLE_SEL_SMALL_WHITE'}
     for node in menu.iter():
+        if node.get('text')=='X-Men Legends 1 XboxRecomp':
+            node.set('text','OpenMUA2')
         if node.get('style') in styles:
             node.set('style',styles[node.get('style')])
     items={item.get('name'):item for item in menu.findall('item')}
@@ -188,35 +195,37 @@ def main():
             slider.set('model','ui/models/model_bar_sound')
             slider.set('neverfocus','true')
     native_nodes=read_nodes(retail['ui/menus/options_rev.engb'][1])
-    native_items={attrs['name']:attrs for tag,attrs,_,_ in native_nodes
-                  if tag=='item' and 'name' in attrs}
-    # Keep MUA2's settings semantics. XML2's camera-angle/follow options are
-    # not MUA2 options. Reuse their anchors for the actual native toggles.
-    option_rows=(
-        ('label_combat_music','combat_music','label_view_dmg','view_dmg'),
-        ('label_view_angle','view_angle','label_view_shake','view_shake'),
-        ('label_view_cycle','view_cycle','label_subtitles','subtitles'),
-        ('label_view_follow','view_follow','label_illumination','illumination'),
-    )
-    for label_name,value_name,native_label,native_value in option_rows:
-        label,value=items[label_name],items[value_name]
-        for attr in ('type','gamevar','fielditem'):
-            label.attrib.pop(attr,None)
-        for child in list(label):label.remove(child)
-        label.set('text',native_items[native_label]['text'])
-        label.set('usecmd',native_items[native_label]['usecmd'])
-        label.set('left',label_name);label.set('right',label_name)
-        value.set('type','MENU_ITEM_BINARY')
-        value.set('gamevar',native_items[native_value]['gamevar'])
-        value.set('neverfocus','true')
-    # XML1-specific extension commands must not swallow the native camera-shake
-    # field or leave a blank focusable row. Its functionality is above.
-    for name in ('label_view_shake','view_shake'):
-        items[name].set('opacity','0');items[name].set('neverfocus','true')
-        items[name].set('text','');items[name].attrib.pop('gamevar',None)
-        items[name].attrib.pop('usecmd',None)
-    items['label_view_follow'].set('down','label_subtitles')
-    items['label_subtitles'].set('up','label_view_follow')
+    if a.page=='options':
+        native_items={attrs['name']:attrs for tag,attrs,_,_ in native_nodes
+                      if tag=='item' and 'name' in attrs}
+        # Keep MUA2's settings semantics. XML2's camera-angle/follow options are
+        # not MUA2 options. Reuse their anchors for the actual native toggles.
+        option_rows=(
+            ('label_combat_music','combat_music','label_view_dmg','view_dmg'),
+            ('label_view_angle','view_angle','label_view_shake','view_shake'),
+            ('label_view_cycle','view_cycle','label_subtitles','subtitles'),
+            ('label_view_follow','view_follow','label_illumination','illumination'),
+        )
+        for label_name,value_name,native_label,native_value in option_rows:
+            label,value=items[label_name],items[value_name]
+            for attr in ('type','gamevar','fielditem'):
+                label.attrib.pop(attr,None)
+            for child in list(label):label.remove(child)
+            label.set('text',native_items[native_label]['text'])
+            label.set('usecmd',native_items[native_label]['usecmd'])
+            label.set('left',label_name);label.set('right',label_name)
+            value.set('type','MENU_ITEM_BINARY')
+            value.set('gamevar',native_items[native_value]['gamevar'])
+            value.set('neverfocus','true')
+        # XML1-specific extension commands must not swallow the native camera-shake
+        # field or leave a blank focusable row. Its functionality is above.
+        for name in ('label_view_shake','view_shake'):
+            items[name].set('opacity','0');items[name].set('neverfocus','true')
+            items[name].set('text','');items[name].attrib.pop('gamevar',None)
+            items[name].attrib.pop('usecmd',None)
+        items['label_view_follow'].set('down','label_subtitles')
+        items['label_subtitles'].set('up','label_view_follow')
+        items['label_click02'].set('usecmd','openmenu options_controller_xbox')
     background=[]
     for tag,attrs,_,_ in native_nodes:
         if tag=='item' and attrs.get('name') in branches:
@@ -240,7 +249,7 @@ def main():
         if node.tag=='animtext' and node.get('name')=='AT_bgelements':menu.insert(0,node)
     compiled=encode_xml(menu);read_nodes(compiled)
     resources={}
-    definition=assets/'packages/generated/maps/package/menus/options.pkgb'
+    definition=assets/f'packages/generated/maps/package/menus/{source_name}.pkgb'
     for row in read_pkgb(definition.read_bytes()):
         name=dict(row.attributes)['filename']
         if row.kind=='model':
@@ -250,16 +259,16 @@ def main():
         name=node.get('model').lower()+'.igb'
         resources[name]=retail[name]
     for extension in ('engb','itab'):
-        resources[f'ui/menus/options_rev.{extension}']=('xml',compiled)
+        resources[f'ui/menus/{output_name}.{extension}']=('xml',compiled)
     result=bytearray()
     for name,(kind,data) in resources.items():
         result.extend(name.encode().ljust(128,b'\0')+kind.encode().ljust(64,b'\0')+struct.pack('<I',len(data))+data)
-    target=output/'options_rev.fb';target.write_bytes(result)
+    target=output/(output_name+'.fb');target.write_bytes(result)
     if len(list(decode_fb(result)))!=len(resources):raise ValueError('FB verification failed')
     (output/'preview-manifest.json').write_text(json.dumps({'package':package,
         'source_sha256':hashlib.sha256(original).hexdigest(),'output_sha256':hashlib.sha256(result).hexdigest(),
         'native_backgrounds':list(branches),'resources':list(resources),'native_rendering_verified':False},indent=2)+'\n')
-    print(f'Prepared native Options preview with {len(resources)} resources and five original background branches')
+    print(f'Prepared native {output_name} preview with {len(resources)} resources and five original background branches')
 
 
 if __name__=='__main__':main()

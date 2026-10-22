@@ -1,5 +1,36 @@
 # Current status â€” GitHub main
 
+## Native Advanced settings display and resolution interaction - 2026-10-22
+
+Added guarded native CMenuItemText update (80ff34fc) and CMenuItem use-command
+(80fe2548) hooks, restricted to owner name options_controller_xbox. Text updates
+tail-call the native setter 80ff3688 with its existing shared result buffer;
+native string interning/layout remain intact. No forced menu or OS input.
+The packer now builds the Advanced package and replaces XML1 branding.
+
+Windows runtime build succeeded without new compiler warnings. PC-controls and
+gamepad-actions CTests passed (2/2); native XML attribute lookup regression passed.
+Run 24 cold-booted, navigated normally to Options, followed actual focused-item
+names to Advanced, and invoked Resolution through normal Enter presses. Native
+readback confirms Attack / Num 4, page 1-7 / 32, selected Player 1 and 1280x720.
+Three further presses displayed 3840x2160 in an inspected native capture:
+`.local/pc-controls/preview-run-24/advanced-4k-selection.png`. Initial connected
+capture and advanced-values.json remain beside it. Run closed normally, exit 0.
+This is menu selection evidence, NOT an actual 4K-output validation.
+
+Run 23 encountered one command-file read failure and a failed fixed-count
+navigation attempt, then ended at its 180-second watchdog. Run 24 instead reads
+native focus at menu+0x458 between presses; it does not modify focus or menu state.
+Preserved compact failure evidence. No duplicate build or source backups created.
+
+Still incomplete: Apply/Cancel persistence and menu lifecycle, binding capture,
+real controller labels, device/window/FSAA fields (visible placeholders), mouse
+navigation, main Options layout/extra rows, native background animation brightness,
+HD output verification and gameplay validation. TODO #1 remains open; installed
+game unchanged. Preset/profile/mouse-setting handlers exist but have not yet been
+individually exercised in the running menu.
+
+
 ## HD output startup wiring - 2026-10-22
 
 The existing PC settings mode list includes 1280x720, 1920x1080, 2560x1440 and

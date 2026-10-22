@@ -1,5 +1,6 @@
 // Included after roster persistence helpers. This relocates the shared menu-item
 // tree, not the CMenu object or any derived class fields. No menu is forced open.
+#include "mua2_pc_menu.inl"
 namespace roster_menu {
 using namespace moderngekko::roster;
 using roster_io::Bytes;
@@ -124,6 +125,7 @@ void Install(const Core::CPUThreadGuard& guard) {
   }
   Host_JitCacheInvalidation();
 
+  pc_menu::Install(guard);
   installed=true;
   std::fprintf(stderr,"[openmua2] roster menu item capacity: %u, %zu guarded edits\n",MenuItems,MenuItemPatches.size()+MenuStringRelPatches.size()+MenuObjectPatches.size());
   std::fprintf(stderr,"[openmua2] registered runtime hooks: %u\n",HLE::GetExternalHookCount());
