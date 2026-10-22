@@ -1,5 +1,14 @@
 # Current status â€” GitHub main
 
+## Keyboard/mouse input core - 2026-10-22
+
+Added MUA2 action mapping, profiles/presets, buffered keyboard/mouse events,
+settings validation/serialization and an Apply/Cancel model. Windows Release
+input test built; all three focused input/QTE CTests passed. Runtime and native
+XML2 menu integration remain pending; TODO #1 stays open. Installed game unchanged.
+See [implementation status](PC-CONTROLS-IMPLEMENTATION.md). No source backups.
+
+
 ## Git-only source checkpoints - 2026-10-22
 
 Per user instruction, full source/history backups are prohibited. The running
