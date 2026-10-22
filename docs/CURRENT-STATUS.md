@@ -1,5 +1,39 @@
 # Current status â€” GitHub main
 
+## Native rebinding, Apply and Cancel verified - 2026-10-22
+
+Added release-to-arm/release-to-finish keyboard/controller capture, with no host
+input injection. Input is suppressed during capture; Delete clears, Escape and
+focus loss cancel. Keyboard focus remains respected after capture. Menu object
+reuse resets the draft/capture. Apply flushes/closes a same-directory pending
+file, renames it over the settings file, then updates live bindings only on
+success. Display settings are saved for next launch. Native Cancel discards the
+draft and runs the game's closemenu command; Options now remains on the native
+menu stack so cancellation returns to Options instead of the main menu.
+
+Windows runtime build succeeded with no new compiler warnings. Focused CTests
+passed 2/2 (PC controls and gamepad actions); added capture tests cover activation
+release, key release, clear/cancel/focus loss, wrong-slot rejection and controller
+disconnect. XML attribute lookup regression also passed.
+
+Run 25 found that an imported combined pcnative_cancel;closemenu command did not
+close MUA2's menu. Run 26 verified saving/replacing/cancelling but exposed the
+parent-stack issue. Run 27 uses normal contained input, with read-only native
+focus inspection: fresh-boot saved U binding loaded; Attack changed to Z and
+saved, then to U and replaced; U itself immediately invoked native Apply;
+a further Z draft was cancelled, the file retained U, and the menu returned to
+options_rev. Native capture after-binding-cancel.png was visually inspected.
+Evidence: .local/pc-controls/preview-run-27/binding-result.json and runtime.log.
+All three runtimes closed normally (exit 0). Installed game untouched.
+
+Remaining: controller capture in the actual menu (unit-tested only), remaining
+profile/preset/device/window/FSAA UI paths, mouse hit testing/navigation, main
+Options row/bar fixes and Accept/Back handling, HD output/layout verification,
+and gameplay validation. TODO #1 stays open. The isolated test profile deliberately
+retains Attack=U; this is not the shipped default. No source backups or duplicate
+build/profile copies created; current fixture and compact diagnostic evidence kept.
+
+
 ## Native Advanced settings display and resolution interaction - 2026-10-22
 
 Added guarded native CMenuItemText update (80ff34fc) and CMenuItem use-command

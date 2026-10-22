@@ -8,6 +8,8 @@
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
 #include "mua2_pc_settings.hpp"
+#include "mua2_pc_binding_capture.hpp"
+#include "Common/FileUtil.h"
 #include "mua2_costumes.hpp"
 #include "mua2_roster_patch_plan.hpp"
 #include "mua2_roster_menu.hpp"
@@ -101,10 +103,12 @@ DirectFusionCall s_direct_fusion_call;
 
 std::array<moderngekko::controls::GamepadPortState,4> s_gamepad_ports;
 std::mutex s_pc_mutex;
+moderngekko::controls::PcBindingCapture s_pc_capture;
+std::filesystem::path s_pc_settings_path;
 moderngekko::controls::PcSettings s_pc_settings=moderngekko::controls::DefaultPcSettings();
 moderngekko::controls::PcInputEvents s_pc_events;
 moderngekko::controls::PcInputFrame s_pc_frame;
-bool s_pc_enabled=false, s_pc_pointer_valid=false;
+bool s_pc_enabled=false, s_pc_pointer_valid=false, s_pc_focused=true;
 double s_pc_pointer_x=0, s_pc_pointer_y=0, s_pc_seconds=1.0/30;
 u64 s_pc_ticks=0;
 bool PcWindowInput(const Platform::InputEvent& event) {
@@ -113,12 +117,16 @@ bool PcWindowInput(const Platform::InputEvent& event) {
   using Type=Platform::InputEvent::Type;
   switch(event.type) {
   case Type::Focus:
+    s_pc_focused=event.down;
+    if(!event.down)s_pc_capture.FocusLost();
     s_pc_events.Focus(event.down);s_pc_frame={};s_pc_pointer_valid=false;
     return false;
   case Type::Key:
     // Native fullscreen is reserved. All other game-window keys are owned by
     // the PC control layer, including unbound keys during binding capture.
     if(event.key==0x7a) return false;
+    s_pc_capture.Key(event.key,event.down,event.repeat);
+    if(s_pc_capture.active)return true;
     if(!event.down || !event.repeat) s_pc_events.Key(event.key,event.down);
     return s_pc_settings.keyboard_enabled;
   case Type::Pointer:
@@ -146,7 +154,7 @@ void AdvancePcInput(const Core::CPUThreadGuard& guard,unsigned port) {
   if(s_pc_ticks && now>=s_pc_ticks && now-s_pc_ticks<frequency/30) return;
   s_pc_seconds=s_pc_ticks && now>s_pc_ticks ? double(now-s_pc_ticks)/frequency:1.0/30;
   s_pc_ticks=now;
-  s_pc_frame=s_pc_events.AdvanceFrame();
+  s_pc_frame=s_pc_capture.active ? moderngekko::controls::PcInputFrame{} : s_pc_events.AdvanceFrame();
 }
 struct GamepadTutorialClock { u32 object=0; unsigned owner=4; float seconds=0; u64 ticks=0; };
 GamepadTutorialClock s_gamepad_tutorial_clock;
@@ -191,6 +199,13 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
   // permanently connected keyboard must not arm an unplugged controller.
   s_gamepad_ports[port].Update(sample);
   sample=s_gamepad_ports[port].sample;
+  {
+    const std::lock_guard pc_lock(s_pc_mutex);
+    if(s_pc_capture.active) {
+      s_pc_capture.Pad(port,sample);
+      sample.inputs.fill(0);sample.connected=true;return sample;
+    }
+  }
   if(!pc_enabled || (device && device->GetSource()=="OpenMUA2Test")) return sample;
   auto& memory=Core::System::GetInstance().GetMemory();
   const auto read=[&](u32 address,std::size_t size)->std::span<const u8> {
@@ -2658,8 +2673,10 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   {
     const std::lock_guard lock(s_pc_mutex);
     s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_ticks=0;
+    s_pc_capture.Reset();s_pc_focused=true;
     s_pc_pointer_valid=false;s_pc_settings=moderngekko::controls::DefaultPcSettings();
     const auto path=impl->config.user_directory / "Config" / "OpenMUA2Controls.ini";
+    s_pc_settings_path=path;
     std::ifstream file(path,std::ios::binary);
     if(file) {
       std::string text{std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>()};

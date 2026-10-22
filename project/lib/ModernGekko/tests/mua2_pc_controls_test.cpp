@@ -1,5 +1,6 @@
 #include "mua2_pc_controls.hpp"
 #include "mua2_pc_settings.hpp"
+#include "mua2_pc_binding_capture.hpp"
 #include <iostream>
 #include <limits>
 
@@ -9,6 +10,27 @@ static bool On(const GamepadActions& a,unsigned id) {
 }
 #define CHECK(condition) do { if(!(condition)) { std::cerr << "line " << __LINE__ << ": " #condition "\n"; return 1; } } while(false)
 int main() {
+  PcBindingCapture capture;
+  capture.Key(13,true);capture.Begin(unsigned(PcAction::Use),0,false,false);
+  capture.Key('Z',true);capture.Key('Z',false); // held activation key: not armed
+  CHECK(!capture.Take());capture.Key(13,false);
+  capture.Key('Z',true);CHECK(!capture.Take());capture.Key('Z',false);
+  auto binding=capture.Take();CHECK(binding && binding->source=='Z' && !binding->cancelled && !capture.active);
+  capture.Begin(0,0,true,false);capture.Key(0x2e,true);capture.Key(0x2e,false);
+  binding=capture.Take();CHECK(binding && binding->source==0 && !binding->cancelled);
+  capture.Begin(0,0,false,false);capture.Key(0x1b,true);capture.Key(0x1b,false);
+  binding=capture.Take();CHECK(binding && binding->cancelled);
+  capture.Begin(0,0,false,false);capture.FocusLost();
+  binding=capture.Take();CHECK(binding && binding->cancelled);
+  GamepadSample captured_pad;captured_pad.connected=true;captured_pad.inputs[0]=1;
+  capture.Begin(0,0,false,true);capture.Pad(0,captured_pad);CHECK(!capture.Take());
+  captured_pad.inputs[0]=0;capture.Pad(0,captured_pad);
+  captured_pad.inputs[2]=1;capture.Pad(1,captured_pad);CHECK(!capture.Take());
+  capture.Pad(0,captured_pad);CHECK(!capture.Take());
+  captured_pad.inputs[2]=0;capture.Pad(0,captured_pad);
+  binding=capture.Take();CHECK(binding && binding->source==3 && !binding->cancelled);
+  capture.Begin(0,0,false,true);captured_pad.connected=false;capture.Pad(0,captured_pad);
+  binding=capture.Take();CHECK(binding && binding->cancelled);
   auto s=DefaultPcSettings();
   CHECK(ValidatePcSettings(s).empty());
   for(unsigned preset=1;preset<=3;++preset) {

@@ -142,7 +142,7 @@ def main():
 
     menu=ET.parse(assets/f'ui/menus/{source_name}.eng').getroot()
     menu.set('name',output_name)
-    if a.page=='options':menu.set('no_stack','true')
+    if a.page=='options':menu.set('no_stack','false')
     # XML2 stores static model bindings in the scene's user properties. MUA2
     # requires those same resource names explicitly on its menu items.
     model_bindings={}
@@ -181,6 +181,8 @@ def main():
         if node.get('style') in styles:
             node.set('style',styles[node.get('style')])
     items={item.get('name'):item for item in menu.findall('item')}
+    if a.page=='advanced':
+        items['label_subtitles'].set('usecmd','closemenu')
     for item in menu.findall('item'):
         if item.get('type')=='MENU_ITEM_SLIDER':
             # MUA2 uses an ordinary focusable label with increment/decrement

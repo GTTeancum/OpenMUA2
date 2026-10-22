@@ -20,6 +20,7 @@ u32 Map(const Core::CPUThreadGuard& guard,u32 menu) {
   return field && Word(field)==it->second ? it->second:0;
 }
 void Initialize(const Core::CPUThreadGuard& guard,u32 menu,u32 map) {
+  pc_menu::Reconstructed(menu);
   auto* b=Bytes(guard,map,MenuMapBytes);
   auto* slot=Bytes(guard,menu+MenuMapPointer,4);
   if(!b || !slot) {roster_io::Abort(guard,"menu item allocation is unmapped");return;}

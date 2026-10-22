@@ -7,6 +7,33 @@ PcOptionsModel model;
 u32 owner=0;
 unsigned page=0;
 bool controller=false;
+void Reconstructed(u32 menu) {
+  if(owner!=menu)return;
+  owner=0;model.Cancel();
+  const std::lock_guard lock(s_pc_mutex);s_pc_capture.Reset();
+}
+bool SaveSettings(const std::string& data,std::string& error) {
+  const auto path=s_pc_settings_path.string();
+  const auto temporary=path+".pending";
+  File::IOFile file(temporary,"wb");
+  if(!file || !file.WriteBytes(data.data(),data.size()) || !file.Flush() || !file.Close()) {
+    error="Could not write settings; previous settings retained";return false;
+  }
+  if(!File::Rename(temporary,path)) {
+    error="Could not replace settings; previous settings retained";return false;
+  }
+  return true;
+}
+void FinishCapture() {
+  const std::lock_guard lock(s_pc_mutex);
+  if(const auto result=s_pc_capture.Take()) {
+    if(result->cancelled)model.status="Binding cancelled";
+    else if(model.Bind(s_pc_capture.action,result->source,s_pc_capture.alternate,s_pc_capture.controller))
+      model.status="Binding changed; Apply to save";
+    s_pc_events.Focus(false);s_pc_events.Focus(s_pc_focused);s_pc_frame={};
+    std::fprintf(stderr,"[openmua2] native binding result: %s\n",model.status.c_str());
+  }
+}
 std::string GuestString(const Core::CPUThreadGuard& guard,u32 address,unsigned limit=128) {
   const auto* bytes=Bytes(guard,address,limit);
   if(!bytes)return {};
@@ -75,6 +102,7 @@ bool Update(const Core::CPUThreadGuard& guard) {
   auto& state=guard.GetSystem().GetPPCState();
   const u32 item=state.gpr[3];
   if(!Item(guard,item))return false;
+  FinishCapture();
   const auto value=Value(Interned(guard,Word(Bytes(guard,item+4,4))));
   if(value.empty())return false;
   // The original update uses this same 256-byte string result buffer before
@@ -90,8 +118,15 @@ bool Use(const Core::CPUThreadGuard& guard) {
   auto& state=guard.GetSystem().GetPPCState();
   if(!Item(guard,state.gpr[3]))return false;
   auto command=Interned(guard,Word(Bytes(guard,state.gpr[3]+0x20,4)));
+  if(command=="closemenu") {
+    model.Cancel();
+    {const std::lock_guard lock(s_pc_mutex);s_pc_capture.Reset();}
+    return false; // Let MUA2 perform its native close transition.
+  }
   if(!command.starts_with("pcnative_"))return false;
   const auto action=command.substr(9);
+  {const std::lock_guard lock(s_pc_mutex);if(s_pc_capture.active){state.gpr[3]=3;state.npc=state.spr[8];return true;}}
+  model.status.clear();
   auto& s=model.draft;
   bool handled=true;
   if(action=="resolution")PcNextOutputMode(s);
@@ -105,9 +140,28 @@ bool Use(const Core::CPUThreadGuard& guard) {
   else if(action=="scroll_prev")page=page<7?0:page-7;
   else if(action.starts_with("profile_") && action.size()==9 && action.back()>='1' && action.back()<='4')model.player=action.back()-'1';
   else if(action.starts_with("preset_") && action.size()==8 && action.back()>='1' && action.back()<='3')PcPreset(s.profiles[model.player],action.back()-'0');
+  else if(action=="defaults") {s=DefaultPcSettings();page=0;}
+  else if(action=="apply") {
+    if(model.Apply(SaveSettings)) {
+      const std::lock_guard lock(s_pc_mutex);
+      s_pc_settings=model.applied;
+      s_pc_events.Focus(false);s_pc_events.Focus(s_pc_focused);s_pc_frame={};
+      model.Open(s_pc_settings);model.status="Saved (display changes on next launch)";
+    }
+  }
+  else if(action.starts_with("rowbind_") && action.size()==11 &&
+          action[8]>='0' && action[8]<='6' && action[9]=='_' &&
+          (action[10]=='0' || action[10]=='1')) {
+    const unsigned target=page+action[8]-'0';
+    if(target<PcActionCount) {
+      const std::lock_guard lock(s_pc_mutex);
+      s_pc_capture.Begin(target,model.player,action[10]=='1',controller);
+      s_pc_events.Focus(false);s_pc_events.Focus(s_pc_focused);s_pc_frame={};
+      model.status=controller?"Release controls, then press or move":"Press a key; Delete clears, Esc cancels";
+    }
+  }
   else handled=false;
   if(!handled)return false;
-  model.status.clear();
   std::fprintf(stderr,"[openmua2] native PC action: %s\n",action.c_str());
   state.gpr[3]=3;state.npc=state.spr[8];return true;
 }
