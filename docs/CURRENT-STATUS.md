@@ -1,5 +1,23 @@
 # Current status â€” GitHub main
 
+## HD output startup wiring - 2026-10-22
+
+The existing PC settings mode list includes 1280x720, 1920x1080, 2560x1440 and
+3840x2160. Saved OutputWidth/OutputHeight now load before platform creation and
+set the render-window dimensions, disable automatic window resizing, and select
+automatic integral internal scaling unless explicitly overridden at launch.
+The Windows window-size calculation now excludes borders and the menu bar from
+the requested client dimensions. Zero dimensions retain existing configuration.
+
+The Windows runtime build succeeded (moderngekko-run.exe); no compiler warnings
+were emitted in this incremental build. The focused PC-controls test passes
+(mode cycle/wrap, persistence,
+invalid-mode rejection and old-settings compatibility). Actual 1440p/4K output
+and layout have not yet been visually verified. The Advanced page and its Apply
+command remain unfinished; this is startup wiring, not a completed menu feature.
+Installed game unchanged; TODO #1 remains open.
+
+
 ## Native Options values and toggles verified - 2026-10-22
 
 Fixed XMLB attribute serialization: MUA2's 801f1c70 lookup uses a case-insensitive

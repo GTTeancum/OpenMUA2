@@ -2655,6 +2655,27 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   }
   Config::SetBase(Config::MAIN_FULLSCREEN, impl->config.fullscreen);
 
+  {
+    const std::lock_guard lock(s_pc_mutex);
+    s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_ticks=0;
+    s_pc_pointer_valid=false;s_pc_settings=moderngekko::controls::DefaultPcSettings();
+    const auto path=impl->config.user_directory / "Config" / "OpenMUA2Controls.ini";
+    std::ifstream file(path,std::ios::binary);
+    if(file) {
+      std::string text{std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>()};
+      std::string error;
+      if(!moderngekko::controls::DecodePcSettings(text,s_pc_settings,error))
+        std::fprintf(stderr,"[openmua2] PC settings rejected; using defaults: %s\n",error.c_str());
+    }
+    if (s_pc_settings.output_width != 0) {
+      Config::SetBase(Config::MAIN_RENDER_WINDOW_WIDTH, static_cast<int>(s_pc_settings.output_width));
+      Config::SetBase(Config::MAIN_RENDER_WINDOW_HEIGHT, static_cast<int>(s_pc_settings.output_height));
+      Config::SetBase(Config::MAIN_RENDER_WINDOW_AUTOSIZE, false);
+      std::fprintf(stderr, "[openmua2] Requested output: %ux%u; internal scale follows output\n",
+                   s_pc_settings.output_width, s_pc_settings.output_height);
+    }
+  }
+
   if (impl->config.headless)
     impl->platform = Platform::CreateHeadlessPlatform();
 #ifdef _WIN32
@@ -2672,19 +2693,6 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   else if (impl->config.window_system != WindowSystem::X11) impl->platform =
       Platform::CreateWaylandPlatform();
 #endif
-  {
-    const std::lock_guard lock(s_pc_mutex);
-    s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_ticks=0;
-    s_pc_pointer_valid=false;s_pc_settings=moderngekko::controls::DefaultPcSettings();
-    const auto path=impl->config.user_directory / "Config" / "OpenMUA2Controls.ini";
-    std::ifstream file(path,std::ios::binary);
-    if(file) {
-      std::string text{std::istreambuf_iterator<char>(file),std::istreambuf_iterator<char>()};
-      std::string error;
-      if(!moderngekko::controls::DecodePcSettings(text,s_pc_settings,error))
-        std::fprintf(stderr,"[openmua2] PC settings rejected; using defaults: %s\n",error.c_str());
-    }
-  }
   if(impl->platform) impl->platform->SetInputHandler(PcWindowInput);
   if (!impl->platform || !impl->platform->Init()) {
     if (impl->ui_initialized)
@@ -2730,6 +2738,10 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
     Config::SetBase(Config::MAIN_GFX_BACKEND, impl->config.graphics.backend);
   else if (impl->config.headless)
     Config::SetBase(Config::MAIN_GFX_BACKEND, std::string("Null"));
+  // Explicit launch overrides still take precedence. Otherwise render geometry
+  // at an integral scale sufficient for the selected output, not a 480p upscale.
+  if (s_pc_settings.output_width != 0)
+    Config::SetBase(Config::GFX_EFB_SCALE, EFB_SCALE_AUTO_INTEGRAL);
   if (impl->config.graphics.internal_resolution_scale)
     Config::SetBase(Config::GFX_EFB_SCALE,
                     *impl->config.graphics.internal_resolution_scale);
