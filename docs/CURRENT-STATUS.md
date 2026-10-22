@@ -1,5 +1,48 @@
 # Current status â€” GitHub main
 
+## Native menu projection established for mouse navigation - 2026-10-22
+
+Added mua2_pc_menu_geometry.hpp: invert Alchemy's actual row-vector camera matrix,
+project all eight native world-bound corners, clip the rectangle to the viewport,
+and reject invalid/singular/behind-camera/empty bounds. Tests use the independently
+read live Effects Volume bounds and camera, plus rejection and hit-edge cases.
+The runtime reads the same matrices and exposes an opt-in read-only bounds trace
+through the existing text-update hook (OPENMUA2_PC_MENU_BOUNDS). It does not yet
+change focus or consume pointer events; mouse navigation remains unfinished.
+
+Run 39 independently projected Effects Volume to normalized rectangle
+(0.190039,0.276055)-(0.273828,0.297383), matching the native capture from run 38.
+Run 40's rebuilt runtime reports the same rectangle and reports Advanced fields.
+Its native Advanced capture was inspected: expected readable controls/red panels
+remain, with the previously noted bright background/layout defects. Initial
+trace snapshots are diagnostic only; dynamic labels require fresh bounds at use,
+not cached initial rectangles. Visibility/focusability/modal filtering remains
+part of the upcoming pointer-routing integration.
+
+Native accessors established from code and live reads:
+- manager at 8081736c; camera 0 pointer at manager+200c (80ffde44).
+- camera+25c -> node+10 -> list+10 -> first transform; matrix at transform+20.
+- projection matrix at *(camera+1a8)+110 (802223d4 / 801ff244).
+- item+6c contains X, top Z, Y, width, height, depth.
+- native focus setter 80fc9bb0 takes menu/item, performs old/new focus callbacks
+  and updates menu help. Use that path when actual pointer events choose a target.
+
+The first candidate observer at 80fe3530 produced no text-item hits; it was removed.
+This menu's text uses the ordinary world-bounds path, not projected 3D-model layout.
+Build initially failed because a header was included inside an enclosing runtime
+namespace; moved it to dolphin_runtime.cpp's normal includes. Final Windows build
+succeeded, and PC-controls/gamepad-actions tests pass 2/2 with no final warnings.
+Runs 38,39,40 stopped normally, exit 0, one CPU, Null audio. An automation-directory
+startup race was retried on the same live process; private helper now waits for
+that directory. Main Options navigation now uses verified option03_text, not the
+previous guessed option02_text. No menus forced or host input sent.
+
+Evidence: .local/pc-controls/preview-run-39/projected-bounds.json and camera dumps;
+preview-run-40/runtime.log and advanced-bounds-reference.png. Reused the supported
+build/private profile; no backups or duplicate game data. Installed game unchanged.
+TODO #1 remains open; TODO #4 terminology scan remains deferred as requested.
+
+
 ## Native Save Options flow verified; terminology scan deferred - 2026-10-22
 
 Correction to the prior checkpoint: an unchanged active-menu pointer did not prove

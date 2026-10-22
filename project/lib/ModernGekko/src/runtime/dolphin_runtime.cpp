@@ -7,6 +7,7 @@
 #include "Core/HLE/HLE.h"
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
+#include "mua2_pc_menu_geometry.hpp"
 #include "mua2_pc_settings.hpp"
 #include "mua2_pc_binding_capture.hpp"
 #include "Common/FileUtil.h"

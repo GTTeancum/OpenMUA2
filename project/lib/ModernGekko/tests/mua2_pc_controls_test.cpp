@@ -1,3 +1,4 @@
+#include "mua2_pc_menu_geometry.hpp"
 #include "mua2_pc_controls.hpp"
 #include "mua2_pc_settings.hpp"
 #include "mua2_pc_binding_capture.hpp"
@@ -140,6 +141,24 @@ int main() {
   physical.inputs.fill(0); physical.inputs[0]=1;
   CHECK(MapPcInput(s,0,{},physical,false,1.0/60).Down(GamepadInput::A));
   CHECK(MapPcInput(s,1,{},physical,false,1.0/60).Down(GamepadInput::X));
+  // Captured native Options camera and Effects Volume world bounds.
+  const PcMatrix camera_world{1,0,0,0, 0,0,1,0, 0,-1,0,0, 255,-1000.5,191.5,1};
+  const PcMatrix projection{.0029296875,0,0,0, 0,.0046875,0,0,
+      0,0,-.002,0, 0,0,-1.2,1};
+  const auto effects_rect=PcProjectMenuBounds({43.4,287.05,-120.5,57.2,9.1,0},camera_world,projection);
+  CHECK(effects_rect);
+  CHECK(std::abs(effects_rect->left-.1900390625)<1e-7);
+  CHECK(std::abs(effects_rect->top-.2760546875)<1e-7);
+  CHECK(std::abs(effects_rect->right-.273828125)<1e-7);
+  CHECK(std::abs(effects_rect->bottom-.2973828125)<1e-7);
+  CHECK(effects_rect->Contains(.23,.285));
+  CHECK(!effects_rect->Contains(.4,.285));
+  CHECK(!effects_rect->Contains(effects_rect->right,.285));
+  CHECK(!PcProjectMenuBounds({43.4,287,-120,0,9,0},camera_world,projection));
+  CHECK(!PcProjectMenuBounds({10000,287,-120,57,9,0},camera_world,projection));
+  CHECK(!PcProjectMenuBounds({43,287,-120,57,9,0},PcMatrix{},projection));
+  auto behind=projection;behind[15]=-1;
+  CHECK(!PcProjectMenuBounds({43,287,-120,57,9,0},camera_world,behind));
   std::string error;
   auto display=DefaultPcSettings();
   // Pin the user-facing HD choices independently of the implementation table.

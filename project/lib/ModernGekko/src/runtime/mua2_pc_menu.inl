@@ -134,9 +134,52 @@ std::string Value(std::string_view name) {
   }
   return {};
 }
+// Use the same camera and native world bounds as menu text rendering.
+std::optional<moderngekko::controls::PcMenuRect> ProjectedBounds(
+    const Core::CPUThreadGuard& guard,u32 item) {
+  const auto read=[&](u32 address)->u32 {
+    const auto* p=Bytes(guard,address,4);return p?Word(p):0;
+  };
+  const u32 manager=read(0x8081736c);
+  const u32 camera=manager?read(manager+0x200c):0;
+  const u32 node=camera?read(camera+0x25c):0;
+  const u32 children=node?read(node+0x10):0;
+  const u32 array=children?read(children+0x10):0;
+  const u32 transform=array?read(array):0;
+  const u32 projection=camera?read(camera+0x1a8):0;
+  if(!transform || !projection)return {};
+  const auto* world_bytes=Bytes(guard,transform+0x20,64);
+  const auto* projection_bytes=Bytes(guard,projection+0x110,64);
+  const auto* bounds_bytes=Bytes(guard,item+0x6c,24);
+  if(!world_bytes || !projection_bytes || !bounds_bytes)return {};
+  const auto f=[](const u8* p){return double(std::bit_cast<float>(Word(p)));};
+  moderngekko::controls::PcMatrix world{},project{};
+  std::array<double,6> bounds{};
+  for(unsigned i=0;i<16;++i){world[i]=f(world_bytes+i*4);project[i]=f(projection_bytes+i*4);}
+  for(unsigned i=0;i<6;++i)bounds[i]=f(bounds_bytes+i*4);
+  return moderngekko::controls::PcProjectMenuBounds(bounds,world,project);
+}
+void ObserveProjectedBounds(const Core::CPUThreadGuard& guard,u32 item) {
+  static const bool enabled=std::getenv("OPENMUA2_PC_MENU_BOUNDS")!=nullptr;
+  if(!enabled)return;
+  const auto* header=Bytes(guard,item,8);
+  if(!header)return;
+  const auto menu=GuestString(guard,Word(header)+8);
+  if(menu!="options_rev" && menu!="options_controller_xbox")return;
+  const auto name=Interned(guard,Word(header+4));
+  if(!name.starts_with("label_") && !name.starts_with("pc_"))return;
+  static std::map<u32,bool> reported;
+  if(reported[item])return;
+  if(const auto rect=ProjectedBounds(guard,item)) {
+    reported[item]=true;
+    std::fprintf(stderr,"[openmua2] PC menu bounds %s/%s item=%08x screen=(%.6f,%.6f)-(%.6f,%.6f)\n",
+      menu.c_str(),name.c_str(),item,rect->left,rect->top,rect->right,rect->bottom);
+  }
+}
 bool Update(const Core::CPUThreadGuard& guard) {
   auto& state=guard.GetSystem().GetPPCState();
   const u32 item=state.gpr[3];
+  ObserveProjectedBounds(guard,item);
   if(!Item(guard,item))return false;
   FinishCapture();
   const auto value=Value(Interned(guard,Word(Bytes(guard,item+4,4))));
