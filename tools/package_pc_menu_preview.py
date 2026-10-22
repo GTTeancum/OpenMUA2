@@ -78,7 +78,9 @@ def main():
     sys.path[:0]=[str(addon),str(a.reference_scripts.resolve(strict=True))]
     from igb_format.igb_reader import IGBReader
     from igb_format.igb_writer import from_reader
-    from menu_igb_graph import field,put,memory,refs,transfer_graph
+    import menu_igb_graph
+    from menu_igb_graph import field,put,memory,refs
+    from pc_menu_geometry import transfer_menu_graph
     from xml1_packages import read_pkgb
     from xbox_tutorials import read_nodes
     output.mkdir(parents=True,exist_ok=True)
@@ -110,7 +112,7 @@ def main():
         if anchor not in native_children:raise ValueError('Background anchor needs ancestor transform')
         if any(hasattr(o,'raw_fields') and any(k==2 and v==name for k,v,_ in o.raw_fields)
                for o in panel.objects):raise ValueError('Duplicate background anchor')
-        children.append(transfer_graph(panel,native,anchor))
+        children.append(transfer_menu_graph(panel,native,anchor,menu_igb_graph))
     memory(panel,field(panel,panel_root,4),struct.pack('<'+'i'*len(children),*children))
     put(panel,panel_root,2,len(children));put(panel,panel_root,3,len(children))
     layout=output/'x2m_options.igb';panel.write(str(layout))

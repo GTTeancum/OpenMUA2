@@ -1,5 +1,19 @@
 # Current status â€” GitHub main
 
+## PC Options first rendering checkpoint - 2026-10-22
+
+Converted legacy menu geometry to native typed arrays and corrected graph-transfer
+directory string/pool indices. Fresh-boot Options now opens through process-local
+keyboard navigation without the previous loader failure. Independent verification
+passes for 124 reachable meshes / 2,534 triangles, including winding, positions,
+normals, UVs and intended red vertex colors. Native screenshot:
+`.local/pc-controls/preview-run-12/options-result.png`.
+
+This is unfinished: panel models are missing, hidden legacy glyph labels remain
+visible, and PC settings hooks are not connected. Red panel textures/tints are
+authored, but their full in-game appearance is not yet verified. Keep TODO #1
+open; installed game unchanged. Test process has exited. No source backups.
+
 ## PC Options asset-loader diagnosis - 2026-10-22
 
 Rebuilt the Windows diagnostic runtime successfully. The native menu candidate

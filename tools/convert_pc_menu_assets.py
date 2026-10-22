@@ -62,10 +62,13 @@ def main():
     p.add_argument('--writer-root', type=Path, required=True)
     p.add_argument('--input', type=Path, required=True)
     p.add_argument('--output', type=Path, required=True)
+    p.add_argument('--native-models', type=Path, required=True)
+    p.add_argument('--reference-scripts', type=Path, required=True)
     a = p.parse_args()
     repo = Path(__file__).resolve().parents[1]
     source, output, addon = a.input.resolve(strict=True), a.output.resolve(), a.writer_root.resolve(strict=True)
-    for path in (source, output, addon):
+    native_models = a.native_models.resolve(strict=True)
+    for path in (source, output, addon, native_models):
         if not path.is_relative_to(repo / '.local'):
             raise ValueError('Conversion inputs, writer and output must stay in repository/.local')
     if output.is_relative_to(source):
@@ -84,6 +87,8 @@ def main():
     sys.path.insert(0, str(addon))
     from igb_format.igb_reader import IGBReader
     from igb_format.igb_writer import from_reader
+    graph = load_module('menu_graph_reference', a.reference_scripts.resolve(strict=True) / 'menu_igb_graph.py')
+    from pc_menu_geometry import convert_geometry
     decoder = load_module('menu_image_decoder', addon / 'utils/image_convert.py')
     encoder = load_module('menu_wii_encoder', addon / 'utils/wii_rgb5a3.py')
     manifest = []
@@ -110,6 +115,7 @@ def main():
             # leave inline strings in a file declaring pooled names.
             writer.version = 8
             writer.name_pool = []
+            writer._intern_name(b'')
             for obj in writer.objects:
                 if hasattr(obj, 'raw_fields'):
                     obj.raw_bytes = None
@@ -188,9 +194,15 @@ def main():
                     changes[ref]=bytes(rgba)
             for index,data in changes.items():
                 memory(writer,index,data)
+            writer, receipt['native_meshes'] = convert_geometry(
+                writer, native_models, graph, IGBReader, from_reader)
             writer.write(str(destination))
             check=IGBReader(str(destination));check.read()
             restored=from_reader(check)
+            for entry in restored.entries:
+                for definition, value in zip(restored.meta_objects[entry.type_index].fields, entry.field_values):
+                    if definition.short_name == b'String' and not 0 <= value < len(restored.name_pool):
+                        raise ValueError('Serialized directory name is outside its name pool')
             if len(restored.objects) != len(writer.objects):
                 raise ValueError('Graph object count changed on serialization')
             for index,obj in enumerate(writer.objects):
