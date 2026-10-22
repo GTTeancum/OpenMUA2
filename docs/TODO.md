@@ -6,6 +6,7 @@
 - Reuse configurable primary/secondary bindings, presets, per-player profiles, mouse sensitivity, device assignment and saved settings.
 - Adapt the actual XML2 Options/Advanced menu assets and mouse navigation, recoloring them red to match MUA2 while preserving native backgrounds and animations.
 - Verify MUA2-specific menu integration, gameplay controls and rebinding; do not carry over XML1-specific addresses or camera behavior blindly.
+- Show an in-game screenshot of the converted UI once it is rendering.
 
 ## 2. Testing fixes
 
@@ -13,6 +14,13 @@
 - Confirm the LT sound fix in user testing: repeated fusion activation was removed and the updated executable staged on October 17.
 - Fix delayed right-stick camera response.
 - Remove B.R.A.G. and Leaders from the Results screen.
+
+## 3. FB to PKGB conversion and loose-file loading
+
+- Adapt OpenXML1xbox's conversion and runtime loading approach to MUA2's `assetsfb.wad`: extract FB resources into loose files and generate standard binary PKGB manifests.
+- Preserve original resource filenames, package associations, declaration order and localized-resource conventions; no hash-renamed assets or custom path aliases.
+- Add first-run conversion through the game EXE, with progress, cancellation and retry, preserving installed mods, saves and the source archive.
+- Support configurable loose-file loading without silently falling back to archived resources; retain packaged mode as an option.
 
 ## Xbox / XInput Quick Reference
 
