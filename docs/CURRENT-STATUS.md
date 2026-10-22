@@ -1,5 +1,24 @@
 # Current status â€” GitHub main
 
+## Red PC panels rendered with native background - 2026-10-22
+
+Fixed the apparent panel-placement failure: the native background layer was
+occluding imported panel faces. Original background Y depths extend to about
+-94, while the imported panel faces are around -9. The packer now translates
+all five native background anchors and their position-animation tracks by the
+same +96 Y, retaining X/Z, relative spacing and background resources. Run 16's
++128 probe revealed the panels but clipped the red background; run 17's +96
+fix shows both full red panels and the native background in the actual game.
+Native proof: `.local/pc-controls/preview-run-17/options-result.png`.
+
+The settings values, PC commands, mouse navigation, rebinding, advanced page
+and HD renderer application remain incomplete. The right controls area is
+empty; do not stage this as a completed UI. TODO #1 remains open. Tests used
+fresh boots and contained keyboard navigation, with null audio; no gameplay or
+audio acceptance claim. Runs 16/17 closed normally. Removed the resolved run-8
+failure state (12,000,397 bytes), retaining its fault/stack evidence and current
+captures; receipt `.local/pc-controls/cleanup-loader-state.json`.
+
 ## PC panel transform investigation - 2026-10-22
 
 Extended the independent conversion check to compare every imported transform's

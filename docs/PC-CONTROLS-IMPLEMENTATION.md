@@ -185,4 +185,28 @@ Wii menu models; investigate its array/schema conversion next.
 Evidence: `.local/pc-controls/preview-run-8/failure.state`, context-5.bin;
 `preview-run-9/stack.bin`; `preview-run-10/0x920ffb68.bin` and 0x9210a390.bin.
 Current candidate: `red-menu-v8`, `native-options-v8`. Do not install it.
-No valid converted-UI screenshot exists yet. All test runtimes were closed.
+No valid converted-UI screenshot existed at that checkpoint. All test runtimes were closed.
+
+## First visible red PC panels - 2026-10-22
+
+Current candidates are `red-menu-native-arrays` and `native-options-native-arrays`.
+Legacy arrays now convert to native typed geometry; directory string and pool
+references are remapped during graph transfer. Independent readback verifies
+124 reachable meshes / 2,534 triangles, original matrices and animation payloads,
+with only the intended red tint differences. The original loader failure is
+resolved in fresh boots.
+
+MUA2 also needs explicit model attributes on menu items; bindings come from the
+original XML2 scene Model properties. Hidden named items must remain for native
+initialization (removing them caused run 13's null read). Empty text and zero
+opacity suppress legacy labels. Setting animate on all model items did not fix
+the missing faces and was reverted after run 15.
+
+The actual missing-face cause was background depth. Imported panel faces around
+Y=-9 were behind the native background planes at Y=-11..-94. A common +96 Y
+translation of the five native backdrop anchors and their position tracks fixes
+the overlap while keeping all background resources and relative animation.
+Run 17's `options-result.png` shows full red PC panels with the original MUA2
+background. This is visual progress, not completed PC settings: values, command
+hooks, mouse navigation, advanced-page integration and HD renderer application
+still require implementation and validation. Installed game remains unchanged.

@@ -112,7 +112,23 @@ def main():
         if anchor not in native_children:raise ValueError('Background anchor needs ancestor transform')
         if any(hasattr(o,'raw_fields') and any(k==2 and v==name for k,v,_ in o.raw_fields)
                for o in panel.objects):raise ValueError('Duplicate background anchor')
-        children.append(transfer_menu_graph(panel,native,anchor,menu_igb_graph))
+        copied=transfer_menu_graph(panel,native,anchor,menu_igb_graph)
+        # Native MUA2 backgrounds occupy Y=-11..-94, which occludes XML2
+        # panel faces near Y=-9. Move the entire background layer away from
+        # the camera, preserving relative depths and all X/Z animation.
+        # Their resulting range is approximately +2..+85: behind the panels,
+        # while remaining inside the menu camera's far clipping plane.
+        depth_offset=96.0
+        matrix=list(field(panel,copied,8));matrix[13]+=depth_offset
+        put(panel,copied,8,tuple(matrix))
+        sequence=field(panel,copied,10)
+        if sequence>=0:
+            positions=field(panel,sequence,2)
+            if positions>=0:
+                block=field(panel,positions,4)
+                vectors=[(x,y+depth_offset,z) for x,y,z in struct.iter_unpack('<3f',panel.objects[block].data)]
+                memory(panel,block,b''.join(struct.pack('<3f',*v) for v in vectors))
+        children.append(copied)
     memory(panel,field(panel,panel_root,4),struct.pack('<'+'i'*len(children),*children))
     put(panel,panel_root,2,len(children));put(panel,panel_root,3,len(children))
     layout=output/'x2m_options.igb';panel.write(str(layout))
