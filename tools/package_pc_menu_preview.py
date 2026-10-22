@@ -53,7 +53,9 @@ def encode_xml(root):
         data.extend(struct.pack('<IIII',intern(node.tag),
                                 offsets[id(sibling)] if sibling is not None else 0xffffffff,
                                 offsets[id(children[0])] if children else 0xffffffff,len(node.attrib)))
-        for key,value in node.attrib.items():
+        # MUA2's XMLB lookup (801f1c70) performs binary search over these
+        # pairs. Authoring order is not a valid serialized attribute order.
+        for key,value in sorted(node.attrib.items(),key=lambda pair:pair[0].lower()):
             data.extend(struct.pack('<II',intern(key),intern(value)))
     return bytes(data+pool)
 
@@ -157,12 +159,17 @@ def main():
             item.set('neverfocus','true')
             item.set('text','')
             continue
+        if item.get('enabled')=='false':
+            # MUA2's native readouts stay enabled so gamevar updates run;
+            # neverfocus makes them display-only without disabling updates.
+            item.attrib.pop('enabled')
+            item.set('neverfocus','true')
         if item.get('type')=='MENU_ITEM_MODEL':
             if item.get('name') in model_bindings:
                 item.set('model',model_bindings[item.get('name')])
             item.set('neverfocus','true')
     styles={'STYLE_TITLE':'STYLE_TITLE_MED',
-            'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'SMALL_WHITE'}
+            'STYLE_MENU':'STYLE_SEL_SMALL_WHITE','STYLE_SMALL':'STYLE_SEL_SMALL_WHITE'}
     for node in menu.iter():
         if node.get('style') in styles:
             node.set('style',styles[node.get('style')])
@@ -181,6 +188,35 @@ def main():
             slider.set('model','ui/models/model_bar_sound')
             slider.set('neverfocus','true')
     native_nodes=read_nodes(retail['ui/menus/options_rev.engb'][1])
+    native_items={attrs['name']:attrs for tag,attrs,_,_ in native_nodes
+                  if tag=='item' and 'name' in attrs}
+    # Keep MUA2's settings semantics. XML2's camera-angle/follow options are
+    # not MUA2 options. Reuse their anchors for the actual native toggles.
+    option_rows=(
+        ('label_combat_music','combat_music','label_view_dmg','view_dmg'),
+        ('label_view_angle','view_angle','label_view_shake','view_shake'),
+        ('label_view_cycle','view_cycle','label_subtitles','subtitles'),
+        ('label_view_follow','view_follow','label_illumination','illumination'),
+    )
+    for label_name,value_name,native_label,native_value in option_rows:
+        label,value=items[label_name],items[value_name]
+        for attr in ('type','gamevar','fielditem'):
+            label.attrib.pop(attr,None)
+        for child in list(label):label.remove(child)
+        label.set('text',native_items[native_label]['text'])
+        label.set('usecmd',native_items[native_label]['usecmd'])
+        label.set('left',label_name);label.set('right',label_name)
+        value.set('type','MENU_ITEM_BINARY')
+        value.set('gamevar',native_items[native_value]['gamevar'])
+        value.set('neverfocus','true')
+    # XML1-specific extension commands must not swallow the native camera-shake
+    # field or leave a blank focusable row. Its functionality is above.
+    for name in ('label_view_shake','view_shake'):
+        items[name].set('opacity','0');items[name].set('neverfocus','true')
+        items[name].set('text','');items[name].attrib.pop('gamevar',None)
+        items[name].attrib.pop('usecmd',None)
+    items['label_view_follow'].set('down','label_subtitles')
+    items['label_subtitles'].set('up','label_view_follow')
     background=[]
     for tag,attrs,_,_ in native_nodes:
         if tag=='item' and attrs.get('name') in branches:

@@ -1,5 +1,27 @@
 # Current status â€” GitHub main
 
+## Native Options values and toggles verified - 2026-10-22
+
+Fixed XMLB attribute serialization: MUA2's 801f1c70 lookup uses a case-insensitive
+binary search, so attributes must be sorted. Appended attributes previously went
+missing unpredictably, including gamevar callbacks, model visibility and commands.
+The new regression exercises that native lookup algorithm against authored XMLB.
+It passes. Native readout styles/neverfocus flags now match MUA2 conventions.
+
+The converted page uses native View Damage, Camera Shake, AI Autospend and Slot
+Illumination bindings in place of XML1-specific camera settings. Run 20 opened
+the page normally, rendered On/Off values, and all four toggles changed through
+contained keyboard navigation. Read-only item snapshots prove native callbacks
+80134cf4 / 80134af0 / 801347f0 / 8013428c and corresponding displayed changes:
+`before-toggle.json`, `damage-off.json`, `other-toggles.json` under
+`.local/pc-controls/preview-run-20`. Its native capture was visually inspected.
+
+The bounded runtime ended with exit 1 at the watchdog before the Back-navigation
+probe completed; do not count that probe as passing. Remaining visible defects
+include volume-bar layout and unadapted subtitles/vibration rows. Advanced menu,
+PC settings hooks, mouse navigation/rebinding and HD renderer application remain
+open. Installed game unchanged; TODO #1 remains open.
+
 ## Red PC panels rendered with native background - 2026-10-22
 
 Fixed the apparent panel-placement failure: the native background layer was
