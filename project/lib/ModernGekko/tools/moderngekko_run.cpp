@@ -6,10 +6,15 @@
 #include "netplay_session.hpp"
 
 #include "Common/StringUtil.h"
+#include "DiscIO/DiscExtractor.h"
+#include "DiscIO/Filesystem.h"
+#include "DiscIO/Volume.h"
 
 #include <SDL3/SDL.h>
 
+#include <algorithm>
 #include <charconv>
+#include <memory>
 #include <chrono>
 #include <csignal>
 #include <cstdlib>
@@ -655,8 +660,60 @@ void RequireOneHostProcessor() {
 }
 #endif
 
+// First-run setup for packaged builds: export a disc image into a new extracted
+// game root with Dolphin's own extractor. Progress lines go to stdout so a GUI
+// launcher can report them; nothing is written outside <output>.
+int ExtractDiscMain(const std::string &image, const std::filesystem::path &output) {
+  std::error_code ec;
+  if (std::filesystem::exists(output, ec)) {
+    std::cerr << "extraction output already exists: " << output.string() << '\n';
+    return 1;
+  }
+  std::unique_ptr<DiscIO::Volume> volume = DiscIO::CreateVolume(image);
+  if (!volume) {
+    std::cerr << "not a readable disc image: " << image << '\n';
+    return 2;
+  }
+  const DiscIO::Partition partition = volume->GetGamePartition();
+  std::cout << "disc " << volume->GetGameID(partition) << std::endl;
+#ifdef MODERNGEKKO_REQUIRED_DISC_ID
+  if (volume->GetGameID(partition) != MODERNGEKKO_REQUIRED_DISC_ID) {
+    std::cerr << "expected disc ID " MODERNGEKKO_REQUIRED_DISC_ID ", found "
+              << volume->GetGameID(partition) << '\n';
+    return 3;
+  }
+#endif
+  const DiscIO::FileSystem *filesystem = volume->GetFileSystem(partition);
+  if (!filesystem || !filesystem->IsValid()) {
+    std::cerr << "can't read the game partition filesystem\n";
+    return 4;
+  }
+  std::filesystem::create_directories(output / "files", ec);
+  if (ec || !DiscIO::ExportSystemData(*volume, partition, output.string())) {
+    std::cerr << "system data extraction failed\n";
+    return 5;
+  }
+  const unsigned total = std::max(1u, filesystem->GetRoot().GetTotalChildren());
+  unsigned completed = 0;
+  DiscIO::ExportDirectory(*volume, partition, filesystem->GetRoot(), true, "",
+                          (output / "files").string(), [&](const std::string &) {
+                            std::cout << "progress " << ++completed << ' ' << total
+                                      << std::endl;
+                            return false;
+                          });
+  const auto inspected = moderngekko::InspectGame(output);
+  if (!inspected) {
+    std::cerr << "extracted game validation failed: " << inspected.error << '\n';
+    return 6;
+  }
+  std::cout << "extracted " << inspected.metadata->disc_id << std::endl;
+  return 0;
+}
+
 int main(int argc, char **argv) {
   try {
+    if (argc == 4 && std::string_view(argv[1]) == "--extract-disc")
+      return ExtractDiscMain(argv[2], argv[3]);
 #if defined(_WIN32)
     RequireOneHostProcessor();
 #endif

@@ -37,3 +37,18 @@ slots. Packages without the manifest retain their original UI behavior.
 `Test-Xbox-UI.ps1 -WorkDirectory <scratch>` checks the version/hash gate using small
 synthetic archives. The common UI pack is still a partial conversion: remaining
 Wii-specific tutorials, menu operations and other QTE variants need validation.
+
+## Release content and first-run setup
+
+For a release, build the content pack from a clean disc archive and the prepared
+OpenMUA2 archive, then pass its folder with `-ContentDirectory`:
+
+```powershell
+python tools/build_content_pack.py --disc-wad <clean>/files/z/assetsfb.wad --openmua2-wad <prepared>/files/z/assetsfb.wad --output-dir <content>
+./tools/windows-launcher/Build-Launcher.ps1 ... -ContentDirectory <content>
+```
+
+With content embedded, a launch without GameData finds the disc image beside the
+EXE (or asks for one), extracts it through `moderngekko-run --extract-disc` and
+rebuilds assetsfb.wad from disc members plus content.zip, checking every member's
+SHA-256. All of this runs in a progress window; no console window is shown.

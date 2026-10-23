@@ -2,7 +2,8 @@ param(
     [Parameter(Mandatory=$true)][string]$RuntimeDirectory,
     [Parameter(Mandatory=$true)][string]$OutputExe,
     [Parameter(Mandatory=$true)][string]$IconPath,
-    [string]$XboxUiManifest
+    [string]$XboxUiManifest,
+    [string]$ContentDirectory
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.IO.Compression
@@ -18,6 +19,15 @@ if ($XboxUiManifest) {
     $uiManifestPath = (Resolve-Path -LiteralPath $XboxUiManifest).Path
     if ([IO.File]::ReadAllLines($uiManifestPath)[0] -notin @('OpenMUA2-Xbox-UI-v3','OpenMUA2-Xbox-UI-v4','OpenMUA2-Xbox-UI-v5','OpenMUA2-Xbox-UI-v6','OpenMUA2-Xbox-UI-v7','OpenMUA2-Xbox-UI-v8')) { throw 'Unsupported Xbox UI manifest version.' }
     $uiResource = @("/resource:$uiManifestPath,xbox-ui.manifest")
+}
+$contentResource = @()
+if ($ContentDirectory) {
+    $contentRoot = (Resolve-Path -LiteralPath $ContentDirectory).Path
+    foreach ($required in @('content.zip', 'content.manifest')) {
+        if (!(Test-Path -LiteralPath (Join-Path $contentRoot $required))) { throw "Missing $required" }
+    }
+    if ([IO.File]::ReadAllLines((Join-Path $contentRoot 'content.manifest'))[0] -ne 'OpenMUA2-Content-v1') { throw 'Unsupported content manifest version.' }
+    $contentResource = @("/resource:$(Join-Path $contentRoot 'content.zip'),content.zip", "/resource:$(Join-Path $contentRoot 'content.manifest'),content.manifest")
 }
 $buildDirectory = Join-Path $env:TEMP ('OpenMUA2-package-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $buildDirectory | Out-Null
@@ -37,7 +47,7 @@ try {
     $manifest.Add((Get-FileHash -LiteralPath $windowIcon -Algorithm SHA256).Hash.ToLowerInvariant() + "`tOpenMUA2.ico")
 } finally { $zip.Dispose(); $zipFile.Dispose() }
 [IO.File]::WriteAllLines($manifestPath, $manifest, [Text.UTF8Encoding]::new($false))
-& "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /platform:x64 /optimize+ "/win32icon:$windowIcon" "/out:$OutputExe" /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll /reference:System.Windows.Forms.dll "/resource:$zipPath,payload.zip" "/resource:$manifestPath,payload.manifest" "/resource:$PSScriptRoot\Xbox-v5-profile.txt,Xbox-v5-profile.txt" @uiResource (Join-Path $PSScriptRoot 'OpenMUA2.cs')
+& "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /target:winexe /platform:x64 /optimize+ "/win32icon:$windowIcon" "/out:$OutputExe" /reference:System.IO.Compression.dll /reference:System.IO.Compression.FileSystem.dll /reference:System.Windows.Forms.dll /reference:System.Drawing.dll "/resource:$zipPath,payload.zip" "/resource:$manifestPath,payload.manifest" "/resource:$PSScriptRoot\Xbox-v5-profile.txt,Xbox-v5-profile.txt" @uiResource @contentResource (Join-Path $PSScriptRoot 'OpenMUA2.cs')
 if ($LASTEXITCODE -ne 0) { throw 'Launcher compilation failed.' }
 Write-Output "Build intermediates retained at $buildDirectory"
 Get-FileHash -LiteralPath $OutputExe -Algorithm SHA256

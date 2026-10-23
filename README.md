@@ -1,116 +1,181 @@
-# OpenMUA2 — LOCAL01 local source workspace
+# OpenMUA2
 
-> **Current Windows performance path (2026-09-30):** full JIT is now the selected
-> OpenMUA2 CPU backend. `Build.cmd --cpu jit --jobs 2` builds/tests the runtime
-> and validates the local game extraction without generating a native game DLL.
-> `Run.cmd --cpu jit` launches it. Both commands default to JIT. The explicit
-> static path remains `Build.cmd --cpu staticrecomp --native-rel`, followed by
-> `Run.cmd --cpu staticrecomp`. `--native-rel` alone retains the static build path.
-> Separate backend receipts preserve module verification for static execution.
-> Sustained 30 FPS combat is still being validated; see `docs/TODO.md`
-> and the latest section of `MUA2-CANONICAL-HANDOFF.md`. The LOCAL01 description
-> below is historical background.
+**Marvel: Ultimate Alliance 2, played natively on Windows.**
 
-**Target folder:** `D:\Programming\GitHub\OpenMUA2\`  
-**Input:** your Wii USA `RMSE52` `.wbfs` image, kept at that folder's root.  
-**Delivery:** September 22, 2026. Offline source snapshot; no remote repository is created.
+OpenMUA2 is a PC port of the Wii version of *Marvel: Ultimate Alliance 2* (USA).
+It runs the original game on a Dolphin-derived runtime with a JIT CPU backend and
+Vulkan rendering, then adds the things a PC version should have: keyboard and mouse
+play, Xbox controller support, HD output, and proper in-game PC options menus.
 
-> **Important recovery boundary:** this contains the actually recoverable **MG01 + FPC01** source baseline, not MR01. The reported MR01 gameplay archive, cumulative 31-file overlay, native module and diagnostic states are unavailable. Their surviving reports are preserved as historical records, not substituted for missing code. LOCAL01 generates a DOL-native module and leaves REL execution to the retained runtime fallback. It is **not** the previously reported native-REL gameplay build or a verified Windows game.
+Bring your own disc image, extract the release, run one EXE. No emulator setup,
+no config files, no console windows.
 
-The full vendored source tree is here, including DolRecomp, ModernGekko, RecompCore and all 42 pinned repository/submodule entries. The five recovered production file edits are already applied. Setup does not fetch repositories or install anything. There is no dependency on a ChatGPT download link after saving this package locally. See `docs/CURRENT-STATUS.md` before continuing development.
+> **Current release: 0.9.0b (beta).** Playable, with a few known issues listed below.
 
-## Set up the local repository
+## Screenshots
 
-Extract the **contents** of this ZIP directly into `D:\Programming\GitHub\OpenMUA2\`, so `Setup.cmd` is in that folder, not in a nested `OpenMUA2_LOCAL01` folder. Keep the WBFS beside it, with its existing filename. An existing folder containing only your game image is fine. **Do not extract over another source checkout or accept overwrite prompts for existing source files.** Use a new folder and compare first in that situation.
+| | |
+| --- | --- |
+| ![Title screen](docs/screenshots/title.jpg) | ![Main menu](docs/screenshots/main-menu.jpg) |
+| Title screen | Main menu |
+| ![PC Options menu](docs/screenshots/options.jpg) | ![Advanced Options menu](docs/screenshots/advanced-options.jpg) |
+| The red PC Options menu | Advanced Options: resolution, bindings, players |
+| ![Gameplay](docs/screenshots/gameplay.jpg) | ![Classic costume](docs/screenshots/costumes.jpg) |
+| In-game, Latveria | Hero Management with Xbox prompts and a classic costume |
 
-Open CMD and run:
+## Features
+
+- **Keyboard and mouse play.** Move with WASD, attack with the mouse, fire powers
+  from the number keys, and hold to drag the camera with the mouse. Menus work with
+  mouse clicks and the scroll wheel.
+- **Xbox controller support** out of the box (XInput), with other gamepads
+  supported through SDL.
+- **Native PC menus.** New red Options and Advanced screens built into the game's
+  own menu system, keeping MUA2's original animated backgrounds.
+- **Full rebinding.** Primary and secondary bindings for every action on both
+  keyboard and controller, three ready-made keyboard layouts, four saved player
+  profiles, mouse sensitivity, camera inversion and device assignment. Apply and
+  Cancel behave as you'd expect, and a failed save never loses your working setup.
+- **HD output.** Choose 720p, 1080p, 1440p or 4K in the Advanced menu; the game
+  renders internally at a matching higher resolution. Windowed or borderless
+  fullscreen, plus MSAA where your GPU supports it. F11 toggles fullscreen.
+- **Bigger roster.** Room for up to 40 heroes (up from 27) for roster mods, with
+  saves that store your team and unlocks by name.
+- **Classic costumes.** 17 heroes shared with the first *Ultimate Alliance* gain its
+  four costumes as alternates (68 in total). Press X (or your Use key) on the
+  active-characters page to cycle through them.
+- **Controller fixes.** Fusions are on LT and Block is on LB, cleanly separated so
+  holding LT never blocks or repeats the fusion sound. Motion-control moments
+  (the Wii "shake" prompts) are replaced with rapid button presses.
+- **One-click install.** The first launch finds your disc image and sets everything
+  up for you.
+
+## Requirements
+
+- 64-bit Windows 10 or 11
+- A Vulkan-capable graphics card
+- About 3 GB of free disk space for the extracted game
+- Your own *Marvel: Ultimate Alliance 2* Wii (USA) disc image (game ID RMSE52)
+
+## Installing
+
+1. Download **OpenMUA2-0.9.0b.zip** from the
+   [Releases page](https://github.com/GTTeancum/OpenMUA2/releases) and extract it to
+   any folder.
+2. Put your own *Marvel: Ultimate Alliance 2* Wii (USA) disc image in the same
+   folder. `.wbfs` is recommended; `.iso` and `.rvz` also work. **Game data is not
+   included.**
+3. Run **OpenMUA2.exe**.
+
+On first launch OpenMUA2 finds your disc image, extracts it into a `GameData`
+folder and adds OpenMUA2's own content, showing a progress window while it works
+(about half a minute). If there is no image in the folder, or more than one, it
+asks you to pick one. The game then starts. Later launches go straight into the
+game.
+
+**Where things live** (all beside `OpenMUA2.exe`):
+
+- `saves` - your save games
+- `GameData` - the extracted game
+- `OpenMUA2.log` - the log file; attach it when reporting a problem
+
+## Controls
+
+All bindings can be changed in **Options**. Keyboard, mouse and controller can be
+used together, and you can assign the keyboard and each controller to different
+players.
+
+### Keyboard and mouse (default layout)
+
+| Action | Key |
+| --- | --- |
+| Move | W A S D (hold Shift to walk) |
+| Camera | Hold V or the middle mouse button and move the mouse; or I J K L |
+| Light attack | Left mouse button (or Numpad 4) |
+| Heavy attack | Right mouse button (or Numpad 6) |
+| Jump | Space |
+| Grab / use | E (tap repeatedly for button-mash prompts) |
+| Block | Ctrl |
+| Powers 1-4 | 1, 2, 3, 4 |
+| Fusion with hero 1-4 | 5, 6, 7, 8 |
+| Fusion | Q |
+| Switch hero | Arrow keys |
+| Pause | Esc |
+| Hero Management | F1 |
+| Fullscreen | F11 |
+| Menus | Mouse, arrow keys, Enter to confirm, Backspace to go back |
+
+Two alternative keyboard layouts are available as presets in Options.
+
+### Xbox controller
+
+| Input | Action |
+| --- | --- |
+| Left stick | Move; steer the hacking signal |
+| Right stick | Camera |
+| A | Light attack / menu confirm |
+| B | Heavy attack / menu back |
+| X | Grab / use |
+| Y | Jump |
+| LB | Block |
+| RT + A/B/X/Y | Powers 1-4 |
+| LT + A/B/X/Y | Fusion with the hero in slot 1/2/3/4 |
+| D-pad | Switch to hero 1/2/3/4; menu navigation |
+| Start / Menu | Pause / resume; continue on title and results screens |
+| Back / View | Hero Management |
+| Tap X repeatedly | Replaces the Wii motion-control prompts |
+
+Some menus use slightly different controls.
+
+## Known issues
+
+This is a beta. The main things you may notice:
+
+- **Mission results screen:** a fix for the screen not advancing is included but
+  still being confirmed. The B.R.A.G. and Leaders tabs still appear there.
+- **Camera:** the right stick can feel slightly delayed.
+- **Wii wording:** some text and button icons still refer to the Wii Remote,
+  Nunchuk or Wii system memory, and the original Wiimote instructions screen is
+  still shown.
+- **Classic costumes:** not every imported costume has been checked with every
+  animation yet.
+- **High resolutions:** 1440p and 4K work, but fullscreen at those sizes has had
+  less testing than 720p and 1080p. Resolution changes take effect after a restart.
+
+Please report problems on the
+[Issues page](https://github.com/GTTeancum/OpenMUA2/issues), with your
+`OpenMUA2.log` attached.
+
+## Building from source
+
+Building needs 64-bit Python 3.11+, Git, CMake, Ninja, the MSVC C/C++ toolchain
+with the Windows SDK, and Wiimms ISO Tools (`wit.exe`), plus your own disc image in
+the repository folder. From a command prompt in the repository:
 
 ```bat
-cd /d D:\Programming\GitHub\OpenMUA2
-OpenMUA2.cmd setup
-```
-
-Alternatively, double-click `Setup.cmd`. It verifies the package, initializes a local `main` branch and commits exactly the delivered files. It does not stage your WBFS, add an `origin`, push anything, change global Git settings, or alter an existing repository. An existing repository is left for you to merge/stage explicitly. The double-click launcher pauses at the end; the direct command does not.
-
-Keep the original ZIP as a separate recovery copy. `OpenMUA2.code-workspace` opens the tree in VS Code.
-
-## Build locally
-
-Your existing Windows tools must include 64-bit Python 3.11+, Git, CMake, Ninja, the MSVC C/C++ toolchain and Windows SDK. Disc extraction also uses your existing **Wiimms ISO Tools (`wit.exe`)**. Nothing is downloaded or installed. `Build.cmd` activates an installed x64 MSVC environment when necessary; an x64 Native Tools Command Prompt also works.
-
-```bat
-cd /d D:\Programming\GitHub\OpenMUA2
 Build.cmd --jobs 2
-```
-
-When WIT is not on PATH, supply its existing location:
-
-```bat
-Build.cmd --jobs 2 --wit "D:\Tools\Wiimms\bin\wit.exe"
-```
-
-The earlier dependency collection already contains `wit-v3.05a-r8638-cygwin64.zip`; its `bin\wit.exe` can be used in place without running the included installer. This local repository deliberately does not duplicate compiler installations or the collector's tool/SDK archives. The full source dependencies are included.
-
-One root-level WBFS is selected automatically. To choose between several:
-
-```bat
-Build.cmd --image "Marvel - Ultimate Alliance 2 (USA).wbfs" --jobs 2
-```
-
-The script builds/tests DolRecomp, extracts the original image into `.local\game`, checks the exact original DOL/REL hashes, regenerates the DOL code, builds ModernGekko and the native module, then verifies the module ABI and DOL chunk hashes. It stops on a failed step and writes logs/receipts under `.local`. Original game files are not patched. The baseline module uses **O0 with IPO disabled**; higher optimization is an explicit development choice, not a correctness/performance promise.
-
-**Windows execution of these launchers and a complete Windows build have not been tested here.** The Linux recompiler, regeneration, audit helper and local-repository tools were tested; see `evidence/local01/VALIDATION.json`. This is a source handoff with a concrete Windows build entry point, not a prebuilt or guaranteed-working Windows release.
-
-After a successful local build:
-
-```bat
 Run.cmd
 ```
 
-The runner uses `.local\user` for its own profile/configuration/save storage. Existing controller settings are retained. No physical input, audible audio, game-save round trip or gameplay is newly verified by this package. Do not enable the historical Wii shadow/lockstep verifier on this baseline; its MEM2 restoration repair is among the missing changes.
+See [docs/BUILD-AND-RUN.md](docs/BUILD-AND-RUN.md) for the full instructions and
+options.
 
-## Keep progress recoverable
+## Credits and legal
 
-```bat
-Snapshot.cmd -m "Describe the source changes just completed"
-Backup.cmd
-```
+OpenMUA2 is an unofficial fan project. It is **not affiliated with, endorsed by or
+sponsored by** Marvel, Activision, Vicarious Visions or n-Space. *Marvel: Ultimate
+Alliance 2* and all related characters and names are trademarks of their respective
+owners.
 
-`Snapshot.cmd` commits current source changes locally. `Backup.cmd` makes a verified ZIP under `.backups` containing the current source worktree **and a Git history bundle**, including uncommitted edits, new source files and tracked deletions. It does not implicitly commit or push. Pause editing/Git operations while making a backup.
+This repository and its releases do not include the game. OpenMUA2's own content
+is added to the game data extracted from your disc. To play, you need your own
+legally obtained copy of the game.
 
-For a separate drive, specify a new ZIP filename in an existing or new directory:
+OpenMUA2's runtime is built on the work of the
+[Dolphin](https://dolphin-emu.org/) GameCube/Wii emulator project and its
+contributors. Thanks also to the MUA and XML modding community, whose tools and
+research made the costume and menu work possible.
 
-```bat
-Backup.cmd --destination "E:\Backups\OpenMUA2-source-2026-09-22.zip"
-```
-
-To restore, extract a backup into an empty folder and run `Setup.cmd`. That restores Git history and the saved worktree without checking out over uncommitted changes. **Back up your original WBFS and `.local\user` separately with the game closed.** A source backup intentionally excludes both. Keeping `.backups` on the same disk is useful for mistakes, not disk-loss protection.
-
-## Folder layout
-
-```text
-OpenMUA2\
-  <your game>.wbfs              Your original input; never committed by these tools
-  Setup.cmd / Build.cmd / Run.cmd
-  Snapshot.cmd / Backup.cmd
-  tools\                       Local workflow, image checks, module verifier
-  project\                     Flat vendored upstream source; no nested Git repos
-    lib\DolRecomp\
-    lib\ModernGekko\
-      vendor\dolphin\          RecompCore, GXRuntime and recursive dependencies
-  locks\                       Exact source pins and packaging transformations
-  patches\                     Cumulative recovered production patch
-  docs\                        Build guide, current status, historical evidence
-  recovery\                    Retained MG01 helpers and FPC01 repair/tests
-  evidence\local01\            Fresh packaging/build/tool validation
-  .local\                      Generated code, builds, extracted game, logs, user data
-  .backups\                    Local source/history backups
-```
-
-`.local`, `.backups`, game images, generated game code and saves are excluded from normal Git operations. Upstream nested `.git*` control files were preserved under `UPSTREAM.*` names, preventing nested submodule/ignore/attribute behavior. The root attributes preserve source bytes. Standalone font files are omitted; the runtime's pinned OSD code checks for its optional external font and can use ImGui's built-in fallback.
-
-## Development references
-
-Read `AGENTS.md`, `docs/BUILD-AND-RUN.md`, `docs/RECOVERY-PLAN.md` and `docs/BACKUP-AND-GIT.md`. `FILE-MANIFEST.json` describes the delivered baseline. `OpenMUA2.cmd verify` compares against that baseline without undoing edits; it should report differences after intentional development.
-
-No proprietary game image, generated game translation, raw RAM capture, local save state or game executable is included. Upstream licenses and notices remain in their source trees; see `THIRD-PARTY-NOTICES.md`. This package does not grant rights to publish game-derived code/assets. No remote or public publishing operation is performed.
+OpenMUA2 is licensed under the **GNU General Public License v3.0**; see
+[LICENSE](LICENSE). Third-party components and their licenses are listed in
+[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

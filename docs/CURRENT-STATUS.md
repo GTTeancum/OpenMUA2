@@ -1,5 +1,30 @@
 # Current status â€” GitHub main
 
+## 0.9.0b release packaging and first-run setup - 2026-10-23
+
+OpenMUA2.exe now sets itself up from the player's own disc. With no GameData beside
+it, it finds the one .wbfs/.iso/.rvz in its folder (or asks with a file picker),
+runs the embedded runner's new `--extract-disc` mode (Dolphin DiscIO, no console
+window) and rebuilds assetsfb.wad from the disc archive plus an embedded content
+pack, in a WinForms progress window with Cancel. An existing GameData whose archive
+does not match is updated in place. Only added/changed archive members ship
+(278 of 1305, 95 MB, tools/build_content_pack.py); members are copied raw and every
+member is SHA-256 checked before the archive replaces the disc copy.
+`--verify-package` also verifies every content member.
+
+No gamepad is no longer a launch error: player one defaults to XInput/0 and
+keyboard/mouse play works. Shipped content is the C:/Games/MUA2 installed archive,
+including the 13 roster28-40 test slots (user decision).
+
+Verified: clean folder with only the EXE and WBFS -> setup window observed
+(extract, add content, check), ~25 s, then the game booted with no controller
+connected. Every extracted file and all 1305 archive members hash-identical to
+C:/Games/MUA2/GameData (wit-only helper files aside). Launcher 9/9 and 67/67,
+runtime CTest 72/75 enabled (same three missing optional executables), dolrecomp
+19/19, Python 170 OK. Screenshots captured natively from the set-up data into
+docs/screenshots. Player README replaces the handoff README, which moved to
+docs/DEVELOPER-WORKSPACE.md.
+
 
 ## Keyboard/mouse TODO completed and staged - 2026-10-23
 
