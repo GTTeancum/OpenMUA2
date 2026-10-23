@@ -50,6 +50,16 @@ def red(rgb):
     return tuple(round(c * 255) for c in colorsys.hsv_to_rgb(0, saturation, value))
 
 
+def red_image(rgb):
+    # Baked tab strips combine blue panels, LEDs and blue-gray metal. Preserve
+    # muted, mid/dark metal shading; saturated panels and bright light pixels
+    # remain themed. Geometry colors use red() separately.
+    _, saturation, value = colorsys.rgb_to_hsv(*(c / 255 for c in rgb))
+    if saturation < .6 and value < .7:
+        return tuple(rgb)
+    return red(rgb)
+
+
 def load_module(name, path):
     spec = importlib.util.spec_from_file_location(name, path)
     result = importlib.util.module_from_spec(spec)
@@ -172,7 +182,7 @@ def main():
                     image_name = field(writer, index, 22).replace('\\', '/').rsplit('/', 1)[-1].lower()
                     if tint and image_name != 'paint_colortest.png':
                         for offset in range(0, len(rgba), 4):
-                            rgba[offset:offset + 3] = bytes(red(rgba[offset:offset + 3]))
+                            rgba[offset:offset + 3] = bytes(red_image(rgba[offset:offset + 3]))
                     encoded = encoder.encode_rgb5a3(rgba, width, height)
                     if ref in changes and changes[ref] != encoded:
                         raise ValueError('Conflicting shared image data')

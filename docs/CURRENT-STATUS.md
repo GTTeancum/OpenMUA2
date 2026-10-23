@@ -1,5 +1,39 @@
 # Current status â€” GitHub main
 
+## Baked tab-strip metal tint corrected - 2026-10-22
+
+Direct inspection of original tabimg2 artwork established that the remaining
+right-hand caps are baked into the tab-strip texture. Geometry experiments could
+not affect them. The raster theme conversion now preserves muted mid/dark
+blue-gray shading while recoloring saturated panel colors and bright light
+pixels. Original shared paint-atlas preservation remains. No pixel-coordinate
+patch or geometry rewrite is used. Vertex color conversion is unchanged.
+
+Both private Options packages were rebuilt and the isolated WAD refreshed.
+Run 62 cold-booted and reached Advanced through ordinary contained navigation.
+Its native advanced-aligned-textures.png was inspected: both right caps and
+left arms are blue-gray, red panels/lights and readable labels remain, and the
+native background renders. Run exited normally. This closes the reported pink
+metal issue in the preview, not all of TODO #1. Installed game remains unchanged.
+
+Palette regression tests pass 3/3 using original metal, panel and LED colors;
+alignment tests pass 2/2 and XMLB serialization 1/1. Independent geometry check
+preserves 124 meshes / 2534 triangles, animation, transforms, positions, normals,
+UVs, winding and intended vertex colors. Receipt: tab-metal-geometry-verification.json.
+This was an asset-authoring change; reused the supported Windows executable
+from the successful slider build. No executable rebuild or new runtime claims.
+
+One new native screenshot and two small extracted texture images were inspected.
+CPU 2, Vulkan, Null audio, neutral synthetic port 0, 180-second watchdog; no host
+input or desktop capture. Original source assets untouched. Replaced the obsolete
+run-59 partial-fix capture with the successful run-62 capture; retained failure
+logs. Cleanup reclaimed 1,236,533 bytes; repository logical size 19.10 GiB,
+free D space 101.78 GiB. No source backups, fixture copies, install or push.
+
+TODO #1 remains active: mouse confirmation dialogs, remaining layout/gameplay
+acceptance and actual Windows 720p/1080p/1440p/4K output checks remain. The platform
+terminology scan remains deferred as TODO #4.
+
 ## Metal atlas preservation checkpoint - 2026-10-22
 
 The converter now preserves all seven paint_colortest.png atlas copies instead
