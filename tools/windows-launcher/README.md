@@ -13,7 +13,8 @@ icon separately.
 The prepared runtime must contain moderngekko-run.exe, Sys, LICENSE and
 THIRD-PARTY-NOTICES.md. Do not include game data, private diagnostics or saves.
 `OpenMUA2.exe --verify-package <report.txt>` verifies every embedded file and runs
-runner help without launching gameplay. Normal launch starts from the beginning
+runner help without launching gameplay. Its temporary runtime cache stays in
+a `package-verification` directory beside the requested report. Normal launch starts from the beginning
 with one logical CPU (mask 4), JIT, Vulkan, Cubeb and the game-folder save profile.
 
 Unmodified managed Xbox v5 profiles migrate to a connected Windows XInput gamepad.

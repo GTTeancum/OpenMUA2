@@ -1,7 +1,9 @@
 # Keyboard/mouse and native PC options implementation
 
-TODO #1 remains open. This document records implementation evidence, not player
-acceptance. Work and private assets remain inside this repository.
+The former TODO #1 is complete and staged as of October 23, 2026. See
+PC-CONTROLS-ACCEPTANCE.md for the final audit. The checkpoints below are historical;
+older pending statements describe their checkpoint, not the final status.
+Private development assets remain inside this repository.
 
 ## Required delivery
 

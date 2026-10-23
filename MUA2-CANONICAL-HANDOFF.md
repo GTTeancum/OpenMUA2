@@ -1,5 +1,36 @@
 # MUA2 CANONICAL HANDOFF â€” Wii Marvel: Ultimate Alliance 2 native PC recompilation
 
+
+## Keyboard/mouse TODO completed and staged - 2026-10-23
+
+The former TODO #1 is complete; removed from the user list and remaining items
+renumbered. Requirement/evidence audit: PC-CONTROLS-ACCEPTANCE.md. The native red
+Options/Advanced UI, configurable keyboard/mouse input, settings and HD choices
+are staged in C:/Games/MUA2. The game was not left running.
+
+Run 97 verifies visible mouse-camera movement after the opening cinematic.
+Run 99 verifies the corrected combined installed-data candidate: native Options
+capture inspected, mouse Yes saves, acknowledgment Continue returns to main,
+empty clicks rejected and idle mouse preserves keyboard selection. Exit 0.
+No forced menus, desktop input or desktop capture. Three native images inspected
+this checkpoint. No physical-device, new encounter-completion, FPS or audio claim.
+
+Final archive assembly uses manifest-verified native-options-native-arrays and
+native-advanced-preview. The earlier run-98 rejected obsolete package was never
+installed. Every unchanged archive member compared equal; only Options changed
+and Advanced was added (1305 total members). All 57 installed save files compare
+identically before and after installation. Existing roster/costumes preserved.
+
+Installed EXE SHA256: e61aa31bddae03778c2a31c65d4e6e95e7a08882acc1e4f0ad8fc9ad5bbdd570
+Installed WAD SHA256: 2d92df63821c431e4fb29e49d614c37b77a27b58ba26934251bff5b8194a2779
+
+Windows runtime build and four focused CTests pass; launcher profile tests 9/9,
+UI-gate tests 67/67, final embedded-package verification/help pass. Package-only
+verification now extracts beside its report, keeping development checks in-repo.
+Logs/receipts: .local/pc-controls/candidate-*, installation-receipt.json, runs 97/99.
+A compact installation rollback retains the previous EXE and replaced Options
+member inside the repository; no full source/history backup. No push.
+
 ## Luke PC costumes converted and staged - 2026-10-18
 
 Four Luke Cage MUA1 PC models (15701-15704) now replace alternate models

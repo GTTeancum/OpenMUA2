@@ -1,6 +1,66 @@
 # Current status â€” GitHub main
 
 
+## Keyboard/mouse TODO completed and staged - 2026-10-23
+
+The former TODO #1 is complete; removed from the user list and remaining items
+renumbered. Requirement/evidence audit: PC-CONTROLS-ACCEPTANCE.md. The native red
+Options/Advanced UI, configurable keyboard/mouse input, settings and HD choices
+are staged in C:/Games/MUA2. The game was not left running.
+
+Run 97 verifies visible mouse-camera movement after the opening cinematic.
+Run 99 verifies the corrected combined installed-data candidate: native Options
+capture inspected, mouse Yes saves, acknowledgment Continue returns to main,
+empty clicks rejected and idle mouse preserves keyboard selection. Exit 0.
+No forced menus, desktop input or desktop capture. Three native images inspected
+this checkpoint. No physical-device, new encounter-completion, FPS or audio claim.
+
+Final archive assembly uses manifest-verified native-options-native-arrays and
+native-advanced-preview. The earlier run-98 rejected obsolete package was never
+installed. Every unchanged archive member compared equal; only Options changed
+and Advanced was added (1305 total members). All 57 installed save files compare
+identically before and after installation. Existing roster/costumes preserved.
+
+Installed EXE SHA256: e61aa31bddae03778c2a31c65d4e6e95e7a08882acc1e4f0ad8fc9ad5bbdd570
+Installed WAD SHA256: 2d92df63821c431e4fb29e49d614c37b77a27b58ba26934251bff5b8194a2779
+
+Windows runtime build and four focused CTests pass; launcher profile tests 9/9,
+UI-gate tests 67/67, final embedded-package verification/help pass. Package-only
+verification now extracts beside its report, keeping development checks in-repo.
+Logs/receipts: .local/pc-controls/candidate-*, installation-receipt.json, runs 97/99.
+A compact installation rollback retains the previous EXE and replaced Options
+member inside the repository; no full source/history backup. No push.
+
+
+## Mouse camera passes; final packaging correction - 2026-10-23
+
+Run 97 cold-booted normally into Latveria and waited for the opening cinematic
+camera to finish. Both native before/after captures were inspected sequentially:
+V plus a horizontal mouse drag visibly changed the gameplay camera view while
+the team remained in place. Runtime exited 0. This verifies the process-local
+mouse path after its pixel-distance correction; not physical hardware, FPS or
+audio. The preceding run-95 normalized-distance failure is superseded.
+
+Prepared a candidate runtime from verified embedded support files in the installed
+EXE plus the latest built runner. Package verification now places its extracted
+runtime beside the requested report, keeping development checks inside the repo.
+The candidate EXE's embedded SHA256 verification and runner help passed; no game
+was launched by that check. Runtime/gameplay tests remain separate evidence.
+
+Run 98's combined installed-data candidate crashed opening Options (exit 70,
+invalid read 32a0ca78 at PC 802e8d3c). Investigation matched the original run-1
+failure: assembly incorrectly selected native-options-preview, an obsolete v6
+asset, rather than the approved native-options-native-arrays package. This is
+an assembly error, not evidence of an installed-data compatibility failure.
+The prepared archive must also include native-advanced-preview's
+options_controller_xbox.fb. A private manifest-driven assembly script now checks
+both output hashes and all unchanged installed archive members. The rejected
+candidate was NOT installed. A corrected combined live check is still required.
+
+TODO #1 stays open pending corrected-package validation, final audit and staging.
+Installed EXE, WAD and saves remain unchanged. No push or full-source backup.
+
+
 ## Mouse validation found normalized/pixel test-input mismatch - 2026-10-23
 
 Run 95 repeated normal cold-boot/story navigation, accepted the private autosave
@@ -6337,3 +6397,5 @@ Installed EXE/WAD were inspected read-only; no installed files or saves changed.
 Post-cleanup logical repository size excluding junctions: 20529549317 bytes.
 
 Final headless pixel-adapter Windows build succeeded; four focused CTests pass (pointer-pixels-headless-tests.log). Live camera acceptance remains pending.
+
+Completion cleanup was attempted with resolved repository-local paths and reparse-point checks, but automatic approval review rejected the command with "blocked by policy" before execution. Obsolete payload ZIPs, verification extraction and old menu FBs remain; no deletion or commit in that rejected call ran. This does not affect the staged game. The existing build, receipts and installed saves are intact. No alternate deletion route was attempted.

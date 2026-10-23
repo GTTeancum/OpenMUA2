@@ -286,6 +286,9 @@ internal static class OpenMUA2
             var self = Process.GetCurrentProcess();
             if ((self.ProcessorAffinity.ToInt64() & 4) == 0) throw new InvalidOperationException("Logical CPU 2 is unavailable.");
             self.ProcessorAffinity = new IntPtr(4);
+            // Package verification is a self-contained build check. Keep its
+            // extraction beside the requested report instead of in user AppData.
+            if (verify) local = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(args[1])), "package-verification");
             string cache = Prepare();
             long packageMilliseconds = startup.ElapsedMilliseconds;
             if (verify)
