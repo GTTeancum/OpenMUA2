@@ -1,6 +1,45 @@
 # Current status â€” GitHub main
 
 
+## Keyboard activation across menu transitions fixed - 2026-10-22
+
+Runs 85/86 reproduced keyboard Enter confirming a completed profile and then
+reopening Create New/name entry. Native confirmation at 80fdcdf8 checks action
+89 through manager method 81009d68, returns to CW_Profile_Choose, then continues
+native input handling. Run 87's timed 200 ms controller A returned to the chooser
+without reopening name entry. The initial single-frame pad pulse did not advance
+and is not counted as successful confirmation. Native captures inspected.
+
+Added a keyboard release gate keyed by menu identity/type. Keys held across a
+menu change remain suppressed until released; held input within one screen and
+fresh presses are preserved. Physical gamepad input and native menu commands
+remain unchanged. A focused regression covers same-menu holding, menu transitions,
+release/repress and return to gameplay context. Windows runtime and test build
+succeeded without compiler warnings/errors: menu-release-build.log.
+
+Run 88 cold-booted, created the private AAA profile through ordinary contained
+keyboard navigation, selected its icon/autospend, and confirmed. It stayed on
+CW_Profile_Choose; a separate Back returned to cw_hero_profile_2player_ps2. Native
+capture inspected: chooser rendered correctly, no reopened name entry. Further
+player-selection input did not yet reach gameplay. No profile disk-persistence,
+movement/camera/combat/QTE or audio acceptance claim. All four recent runs ended
+normally with explicit stop; CPU 2, Vulkan, No Audio Output, 180-second watchdogs.
+No forced menu/state load, desktop input/capture or installed-game changes.
+
+Broader CTest: initial plain-shell invocation passed 71, missed three optional
+LZ4 dependency executables, failed codegen_compile because the compiler include
+environment was absent, and had one disabled test. With tools/msvc-env.cmd,
+all 72 available enabled tests pass, including codegen_compile and the new gate
+test. Missing fullbench/fuzzer/zstreamtest were explicitly excluded, not counted
+as passes; playTests remains disabled. Logs: full-runtime-ctest.log and
+supported-runtime-ctest.log under .local/pc-controls.
+
+Removed four redundant run-83/84 navigation captures: 4,552,347 bytes. Useful
+failure/confirmation proof and compact logs retained. D free: 74,313,945,088 bytes.
+No source backups, installation or push. TODO #1 remains active for keyboard/mouse
+gameplay acceptance and coherent staging. Wii glyph/text scan remains deferred.
+
+
 ## Keyboard gameplay validation preparation - 2026-10-22
 
 Run 83 reached Play -> Load Game through ordinary keyboard navigation. Native

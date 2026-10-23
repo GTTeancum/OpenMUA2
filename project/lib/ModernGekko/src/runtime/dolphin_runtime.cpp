@@ -113,6 +113,7 @@ std::filesystem::path s_pc_settings_path;
 moderngekko::controls::PcSettings s_pc_settings=moderngekko::controls::DefaultPcSettings();
 moderngekko::controls::PcInputEvents s_pc_events;
 moderngekko::controls::PcInputFrame s_pc_frame;
+moderngekko::controls::PcMenuReleaseGate s_pc_menu_release;
 bool s_pc_enabled=false, s_pc_pointer_valid=false, s_pc_focused=true;
 double s_pc_pointer_x=0, s_pc_pointer_y=0, s_pc_seconds=1.0/30;
 u64 s_pc_ticks=0;
@@ -241,6 +242,16 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
     return bytes ? std::span<const u8>(bytes,size):std::span<const u8>{};
   };
   const auto menu=moderngekko::controls::ActiveMenuData(read);
+  if(port==settings.keyboard_player) {
+    std::uint64_t token=0;
+    if(!menu.empty()) {
+      token=moderngekko::controls::ReadBE(menu,10404);
+      for(unsigned i=8;i<72 && menu[i];++i)token=(token^menu[i])*1099511628211ull;
+    }
+    const std::lock_guard pc_lock(s_pc_mutex);
+    keyboard=s_pc_menu_release.Apply(keyboard,token);
+  }
+
   if(!menu.empty()) {
     const auto* name=reinterpret_cast<const char*>(menu.data()+8);
     // Options clicks activate the item beneath the pointer, not the last item
@@ -2731,7 +2742,7 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
 
   {
     const std::lock_guard lock(s_pc_mutex);
-    s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_ticks=0;
+    s_pc_enabled=false;s_pc_events.Focus(true);s_pc_frame={};s_pc_menu_release={};s_pc_ticks=0;
     s_pc_capture.Reset();s_pc_focused=true;
     s_pc_pointer_valid=false;s_pc_settings=moderngekko::controls::DefaultPcSettings();
     const auto path=impl->config.user_directory / "Config" / "OpenMUA2Controls.ini";

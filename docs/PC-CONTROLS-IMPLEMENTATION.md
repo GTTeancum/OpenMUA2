@@ -337,3 +337,13 @@ errors in build 8. Final immediate-click regression is recorded in CURRENT-STATU
 
 Gameplay input acceptance and coherent candidate staging remain before TODO #1
 can close. No physical-input, audio or combat-FPS claim follows from these tests.
+
+
+### Keyboard menu transition release gate
+
+PcMenuReleaseGate suppresses held keys across menu identity/type changes until
+release, preventing one Enter press from confirming a profile and reopening
+Create New. Run 88 verifies the cold-boot profile flow against the controller
+comparison in run 87. It does not filter physical gamepads. The Windows build
+and 72 available enabled tests pass; see CURRENT-STATUS for exclusions and logs.
+Gameplay input acceptance is still pending.

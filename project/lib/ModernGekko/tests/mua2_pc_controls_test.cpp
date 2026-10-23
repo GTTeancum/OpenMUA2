@@ -13,6 +13,18 @@ static bool On(const GamepadActions& a,unsigned id) {
 }
 #define CHECK(condition) do { if(!(condition)) { std::cerr << "line " << __LINE__ << ": " #condition "\n"; return 1; } } while(false)
 int main() {
+  PcMenuReleaseGate gate;
+  PcInputFrame held;held.held[13]=true;
+  CHECK(gate.Apply(held,1).held[13]);
+  CHECK(gate.Apply(held,1).held[13]);
+  CHECK(!gate.Apply(held,2).held[13]);
+  CHECK(!gate.Apply(held,2).held[13]);
+  CHECK(!gate.Apply(PcInputFrame{},2).held[13]);
+  CHECK(gate.Apply(held,2).held[13]);
+  CHECK(!gate.Apply(held,0).held[13]);
+  CHECK(!gate.Apply(PcInputFrame{},0).held[13]);
+  CHECK(gate.Apply(held,0).held[13]);
+
   std::map<std::uint32_t,std::vector<std::uint8_t>> guest;
   auto put=[&](std::uint32_t a,std::uint32_t v) {
     guest[a]={std::uint8_t(v>>24),std::uint8_t(v>>16),std::uint8_t(v>>8),std::uint8_t(v)};

@@ -164,6 +164,26 @@ struct PcInputFrame {
   std::array<bool,256> held{};
   double mouse_dx=0,mouse_dy=0;
 };
+// A held key may activate the old screen but must be released before it
+// can activate the next one. Native menus can clear their own edge history.
+class PcMenuReleaseGate {
+public:
+  PcInputFrame Apply(const PcInputFrame& frame, std::uint64_t menu) {
+    if(m_initialized && menu!=m_menu)
+      for(unsigned i=0;i<256;++i) m_blocked[i]=m_blocked[i] || frame.held[i];
+    m_initialized=true;m_menu=menu;
+    auto result=frame;
+    for(unsigned i=0;i<256;++i) {
+      m_blocked[i]=m_blocked[i] && frame.held[i];
+      if(m_blocked[i])result.held[i]=false;
+    }
+    return result;
+  }
+private:
+  bool m_initialized=false;
+  std::uint64_t m_menu=0;
+  std::array<bool,256> m_blocked{};
+};
 // Window-thread events are latched once per game input frame under the caller's
 // lock. Multiple guest reads share that frame. Fast down/up taps survive until
 // sampled; OS key-repeat cannot turn a held Use key into repeated QTE presses.
