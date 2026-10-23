@@ -2716,6 +2716,13 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
     UICommon::Init();
     impl->ui_initialized = true;
   }
+  // Explicit contained diagnostics only; the ordinary startup policy keeps
+  // texture dumps off. Use a session layer so this cannot persist in GFX.ini.
+  if(!impl->config.automation.directory.empty() &&
+     std::getenv("OPENMUA2_DIAGNOSTIC_TEXTURE_DUMP")) {
+    Config::SetCurrent(Config::GFX_DUMP_TEXTURES,true);
+    std::fprintf(stderr,"[openmua2] diagnostic texture dump enabled in the active user directory\n");
+  }
   Config::SetBase(Config::MAIN_FULLSCREEN, impl->config.fullscreen);
 
   {

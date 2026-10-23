@@ -297,6 +297,14 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
   const auto* items=map?Bytes(guard,map,moderngekko::roster::MenuMapBytes):nullptr;
   if(point && items && Word(items+8)==0x8118fb90 &&
      Word(items+moderngekko::roster::MenuMapCount)<=moderngekko::roster::MenuItems) {
+    std::map<std::string,u32> regions;
+    for(unsigned i=0;i<moderngekko::roster::MenuItems;++i) {
+      const u32 address=Word(items+moderngekko::roster::MenuMapValues+4*i);
+      const auto* region=address?Bytes(guard,address,8):nullptr;
+      if(!region || Word(region)!=menu)continue;
+      const auto region_name=Interned(guard,Word(region+4));
+      if(region_name.starts_with("pc_hit_"))regions.emplace(region_name.substr(7),address);
+    }
     for(unsigned i=0;i<moderngekko::roster::MenuItems;++i) {
       const u32 candidate=Word(items+moderngekko::roster::MenuMapValues+4*i);
       const auto* item=candidate?Bytes(guard,candidate,0xac):nullptr;
@@ -304,7 +312,8 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
       if(!item || Word(item)!=menu || !(item[0x4e]&0x10) || (item[0x4e]&0x2c))continue;
       // Visible decorative scene nodes share these flags but have no action.
       if(!Word(item+0x20) && !Word(item+0x24) && !Word(item+0x28))continue;
-      const auto bounds=ProjectedBounds(guard,candidate);
+      const auto region=regions.find(Interned(guard,Word(item+4)));
+      const auto bounds=ProjectedBounds(guard,region==regions.end()?candidate:region->second);
       if(bounds && bounds->Contains((*point)[0],(*point)[1])) {hit=candidate;break;}
     }
   }

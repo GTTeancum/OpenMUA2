@@ -88,7 +88,7 @@ def main():
     from igb_format.igb_reader import IGBReader
     from igb_format.igb_writer import from_reader
     graph = load_module('menu_graph_reference', a.reference_scripts.resolve(strict=True) / 'menu_igb_graph.py')
-    from pc_menu_geometry import convert_geometry
+    from pc_menu_geometry import convert_geometry, set_memory_alignment, alignment_names
     decoder = load_module('menu_image_decoder', addon / 'utils/image_convert.py')
     encoder = load_module('menu_wii_encoder', addon / 'utils/wii_rgb5a3.py')
     manifest = []
@@ -178,6 +178,10 @@ def main():
                                         (11,21),(12,len(encoded)),(14,-1),(15,1),(16,0),
                                         (17,-1),(18,0),(19,width*2),(20,1),(21,0)):
                         put(writer,index,slot,value)
+                    # GX texture base addresses are 32-byte aligned. PC images
+                    # may request generic allocation; ImageData selects the Wii
+                    # loader's correct alignment, avoiding a rounded-down base.
+                    set_memory_alignment(writer, ref, b'ImageData')
                     receipt['images'] += 1
                 elif tint and kind == b'igVertexArray1_1':
                     streams = bytes(writer.objects[field(writer,index,2)].data)
@@ -205,6 +209,12 @@ def main():
                         raise ValueError('Serialized directory name is outside its name pool')
             if len(restored.objects) != len(writer.objects):
                 raise ValueError('Graph object count changed on serialization')
+            names = alignment_names(restored)
+            for index,obj in enumerate(restored.objects):
+                if hasattr(obj, 'raw_fields') and restored.meta_objects[obj.type_index].name == b'igImage':
+                    alignment = restored.ref_info[field(restored,index,13)]['align_type_idx']
+                    if alignment < 0 or names[alignment] != b'ImageData':
+                        raise ValueError(f'Native texture alignment lost during graph conversion: {relative}')
             for index,obj in enumerate(writer.objects):
                 other=restored.objects[index]
                 if hasattr(obj,'raw_fields') and ([(k,v) for k,v,_ in obj.raw_fields] !=

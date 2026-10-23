@@ -270,6 +270,11 @@ def main():
         return node
     for node in element(8):
         if node.tag=='animtext' and node.get('name')=='AT_bgelements':menu.insert(0,node)
+    # Mouse regions use the authored focus-panel geometry, independently of
+    # placeholder text bounds. Invisible companion anchors never draw or focus.
+    from pc_menu_hit_regions import add_hit_regions
+    hit_regions=add_hit_regions(panel,menu,assets,read,menu_igb_graph)
+    panel.write(str(layout))
     compiled=encode_xml(menu);read_nodes(compiled)
     resources={}
     definition=assets/f'packages/generated/maps/package/menus/{source_name}.pkgb'
@@ -290,7 +295,7 @@ def main():
     if len(list(decode_fb(result)))!=len(resources):raise ValueError('FB verification failed')
     (output/'preview-manifest.json').write_text(json.dumps({'package':package,
         'source_sha256':hashlib.sha256(original).hexdigest(),'output_sha256':hashlib.sha256(result).hexdigest(),
-        'native_backgrounds':list(branches),'resources':list(resources),'native_rendering_verified':False},indent=2)+'\n')
+        'native_backgrounds':list(branches),'mouse_regions':hit_regions,'resources':list(resources),'native_rendering_verified':False},indent=2)+'\n')
     print(f'Prepared native {output_name} preview with {len(resources)} resources and five original background branches')
 
 

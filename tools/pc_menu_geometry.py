@@ -8,11 +8,65 @@ import copy
 import struct
 
 
+
+def alignment_names(writer):
+    data = bytes(writer.alignment_data)
+    size, version, count = struct.unpack_from('<3I', data)
+    if size != len(data) or version != 1:
+        raise ValueError('Unsupported Alchemy alignment table')
+    lengths = struct.unpack_from('<' + 'I' * count, data, 12)
+    at, result = 12 + count * 4, []
+    for length in lengths:
+        value = data[at:at + length]
+        if not value or value[-1] != 0 or b'\0' in value[:-1]:
+            raise ValueError('Invalid Alchemy alignment name')
+        result.append(value[:-1])
+        at += length
+    if at != size:
+        raise ValueError('Alignment table size mismatch')
+    return result
+
+
+def alignment_index(writer, name):
+    names = alignment_names(writer)
+    if name not in names:
+        names.append(name)
+        body = struct.pack('<2I', 1, len(names))
+        body += struct.pack('<' + 'I' * len(names), *(len(n) + 1 for n in names))
+        body += b''.join(n + b'\0' for n in names)
+        writer.alignment_data = struct.pack('<I', len(body) + 4) + body
+    return names.index(name)
+
+
+def set_memory_alignment(writer, index, name):
+    info = writer.ref_info[index]
+    if info['is_object']:
+        raise ValueError('Only memory blocks have alignment classes')
+    alignment = alignment_index(writer, name)
+    entry = copy.deepcopy(writer.entries[writer.index_map[index]])
+    entry.raw_bytes = None
+    for n, definition in enumerate(writer.meta_objects[entry.type_index].fields):
+        if definition.slot == 12:
+            entry.field_values[n] = alignment
+            break
+    else:
+        raise ValueError('Memory directory has no alignment field')
+    writer.index_map[index] = len(writer.entries)
+    writer.entries.append(entry)
+    info['align_type_idx'] = alignment
+
+
 def transfer_menu_graph(destination, source, index, graph):
     source = copy.deepcopy(source)
+    source_alignments = alignment_names(source)
     # Directory names and memory-pool handles belong to source-local tables,
     # independently of the object/meta-field indices handled by the graph copier.
     for i, info in enumerate(source.ref_info):
+        alignment = info.get('align_type_idx', -1)
+        if alignment >= 0:
+            if alignment >= len(source_alignments):
+                raise ValueError('Source memory alignment is outside its table')
+            info['_mua2_alignment'] = source_alignments[alignment]
         pool = info.get('mem_pool_handle', -1)
         new_pool = -1
         if pool >= 0:
@@ -28,12 +82,25 @@ def transfer_menu_graph(destination, source, index, graph):
                 if not 0 <= old_name < len(source.name_pool):
                     raise ValueError('Source directory name is outside its name pool')
                 entry.field_values[n] = destination._intern_name(source.name_pool[old_name])
+            if not info['is_object'] and definition.slot == 12:
+                entry.field_values[n] = alignment
             if definition.slot == (12 if info['is_object'] else 13):
                 entry.field_values[n] = new_pool
         source.index_map[i] = len(source.entries)
         source.entries.append(entry)
         info['mem_pool_handle'] = new_pool
-    return graph.transfer_graph(destination, source, index)
+        if not info['is_object']:
+            info['align_type_idx'] = alignment
+    first = len(destination.objects)
+    result = graph.transfer_graph(destination, source, index)
+    # The reference PC graph copier intentionally clears memory alignment.
+    # Restore named requirements after it has copied/remapped the graph. The
+    # temporary tag survives deepcopy but is never serialized into an IGB.
+    for i in range(first, len(destination.objects)):
+        name = destination.ref_info[i].pop('_mua2_alignment', None)
+        if name is not None:
+            set_memory_alignment(destination, i, name)
+    return result
 
 
 def convert_geometry(writer, native_root, graph, reader_type, from_reader):

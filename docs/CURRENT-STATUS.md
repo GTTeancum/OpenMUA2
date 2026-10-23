@@ -1,5 +1,63 @@
 # Current status â€” GitHub main
 
+## PC menu texture alignment and mouse regions - 2026-10-22
+
+The user's circled striped tabs, smeared lights and texture edges were reproduced
+in native captures. Run 53's GPU texture dump showed the preset strip shifted by
+16 bytes: actual[16:] equals encoded[:-16] byte-for-byte. The converted RGB5A3
+image itself decoded cleanly. Its memory directory requested generic alignment
+(-1), so the GX texture base address rounded down to the preceding 32-byte boundary.
+
+The converter now requests named ImageData alignment on every image. The reference
+PC graph copier explicitly clears alignment; the OpenMUA2 wrapper restores named
+requirements after copying, remapping alignment-table names across graphs. An
+initial correction before the copy was therefore ineffective (run 54); it is not
+counted as a fix. Serialization now rejects any converted image that loses its
+ImageData requirement. No reference-repository files were modified.
+
+Run 55 reached Advanced through ordinary contained navigation and exited normally.
+Its native advanced-aligned-textures.png was inspected: preset-strip and hinge/light
+striping is gone; labels, red panels and native backdrop remain. Both tab-strip GPU
+textures match the converted image pixels exactly. The private aligned-texture-audit
+records exact matches for 28 of 46 image instances across diagnostic dumps; the
+remaining instances were not established by that pixel comparison. All 46 have
+verified serialized ImageData alignment. This is not a claim that all UI polish,
+menus, animation behavior or higher-resolution output are complete.
+
+Mouse targets now use invisible, empty-text scene anchors derived from authored
+selection-model boxes and focus transforms, instead of short placeholder labels.
+39 Advanced controls and 7 Options controls receive these regions. Run 49 confirmed
+a visible Player 2 click missed. Run 50's first MODEL-marker experiment failed with
+Unknown Pointer 0x20000004; empty text anchors replaced those model draw submissions.
+Run 51 then clicked Player 2, Player 1 and outer portions of both binding columns,
+reaching the intended native commands. However, logs also show a duplicate profile
+activation and a binding re-entry after cancellation: one-click/one-action behavior
+remains open and these tests do not constitute complete mouse acceptance.
+
+The supported Windows executable is .local/build/windows-x64/runtime/moderngekko-run.exe.
+Builds hit-regions-build.log and texture-diagnostic-build.log succeeded without
+warnings/errors. Focused CTests pass 3/3 (PC controls, gamepad actions, automation).
+Python alignment regressions pass 2/2 and XMLB serialization passes 1/1. Independent
+geometry validation preserved transforms/animations and 124 meshes / 2534 triangles,
+including winding, positions, normals, UVs and intended color changes.
+
+Texture dumping requires OPENMUA2_DIAGNOSTIC_TEXTURE_DUMP and an explicit automation
+directory; it uses a session-only configuration layer and the active user directory.
+Normal startup continues to disable dumps. Run 52 produced no dumps due to that
+startup policy; run 53 used the explicit diagnostic opt-in. Runs were one CPU,
+headless Vulkan, Null audio with 180-second watchdogs. No OS/desktop input or capture,
+no installed-game updates, and no audible audio/gameplay/HD acceptance claims.
+
+Checkpoint cleanup removed 660 unrelated temporary texture dumps and the redundant
+failed run-54 PNG: 15,261,308 bytes reclaimed. Retained 10 relevant GPU textures,
+the run-51 before image, run-55 corrected image and compact logs/audits. Repository
+logical size excluding reparse points (hardlinks counted per path): 19.10 GiB;
+free D space approximately 101.78 GiB. No full source backups. TODO #1 and its goal
+remain active; TODO #4 terminology scan stays deferred. Remaining work includes
+mouse activation/cancellation/dialogs/sliders, layout polish, gameplay/binding
+acceptance and actual 720p/1080p/1440p/4K output verification.
+
+
 ## Native wheel adjustment and Advanced backdrop corrected - 2026-10-22
 
 Mouse wheel input now uses the native menu item's existing directional callback
