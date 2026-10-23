@@ -1,6 +1,24 @@
 # Current status â€” GitHub main
 
 
+## Mouse validation found normalized/pixel test-input mismatch - 2026-10-23
+
+Run 95 repeated normal cold-boot/story navigation, accepted the private autosave
+confirmation, waited twelve seconds after loading, and exited 0. Both native
+captures were inspected sequentially: the settled gameplay view does not visibly
+rotate during V + pointer drag. This is not camera acceptance.
+
+Inspection found automation PcPointer sent normalized x/y with width=height=1
+into PcWindowInput, whose MouseDelta consumer expects pixel differences. A drag
+from 0.3 to 0.768 therefore moved only 0.468 pixels in the test. Real window
+pointer events already use pixels. The adapter now converts normalized commands
+to current output pixel coordinates before calling the same consumer. Menu
+coordinates remain normalized by event width/height; no host input is generated.
+Build/validation status follows below. TODO #1 remains open; the fix must be
+verified live before camera acceptance, final audit and coherent staging.
+Evidence: .local/pc-controls/preview-run-95 and pointer-pixels-build.log.
+
+
 ## Keyboard gameplay evidence and camera validation boundary - 2026-10-23
 
 Run 93 reached Latveria through normal contained keyboard navigation on runtime
@@ -6304,3 +6322,18 @@ No new claim is made here for a complete level, long-session stability, multipla
 The original extracted `sys/main.dol` remains the boot source. Any merged/generated DOL/REL reference is code-generation material only and must never replace the game's real boot DOL.
 
 Gameplay checkpoint verification: four focused CTests pass (PC controls, gamepad actions, button QTE, automation protocol); log .local/pc-controls/gameplay-checkpoint-tests.log. Cleanup removed the redundant run-94 context probe (5,048 bytes); parsed context/log and native captures retained. Logical repository size excluding junctions: 20541720271 bytes.
+
+Pointer test follow-up: the first pixel conversion built successfully with no
+compiler warnings/errors and four focused CTests passed. Run 96 reached stable
+Latveria but rejected PcPointer because headless output has a 0x0 backbuffer;
+no camera acceptance. It stopped explicitly. The adapter now defines a 1280x720
+virtual client for headless tests, while windowed tests use actual backbuffer
+pixels. Final build log: pointer-pixels-headless-build.log. Live acceptance of
+this revision remains pending. Cleanup removed superseded run-94 comparison
+captures and run-96 redundant baseline (11,851,527 bytes); run-95 settled-scene
+pair, command receipts and failure logs retained. Free D space about 69.21 GiB.
+Installed EXE/WAD were inspected read-only; no installed files or saves changed.
+
+Post-cleanup logical repository size excluding junctions: 20529549317 bytes.
+
+Final headless pixel-adapter Windows build succeeded; four focused CTests pass (pointer-pixels-headless-tests.log). Live camera acceptance remains pending.

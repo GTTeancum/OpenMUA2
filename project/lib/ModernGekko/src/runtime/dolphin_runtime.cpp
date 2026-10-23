@@ -2277,9 +2277,23 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
     PcWindowInput({Platform::InputEvent::Type::Wheel,0,false,false,0,command.pc_y});
     break;
   case automation::CommandType::PcPointer:
-    // Process-local pointer event; never moves the OS cursor or sends window input.
-    PcWindowInput({Platform::InputEvent::Type::Pointer,0,false,false,command.pc_x,command.pc_y,1,1});
+  {
+    // The protocol uses normalized client coordinates, but window input and
+    // camera deltas use pixels. Preserve menu normalization while reproducing
+    // the same drag distance as a real pointer on the current output surface.
+    // This remains process-local; it never moves or sends input to the OS cursor.
+    // Headless runs have no window/backbuffer: use an explicit 720p virtual
+    // client for pixel-distance input rather than a one-pixel surface.
+    const double width=g_presenter && g_presenter->GetBackbufferWidth()>0 ?
+        g_presenter->GetBackbufferWidth():1280;
+    const double height=g_presenter && g_presenter->GetBackbufferHeight()>0 ?
+        g_presenter->GetBackbufferHeight():720;
+    if(width<=0 || height<=0)
+      return RuntimeError{RuntimeErrorCode::InvalidState,"PC pointer requires an initialized output surface"};
+    PcWindowInput({Platform::InputEvent::Type::Pointer,0,false,false,
+                   command.pc_x*width,command.pc_y*height,width,height});
     break;
+  }
   case automation::CommandType::PcKey:
     // This calls the same local event consumer as the game window. No window
     // messages, SendInput, physical device state or desktop focus are changed.
