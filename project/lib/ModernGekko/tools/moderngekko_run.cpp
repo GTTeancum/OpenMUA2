@@ -455,7 +455,7 @@ int RunMain(int argc, char **argv) {
     std::cerr << "invalid config.ini: " << frontend_config.error << '\n';
     return 2;
   }
-  config.graphics.internal_resolution_scale = frontend_config.dolphin_scale;
+  config.graphics.fallback_internal_resolution_scale = frontend_config.dolphin_scale;
   if (config.graphics.backend.empty())
     config.graphics.backend = frontend_config.graphics_backend;
   config.fullscreen = frontend_config.fullscreen;

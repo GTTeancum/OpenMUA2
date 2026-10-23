@@ -244,3 +244,20 @@ Generic Advanced now uses the original ordinary-menu backdrop definitions from
 cw_boosts, whose five model names are checked against the retained Options scene.
 Its static opacity differs from OPTIONS_MENU's animation-scene configuration.
 Run 48's inspected native capture confirms the overly bright backdrop is fixed.
+
+### Verified HD output and legacy scaling precedence
+
+The Windows window size limit now permits the configured client dimensions plus
+borders/menu. Normal-menu Apply/restart verified 1080p, 1440p and 4K outputs.
+Actual dimensions come from the rendering-thread backbuffer/viewport/EFB log.
+Native captures at these sizes preserve the user-approved layout and background.
+
+The frontend config.ini internal render preference is a fallback. An explicit
+in-game output choice enables automatic integral scaling, while an explicit
+runtime API scale override still wins. Final-binary startup checks verify
+720p/1080p/1440p internal scales of 2x/3x/4x; a full Advanced-menu run verifies
+4K with 6x EFB rendering and saves 720p through Apply. See CURRENT-STATUS and
+private run receipts 67-73 for exact evidence and limitations.
+
+Native mouse confirmation dialogs and remaining gameplay controls still need
+acceptance before TODO #1 closes. Visual design was approved by the user.

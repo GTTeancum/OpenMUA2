@@ -1,5 +1,46 @@
 # Current status â€” GitHub main
 
+## HD output, internal scaling and native layout verification - 2026-10-22
+
+Runs 67/68/69 used ordinary contained menu navigation and Apply to verify exact
+1920x1080 -> saved 2560x1440 -> restarted 2560x1440 -> saved 3840x2160 ->
+restarted 3840x2160 -> saved 1280x720. The run-66 unexpected later resize did
+not recur; its cause remains unknown rather than assigned to user input.
+Native captures for 1080p and 1440p were inspected: approved panel layout,
+labels, background, metal and button rows intact. Output proofs use actual GPU
+backbuffer logs; screenshots exclude the few pillarbox pixels.
+
+This exposed a legacy frontend config.ini internal-scale override. The launcher
+now provides its scale as a fallback, while an in-game output choice selects
+automatic integral internal rendering. Explicit runtime API scale overrides
+still take precedence. Windows build moderngekko-run.exe succeeded without
+warnings/errors in output-scale-build.log. Five focused controls, gamepad,
+frontend settings and automation CTests passed. After building, only changed
+line endings were normalized; no further executable-code changes.
+
+Run 70 started from a private 4K fixture setting, reached Advanced by normal
+navigation, verified 3840x2160 output and 3840x3168 EFB, and Apply saved 720p.
+Its native 3832x2160 capture was inspected: complete readable menu, approved
+red panels/metal, native background and no clipped controls. Runs 71/72/73
+verified startup output/internal pairs on the final binary:
+1280x720 / 1280x1056, 1920x1080 / 1920x1584, 2560x1440 / 2560x2112.
+Those three short runs are dimensions checks, not new menu/gameplay acceptance.
+Relevant output-result.json, scale-result.json and binary SHA receipts remain
+under .local/pc-controls/preview-run-67 through preview-run-73.
+
+All runs used CPU 2, Vulkan, No Audio Output, <=180-second watchdogs and no OS
+input or desktop capture. Three native images inspected this turn. No audio or
+combat/FPS acceptance claim. All game processes exited normally. Restored the
+private control settings from output-test-settings.json after the sizing tests.
+Removed superseded run-69 capture: 2,356,918 bytes. Repository logical bytes:
+20,542,197,469; free D bytes: 109,257,089,024. No install, push or source backups.
+
+TODO #1 stays active: complete native mouse confirmation dialogs and remaining
+gameplay input acceptance, then stage a coherent candidate. Approved visual
+design is retained; Wii terminology/glyph scan and screen replacement stay in
+TODO #4/#5. No additional screenshots needed for cosmetic approval.
+
+
 ## Requested window size limit and remaining glyph reports - 2026-10-22
 
 Added WM_GETMINMAXINFO handling allowing the configured client size plus window

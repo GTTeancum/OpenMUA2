@@ -32,6 +32,8 @@ struct GraphicsSettings
 {
   std::string backend;
   std::optional<int> internal_resolution_scale;
+  // Legacy launcher preference, used only when no in-game output is selected.
+  std::optional<int> fallback_internal_resolution_scale;
 };
 
 struct AudioSettings

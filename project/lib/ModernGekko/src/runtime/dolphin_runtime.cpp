@@ -2818,6 +2818,9 @@ RuntimeCreateResult Runtime::Create(RuntimeConfig config) {
   // at an integral scale sufficient for the selected output, not a 480p upscale.
   if (s_pc_settings.output_width != 0)
     Config::SetBase(Config::GFX_EFB_SCALE, EFB_SCALE_AUTO_INTEGRAL);
+  else if (impl->config.graphics.fallback_internal_resolution_scale)
+    Config::SetBase(Config::GFX_EFB_SCALE,
+                    *impl->config.graphics.fallback_internal_resolution_scale);
   if (impl->config.graphics.internal_resolution_scale)
     Config::SetBase(Config::GFX_EFB_SCALE,
                     *impl->config.graphics.internal_resolution_scale);
