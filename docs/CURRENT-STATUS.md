@@ -1,5 +1,34 @@
 # Current status â€” GitHub main
 
+## Contained mouse activation verification - 2026-10-22
+
+Runs 56 and 57 used a persistent neutral process-local Xbox device on port 0
+to isolate PC input from physical-controller activity. Both cold-booted and
+reached Options/Advanced through ordinary key navigation, without loading a
+state or invoking menu commands directly. The existing supported executable
+was reused without a rebuild or production input changes.
+
+Run 56 produced exactly four actions for four clicks and two successful capture
+cancellations. Its native screenshot was inspected: Binding cancelled remained
+visible, the Advanced panel was intact, and the earlier texture fix remained
+visible. Run 57 repeated the four-target sequence three times, checking exact
+action counts after each click and cancellation: 12 actions / 12 clicks, six
+cancellations, no re-entry. Both exited normally. Private receipts are
+.local/pc-controls/single-click-results.json and preview-run-56/57; the repeated
+probe is verify_single_clicks.py. No second screenshot was created in run 57.
+
+This removes physical input as a variable in these passing tests, but does not
+prove the exact cause of run 51's duplicate commands. No speculative debounce
+was added. Future contained PC-input tests should explicitly neutralize port 0.
+Mouse dialogs/sliders, gameplay acceptance and actual Windows output/layout at
+all four resolutions remain open. Headless captures cannot prove Windows client
+area dimensions. TODO #1 and the goal remain active; no installed-game update.
+
+Both tests used CPU 2, Vulkan, Null audio and the existing 180-second watchdog.
+No host input or desktop capture. Only one new native screenshot was inspected.
+Checkpoint hygiene retained the compact logs and cancellation capture as useful
+evidence; no duplicate build, game copy, texture dump or source backup created.
+
 ## PC menu texture alignment and mouse regions - 2026-10-22
 
 The user's circled striped tabs, smeared lights and texture edges were reproduced
