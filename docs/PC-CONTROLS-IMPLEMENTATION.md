@@ -230,3 +230,17 @@ dialog confirmation is retained. Left-click is suppressed as generic confirm
 in these menus so clicking empty space cannot activate the last focused item.
 Mouse sliders/wheel behavior, complete dialog navigation, hit-area coverage and
 windowed output still require validation/implementation before TODO #1 closes.
+
+### Wheel and backdrop follow-up
+
+pc_wheel accepts a finite nonzero delta from -16 to 16, including fractional
+notches. It feeds the game's own wheel consumer; no OS wheel messages are sent.
+The native directional callback adjusts the hovered item's authored left/right
+commands. Live runs 46/47 verify effects-volume increments, decrements, minimum
+clamping, fractional accumulation and empty-space rejection. Mouse bar/drag and
+full dialog handling remain work in progress.
+
+Generic Advanced now uses the original ordinary-menu backdrop definitions from
+cw_boosts, whose five model names are checked against the retained Options scene.
+Its static opacity differs from OPTIONS_MENU's animation-scene configuration.
+Run 48's inspected native capture confirms the overly bright backdrop is fixed.

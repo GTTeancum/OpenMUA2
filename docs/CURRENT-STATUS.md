@@ -1,5 +1,44 @@
 # Current status â€” GitHub main
 
+## Native wheel adjustment and Advanced backdrop corrected - 2026-10-22
+
+Mouse wheel input now uses the native menu item's existing directional callback
+(80fe21c8) and authored increment/decrement commands. It preserves fractional
+notches, bounds queued steps, and clears pending wheel work on focus/context loss,
+invalid targets and modal dialogs. No guest volume value is written directly.
+Added process-local pc_wheel delta=-16..16 (nonzero, finite) for contained tests.
+The pointer must be over an actionable native item; bar/drag hit-area coverage
+and complete mouse dialog operation remain unfinished.
+
+Windows build .local/pc-controls/wheel-build.log succeeded without warnings/errors;
+produced .local/build/windows-x64/runtime/moderngekko-run.exe and the updated test
+executables. PC controls, gamepad actions and automation protocol pass 3/3;
+XMLB package serialization test passes 1/1. Native runs 46 and 47 verified effects
+volume 6 -> 0 (clamped) -> 5 -> 3, three quarter-notch inputs retaining 3, fourth
+quarter-notch yielding 4, empty-space scrolling ignored, then restoring 6.
+Evidence: preview-run-46/wheel-result.json and preview-run-47/wheel-result.json.
+
+Advanced's bright backdrop was caused by importing Options-specific animated
+background item definitions into a generic menu. Two attempts (opacity fallback
+and animonopen) did not fix the rendered output and were removed. Inspection of
+native menu XMLB data showed ordinary menus such as cw_boosts use explicit opacity
+and omit Options' animate/animtext_scene declarations for the decorative stars.
+The packer now reuses those exact ordinary-menu backdrop declarations for generic
+pages, verifies the five model names match, and retains Options' definitions for
+OPTIONS_MENU. Existing model data and rotation settings remain unchanged.
+
+Run 48 reached Advanced using ordinary contained navigation. Its native screenshot
+advanced-bounds-reference.png was inspected: subtle backdrop, readable red panels,
+expected settings, profile tabs and binding table. The previous full-bright
+appearance is resolved. Remaining footer/layout/hit-area work is not claimed done.
+Runs 46-48 stopped normally, one CPU, Null audio; no audible/gameplay/HD acceptance.
+All data stays in the private fixture; installed game remains unchanged. TODO #1
+and its goal remain open; terminology scan remains deferred. Reused the supported
+build, profile and WAD; no full source backups or additional game copies.
+
+Wheel/backdrop checkpoint cleanup: removed 3,288,043 bytes of superseded run-46/47 captures; successful run-48 capture and failure logs retained. Free D space: 101.81 GiB.
+
+
 ## Native Options pointer navigation checkpoint - 2026-10-22
 
 Window pointer events now carry client dimensions. The rendering thread publishes

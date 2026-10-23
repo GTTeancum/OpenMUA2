@@ -268,11 +268,11 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
   const std::lock_guard lock(s_pc_mutex);
   if(!supported || !manager || read(manager+25860)!=menu || !s_pc_enabled ||
      !s_pc_settings.keyboard_enabled || !s_pc_focused || s_pc_capture.active) {
-    s_pc_menu_pointer.click=false;consumed=s_pc_menu_pointer.serial;pointer_owner=0;
+    s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};consumed=s_pc_menu_pointer.serial;pointer_owner=0;
     return false;
   }
   if(pointer_owner!=menu) {
-    pointer_owner=menu;consumed=s_pc_menu_pointer.serial;s_pc_menu_pointer.click=false;
+    pointer_owner=menu;consumed=s_pc_menu_pointer.serial;s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};
     return false;
   }
   // The native Options close gate uses these same dialog/save managers.
@@ -287,9 +287,9 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
       blocked,s_pc_menu_pointer.valid,s_pc_menu_pointer.click,
       s_pc_viewport.left,s_pc_viewport.top,s_pc_viewport.right,s_pc_viewport.bottom);
   if(blocked || !s_pc_menu_pointer.valid) {
-    s_pc_menu_pointer.click=false;consumed=s_pc_menu_pointer.serial;return false;
+    s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};consumed=s_pc_menu_pointer.serial;return false;
   }
-  if(!s_pc_menu_pointer.click && consumed==s_pc_menu_pointer.serial)return false;
+  if(!s_pc_menu_pointer.click && !s_pc_menu_pointer.wheel.Pending() && consumed==s_pc_menu_pointer.serial)return false;
   consumed=s_pc_menu_pointer.serial;
   const auto point=PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport);
   u32 hit=0;
@@ -308,11 +308,27 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
       if(bounds && bounds->Contains((*point)[0],(*point)[1])) {hit=candidate;break;}
     }
   }
-  if(!hit) {s_pc_menu_pointer.click=false;return false;}
+  if(!hit) {s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};return false;}
   if(read(menu+0x458)!=hit) {
     state.gpr[4]=hit;state.npc=0x80fc9bb0;
     std::fprintf(stderr,"[openmua2] pointer focus: %s\n",Interned(guard,read(hit+4)).c_str());
     return true;
+  }
+  if(s_pc_menu_pointer.wheel.Pending()) {
+    const int direction=s_pc_menu_pointer.wheel.Take();
+    const u32 callback=read(read(hit+0x9c)+0x64);
+    if(callback==0x80fe21c8 && read(hit+(direction>0?0x28:0x24))) {
+      // Native directional input is two signed bytes. Use the same temporary
+      // result buffer as native text updates; this call is synchronous on CPU.
+      auto* axis=Bytes(guard,0x812e252c,2);
+      if(axis) {
+        axis[0]=direction>0?1:0xff;axis[1]=0;
+        state.gpr[3]=hit;state.gpr[4]=0x812e252c;state.npc=callback;
+        std::fprintf(stderr,"[openmua2] pointer adjust: %s %d\n",Interned(guard,read(hit+4)).c_str(),direction);
+        return true;
+      }
+    }
+    s_pc_menu_pointer.wheel={};
   }
   if(!s_pc_menu_pointer.click)return false;
   s_pc_menu_pointer.click=false;
@@ -329,7 +345,8 @@ void Install(const Core::CPUThreadGuard& guard) {
   const auto* setter=Bytes(guard,0x80ff3688,4);
   const auto* input=Bytes(guard,0x80fc9170,4);
   const auto* focus=Bytes(guard,0x80fc9bb0,4);
-  if(!input || !focus || Word(input)!=0x9421ff40 || Word(focus)!=0x9421fff0 ||
+  const auto* directional=Bytes(guard,0x80fe21c8,4);
+  if(!directional || Word(directional)!=0x9421ffe0 || !input || !focus || Word(input)!=0x9421ff40 || Word(focus)!=0x9421fff0 ||
      !update || !use || !setter || Word(update)!=0x9421fff0 || Word(use)!=0x9421fff0 || Word(setter)!=0x9421ffe0 ||
      !HLE::SetExternalFunctionReplacement(guard,0x80ff34fc,Update) ||
      !HLE::SetExternalFunctionReplacement(guard,0x80fe2548,Use) ||

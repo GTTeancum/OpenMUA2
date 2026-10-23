@@ -23,6 +23,21 @@ constexpr std::array<std::string_view, PcActionCount> PcActionNames{
   "CameraUp", "CameraDown", "Power1", "Power2", "Power3", "Power4",
   "Fusion1", "Fusion2", "Fusion3", "Fusion4", "Walk", "CameraDrag"
 };
+// Preserve fractional/high-resolution wheel input; bound queued work so a
+// stalled window cannot produce seconds of delayed menu changes.
+class PcWheelInput {
+public:
+  void Add(double delta) {
+    if(std::isfinite(delta))m_steps=std::clamp(m_steps+delta,-16.0,16.0);
+  }
+  bool Pending() const {return std::abs(m_steps)>=1;}
+  int Take() {
+    const int step=m_steps>=1?1:(m_steps<=-1?-1:0);
+    m_steps-=step;return step;
+  }
+private:
+  double m_steps=0;
+};
 struct PcBinding {
   unsigned primary = 0, secondary = 0;
   bool operator==(const PcBinding&) const = default;

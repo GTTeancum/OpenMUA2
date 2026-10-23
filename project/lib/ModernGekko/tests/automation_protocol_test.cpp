@@ -70,6 +70,15 @@ int main()
       if(automation::ParseCommandFile(path,&pointer,&why))return 174;
     }
   }
+  {
+    const auto path=root/"pc_wheel.txt";automation::Command c;std::string why;
+    {std::ofstream f(path);f << "command=pc_wheel\ndelta=-0.25\n";}
+    if(!automation::ParseCommandFile(path,&c,&why) || c.type!=automation::CommandType::PcWheel || c.pc_y!=-.25)return 175;
+    for(const auto bad:{"delta=0", "delta=nan", "delta=17", "delta=-17", "delta=1\nextra=1"}) {
+      {std::ofstream f(path);f << "command=pc_wheel\n" << bad << "\n";}
+      if(automation::ParseCommandFile(path,&c,&why))return 176;
+    }
+  }
   const auto listed = automation::ListCommandFiles(commands);
   if (listed.size() != 2 || listed[0].filename() != "001_pause.txt" ||
       listed[1].filename() != "002_pad.txt")

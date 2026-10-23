@@ -17,6 +17,7 @@ enum class CommandType
 {
   PcKey,
   PcPointer,
+  PcWheel,
   Pad,
   PadFrames,
   XboxFrames,

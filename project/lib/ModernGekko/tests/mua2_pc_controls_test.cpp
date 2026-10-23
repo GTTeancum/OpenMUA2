@@ -41,6 +41,15 @@ int main() {
   CHECK(!PcViewportPoint(1,.5,{0,0,1,1}));
   CHECK(!PcViewportPoint(.5,.5,{0,0,0,0}));
   CHECK(!PcViewportPoint(std::numeric_limits<double>::quiet_NaN(),.5,letterbox));
+  PcWheelInput wheel;
+  for(unsigned i=0;i<3;++i)wheel.Add(.25);
+  CHECK(!wheel.Pending() && wheel.Take()==0);
+  wheel.Add(.25);CHECK(wheel.Pending() && wheel.Take()==1 && !wheel.Pending());
+  wheel.Add(-2.5);CHECK(wheel.Take()==-1 && wheel.Take()==-1 && wheel.Take()==0);
+  wheel.Add(.5);CHECK(!wheel.Pending());
+  wheel.Add(std::numeric_limits<double>::infinity());CHECK(!wheel.Pending());
+  wheel.Add(10000);for(unsigned i=0;i<16;++i)CHECK(wheel.Take()==1);
+  CHECK(!wheel.Pending());wheel.Add(-4);wheel={};CHECK(!wheel.Pending());
   PcBindingCapture capture;
   capture.Key(13,true);capture.Begin(unsigned(PcAction::Use),0,false,false);
   capture.Key('Z',true);capture.Key('Z',false); // held activation key: not armed

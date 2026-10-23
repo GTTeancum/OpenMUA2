@@ -117,6 +117,7 @@ u64 s_pc_ticks=0;
 struct PcMenuPointer {
   double x=0,y=0;
   bool valid=false,down=false,click=false;
+  moderngekko::controls::PcWheelInput wheel;
   u64 serial=0;
 };
 PcMenuPointer s_pc_menu_pointer;
@@ -160,7 +161,9 @@ bool PcWindowInput(const Platform::InputEvent& event) {
     for(unsigned key:{1u,2u,4u,5u,6u})s_pc_events.Key(key,false);
     return false;
   case Type::Wheel:
-    return false; // Native menu pointer routing is connected separately.
+    if(s_pc_menu_pointer.valid && s_pc_focused && !s_pc_capture.active)
+      s_pc_menu_pointer.wheel.Add(event.y);
+    return s_pc_settings.keyboard_enabled;
   }
   return false;
 }
@@ -244,7 +247,8 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
       // Dialogs can suspend the menu update entirely. Drop clicks here too,
       // while the ordinary provider still polls input, to prevent delayed use.
       if(moderngekko::controls::PcMenuModalBlocked(read)) {
-        const std::lock_guard pc_lock(s_pc_mutex);s_pc_menu_pointer.click=false;
+        const std::lock_guard pc_lock(s_pc_mutex);
+        s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};
       }
     }
   }
@@ -2254,6 +2258,9 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   auto& system = Core::System::GetInstance();
   switch (command.type)
   {
+  case automation::CommandType::PcWheel:
+    PcWindowInput({Platform::InputEvent::Type::Wheel,0,false,false,0,command.pc_y});
+    break;
   case automation::CommandType::PcPointer:
     // Process-local pointer event; never moves the OS cursor or sends window input.
     PcWindowInput({Platform::InputEvent::Type::Pointer,0,false,false,command.pc_x,command.pc_y,1,1});
@@ -2427,6 +2434,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   {
   case automation::CommandType::PcKey:
   case automation::CommandType::PcPointer:
+  case automation::CommandType::PcWheel:
   case automation::CommandType::Pause:
   case automation::CommandType::Resume:
   case automation::CommandType::SaveState:

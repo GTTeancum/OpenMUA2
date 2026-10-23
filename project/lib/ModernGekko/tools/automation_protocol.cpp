@@ -166,6 +166,7 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
   if (text == "xbox_frames") return CommandType::XboxFrames;
   if (text == "pc_key") return CommandType::PcKey;
   if (text == "pc_pointer") return CommandType::PcPointer;
+  if (text == "pc_wheel") return CommandType::PcWheel;
   if (text == "xbox_time") return CommandType::XboxTime;
   if (text == "xbox_sequence") return CommandType::XboxSequence;
   if (text == "check_memory") return CommandType::CheckMemory;
@@ -483,6 +484,16 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
 
   switch (*type)
   {
+  case CommandType::PcWheel:
+  {
+    const auto delta=values.find("delta");
+    const auto value=delta==values.end()?std::optional<double>{}:ParseDouble(delta->second);
+    if(values.size()!=2 || !value || !std::isfinite(*value) || *value==0 || std::abs(*value)>16) {
+      if(error)*error="pc_wheel requires only nonzero delta=-16..16";
+      return false;
+    }
+    parsed.pc_y=*value;break;
+  }
   case CommandType::PcPointer:
   {
     const auto x=values.find("x"),y=values.find("y");

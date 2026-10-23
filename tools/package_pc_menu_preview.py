@@ -142,6 +142,7 @@ def main():
 
     menu=ET.parse(assets/f'ui/menus/{source_name}.eng').getroot()
     menu.set('name',output_name)
+
     if a.page=='options':
         menu.set('no_stack','false')
         menu.set('updownonly','true')
@@ -233,8 +234,23 @@ def main():
         items['label_accept'].set('usecmd','saveoptions')
         items['label_click02'].attrib.pop('gamevar',None)
         items['label_click02'].set('usecmd','openmenu options_controller_xbox')
+    # Generic native menus use explicit opacity instead of Options' derived
+    # animation scene. Reuse their exact backdrop declarations, not guessed
+    # alpha overrides on the incompatible Options animation binding.
+    backdrop_nodes=native_nodes
+    if menu.get('type')!='OPTIONS_MENU':
+        with zipfile.ZipFile(wad) as archive:
+            generic=archive.read('packages/generated/maps/package/menus/cw_boosts.fb')
+        generic_resources={name:data for name,kind,data in decode_fb(generic)}
+        backdrop_nodes=read_nodes(generic_resources['ui/menus/cw_boosts.engb'])
+        original_models={a['name']:a.get('model','').lower() for t,a,_,_ in native_nodes
+                         if t=='item' and a.get('name') in branches}
+        generic_models={a['name']:a.get('model','').lower() for t,a,_,_ in backdrop_nodes
+                        if t=='item' and a.get('name') in branches}
+        if generic_models!=original_models:
+            raise ValueError('Generic backdrop models differ from retained native scene')
     background=[]
-    for tag,attrs,_,_ in native_nodes:
+    for tag,attrs,_,_ in backdrop_nodes:
         if tag=='item' and attrs.get('name') in branches:
             # Native anchor animation and model rotation are retained. The
             # original AT_bgelements text-opacity track is copied below.
