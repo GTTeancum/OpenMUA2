@@ -25,7 +25,7 @@
 
 ## 4. Platform terminology scan
 
-- Manually review player-facing text for Wii, Nintendo, Wii system memory, Wii Remote, Nunchuk, pointer and console-specific system messages. Replace obsolete instructions with accurate PC/gamepad wording; review each match in context.
+- Manually review player-facing text and button glyphs for Wii, Nintendo, Wii system memory, Wii Remote, Nunchuk, pointer and console-specific system messages. Include the remaining Wii glyph references reported during user testing. Replace obsolete instructions with accurate PC/gamepad wording; review each match in context.
 
 ## 5. Replace the Wiimote screen
 

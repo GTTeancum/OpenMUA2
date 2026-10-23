@@ -397,6 +397,23 @@ LRESULT PlatformWin32::WndProc(const HWND hwnd, const UINT msg, const WPARAM wPa
   }
   switch (msg)
   {
+  case WM_GETMINMAXINFO:
+  {
+    // Explicit output presets may exceed the desktop work area. Preserve the
+    // normal maximize bounds, but permit the requested windowed client size.
+    RECT requested{0, 0, Config::Get(Config::MAIN_RENDER_WINDOW_WIDTH),
+                       Config::Get(Config::MAIN_RENDER_WINDOW_HEIGHT)};
+    if (AdjustWindowRectEx(&requested, WS_OVERLAPPEDWINDOW, TRUE, WS_EX_CLIENTEDGE))
+    {
+      auto* limits = reinterpret_cast<MINMAXINFO*>(lParam);
+      limits->ptMaxTrackSize.x = std::max(limits->ptMaxTrackSize.x,
+                                         requested.right - requested.left);
+      limits->ptMaxTrackSize.y = std::max(limits->ptMaxTrackSize.y,
+                                         requested.bottom - requested.top);
+    }
+    return 0;
+  }
+
   case WM_NCCREATE:
   {
     platform = static_cast<PlatformWin32*>(reinterpret_cast<CREATESTRUCT*>(lParam)->lpCreateParams);

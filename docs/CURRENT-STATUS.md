@@ -1,5 +1,26 @@
 # Current status â€” GitHub main
 
+## Requested window size limit and remaining glyph reports - 2026-10-22
+
+Added WM_GETMINMAXINFO handling allowing the configured client size plus window
+borders/menu without changing maximize bounds. Windows build succeeded (no
+warnings/errors in window-limits-build.log); three focused CTests passed.
+Run 66 initially reported the requested 1920x1080, proving the creation clamp
+is corrected. Later in the same run the actual window output became 1916x985;
+the end-to-end resolution assertion correctly failed before saving 1440p.
+The cause of that later resize is not established. Do not claim full 1080p
+persistence or 1440p/4K acceptance yet. No new screenshot was captured.
+Run was stopped normally; CPU 2, Vulkan, No Audio Output, contained input only.
+Binary SHA and log: .local/pc-controls/preview-run-66/. Installed build unchanged.
+
+User reported remaining Wii glyphs. Expanded TODO #4 to explicitly include
+button glyphs and that report, retaining the deferred scan rather than treating
+visual approval of the Options layout as approval of all game prompts.
+No source backup, new game fixture, installation, or push. Existing diagnostic
+artifacts remain relevant to the unresolved resize; no obsolete new captures.
+Free D space before this build: 109,284,372,480 bytes. TODO #1 remains active.
+
+
 ## PC menu visual approval and output verification - 2026-10-22
 
 User approved the Advanced Options appearance. Preserve this layout/theme.
