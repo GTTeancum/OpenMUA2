@@ -1,5 +1,32 @@
 # Current status â€” GitHub main
 
+## Metal atlas preservation checkpoint - 2026-10-22
+
+The converter now preserves all seven paint_colortest.png atlas copies instead
+of recoloring blue-gray painted metal. Independent byte comparison against the
+unrecolored original decoded/encoded image passed for all seven copies; receipt
+.local/pc-controls/metal-preservation.json. Both Options packages were rebuilt
+and refreshed only in the isolated fixture. No executable changes/rebuild needed.
+Alignment tests pass 2/2; XMLB test passes 1/1. Geometry verification passed for
+124 meshes / 2534 triangles, transforms, animation, winding, normals and UVs.
+
+Native run 59 verified the left-side arms lost the pink tint, while right-hand
+caps beside the profile/default tabs remained pink. Two geometry-tint hypotheses
+(runs 60 and 61) did not fix those caps; preserving all paint-bound vertex arrays
+also changed an LED. Those geometry changes and helper were removed from source.
+The retained correction is only the verified shared-atlas preservation. The
+right-hand tab artwork needs further inspection; this is not a complete tint fix.
+The isolated fixture was rebuilt from the final source after removing the failed
+reflection experiments; geometry verification passed again.
+
+All three runs cold-booted with contained navigation, neutral synthetic port 0,
+CPU 2, Vulkan, Null audio and 180-second watchdogs; exited normally. Three native
+captures were inspected, with no desktop input/capture. Kept run 59's partial-fix
+capture and all failure logs; pruned run 60/61 captures (2,475,989 bytes).
+Free D space is 101.78 GiB. No redundant build or fixture was created.
+No installation, push, game copies or source backups. TODO #1 remains active,
+including remaining tint, mouse dialogs, gameplay and actual HD output validation.
+
 ## Native volume sliders and metal-tint diagnosis - 2026-10-22
 
 Implemented click/drag on both native Options volume bars. Hit bounds come from

@@ -166,7 +166,11 @@ def main():
                                     rgba[offset:offset + 4] = bytes(pixel)
                     else:
                         raise ValueError(f'Unsupported image format {fmt}')
-                    if tint:
+                    # Shared painted-metal atlas: preserve its original shading
+                    # across rails, hinges and light assemblies. Theme colors
+                    # belong to the panel/light textures and vertex streams.
+                    image_name = field(writer, index, 22).replace('\\', '/').rsplit('/', 1)[-1].lower()
+                    if tint and image_name != 'paint_colortest.png':
                         for offset in range(0, len(rgba), 4):
                             rgba[offset:offset + 3] = bytes(red(rgba[offset:offset + 3]))
                     encoded = encoder.encode_rgb5a3(rgba, width, height)
