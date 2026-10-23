@@ -27,6 +27,10 @@
 
 - Manually review player-facing text for Wii, Nintendo, Wii system memory, Wii Remote, Nunchuk, pointer and console-specific system messages. Replace obsolete instructions with accurate PC/gamepad wording; review each match in context.
 
+## 5. Replace the Wiimote screen
+
+- Replace the Wiimote screen with appropriate Xbox/gamepad and keyboard/mouse instructions and artwork.
+
 ## Xbox / XInput Quick Reference
 
 Agreed gameplay mapping. Context-specific menu controls may differ.

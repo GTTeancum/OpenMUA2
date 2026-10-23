@@ -64,6 +64,7 @@
 #include "UICommon/UICommon.h"
 #include "VideoCommon/FrameDumper.h"
 #include "VideoCommon/Present.h"
+#include "VideoCommon/FramebufferManager.h"
 #include "VideoCommon/PerformanceMetrics.h"
 #include "VideoCommon/VideoEvents.h"
 #include "VideoCommon/VideoConfig.h"
@@ -3141,11 +3142,26 @@ RuntimeRunResult Runtime::Run() {
         }
       });
   m_impl->present_hook =
-      GetVideoEvents().after_present_event.Register([this, boot_start, first_frame = true](const PresentInfo &info) mutable {
+      GetVideoEvents().after_present_event.Register([this, boot_start, first_frame = true, last_dimensions = std::array<int,8>{}](const PresentInfo &info) mutable {
         // Publish on the rendering thread; window/CPU consumers take the mutex.
         if(g_presenter) {
           const auto rect=g_presenter->GetTargetRectangle();
           const double w=g_presenter->GetBackbufferWidth(),h=g_presenter->GetBackbufferHeight();
+          // Read actual GPU dimensions on the rendering thread. Saved settings
+          // and screenshot dimensions alone do not establish window output.
+          if(!m_impl->config.automation.directory.empty() && g_framebuffer_manager &&
+             g_framebuffer_manager->GetEFBColorTexture()) {
+            const std::array<int,8> dimensions{int(w),int(h),rect.left,rect.top,
+                rect.right-rect.left,rect.bottom-rect.top,
+                int(g_framebuffer_manager->GetEFBWidth()),int(g_framebuffer_manager->GetEFBHeight())};
+            if(dimensions!=last_dimensions) {
+              last_dimensions=dimensions;
+              std::fprintf(stderr,"[openmua2] render dimensions: headless=%d output=%dx%d viewport=%d,%d,%dx%d efb=%dx%d\n",
+                  m_impl->config.headless,dimensions[0],dimensions[1],dimensions[2],dimensions[3],
+                  dimensions[4],dimensions[5],dimensions[6],dimensions[7]);
+            }
+          }
+
           const std::lock_guard lock(s_pc_mutex);
           // Headless input is in the native capture's normalized image space;
           // there is no client window/backbuffer and therefore no window bars.

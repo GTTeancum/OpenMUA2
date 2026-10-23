@@ -1,5 +1,28 @@
 # Current status â€” GitHub main
 
+## PC menu visual approval and output verification - 2026-10-22
+
+User approved the Advanced Options appearance. Preserve this layout/theme.
+Added TODO #5: replace the Wiimote screen with PC/gamepad instructions/artwork.
+TODO #1 remains open for functionality and real output-resolution verification.
+
+Added automation-only logging of actual backbuffer, viewport and EFB dimensions
+on the rendering thread. Windows build succeeded; focused controls, gamepad
+and automation CTests passed 3/3. Run 63 verified 1280x720 output and normal-menu
+Apply saved 1920x1080. Its PNG used internal capture resolution and does not prove
+window dimensions. Run 63 used Cubeb due to an incorrect test backend name;
+subsequent runs explicitly use No Audio Output. No audio acceptance claim.
+
+Runs 64 and 65 requested 1920x1080 but reported 1920x1037 output, viewport
+1840x1037. A post-creation SetWindowPos experiment built successfully but did
+not correct the clamp; removed that ineffective source change. Current local
+binary still includes that failed experiment and must be rebuilt before further
+acceptance or staging. Run 65 was stopped after obtaining the dimensions;
+no screenshot, gameplay or higher-resolution acceptance is claimed for it.
+The private profile remains at 1920x1080; its initial settings are preserved in
+.local/pc-controls/output-test-settings.json. Nothing installed or pushed.
+
+
 ## Baked tab-strip metal tint corrected - 2026-10-22
 
 Direct inspection of original tabimg2 artwork established that the remaining
