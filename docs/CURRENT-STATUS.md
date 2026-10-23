@@ -1,6 +1,37 @@
 # Current status â€” GitHub main
 
 
+## Keyboard gameplay evidence and camera validation boundary - 2026-10-23
+
+Run 93 reached Latveria through normal contained keyboard navigation on runtime
+SHA256 2e9188ec93b901571ddecc052ba1491cf9dbb09872837b7beb37beeff789e3c0.
+Seventeen gameplay publication/release checks passed: WASD movement, keyboard
+camera left/right, keyboard and mouse light/heavy attacks, use, jump, block,
+and all four power shortcuts. Each tested action returned to zero on release.
+Native gameplay-after-actions.png was inspected and shows the team in Latveria
+with Captain America's shield power active. This establishes input publication
+and that visible power activation, not every action's completed animation.
+Evidence: .local/pc-controls/preview-run-93/gameplay-action-results.json.
+The earlier fixed-count main-menu assertion failed; continuation used ordinary
+input in the same process and exited 0. Enter skips the story movie; Backspace
+was not a reliable skip. No forced menu or guest state writes were used.
+
+Run 94 again reached Latveria and exited 0. It exposed a legitimate autosave
+replacement confirmation in the private test profile; the continuation accepted
+it through normal input. The two native camera captures were inspected in order.
+The first still shows Nick Fury's opening cinematic and the second gameplay;
+this is NOT accepted as proof of mouse camera movement. The private route now
+handles that confirmation and waits for the opening camera to finish. No source
+or installed-game change was needed for this test-route correction.
+
+TODO #1 remains open: stable gameplay mouse-camera verification, remaining
+scope audit and coherent candidate staging are not complete. Existing unit
+coverage of fusion/QTE input edges does not establish encounter completion.
+No physical-input, audio or FPS acceptance claim. CPU 2, Vulkan, No Audio Output,
+180-second watchdog, process-local input/native captures only. All artifacts
+remain in the repository. No push, installation or source backup.
+
+
 ## Player selection verified; fresh-key transition regression fixed - 2026-10-22
 
 Run 89 verified keyboard player-1 join, AAA profile selection/details/confirmation,
@@ -6271,3 +6302,5 @@ No new claim is made here for a complete level, long-session stability, multipla
 6. Defer additional lockstep/correctness expansion until performance work reaches a useful plateau or a concrete failure blocks further performance measurement. Existing correctness/SMC/audit guards stay enabled.
 
 The original extracted `sys/main.dol` remains the boot source. Any merged/generated DOL/REL reference is code-generation material only and must never replace the game's real boot DOL.
+
+Gameplay checkpoint verification: four focused CTests pass (PC controls, gamepad actions, button QTE, automation protocol); log .local/pc-controls/gameplay-checkpoint-tests.log. Cleanup removed the redundant run-94 context probe (5,048 bytes); parsed context/log and native captures retained. Logical repository size excluding junctions: 20541720271 bytes.
