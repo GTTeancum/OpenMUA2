@@ -241,6 +241,14 @@ int main() {
     CHECK(!DecodePcSettings(bad,restored,error));
     CHECK(restored==s && !error.empty());
   }
+  const PcMenuRect volume_bar{.2,.3,.8,.4};
+  CHECK(PcVolumeTarget(.2,volume_bar)==0);
+  CHECK(PcVolumeTarget(.5,volume_bar)==5);
+  CHECK(PcVolumeTarget(.8,volume_bar)==10);
+  CHECK(PcVolumeTarget(-1,volume_bar)==0);
+  CHECK(PcVolumeTarget(2,volume_bar)==10);
+  CHECK(!PcVolumeTarget(.5,PcMenuRect{.8,.3,.2,.4}));
+  CHECK(!PcVolumeTarget(NAN,volume_bar));
   PcOptionsModel options;
   options.Open(s);
   CHECK(options.Bind(unsigned(PcAction::Use),'Z',false,false));

@@ -265,6 +265,8 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
   const bool supported=name=="options_rev" || name=="options_controller_xbox";
   static u32 pointer_owner=0;
   static u64 consumed=0;
+  static u32 slider_item=0;
+  static int slider_target=-1;
   const std::lock_guard lock(s_pc_mutex);
   if(!supported || !manager || read(manager+25860)!=menu || !s_pc_enabled ||
      !s_pc_settings.keyboard_enabled || !s_pc_focused || s_pc_capture.active) {
@@ -272,6 +274,7 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
     return false;
   }
   if(pointer_owner!=menu) {
+    slider_item=0;slider_target=-1;
     pointer_owner=menu;consumed=s_pc_menu_pointer.serial;s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};
     return false;
   }
@@ -287,9 +290,12 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
       blocked,s_pc_menu_pointer.valid,s_pc_menu_pointer.click,
       s_pc_viewport.left,s_pc_viewport.top,s_pc_viewport.right,s_pc_viewport.bottom);
   if(blocked || !s_pc_menu_pointer.valid) {
+    slider_item=0;slider_target=-1;
     s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};consumed=s_pc_menu_pointer.serial;return false;
   }
-  if(!s_pc_menu_pointer.click && !s_pc_menu_pointer.wheel.Pending() && consumed==s_pc_menu_pointer.serial)return false;
+  if(!s_pc_menu_pointer.down && slider_target<0)slider_item=0;
+  if(s_pc_menu_pointer.click) {slider_item=0;slider_target=-1;}
+  if(!s_pc_menu_pointer.click && !s_pc_menu_pointer.wheel.Pending() && slider_target<0 && consumed==s_pc_menu_pointer.serial)return false;
   consumed=s_pc_menu_pointer.serial;
   const auto point=PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport);
   u32 hit=0;
@@ -297,12 +303,13 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
   const auto* items=map?Bytes(guard,map,moderngekko::roster::MenuMapBytes):nullptr;
   if(point && items && Word(items+8)==0x8118fb90 &&
      Word(items+moderngekko::roster::MenuMapCount)<=moderngekko::roster::MenuItems) {
-    std::map<std::string,u32> regions;
+    std::map<std::string,u32> regions, named;
     for(unsigned i=0;i<moderngekko::roster::MenuItems;++i) {
       const u32 address=Word(items+moderngekko::roster::MenuMapValues+4*i);
       const auto* region=address?Bytes(guard,address,8):nullptr;
       if(!region || Word(region)!=menu)continue;
       const auto region_name=Interned(guard,Word(region+4));
+      named.emplace(region_name,address);
       if(region_name.starts_with("pc_hit_"))regions.emplace(region_name.substr(7),address);
     }
     for(unsigned i=0;i<moderngekko::roster::MenuItems;++i) {
@@ -315,6 +322,46 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
       const auto region=regions.find(Interned(guard,Word(item+4)));
       const auto bounds=ProjectedBounds(guard,region==regions.end()?candidate:region->second);
       if(bounds && bounds->Contains((*point)[0],(*point)[1])) {hit=candidate;break;}
+    }
+    // Bind the actual visible bars to their native labels. Guard both gamevar
+    // callbacks and the options manager before interpreting its packed detents.
+    // 801342d8/801344a4 call virtual getters 8014d26c/8014d2a4:
+    // options+0x21/+0x22, upper five bits, divided by ten.
+    if(name=="options_rev" && point && read(0x806356e0)==0x8053ce90) {
+      for(const auto& spec:std::array{
+          std::tuple{"fx_vol","label_effects_volume",0x801342d8u,0x80134338u,0x80635701u},
+          std::tuple{"music_vol","label_music_volume",0x801344a4u,0x80134504u,0x80635702u}}) {
+        const auto& [bar_name,label_name,getter,setter,value_address]=spec;
+        const auto bar=named.find(bar_name),label=named.find(label_name);
+        if(bar==named.end() || label==named.end() || read(bar->second+0x34)!=getter ||
+           read(bar->second+0x30)!=setter)continue;
+        const auto bounds=ProjectedBounds(guard,bar->second);
+        const auto* value=Bytes(guard,value_address,1);
+        if(!bounds || !value || (*value>>3)>10)continue;
+        const bool begin=s_pc_menu_pointer.click && bounds->Contains((*point)[0],(*point)[1]);
+        if(begin || (slider_item==label->second && s_pc_menu_pointer.down)) {
+          slider_item=label->second;
+          slider_target=PcVolumeTarget((*point)[0],*bounds).value_or(-1);
+          s_pc_menu_pointer.click=false;
+        }
+        if(slider_item!=label->second || slider_target<0)continue;
+        hit=slider_item;
+        if(read(menu+0x458)!=hit)break; // Focus first, preserving the target.
+        const int current=*value>>3;
+        if(current==slider_target) {
+          slider_target=-1;
+          if(!s_pc_menu_pointer.down)slider_item=0;
+          state.npc=state.spr[8];return true;
+        }
+        const int direction=current<slider_target?1:-1;
+        const u32 callback=read(read(hit+0x9c)+0x64);
+        auto* axis=Bytes(guard,0x812e252c,2);
+        if(callback!=0x80fe21c8 || !axis) {slider_item=0;slider_target=-1;break;}
+        axis[0]=direction>0?1:0xff;axis[1]=0;
+        state.gpr[3]=hit;state.gpr[4]=0x812e252c;state.npc=callback;
+        std::fprintf(stderr,"[openmua2] pointer volume: %s %d -> %d\n",bar_name,current,slider_target);
+        return true;
+      }
     }
   }
   if(!hit) {s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};return false;}

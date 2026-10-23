@@ -1,5 +1,39 @@
 # Current status â€” GitHub main
 
+## Native volume sliders and metal-tint diagnosis - 2026-10-22
+
+Implemented click/drag on both native Options volume bars. Hit bounds come from
+native model world bounds and the actual camera/viewport. The native gamevar
+getters and options-manager vtable are checked before reading packed 0..10
+volume detents; updates tail-call the existing increment/decrement callback.
+No direct volume/save-memory writes or replacement audio settings system.
+Dragging clamps to endpoints; releasing stops drag updates. Context changes,
+modal dialogs and invalid pointer state stop pending interaction.
+
+Windows build slider-build.log succeeded without warnings/errors; supported
+binary .local/build/windows-x64/runtime/moderngekko-run.exe rebuilt. Focused
+PC-controls, gamepad-actions and automation tests pass 3/3, including new slider
+rounding/clamping/invalid-geometry cases. Run 58 cold-booted through ordinary
+contained navigation with neutral process-local controller port 0. Both effects
+and music passed clicks at 5, 0 and 10, drag beyond the left endpoint, release and
+hover without further change, then restoration to original 6 and 8. Receipt:
+.local/pc-controls/preview-run-58/slider-result.json. Its native screenshot was
+inspected: both restored bars, focused Music Volume, red panels, labels and native
+backdrop present. Null audio means this does not establish audible volume changes.
+Runtime exited normally under the existing single-CPU/180-second watchdog.
+
+The user asked why some metal arms look pink. Source-pixel audit confirms the
+broad blue-to-red tint catches blue-gray metal in m_team_corner_hinge and
+m_team_side_hinge: RGB (82,105,131) becomes (131,82,82), for example. Private
+metal-tint-audit.json records changed pixels. This is an authoring tint issue,
+not scene lighting; narrowing recoloring to preserve metal is still pending.
+
+TODO #1 remains active. Remaining work includes that palette correction, mouse
+confirmation dialogs, gameplay acceptance, layout polish and actual Windows
+720p/1080p/1440p/4K output verification. No installation or push. Hygiene: reused
+build and fixture, retained one useful native capture and compact receipts; no
+texture dumps, additional game copies or backups created.
+
 ## Contained mouse activation verification - 2026-10-22
 
 Runs 56 and 57 used a persistent neutral process-local Xbox device on port 0

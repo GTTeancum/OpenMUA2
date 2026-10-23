@@ -13,6 +13,13 @@ struct PcMenuRect {
            x>=left && x<right && y>=top && y<bottom;
   }
 };
+// A native volume slider has eleven detents (0..10). Dragging beyond its
+// horizontal extent clamps; malformed geometry never requests a change.
+inline std::optional<int> PcVolumeTarget(double x,const PcMenuRect& bar) {
+  if(!std::isfinite(x) || !std::isfinite(bar.left) || !std::isfinite(bar.right) ||
+     bar.right<=bar.left)return {};
+  return int(std::lround(std::clamp((x-bar.left)/(bar.right-bar.left),0.0,1.0)*10));
+}
 // Map client-normalized coordinates through the renderer's actual viewport.
 // Letterbox/pillarbox bars and invalid dimensions never produce a menu target.
 inline std::optional<std::array<double,2>> PcViewportPoint(
