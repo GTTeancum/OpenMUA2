@@ -170,8 +170,8 @@ class PcMenuReleaseGate {
 public:
   PcInputFrame Apply(const PcInputFrame& frame, std::uint64_t menu) {
     if(m_initialized && menu!=m_menu)
-      for(unsigned i=0;i<256;++i) m_blocked[i]=m_blocked[i] || frame.held[i];
-    m_initialized=true;m_menu=menu;
+      for(unsigned i=0;i<256;++i) m_blocked[i]=m_blocked[i] || (m_previous[i] && frame.held[i]);
+    m_initialized=true;m_menu=menu;m_previous=frame.held;
     auto result=frame;
     for(unsigned i=0;i<256;++i) {
       m_blocked[i]=m_blocked[i] && frame.held[i];
@@ -182,7 +182,7 @@ public:
 private:
   bool m_initialized=false;
   std::uint64_t m_menu=0;
-  std::array<bool,256> m_blocked{};
+  std::array<bool,256> m_blocked{},m_previous{};
 };
 // Window-thread events are latched once per game input frame under the caller's
 // lock. Multiple guest reads share that frame. Fast down/up taps survive until

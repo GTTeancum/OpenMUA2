@@ -347,3 +347,7 @@ Create New. Run 88 verifies the cold-boot profile flow against the controller
 comparison in run 87. It does not filter physical gamepads. The Windows build
 and 72 available enabled tests pass; see CURRENT-STATUS for exclusions and logs.
 Gameplay input acceptance is still pending.
+
+The release gate now compares previous and current held samples: a newly pressed
+key on the first query of a new menu is accepted. Focused regression and Windows
+build pass; final live verification is pending (fresh-menu-key-build/tests logs).

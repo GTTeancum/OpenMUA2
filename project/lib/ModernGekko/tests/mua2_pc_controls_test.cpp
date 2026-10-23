@@ -25,6 +25,12 @@ int main() {
   CHECK(!gate.Apply(PcInputFrame{},0).held[13]);
   CHECK(gate.Apply(held,0).held[13]);
 
+  // A fresh key on the first query of a new menu must not be swallowed.
+  PcMenuReleaseGate fresh_gate;
+  CHECK(!fresh_gate.Apply(PcInputFrame{},1).held[13]);
+  CHECK(fresh_gate.Apply(held,2).held[13]);
+  CHECK(!fresh_gate.Apply(PcInputFrame{},2).held[13]);
+  CHECK(fresh_gate.Apply(held,0).held[13]);
   std::map<std::uint32_t,std::vector<std::uint8_t>> guest;
   auto put=[&](std::uint32_t a,std::uint32_t v) {
     guest[a]={std::uint8_t(v>>24),std::uint8_t(v>>16),std::uint8_t(v>>8),std::uint8_t(v)};

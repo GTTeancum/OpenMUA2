@@ -1,6 +1,40 @@
 # Current status â€” GitHub main
 
 
+## Player selection verified; fresh-key transition regression fixed - 2026-10-22
+
+Run 89 verified keyboard player-1 join, AAA profile selection/details/confirmation,
+and Start advancing to the native no-saved-games dialog. Private profs.dat still
+has no recorded disk save; do not claim persistence. Run 90 reached Begin Story
+as Guest, confirmed the AI Autospend choice, and advanced movie -> level loading.
+Runs 89-91 ended with bounded launcher exit 1 while navigation/inspection consumed
+the run window; later command attempts timed out. None reached gameplay action
+acceptance. Run 92 stopped explicitly with exit 0 after a startup route assertion.
+
+The automatic route exposed first-press loss around menu transitions. Source
+review found PcMenuReleaseGate blocked all current held keys when first seeing
+a new menu, even when the preceding sample was neutral. It now blocks only keys
+held in BOTH previous and current samples. Added a regression for a fresh press
+on a new menu and on return to gameplay. Held-key transition/release tests remain.
+Windows moderngekko-run.exe and the controls test build succeeded, no compiler
+warnings/errors: .local/pc-controls/fresh-menu-key-build.log. Three focused CTests
+pass, fresh-menu-key-tests.log. Live verification of this refined gate is next;
+no claim that gameplay or all menu transitions now pass.
+
+Private verify_story_gameplay.py now includes explicit animation waits and checks
+for the profile-creation and AI Autospend dialogs. Begin Story supports declining
+profile creation and playing as Guest. Do not reuse the Load Game profile route.
+verify_gameplay_actions.py is prepared but has NOT passed or run its assertions
+in gameplay yet. It checks published actions/release, not complete encounter
+behavior. Four native menu captures inspected; two intermediate selection captures
+removed afterward (1,797,804 bytes). Remaining proof is compact. Logical repository
+bytes: 20,528,842,291; D free before cleanup: 74,321,539,072 bytes.
+
+All work remains in the repository; no installation, push, full-source backup,
+desktop input or desktop capture. TODO #1 remains open. Gameplay input validation,
+final candidate validation/staging and closure audit still remain.
+
+
 ## Keyboard activation across menu transitions fixed - 2026-10-22
 
 Runs 85/86 reproduced keyboard Enter confirming a completed profile and then
