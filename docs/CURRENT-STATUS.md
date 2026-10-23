@@ -1,5 +1,21 @@
 # Current status â€” GitHub main
 
+## Native save-dialog layout recovered; decline verified - 2026-10-22
+
+Runs 74/75 reached the native Options save dialog through ordinary contained
+input. One native capture inspected. Run 75 selected No, confirmed, verified
+the dialog closed and returned to cw_main. Both exited normally with CPU 2,
+Vulkan, No Audio Output and 180-second watchdogs. No desktop input/capture.
+Recovered choice labels, native commands, enabled mask, selection, visible
+rows and renderer-cached row positions; details in PC-CONTROLS-IMPLEMENTATION.
+The text-to-screen transform is still needed for correct mouse hit regions.
+No hard-coded screenshot-coordinate adapter or direct save-command bypass added.
+No production code change, rebuild, installation, push or completion claim.
+TODO #1 remains active. The observed Wii wording/glyphs remain deferred #4.
+New artifacts are compact probes/logs and one useful capture, all in .local;
+no source/history backup or redundant game fixture was created.
+
+
 ## HD output, internal scaling and native layout verification - 2026-10-22
 
 Runs 67/68/69 used ordinary contained menu navigation and Apply to verify exact

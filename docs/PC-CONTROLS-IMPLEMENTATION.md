@@ -261,3 +261,46 @@ private run receipts 67-73 for exact evidence and limitations.
 
 Native mouse confirmation dialogs and remaining gameplay controls still need
 acceptance before TODO #1 closes. Visual design was approved by the user.
+
+### Native confirmation dialog recovery (mouse path pending)
+
+Runs 74/75 cold-booted and reached Options with ordinary contained navigation,
+changed effects volume and selected the native Apply item. Run 74's native
+capture was inspected: the real save-options Yes/No dialog covers Options.
+The Wii wording/glyphs seen there belong to deferred TODO #4; no replacement
+screen was forced. Run 75 moved Down to No, confirmed, observed the active flag
+clear and returned to cw_main. This verifies the native decline branch using
+keyboard events, not mouse support or saved-data persistence.
+
+Recovered current-build layout (never reuse XML1 addresses):
+- Dialog manager global 80817374, expected vtable 811983b8.
+- Active slot at manager+8a0c; slots 0..6, stride 13b8, base manager+4.
+- Active flag 13a9 bit 80; choices count 13a4, visible count 13a5,
+  first visible row 13a6, current selection 13a7, input player 13a8.
+- Choice labels at 0201 + index*81; corresponding native commands at
+  070b + index*81. Observed Yes=saveloadProcess(2), No=saveloadAbort().
+- Enabled-choice bitmask at 1128. Other masks 1120/1124 control native
+  closing/modal behavior; preserve the native confirmation handler.
+- Renderer 810125cc caches each visible row's vertical coordinate at
+  112c + index*4 (store 81013308). These are NOT normalized screen coordinates.
+- Manager+8a28 points to the text-layout object. Its +40c/+410 are x/y,
+  +414/+418 width/height, +408 accumulated text height, +434 scene resource,
+  +438 font object. Run 75 recorded x=87, y=278, width=340, height=240.
+- Renderer choice loop 81013124..810135d4 invokes font draw 80253d04
+  at 81013524; selected-row highlight uses the same text metrics.
+- Native direction input is 8100fc00; confirmation is 810100d4. The latter
+  checks controller acceptance at 81010768, validates selection and enabled
+  masks, then executes the selected native command and native closure logic.
+- Font draw 80253e38 rescales coordinates using the object returned by
+  80017890 (static object 8060e040), vtable methods +68/+6c, then queues
+  text geometry. The dialog scene/camera transform must also be accounted
+  for before deriving mouse hit regions. A row Y or screenshot percentage
+  alone is insufficient; do not hard-code the observed Yes/No positions.
+
+Private evidence: preview-run-74/dialog-object.bin, dialog-manager.bin,
+dialog-vtable.bin, save-confirmation.png; preview-run-75/dialog-layout.bin,
+dialog.json and decline-result.json. Focused disassembly notes are under
+.local/pc-controls/dialog-{input,render,update}-disasm.txt. No guest memory was
+written by these inspection tests. Both processes exited normally, CPU 2,
+Vulkan, No Audio Output, 180-second watchdogs, no desktop/OS input or capture.
+One native image inspected. No production edit/build or mouse acceptance yet.
