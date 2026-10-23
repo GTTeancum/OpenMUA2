@@ -1,6 +1,30 @@
 # Current status â€” GitHub main
 
 
+## Keyboard gameplay validation preparation - 2026-10-22
+
+Run 83 reached Play -> Load Game through ordinary keyboard navigation. Native
+capture showed no registered player profiles in the private preview fixture,
+despite placeholder Game*.dat files being present. The interrupted run later
+exited 1 under the bounded launcher; no gameplay pass is claimed.
+
+Run 84 cold-booted and reached profile creation using only contained keyboard
+events. Native captures verified the on-screen name keyboard and its acceptance
+dialog. Escape maps to the existing Start/accept behavior; the dialog defaults
+to No, so it requires Down/Enter. Accepted AAA and reached Select Image with the
+native Autospend dialog. Two subsequent Enter presses returned to the name
+screen; the reason is not yet established and profs.dat was not saved. Stopped
+normally (exit 0) before the watchdog. No forced menus or game-memory writes.
+Next: inspect each profile/dialog transition individually using the compact
+read-only context probe, complete the private profile, then validate gameplay
+keyboard/mouse actions. Do not repeat blind confirmation sequences or count
+menu input as gameplay validation. Three native images inspected this turn.
+
+Private scripts/receipts stay in .local/pc-controls (runs 83/84). Existing runtime
+and candidate assets reused; no new build or game-data copy, install or push.
+TODO #1 remains active; no gameplay, audio, FPS or completion claim.
+
+
 ## Native mouse save-dialog acceptance - 2026-10-22
 
 Implemented exact-code-guarded Options/Advanced mouse dialog input using native
