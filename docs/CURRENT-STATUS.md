@@ -1,5 +1,39 @@
 # Current status â€” GitHub main
 
+
+## Native mouse save-dialog acceptance - 2026-10-22
+
+Implemented exact-code-guarded Options/Advanced mouse dialog input using native
+pointer projection, font-metric row selection and confirmation dispatch. Save
+commands and enabled masks remain game-owned. Independent click edges survive
+gamepad polling; idle pointers preserve keyboard selection. Zero-choice Continue
+uses native footer bounds. Move-and-click waits for current pointer projection.
+
+Run 79: mouse No closed the dialog and returned to cw_main. Run 81: mouse Yes
+saved, Continue returned to cw_main, empty-space clicks were rejected in both
+dialogs, and keyboard selection survived an idle mouse. Its native capture was
+inspected and shows the actual Save Successful acknowledgment over Options.
+Run 82 repeated that flow on the final binary with no hover delay before the
+Continue click; all assertions passed. Both recent runtime processes exited 0.
+Private receipts: .local/pc-controls/preview-run-{79,81,82}; build log:
+.local/pc-controls/dialog-mouse-build-8.log. Windows moderngekko-run.exe links
+successfully, no compiler warnings/errors. Three focused CTests pass (PC controls,
+gamepad actions, automation protocol). Build 7 was a no-op after an edit assertion;
+the corrected edit and final build are build 8. Earlier failed iterations remain
+documented in PC-CONTROLS-IMPLEMENTATION, not counted as successful validation.
+
+CPU 2, Vulkan, No Audio Output, <=180-second watchdogs, contained input only.
+No desktop control/capture, installation or push. Removed superseded run-80
+acknowledgment capture (302,866 bytes), retaining run-81 proof and failure logs.
+Repository logical size before that removal: 20,509,239,651 bytes; D free space
+before the build: 74,317,078,528 bytes. No full-source backups were created.
+User files Build-With-Log.cmd and texs/ remain untouched.
+
+TODO #1 stays active: gameplay input acceptance, final candidate validation and
+staging still remain. Approved UI design is preserved. Wii wording/glyph scan
+and Wiimote-screen replacement remain deferred TODO #4/#5. No physical input,
+audio or combat-FPS acceptance is claimed by the menu tests.
+
 ## Native save-dialog layout recovered; decline verified - 2026-10-22
 
 Runs 74/75 reached the native Options save dialog through ordinary contained

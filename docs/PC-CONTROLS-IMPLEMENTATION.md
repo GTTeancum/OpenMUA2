@@ -304,3 +304,36 @@ dialog.json and decline-result.json. Focused disassembly notes are under
 written by these inspection tests. Both processes exited normally, CPU 2,
 Vulkan, No Audio Output, 180-second watchdogs, no desktop/OS input or capture.
 One native image inspected. No production edit/build or mouse acceptance yet.
+
+
+### Native mouse save dialogs implemented - 2026-10-22
+
+The adapter feeds viewport-normalized mouse coordinates into MUA2's own pointer
+projection and font-metric row picker. It routes valid clicks through the native
+confirmation dispatcher, preserving enabled masks, save scripts and dialog
+closure. Seven exact-code-guarded callbacks are restricted to Options/Advanced.
+The zero-choice acknowledgment uses its native rendered footer bounds, not a
+screenshot-specific hit box. Mouse press edges have an independent counter so
+gamepad sampling cannot consume them first. Idle mouse input does not overwrite
+keyboard selection. A projection-serial guard defers move-and-click consumption
+until the native pointer position has been updated.
+
+Run 79 verified mouse No returns to cw_main. Run 81 verified mouse Yes produces
+Save Successful, clicking Continue returns to cw_main, empty-space clicks do
+nothing in either dialog, and keyboard selection persists with an idle mouse.
+The run-81 native capture was inspected: real save acknowledgment, Continue,
+and the approved Options scene behind it. Remaining Wii glyphs are deferred #4.
+These are normal contained menu navigation tests, not forced menus or direct
+save-command calls. CPU 2, Vulkan, No Audio Output and 180-second watchdogs.
+Both processes exited 0. Private result JSON, logs and capture remain in .local.
+
+Earlier iterations: run 77 rejected a leaf-function replacement at registration;
+caller observers corrected it without weakening guards. Run 78 hovered correctly
+but lost clicks to shared sampling; the independent press counter corrected it.
+Build 7 was a no-op after a private edit assertion; build 8 includes the final
+projection guard and successfully links moderngekko-run.exe. Focused PC-controls,
+gamepad-actions and automation-protocol CTests pass 3/3. No compiler warnings or
+errors in build 8. Final immediate-click regression is recorded in CURRENT-STATUS.
+
+Gameplay input acceptance and coherent candidate staging remain before TODO #1
+can close. No physical-input, audio or combat-FPS claim follows from these tests.

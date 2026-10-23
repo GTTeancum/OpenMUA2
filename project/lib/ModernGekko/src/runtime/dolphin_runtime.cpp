@@ -120,7 +120,7 @@ struct PcMenuPointer {
   double x=0,y=0;
   bool valid=false,down=false,click=false;
   moderngekko::controls::PcWheelInput wheel;
-  u64 serial=0;
+  u64 serial=0,presses=0;
 };
 PcMenuPointer s_pc_menu_pointer;
 moderngekko::controls::PcMenuRect s_pc_viewport{0,0,0,0};
@@ -140,8 +140,10 @@ bool PcWindowInput(const Platform::InputEvent& event) {
     // the PC control layer, including unbound keys during binding capture.
     if(event.key==0x7a) return false;
     if(event.key==1) {
-      if(event.down && !s_pc_menu_pointer.down && !s_pc_capture.active)
+      if(event.down && !s_pc_menu_pointer.down && !s_pc_capture.active) {
         s_pc_menu_pointer.click=true;
+        ++s_pc_menu_pointer.presses;
+      }
       s_pc_menu_pointer.down=event.down;
     }
     s_pc_capture.Key(event.key,event.down,event.repeat);

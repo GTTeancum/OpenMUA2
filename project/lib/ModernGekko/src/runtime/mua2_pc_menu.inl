@@ -254,6 +254,136 @@ bool Use(const Core::CPUThreadGuard& guard) {
 }
 // Runs from the normal native menu input update, never from a test command.
 // Tail calls retain the native caller's LR and all native focus/command behavior.
+// Mouse dialogs reuse the game's pointer projection, font-metric row picking,
+// and confirmation dispatcher. No save script is invoked from host code.
+u32 DialogContext(const Core::CPUThreadGuard& guard) {
+  const auto read=[&](u32 a) { const auto* p=Bytes(guard,a,4);return p?Word(p):0u; };
+  const u32 manager=read(0x8081736c),dialog=read(0x80817374);
+  if(read(manager)!=0x81198830 || read(dialog)!=0x811983b8)return 0;
+  const auto name=GuestString(guard,read(manager+25860)+8);
+  if(name!="options_rev" && name!="options_controller_xbox")return 0;
+  const u32 slot=read(dialog+0x8a0c);
+  if(slot>6)return 0;
+  const auto* data=Bytes(guard,dialog+4+slot*0x13b8,0x13b8);
+  return data && (data[0x13a9]&0x80)?dialog:0;
+}
+bool DialogMouseEnabled() {
+  return s_pc_enabled && s_pc_settings.keyboard_enabled && s_pc_focused &&
+      !s_pc_capture.active;
+}
+u32 dialog_mouse_owner=0;
+u64 dialog_mouse_serial=0,dialog_mouse_press=0,dialog_projected_serial=0;
+bool dialog_mouse_click=false,dialog_mouse_confirm=false;
+void DialogMouseSample(const Core::CPUThreadGuard& guard) {
+  if(!DialogContext(guard))return;
+  auto& state=guard.GetSystem().GetPPCState();
+  const std::lock_guard lock(s_pc_mutex);
+  if(!DialogMouseEnabled() || !s_pc_menu_pointer.valid ||
+     state.gpr[28]!=s_pc_settings.keyboard_player)return;
+  const auto point=PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport);
+  const auto* global=Bytes(guard,0x8081736c,4);
+  if(!point || !global || state.gpr[31]!=Word(global)+4904+72*state.gpr[28])return;
+  auto* data=guard.GetSystem().GetMemory().GetPointerForRange(state.gpr[31],12);
+  if(!data)return;
+  const std::array<u32,3> words{std::bit_cast<u32>(float(2*(*point)[0]-1)),
+      std::bit_cast<u32>(float(1-2*(*point)[1])),1};
+  for(unsigned i=0;i<3;++i)for(unsigned j=0;j<4;++j)data[4*i+j]=u8(words[i]>>(24-8*j));
+  dialog_projected_serial=s_pc_menu_pointer.serial;
+}
+void DialogMousePoint(const Core::CPUThreadGuard& guard) {
+  if(!DialogContext(guard)) {dialog_mouse_owner=0;return;}
+  auto& state=guard.GetSystem().GetPPCState();
+  const std::lock_guard lock(s_pc_mutex);
+  if(!DialogMouseEnabled())return;
+  // Observe the result of the leaf getter, retaining its original instructions.
+  if(state.pc==0x80ffbabc && state.gpr[28]!=s_pc_settings.keyboard_player)return;
+  const auto* global=Bytes(guard,0x8081736c,4);
+  if(global)state.gpr[3]=Word(global)+4904+72*s_pc_settings.keyboard_player;
+}
+bool DialogMouseInput(const Core::CPUThreadGuard& guard) {
+  const u32 dialog=DialogContext(guard);
+  if(!dialog)return false;
+  auto& state=guard.GetSystem().GetPPCState();
+  if(state.gpr[3]!=dialog)return false;
+  const std::lock_guard lock(s_pc_mutex);
+  if(!DialogMouseEnabled())return false;
+  dialog_mouse_confirm=false;dialog_mouse_click=false;
+  const auto* slot=Bytes(guard,dialog+0x8a0c,4);
+  const u32 active=dialog+4+Word(slot)*0x13b8;
+  const bool moved=dialog_mouse_serial!=s_pc_menu_pointer.serial;
+  if(moved && dialog_projected_serial!=s_pc_menu_pointer.serial) {state.npc=state.spr[8];return true;}
+  const bool pressed=dialog_mouse_press!=s_pc_menu_pointer.presses;
+  dialog_mouse_press=s_pc_menu_pointer.presses;
+  dialog_mouse_serial=s_pc_menu_pointer.serial;
+  if(dialog_mouse_owner!=active) {
+    dialog_mouse_owner=active;s_pc_menu_pointer.click=false;
+    state.npc=state.spr[8];return true;
+  }
+  if(!s_pc_menu_pointer.valid || !PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport) ||
+     (!moved && !pressed)) {
+    s_pc_menu_pointer.click=false;state.npc=state.spr[8];return true;
+  }
+  dialog_mouse_click=pressed;s_pc_menu_pointer.click=false;
+  return false;
+}
+void DialogMouseHit(const Core::CPUThreadGuard& guard) {
+  if(!DialogContext(guard))return;
+  const std::lock_guard lock(s_pc_mutex);
+  if(!DialogMouseEnabled())return;
+  const auto& state=guard.GetSystem().GetPPCState();
+  dialog_mouse_confirm=dialog_mouse_click && static_cast<s32>(state.gpr[24])>=0;
+  if(std::getenv("OPENMUA2_PC_MENU_BOUNDS"))
+    std::fprintf(stderr,"[openmua2] dialog pointer row=%d click=%d\n",static_cast<s32>(state.gpr[24]),dialog_mouse_click);
+}
+u32 dialog_footer_owner=0;
+std::string dialog_footer_label;
+std::array<float,4> dialog_footer_bounds{};
+void DialogMouseFooter(const Core::CPUThreadGuard& guard) {
+  const u32 dialog=DialogContext(guard);if(!dialog)return;
+  const auto* slot=Bytes(guard,dialog+0x8a0c,4);
+  const u32 active=dialog+4+Word(slot)*0x13b8;
+  const auto* data=Bytes(guard,active,0x13b8);
+  if(!data || data[0x13a4]!=0)return;
+  const auto& state=guard.GetSystem().GetPPCState();
+  dialog_footer_owner=active;
+  dialog_footer_label=GuestString(guard,active+0x1195,65);
+  // Capture the native footer container at its draw call, in the same HUD
+  // coordinates as the projected pointer. The original renderer owns layout.
+  const float x=static_cast<s32>(state.gpr[4]),y=static_cast<s32>(state.gpr[5]);
+  dialog_footer_bounds={x,y-static_cast<s32>(state.gpr[7]),
+      x+static_cast<s32>(state.gpr[6]),y};
+}
+void DialogMouseAccept(const Core::CPUThreadGuard& guard) {
+  const u32 dialog=DialogContext(guard);
+  const std::lock_guard lock(s_pc_mutex);
+  auto& state=guard.GetSystem().GetPPCState();
+  if(!dialog || state.gpr[28]!=dialog || !DialogMouseEnabled()) {dialog_mouse_confirm=false;return;}
+  const auto* slot=Bytes(guard,dialog+0x8a0c,4);
+  const u32 active=dialog+4+Word(slot)*0x13b8;
+  const auto* data=Bytes(guard,active,0x13b8);
+  if(data && data[0x13a4]==0) {
+    // Wait for native projection before consuming a move-and-click event.
+    if(dialog_projected_serial!=s_pc_menu_pointer.serial)return;
+    const bool pressed=dialog_mouse_press!=s_pc_menu_pointer.presses;
+    dialog_mouse_press=s_pc_menu_pointer.presses;
+    const auto* global=Bytes(guard,0x8081736c,4);
+    const auto* point=global?Bytes(guard,Word(global)+4904+72*s_pc_settings.keyboard_player+12,8):nullptr;
+    if(pressed && point && s_pc_menu_pointer.valid &&
+       PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport) &&
+       dialog_footer_owner==active && !dialog_footer_label.empty() &&
+       dialog_footer_label==GuestString(guard,active+0x1195,65) &&
+       !GuestString(guard,active+0x1298,129).empty()) {
+      const float x=std::bit_cast<float>(Word(point)),y=std::bit_cast<float>(Word(point+4));
+      dialog_mouse_confirm=x>=dialog_footer_bounds[0] && x<dialog_footer_bounds[2] &&
+          y>=dialog_footer_bounds[1] && y<dialog_footer_bounds[3];
+      if(std::getenv("OPENMUA2_PC_MENU_BOUNDS"))
+        std::fprintf(stderr,"[openmua2] dialog footer point=%.3f,%.3f rect=%.3f,%.3f,%.3f,%.3f hit=%d\n",
+            x,y,dialog_footer_bounds[0],dialog_footer_bounds[1],dialog_footer_bounds[2],dialog_footer_bounds[3],dialog_mouse_confirm);
+    }
+  }
+  if(dialog_mouse_confirm) {state.gpr[3]=1;dialog_mouse_confirm=false;}
+
+}
 bool PointerInput(const Core::CPUThreadGuard& guard) {
   auto& state=guard.GetSystem().GetPPCState();
   const u32 menu=state.gpr[3];
@@ -289,6 +419,9 @@ bool PointerInput(const Core::CPUThreadGuard& guard) {
     std::fprintf(stderr,"[openmua2] pointer gate blocked=%d valid=%d click=%d viewport=(%.4f,%.4f)-(%.4f,%.4f)\n",
       blocked,s_pc_menu_pointer.valid,s_pc_menu_pointer.click,
       s_pc_viewport.left,s_pc_viewport.top,s_pc_viewport.right,s_pc_viewport.bottom);
+  if(blocked && DialogContext(guard)) {
+    slider_item=0;slider_target=-1;s_pc_menu_pointer.wheel={};return false;
+  }
   if(blocked || !s_pc_menu_pointer.valid) {
     slider_item=0;slider_target=-1;
     s_pc_menu_pointer.click=false;s_pc_menu_pointer.wheel={};consumed=s_pc_menu_pointer.serial;return false;
@@ -409,6 +542,26 @@ void Install(const Core::CPUThreadGuard& guard) {
      !HLE::SetExternalFunctionReplacement(guard,0x80fc9170,PointerInput)) {
     roster_io::Abort(guard,"PC menu callback guards rejected");return;
   }
+  constexpr std::array<u32,7> sites{0x80ffbd5c,0x8100f990,0x8100f914,0x8100fb78,0x81010788,0x80ffbabc,0x81013870};
+  constexpr std::array<const char*,7> hashes{
+    "E7D14A58B117DE408568FBDA9C0C44928BB86486","BBEF2A0F6C66F791B28323131340C53CE142C9B2",
+    "1E2492C131F76D8AD3C2A8FF96A69749E0BB5436","9C7B9395668EC6B4C18CB21050BA4ACF868713A7",
+    "84A38FDC9C4CDD0F73FAA10D2FE711EFAE8E7037","3FAC6859A49F9DB4DFB8B10E375EFEA80EFAA8A8","781DD0241A9856278789D160F676D31E626A0ED4"};
+  for(unsigned i=0;i<sites.size();++i)if(!ProviderCode(guard,sites[i],16,hashes[i])) {
+    roster_io::Abort(guard,"PC dialog callback guards rejected");return;
+  }
+  if(!HLE::SetExternalStartObserver(guard,sites[0],DialogMouseSample) ||
+     !HLE::SetExternalStartObserver(guard,sites[1],DialogMousePoint) ||
+     !HLE::SetExternalFunctionReplacement(guard,sites[2],DialogMouseInput) ||
+     !HLE::SetExternalStartObserver(guard,sites[3],DialogMouseHit) ||
+     !HLE::SetExternalStartObserver(guard,sites[4],DialogMouseAccept) ||
+     !HLE::SetExternalStartObserver(guard,sites[5],DialogMousePoint) ||
+     !HLE::SetExternalStartObserver(guard,sites[6],DialogMouseFooter)) {
+    roster_io::Abort(guard,"PC dialog callback installation failed");return;
+  }
+  dialog_mouse_owner=0;dialog_mouse_serial=0;dialog_mouse_press=0;dialog_projected_serial=0;
+  dialog_mouse_click=false;dialog_mouse_confirm=false;
+  dialog_footer_owner=0;dialog_footer_label.clear();
   owner=0;model.active=false;
   std::fprintf(stderr,"[openmua2] native PC menu callbacks installed\n");
 }
