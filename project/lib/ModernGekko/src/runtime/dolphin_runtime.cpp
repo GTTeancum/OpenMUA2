@@ -8,6 +8,7 @@
 #include "mua2_action_bindings.hpp"
 #include "mua2_gamepad_actions.hpp"
 #include "mua2_pc_menu_geometry.hpp"
+#include "mua2_pc_menu_context.hpp"
 #include "mua2_pc_settings.hpp"
 #include "mua2_pc_binding_capture.hpp"
 #include "Common/FileUtil.h"
@@ -61,6 +62,7 @@
 #include "InputCommon/ControllerInterface/Touch/InputOverrider.h"
 #include "UICommon/UICommon.h"
 #include "VideoCommon/FrameDumper.h"
+#include "VideoCommon/Present.h"
 #include "VideoCommon/PerformanceMetrics.h"
 #include "VideoCommon/VideoEvents.h"
 #include "VideoCommon/VideoConfig.h"
@@ -112,6 +114,13 @@ moderngekko::controls::PcInputFrame s_pc_frame;
 bool s_pc_enabled=false, s_pc_pointer_valid=false, s_pc_focused=true;
 double s_pc_pointer_x=0, s_pc_pointer_y=0, s_pc_seconds=1.0/30;
 u64 s_pc_ticks=0;
+struct PcMenuPointer {
+  double x=0,y=0;
+  bool valid=false,down=false,click=false;
+  u64 serial=0;
+};
+PcMenuPointer s_pc_menu_pointer;
+moderngekko::controls::PcMenuRect s_pc_viewport{0,0,0,0};
 bool PcWindowInput(const Platform::InputEvent& event) {
   const std::lock_guard lock(s_pc_mutex);
   if(!s_pc_enabled) return false;
@@ -120,12 +129,18 @@ bool PcWindowInput(const Platform::InputEvent& event) {
   case Type::Focus:
     s_pc_focused=event.down;
     if(!event.down)s_pc_capture.FocusLost();
+    s_pc_menu_pointer={};
     s_pc_events.Focus(event.down);s_pc_frame={};s_pc_pointer_valid=false;
     return false;
   case Type::Key:
     // Native fullscreen is reserved. All other game-window keys are owned by
     // the PC control layer, including unbound keys during binding capture.
     if(event.key==0x7a) return false;
+    if(event.key==1) {
+      if(event.down && !s_pc_menu_pointer.down && !s_pc_capture.active)
+        s_pc_menu_pointer.click=true;
+      s_pc_menu_pointer.down=event.down;
+    }
     s_pc_capture.Key(event.key,event.down,event.repeat);
     if(s_pc_capture.active)return true;
     if(!event.down || !event.repeat) s_pc_events.Key(event.key,event.down);
@@ -134,9 +149,14 @@ bool PcWindowInput(const Platform::InputEvent& event) {
     if(s_pc_pointer_valid)
       s_pc_events.MouseDelta(event.x-s_pc_pointer_x,event.y-s_pc_pointer_y);
     s_pc_pointer_x=event.x;s_pc_pointer_y=event.y;s_pc_pointer_valid=true;
+    s_pc_menu_pointer.valid=event.width>0 && event.height>0;
+    if(s_pc_menu_pointer.valid) {
+      s_pc_menu_pointer.x=event.x/event.width;s_pc_menu_pointer.y=event.y/event.height;
+      ++s_pc_menu_pointer.serial;
+    }
     return false;
   case Type::PointerLeave:
-    s_pc_pointer_valid=false;
+    s_pc_pointer_valid=false;s_pc_menu_pointer={};
     for(unsigned key:{1u,2u,4u,5u,6u})s_pc_events.Key(key,false);
     return false;
   case Type::Wheel:
@@ -213,8 +233,22 @@ moderngekko::controls::GamepadSample ReadGamepadSample(unsigned port) {
     const auto* bytes=memory.GetPointerForRange(address,size);
     return bytes ? std::span<const u8>(bytes,size):std::span<const u8>{};
   };
-  return moderngekko::controls::MapPcInput(settings,port,keyboard,sample,
-      moderngekko::controls::ActiveMenuType(read)!=0,seconds);
+  const auto menu=moderngekko::controls::ActiveMenuData(read);
+  if(!menu.empty()) {
+    const auto* name=reinterpret_cast<const char*>(menu.data()+8);
+    // Options clicks activate the item beneath the pointer, not the last item
+    // selected with a keyboard. Also suppress clicks behind a modal dialog.
+    if(std::strncmp(name,"options_rev",64)==0 ||
+       std::strncmp(name,"options_controller_xbox",64)==0) {
+      keyboard.held[1]=false;
+      // Dialogs can suspend the menu update entirely. Drop clicks here too,
+      // while the ordinary provider still polls input, to prevent delayed use.
+      if(moderngekko::controls::PcMenuModalBlocked(read)) {
+        const std::lock_guard pc_lock(s_pc_mutex);s_pc_menu_pointer.click=false;
+      }
+    }
+  }
+  return moderngekko::controls::MapPcInput(settings,port,keyboard,sample,!menu.empty(),seconds);
 }
 
 bool s_gamepad_provider=false;
@@ -2220,6 +2254,10 @@ std::optional<RuntimeError> ApplyAutomationCommand(Runtime& runtime,
   auto& system = Core::System::GetInstance();
   switch (command.type)
   {
+  case automation::CommandType::PcPointer:
+    // Process-local pointer event; never moves the OS cursor or sends window input.
+    PcWindowInput({Platform::InputEvent::Type::Pointer,0,false,false,command.pc_x,command.pc_y,1,1});
+    break;
   case automation::CommandType::PcKey:
     // This calls the same local event consumer as the game window. No window
     // messages, SendInput, physical device state or desktop focus are changed.
@@ -2388,6 +2426,7 @@ bool AutomationCommandNeedsReadyCore(automation::CommandType type)
   switch (type)
   {
   case automation::CommandType::PcKey:
+  case automation::CommandType::PcPointer:
   case automation::CommandType::Pause:
   case automation::CommandType::Resume:
   case automation::CommandType::SaveState:
@@ -3087,6 +3126,17 @@ RuntimeRunResult Runtime::Run() {
       });
   m_impl->present_hook =
       GetVideoEvents().after_present_event.Register([this, boot_start, first_frame = true](const PresentInfo &info) mutable {
+        // Publish on the rendering thread; window/CPU consumers take the mutex.
+        if(g_presenter) {
+          const auto rect=g_presenter->GetTargetRectangle();
+          const double w=g_presenter->GetBackbufferWidth(),h=g_presenter->GetBackbufferHeight();
+          const std::lock_guard lock(s_pc_mutex);
+          // Headless input is in the native capture's normalized image space;
+          // there is no client window/backbuffer and therefore no window bars.
+          s_pc_viewport=m_impl->config.headless ? moderngekko::controls::PcMenuRect{0,0,1,1} :
+            w>0 && h>0 ? moderngekko::controls::PcMenuRect{
+            rect.left/w,rect.top/h,rect.right/w,rect.bottom/h}:moderngekko::controls::PcMenuRect{};
+        }
         if (first_frame) {
           first_frame = false;
           std::fprintf(stderr, "[startup] first presentation after boot: %lld ms\n",

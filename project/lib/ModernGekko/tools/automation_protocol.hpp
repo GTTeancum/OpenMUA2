@@ -16,6 +16,7 @@ namespace moderngekko::automation
 enum class CommandType
 {
   PcKey,
+  PcPointer,
   Pad,
   PadFrames,
   XboxFrames,
@@ -52,6 +53,7 @@ struct Command
   bool xbox_connected = true; // Process-local synthetic device only.
   unsigned pc_key = 0;
   bool pc_down = false;
+  double pc_x = 0, pc_y = 0;
   std::filesystem::path path;
   std::uint32_t address = 0;
   std::uint32_t size = 0;

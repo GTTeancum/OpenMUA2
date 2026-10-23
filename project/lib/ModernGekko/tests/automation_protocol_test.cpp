@@ -59,6 +59,17 @@ int main()
     output << "command=pause\n";
   }
 
+  {
+    const auto path=root/"pc_pointer.txt";
+    automation::Command pointer;std::string why;
+    {std::ofstream f(path);f << "command=pc_pointer\nx=0.25\ny=0.75\n";}
+    if(!automation::ParseCommandFile(path,&pointer,&why) ||
+       pointer.type!=automation::CommandType::PcPointer || pointer.pc_x!=.25 || pointer.pc_y!=.75)return 173;
+    for(const auto bad:{"x=-1\ny=0", "x=nan\ny=0", "x=0\ny=inf", "x=0", "x=1.1\ny=0", "x=0\ny=0\nextra=1"}) {
+      {std::ofstream f(path);f << "command=pc_pointer\n" << bad << "\n";}
+      if(automation::ParseCommandFile(path,&pointer,&why))return 174;
+    }
+  }
   const auto listed = automation::ListCommandFiles(commands);
   if (listed.size() != 2 || listed[0].filename() != "001_pause.txt" ||
       listed[1].filename() != "002_pad.txt")

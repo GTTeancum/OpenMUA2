@@ -252,13 +252,88 @@ bool Use(const Core::CPUThreadGuard& guard) {
   std::fprintf(stderr,"[openmua2] native PC action: %s\n",action.c_str());
   state.gpr[3]=3;state.npc=state.spr[8];return true;
 }
+// Runs from the normal native menu input update, never from a test command.
+// Tail calls retain the native caller's LR and all native focus/command behavior.
+bool PointerInput(const Core::CPUThreadGuard& guard) {
+  auto& state=guard.GetSystem().GetPPCState();
+  const u32 menu=state.gpr[3];
+  const auto name=GuestString(guard,menu+8);
+  const auto read=[&](u32 address)->u32 {
+    const auto* p=Bytes(guard,address,4);return p?Word(p):0;
+  };
+  const u32 manager=read(0x8081736c);
+  const bool supported=name=="options_rev" || name=="options_controller_xbox";
+  static u32 pointer_owner=0;
+  static u64 consumed=0;
+  const std::lock_guard lock(s_pc_mutex);
+  if(!supported || !manager || read(manager+25860)!=menu || !s_pc_enabled ||
+     !s_pc_settings.keyboard_enabled || !s_pc_focused || s_pc_capture.active) {
+    s_pc_menu_pointer.click=false;consumed=s_pc_menu_pointer.serial;pointer_owner=0;
+    return false;
+  }
+  if(pointer_owner!=menu) {
+    pointer_owner=menu;consumed=s_pc_menu_pointer.serial;s_pc_menu_pointer.click=false;
+    return false;
+  }
+  // The native Options close gate uses these same dialog/save managers.
+  // Unknown instances fail closed. The pending-dialog flag also blocks clicks
+  // during the interval before a newly requested dialog becomes visible.
+  const bool blocked=PcMenuModalBlocked([&](u32 a,std::size_t n)->std::span<const u8> {
+    const auto* p=Bytes(guard,a,n);return p?std::span<const u8>(p,n):std::span<const u8>{};
+  });
+  if(std::getenv("OPENMUA2_PC_MENU_BOUNDS") &&
+     (s_pc_menu_pointer.click || consumed!=s_pc_menu_pointer.serial))
+    std::fprintf(stderr,"[openmua2] pointer gate blocked=%d valid=%d click=%d viewport=(%.4f,%.4f)-(%.4f,%.4f)\n",
+      blocked,s_pc_menu_pointer.valid,s_pc_menu_pointer.click,
+      s_pc_viewport.left,s_pc_viewport.top,s_pc_viewport.right,s_pc_viewport.bottom);
+  if(blocked || !s_pc_menu_pointer.valid) {
+    s_pc_menu_pointer.click=false;consumed=s_pc_menu_pointer.serial;return false;
+  }
+  if(!s_pc_menu_pointer.click && consumed==s_pc_menu_pointer.serial)return false;
+  consumed=s_pc_menu_pointer.serial;
+  const auto point=PcViewportPoint(s_pc_menu_pointer.x,s_pc_menu_pointer.y,s_pc_viewport);
+  u32 hit=0;
+  const u32 map=read(menu+moderngekko::roster::MenuMapPointer);
+  const auto* items=map?Bytes(guard,map,moderngekko::roster::MenuMapBytes):nullptr;
+  if(point && items && Word(items+8)==0x8118fb90 &&
+     Word(items+moderngekko::roster::MenuMapCount)<=moderngekko::roster::MenuItems) {
+    for(unsigned i=0;i<moderngekko::roster::MenuItems;++i) {
+      const u32 candidate=Word(items+moderngekko::roster::MenuMapValues+4*i);
+      const auto* item=candidate?Bytes(guard,candidate,0xac):nullptr;
+      // Match the native focus eligibility check at 80fc9410..80fc944c.
+      if(!item || Word(item)!=menu || !(item[0x4e]&0x10) || (item[0x4e]&0x2c))continue;
+      // Visible decorative scene nodes share these flags but have no action.
+      if(!Word(item+0x20) && !Word(item+0x24) && !Word(item+0x28))continue;
+      const auto bounds=ProjectedBounds(guard,candidate);
+      if(bounds && bounds->Contains((*point)[0],(*point)[1])) {hit=candidate;break;}
+    }
+  }
+  if(!hit) {s_pc_menu_pointer.click=false;return false;}
+  if(read(menu+0x458)!=hit) {
+    state.gpr[4]=hit;state.npc=0x80fc9bb0;
+    std::fprintf(stderr,"[openmua2] pointer focus: %s\n",Interned(guard,read(hit+4)).c_str());
+    return true;
+  }
+  if(!s_pc_menu_pointer.click)return false;
+  s_pc_menu_pointer.click=false;
+  // Release the mutex before Use can enter binding capture on the next guest step.
+  const u32 use=read(read(hit+0x9c)+0x4c);
+  if(use!=0x80fe2548)return false;
+  state.gpr[3]=hit;state.gpr[4]=0xffffffff;state.npc=use;
+  std::fprintf(stderr,"[openmua2] pointer activate: %s\n",Interned(guard,read(hit+4)).c_str());
+  return true;
+}
 void Install(const Core::CPUThreadGuard& guard) {
   const auto* update=Bytes(guard,0x80ff34fc,4);
   const auto* use=Bytes(guard,0x80fe2548,4);
   const auto* setter=Bytes(guard,0x80ff3688,4);
-  if(!update || !use || !setter || Word(update)!=0x9421fff0 || Word(use)!=0x9421fff0 || Word(setter)!=0x9421ffe0 ||
+  const auto* input=Bytes(guard,0x80fc9170,4);
+  const auto* focus=Bytes(guard,0x80fc9bb0,4);
+  if(!input || !focus || Word(input)!=0x9421ff40 || Word(focus)!=0x9421fff0 ||
+     !update || !use || !setter || Word(update)!=0x9421fff0 || Word(use)!=0x9421fff0 || Word(setter)!=0x9421ffe0 ||
      !HLE::SetExternalFunctionReplacement(guard,0x80ff34fc,Update) ||
-     !HLE::SetExternalFunctionReplacement(guard,0x80fe2548,Use)) {
+     !HLE::SetExternalFunctionReplacement(guard,0x80fe2548,Use) ||
+     !HLE::SetExternalFunctionReplacement(guard,0x80fc9170,PointerInput)) {
     roster_io::Abort(guard,"PC menu callback guards rejected");return;
   }
   owner=0;model.active=false;

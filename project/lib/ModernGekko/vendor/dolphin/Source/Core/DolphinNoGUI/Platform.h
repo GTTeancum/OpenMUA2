@@ -20,6 +20,7 @@ public:
     unsigned key = 0;
     bool down = false, repeat = false;
     double x = 0, y = 0;
+    double width = 0, height = 0; // Pointer client dimensions, not desktop coordinates.
   };
   // Installed before Init; invoked only by this application's window events.
   // Returning true consumes an event before emulator keyboard shortcuts.

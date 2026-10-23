@@ -1,4 +1,6 @@
 #include "mua2_pc_menu_geometry.hpp"
+#include "mua2_pc_menu_context.hpp"
+#include <map>
 #include "mua2_pc_controls.hpp"
 #include "mua2_pc_settings.hpp"
 #include "mua2_pc_binding_capture.hpp"
@@ -11,6 +13,34 @@ static bool On(const GamepadActions& a,unsigned id) {
 }
 #define CHECK(condition) do { if(!(condition)) { std::cerr << "line " << __LINE__ << ": " #condition "\n"; return 1; } } while(false)
 int main() {
+  std::map<std::uint32_t,std::vector<std::uint8_t>> guest;
+  auto put=[&](std::uint32_t a,std::uint32_t v) {
+    guest[a]={std::uint8_t(v>>24),std::uint8_t(v>>16),std::uint8_t(v>>8),std::uint8_t(v)};
+  };
+  const auto read=[&](std::uint32_t a,std::size_t n)->std::span<const std::uint8_t> {
+    auto it=guest.find(a);return it!=guest.end() && it->second.size()==n ?
+      std::span<const std::uint8_t>(it->second):std::span<const std::uint8_t>{};
+  };
+  CHECK(PcMenuModalBlocked(read));
+  put(0x80817374,0x90000000);put(0x90000000,0x811983b8);
+  put(0x808173b0,0x80001000);put(0x80001004,0x80542ba0);
+  put(0x90008a0c,6);put(0x800010dc,0);
+  const auto flag=0x90000000u+4+6*0x13b8+0x13a9;
+  guest[flag]={0};guest[0x90008a32]={0};
+  CHECK(!PcMenuModalBlocked(read));
+  guest[flag]={0x80};CHECK(PcMenuModalBlocked(read));guest[flag]={0};
+  guest[0x90008a32]={0x80};put(0x90008a10,1);CHECK(PcMenuModalBlocked(read));
+  put(0x90008a10,0);CHECK(!PcMenuModalBlocked(read));
+  put(0x800010dc,3);CHECK(PcMenuModalBlocked(read));put(0x800010dc,0);
+  guest.erase(flag);CHECK(PcMenuModalBlocked(read));
+  const PcMenuRect letterbox{0,.125,1,.875};
+  auto center=PcViewportPoint(.5,.5,letterbox);
+  CHECK(center && (*center)[0]==.5 && (*center)[1]==.5);
+  CHECK(!PcViewportPoint(.5,.1,letterbox));
+  CHECK(!PcViewportPoint(.5,.875,letterbox));
+  CHECK(!PcViewportPoint(1,.5,{0,0,1,1}));
+  CHECK(!PcViewportPoint(.5,.5,{0,0,0,0}));
+  CHECK(!PcViewportPoint(std::numeric_limits<double>::quiet_NaN(),.5,letterbox));
   PcBindingCapture capture;
   capture.Key(13,true);capture.Begin(unsigned(PcAction::Use),0,false,false);
   capture.Key('Z',true);capture.Key('Z',false); // held activation key: not armed

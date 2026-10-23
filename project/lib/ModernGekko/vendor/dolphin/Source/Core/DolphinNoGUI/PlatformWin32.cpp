@@ -368,9 +368,12 @@ LRESULT PlatformWin32::WndProc(const HWND hwnd, const UINT msg, const WPARAM wPa
     {
       TRACKMOUSEEVENT tracking{sizeof(TRACKMOUSEEVENT), TME_LEAVE, hwnd, 0};
       TrackMouseEvent(&tracking);
+      RECT client{};
+      GetClientRect(hwnd, &client);
       platform->HandleInput({InputEvent::Type::Pointer, 0, false, false,
                             static_cast<double>(static_cast<short>(LOWORD(lParam))),
-                            static_cast<double>(static_cast<short>(HIWORD(lParam)))});
+                            static_cast<double>(static_cast<short>(HIWORD(lParam))),
+                            double(client.right), double(client.bottom)});
     }
     else if (msg == WM_MOUSELEAVE)
       platform->HandleInput({InputEvent::Type::PointerLeave});

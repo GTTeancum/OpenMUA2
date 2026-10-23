@@ -210,3 +210,23 @@ Run 17's `options-result.png` shows full red PC panels with the original MUA2
 background. This is visual progress, not completed PC settings: values, command
 hooks, mouse navigation, advanced-page integration and HD renderer application
 still require implementation and validation. Installed game remains unchanged.
+
+## Native pointer routing - 2026-10-22 (in progress)
+
+The game window supplies client mouse coordinates and dimensions. The rendering
+thread publishes its actual viewport under the input mutex; letterbox/pillarbox
+clicks are rejected. Headless tests use normalized native-capture image space
+because there is no client window. This does not verify Windows client scaling.
+
+The process-local automation command `pc_pointer` takes only `x=0..1` and
+`y=0..1`; `pc_key` with `key=1` presses/releases the local left mouse button.
+Neither command moves the desktop cursor or sends OS/window messages.
+
+Pointer focus/activation currently targets Options and Advanced. It uses the
+normal native menu input callback, current world bounds/camera, native focus
+setter and native item Use callback. Decorative objects without commands are
+excluded. Modal dialog/save state blocks the underlying menu; keyboard/controller
+dialog confirmation is retained. Left-click is suppressed as generic confirm
+in these menus so clicking empty space cannot activate the last focused item.
+Mouse sliders/wheel behavior, complete dialog navigation, hit-area coverage and
+windowed output still require validation/implementation before TODO #1 closes.

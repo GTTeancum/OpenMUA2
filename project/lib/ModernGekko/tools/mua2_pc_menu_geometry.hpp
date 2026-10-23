@@ -13,6 +13,15 @@ struct PcMenuRect {
            x>=left && x<right && y>=top && y<bottom;
   }
 };
+// Map client-normalized coordinates through the renderer's actual viewport.
+// Letterbox/pillarbox bars and invalid dimensions never produce a menu target.
+inline std::optional<std::array<double,2>> PcViewportPoint(
+    double x,double y,const PcMenuRect& viewport) {
+  const double w=viewport.right-viewport.left,h=viewport.bottom-viewport.top;
+  if(!std::isfinite(w) || !std::isfinite(h) || w<=0 || h<=0 ||
+     x<0 || y<0 || x>=1 || y>=1 || !viewport.Contains(x,y))return {};
+  return std::array<double,2>{(x-viewport.left)/w,(y-viewport.top)/h};
+}
 // Alchemy matrices use row vectors. Bounds are world-space X, top Z, Y,
 // width X, height Z, depth Y, as maintained by CMenuItem's native layout.
 inline std::optional<PcMenuRect> PcProjectMenuBounds(

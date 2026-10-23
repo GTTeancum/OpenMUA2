@@ -165,6 +165,7 @@ std::optional<CommandType> ParseCommandType(std::string_view value)
   const std::string text = Trim(value);
   if (text == "xbox_frames") return CommandType::XboxFrames;
   if (text == "pc_key") return CommandType::PcKey;
+  if (text == "pc_pointer") return CommandType::PcPointer;
   if (text == "xbox_time") return CommandType::XboxTime;
   if (text == "xbox_sequence") return CommandType::XboxSequence;
   if (text == "check_memory") return CommandType::CheckMemory;
@@ -482,6 +483,18 @@ bool ParseCommandFile(const std::filesystem::path& path, Command* command, std::
 
   switch (*type)
   {
+  case CommandType::PcPointer:
+  {
+    const auto x=values.find("x"),y=values.find("y");
+    const auto px=x==values.end()?std::optional<double>{}:ParseDouble(x->second);
+    const auto py=y==values.end()?std::optional<double>{}:ParseDouble(y->second);
+    if(values.size()!=3 || !px || !py || !std::isfinite(*px) || !std::isfinite(*py) ||
+       *px<0 || *px>1 || *py<0 || *py>1) {
+      if(error)*error="pc_pointer requires only normalized client x=0..1 and y=0..1";
+      return false;
+    }
+    parsed.pc_x=*px;parsed.pc_y=*py;break;
+  }
   case CommandType::PcKey:
   {
     const auto key=values.find("key"),down=values.find("down");

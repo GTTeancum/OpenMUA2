@@ -1,5 +1,50 @@
 # Current status â€” GitHub main
 
+## Native Options pointer navigation checkpoint - 2026-10-22
+
+Window pointer events now carry client dimensions. The rendering thread publishes
+its actual viewport under the input mutex; normalized hit testing excludes window
+bars. Process-local pc_pointer tests use normalized native capture coordinates in
+headless mode (no client/backbuffer). No OS input or desktop capture is involved.
+The native menu input callback selects current actionable item bounds, tail-calls
+the native focus setter and Use callback. Decorative scene nodes have no command
+and cannot intercept hits. Generic left-click confirmation is suppressed in these
+Options menus, so empty-space clicks cannot activate the last keyboard selection.
+Dialog/save guards block underlying menu actions; the provider also discards
+pending clicks while dialogs suspend menu updates, preventing delayed activation.
+
+Final Windows runtime build succeeded without warnings/errors:
+.local/pc-controls/pointer-build-4.log; binary remains the supported
+.local/build/windows-x64/runtime/moderngekko-run.exe. Focused CTests pass 3/3:
+PC controls, gamepad actions, automation protocol. Added tests cover viewport/bar
+rejection, strict pointer parsing, active/queued dialog and busy-save guards.
+
+Live evidence: run 44 and final-build run 45 navigated from cold boot with normal
+contained key input, hovered label_click02, clicked into Advanced, and ignored
+an empty-space click. Returning with Escape and opening Save Options, a click at
+the underlying Advanced position preserved Options/Accept and the active dialog.
+Run 45 then acknowledged Save Successful and settled at cw_main. Its initial
+assertion incorrectly assumed Right selected No; actual native screenshot proved
+Save Successful instead. A subsequent immediate read caught an empty transition;
+a settled read proved cw_main. These are test assumptions corrected from evidence,
+not game exit defects. No claim of a tested No/cancel dialog branch.
+
+Run 44 mouse-opened-advanced.png was inspected: native red panels and expected
+settings/bindings render; background remains too bright and layout/footer polish
+is unfinished. Run 45 dialog-after-confirm.png was inspected. Earlier runs caught
+and corrected headless zero-viewport rejection (42) and a decorative star taking
+focus (43). Their compact failure logs remain. Runs 41-45 stopped normally; one
+CPU and Null audio throughout, no audible audio/gameplay performance acceptance.
+
+TODO #1 remains open: complete mouse hit areas/sliders/wheel/dialog operation,
+remaining binding/gameplay checks, layout/footer polish, and actual HD/windowed
+output validation. Installed game unchanged. TODO #4 terminology scan deferred.
+No backups/new game copies. Repository logical size (excluding reparse points,
+hardlinks counted per path) was 19.08 GiB; free D space ~101.8 GiB. Removed the
+superseded run-42 failed-hover PNG (1,116,315 bytes); retained successful run-44
+capture and compact logs. No proprietary assets staged.
+
+
 ## Native menu projection established for mouse navigation - 2026-10-22
 
 Added mua2_pc_menu_geometry.hpp: invert Alchemy's actual row-vector camera matrix,
