@@ -1,8 +1,8 @@
 # Original Xbox compatibility: survey and prioritized plan
 
-Branch: `original-xbox` (created from `main` @ `e0f402e2`). Status: **planning only, no
-Xbox code yet.** Every number below comes from files in this repo unless it is marked
-*unverified*.
+Branch: `original-xbox` (created from `main` @ `e0f402e2`). Status: **planning, plus a
+game-free nxdk smoke XBE that builds in CI** (run 42723871079, commit `74f82177`). Every
+number below comes from files in this repo unless it is marked *unverified*.
 
 ## 1. What OpenMUA2 actually is
 
@@ -136,8 +136,19 @@ with igb-blender (per the brief). That makes the most realistic Xbox deliverable
   `original-xbox` only is authorized by the maintainer's task brief.
 
 ## 6. Not verified in this pass
-- Nothing was built or run. There is no disc and no Windows host, and GitHub push
-  auth was unavailable when this was written.
+- Only `xbox/smoke` was built, in GitHub Actions: Ubuntu clang 18.1.3, nxdk `004fefbf`,
+  `default.xbe` 114,688 bytes, sha256
+  `3cd48b59d60120108a069dbeb44cb034d350f34f9b75dc5e0dbaefbf1fa68d98`. The only build
+  warning is nxdk's own lld `.edata` merge notice. The XBE has **not been run** on
+  hardware or xemu.
+- The OpenMUA2 runtime was not built for any platform. There is no disc and no
+  Windows host in this environment.
+- Raw Actions logs and artifacts are served from blob storage that the automation
+  environment can't reach. The workflow therefore mirrors diagnostics into
+  annotations, which are read via the REST API.
+- The workflow uses Node 24 action majors (`checkout@v7`, `cache@v6`,
+  `upload-artifact@v7`). These are the latest tags seen; see the latest run for
+  verification.
 - The PIII/NV2A performance gap is an estimate, not a measurement.
 - The real MUA2 memory footprint is unknown (P0.1).
 - The expansion factor for recompiled code is unknown (P0.2).

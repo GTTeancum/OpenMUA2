@@ -1,4 +1,19 @@
-# Current status â€” GitHub main
+# Current status — original-xbox branch
+
+## Original Xbox feasibility survey and nxdk smoke build - 2026-11-09
+
+Branch original-xbox (from main e0f402e2). Survey and plan:
+docs/ORIGINAL-XBOX-PORT-PLAN.md. The runtime as delivered cannot target the original
+Xbox: 88 MiB Wii guest RAM vs 64 MiB UMA, ~8.6 MB PPC text, 64-bit-only RecompCore
+CMake, no GX->NV2A path. P0 feasibility gates come before any port work.
+
+Added xbox/smoke, a game-free nxdk XBE that reports MmQueryStatistics, plus
+.github/workflows/xbox-nxdk.yml (pinned nxdk 004fefbf). The GitHub Actions run
+passed: clang 18.1.3, default.xbe 114688 bytes. Not run on hardware or xemu. No
+Windows build, disc, WBFS or game data was used or touched. main unchanged.
+
+
+# Earlier status (GitHub main)
 
 ## 0.9.0b release packaging and first-run setup - 2026-10-23
 

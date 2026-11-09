@@ -29,7 +29,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install toolchain (llvm/lld; clang preinstalled)
         run: |
@@ -39,7 +39,7 @@ jobs:
 
       - name: Cache nxdk build
         id: cache-nxdk
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .nxdk
           key: nxdk-${{ env.NXDK_REF }}-ubuntu-24.04-v1
@@ -81,7 +81,7 @@ jobs:
           echo "::notice::$(clang --version | head -n1) | nxdk $NXDK_REF | default.xbe $(stat -c %s bin/default.xbe) bytes sha256 $(sha256sum bin/default.xbe | cut -c1-64)"
 
       - name: Upload XBE
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: openmua2-xbox-smoke
           path: xbox/smoke/bin/default.xbe
