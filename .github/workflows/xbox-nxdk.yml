@@ -1,0 +1,76 @@
+name: Original Xbox (nxdk)
+
+# Builds the OpenMUA2 original-Xbox targets with the open-source nxdk.
+# No game data, XDK or proprietary SDK is used or downloaded.
+on:
+  push:
+    branches: [original-xbox]
+    paths:
+      - "xbox/**"
+      - ".github/workflows/xbox-nxdk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned nxdk revision; bump deliberately.
+  NXDK_REPO: https://github.com/XboxDev/nxdk.git
+  NXDK_REF: 004fefbfe8fd93a5ea8ee9a95ff187b0f58ec8ed
+
+jobs:
+  smoke:
+    name: nxdk smoke XBE
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install toolchain (llvm/lld; clang preinstalled)
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install llvm lld pkgconf
+          clang --version
+
+      - name: Cache nxdk build
+        id: cache-nxdk
+        uses: actions/cache@v4
+        with:
+          path: .nxdk
+          key: nxdk-${{ env.NXDK_REF }}-ubuntu-24.04-v1
+
+      - name: Fetch nxdk
+        if: steps.cache-nxdk.outputs.cache-hit != 'true'
+        run: |
+          git init .nxdk
+          git -C .nxdk remote add origin "$NXDK_REPO"
+          git -C .nxdk fetch --depth 1 origin "$NXDK_REF"
+          git -C .nxdk checkout --detach FETCH_HEAD
+          git -C .nxdk submodule update --init --recursive --depth 1
+
+      - name: Build nxdk libraries
+        if: steps.cache-nxdk.outputs.cache-hit != 'true'
+        working-directory: .nxdk
+        run: |
+          eval "$(./bin/activate -s)"
+          make NXDK_ONLY=y -j"$(nproc)"
+
+      - name: Build smoke XBE
+        working-directory: xbox/smoke
+        run: |
+          eval "$("$GITHUB_WORKSPACE/.nxdk/bin/activate" -s)"
+          make NXDK_DIR="$GITHUB_WORKSPACE/.nxdk" -j"$(nproc)"
+          ls -l bin
+          sha256sum bin/default.xbe
+
+      - name: Upload XBE
+        uses: actions/upload-artifact@v4
+        with:
+          name: openmua2-xbox-smoke
+          path: xbox/smoke/bin/default.xbe
+          if-no-files-found: error

@@ -76,9 +76,10 @@ confirm that.
 2. **Code-size probe.** Run DolRecomp's C backend (`BACKEND=c`) and compile the
    output with `clang --target=i386-pc-win32 -Os`. Record the `.text` size. This needs
    a disc, so it runs locally, not in CI. No game-derived output may be committed.
-3. **nxdk smoke target.** Add a GitHub Actions workflow on this branch that builds
-   nxdk's toolchain and a trivial XBE (`xbox/hello`) that links. This proves the CI
-   path that every later step uses. It contains no game code.
+3. **nxdk smoke target.** `.github/workflows/xbox-nxdk.yml` builds pinned nxdk and
+   `xbox/smoke`, a game-free XBE that prints the kernel's physical memory statistics.
+   It uploads `default.xbe` as an artifact. Running it on hardware or xemu gives the
+   real free-RAM figure to compare with P0.1.
 4. **Decide** on the outcome of steps 1 and 2.
 
 ### P1: Recommended direction if P0 confirms infeasibility: content port to the MUA1 Xbox engine
@@ -122,8 +123,13 @@ with igb-blender (per the brief). That makes the most realistic Xbox deliverable
   reverse-engineered format readers. Do not use leaked SDK binaries.
 - **igb-blender** license: *not verified*. Check before vendoring or redistributing
   any of its code.
-- **nxdk** is a mix of permissive and other licenses. Check its compatibility with
-  this repo's GPL-3.0 per component before linking. *Unverified*.
+- **nxdk** (pinned `004fefbf`) declares `Apache-2.0 AND BSD-3-Clause AND CC0-1.0 AND
+  GPL-2.0-or-later AND MIT` plus `LicenseRef-NVIDIA-CG`. The first five are
+  GPL-3.0-compatible. The NVIDIA one covers the bundled **proprietary NVIDIA Cg
+  compiler** (`tools/cg/*/cgc`), which only compiles shaders. The smoke XBE doesn't
+  use it. Any future NV2A shader work must either accept its terms (it is
+  redistributable freeware, *terms not reviewed here*) or use an open shader path.
+  Don't vendor `cgc` into this repo.
 - **GPL obligations.** Any XBE built from RecompCore/Dolphin code is GPL-3.0 and needs
   corresponding source.
 - The repo's `AGENTS.md` says never to push without authorization. Pushing to

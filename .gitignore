@@ -36,3 +36,8 @@ __pycache__/
 /*.zip.*
 /*.7z
 /*.7z.*
+
+# nxdk checkout used by xbox/ builds
+/.nxdk/
+/xbox/*/bin/
+/xbox/*/*.iso
