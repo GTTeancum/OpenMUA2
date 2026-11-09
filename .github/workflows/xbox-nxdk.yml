@@ -62,11 +62,23 @@ jobs:
 
       - name: Build smoke XBE
         working-directory: xbox/smoke
+        # Diagnostics are also emitted as annotations, which are readable through
+        # the REST API (check-runs/<id>/annotations) when raw logs are not.
         run: |
           eval "$("$GITHUB_WORKSPACE/.nxdk/bin/activate" -s)"
-          make NXDK_DIR="$GITHUB_WORKSPACE/.nxdk" -j"$(nproc)"
+          set +e
+          make NXDK_DIR="$GITHUB_WORKSPACE/.nxdk" -j"$(nproc)" 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          grep -E '(error|warning):' build.log | head -40 | while IFS= read -r line; do
+            case "$line" in *error:*) echo "::error::$line";; *) echo "::warning::$line";; esac
+          done
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::make failed with exit $rc; last lines: $(tail -n 5 build.log | tr '\n' ' ')"
+            exit "$rc"
+          fi
           ls -l bin
-          sha256sum bin/default.xbe
+          echo "::notice::$(clang --version | head -n1) | nxdk $NXDK_REF | default.xbe $(stat -c %s bin/default.xbe) bytes sha256 $(sha256sum bin/default.xbe | cut -c1-64)"
 
       - name: Upload XBE
         uses: actions/upload-artifact@v4
