@@ -50,6 +50,7 @@ jobs:
             moderngekko_frontend_config_gamecube_test
             moderngekko_pgo_support_test
             moderngekko_port_command_line_test
+            moderngekko_memory_census_test
           "
           for target in $targets; do
             cmake --build build/moderngekko --config Release --target "$target" --parallel 2
@@ -61,7 +62,7 @@ jobs:
           --test-dir build/moderngekko
           -C Release
           --output-on-failure
-          -R "moderngekko\.(launcher_savestates|dol_patch|frontend_config|pgo_support|port_command_line)"
+          -R "moderngekko\.(launcher_savestates|dol_patch|frontend_config|pgo_support|port_command_line|memory_census)"
 
   full-build:
     name: Full build and test (${{ matrix.os }})

@@ -70,6 +70,7 @@
 #include "VideoCommon/VideoConfig.h"
 #include "automation_protocol.hpp"
 #include "frame_timing.hpp"
+#include "memory_census.hpp"
 #include "dolphin_runtime_internal.hpp"
 #include "moderngekko/cpu_state.h"
 #include "moderngekko/mod_loader.hpp"
@@ -2634,6 +2635,10 @@ struct Runtime::Impl {
   std::filesystem::path frame_timing_path;
   std::unique_ptr<moderngekko::telemetry::PresentationTiming> presentation_timing;
   std::filesystem::path presentation_timing_path;
+  // OPENMUA2_MEMORY_CENSUS: guest RAM footprint sampler (original-Xbox P0.1).
+  std::unique_ptr<moderngekko::telemetry::MemoryCensus> memory_census;
+  std::filesystem::path memory_census_path;
+  std::jthread memory_census_thread;
   bool automation_registered = false;
   std::jthread automation_thread;
 };
@@ -2913,6 +2918,10 @@ Runtime::~Runtime() {
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: destructor stopping automation\n");
   StopAutomation();
+  if (m_impl->memory_census_thread.joinable()) {
+    m_impl->memory_census_thread.request_stop();
+    m_impl->memory_census_thread.join();
+  }
   if (m_impl->booted) {
     if (shutdown_trace)
       std::fprintf(stderr, "[moderngekko] runtime: destructor stopping booted core\n");
@@ -3128,6 +3137,42 @@ RuntimeRunResult Runtime::Run() {
     m_impl->frame_timing_path = path;
     m_impl->frame_timing = std::make_unique<moderngekko::telemetry::FrameTiming>();
   }
+  if (const char* path = std::getenv("OPENMUA2_MEMORY_CENSUS"); path && *path) {
+    unsigned interval_ms = 1000;
+    if (const char* text = std::getenv("OPENMUA2_MEMORY_CENSUS_INTERVAL_MS"); text && *text)
+      interval_ms = std::clamp(static_cast<unsigned>(std::strtoul(text, nullptr, 10)), 100u, 600000u);
+    m_impl->memory_census_path = path;
+    m_impl->memory_census = std::make_unique<moderngekko::telemetry::MemoryCensus>();
+    std::fprintf(stderr, "[openmua2] memory census every %u ms -> %s\n", interval_ms, path);
+    // Runs on its own thread so the CPU/video threads keep their timing. It is
+    // joined before Core::Stop, so guest RAM stays mapped while it samples.
+    m_impl->memory_census_thread = std::jthread(
+        [census = m_impl->memory_census.get(), state = &m_impl->automation_state,
+         interval_ms](std::stop_token stop_token) {
+          const auto start = std::chrono::steady_clock::now();
+          while (!stop_token.stop_requested()) {
+            for (unsigned waited = 0; waited < interval_ms && !stop_token.stop_requested();
+                 waited += 50)
+              std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            if (stop_token.stop_requested())
+              break;
+            auto& system = Core::System::GetInstance();
+            if (!Core::IsRunning(system))
+              continue;
+            auto& memory = system.GetMemory();
+            if (!memory.IsInitialized() || !memory.GetRAM())
+              continue;
+            const std::span<const u8> mem1(memory.GetRAM(), memory.GetRamSizeReal());
+            const std::span<const u8> mem2 =
+                memory.GetEXRAM() ? std::span<const u8>(memory.GetEXRAM(), memory.GetExRamSizeReal())
+                                  : std::span<const u8>{};
+            const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - start).count();
+            census->Sample(state->frame_count.load(std::memory_order_relaxed),
+                           static_cast<std::uint64_t>(ms), mem1, mem2);
+          }
+        });
+  }
   if (const char* path = std::getenv("MODERNGEKKO_PRESENT_TIMES"); path && *path) {
     m_impl->presentation_timing_path = path;
     m_impl->presentation_timing =
@@ -3268,6 +3313,10 @@ RuntimeRunResult Runtime::Run() {
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: stopping automation\n");
   StopAutomation();
+  if (m_impl->memory_census_thread.joinable()) {
+    m_impl->memory_census_thread.request_stop();
+    m_impl->memory_census_thread.join();
+  }
   if (shutdown_trace)
     std::fprintf(stderr, "[moderngekko] runtime: stopping core\n");
   Core::Stop(Core::System::GetInstance());
@@ -3283,6 +3332,17 @@ RuntimeRunResult Runtime::Run() {
     if (!output)
       std::fprintf(stderr, "[moderngekko] failed to write frame timing trace\n");
     m_impl->frame_timing.reset();
+  }
+  if (m_impl->memory_census) {
+    std::ofstream output(m_impl->memory_census_path);
+    m_impl->memory_census->Write(output);
+    output.close();
+    if (!output)
+      std::fprintf(stderr, "[openmua2] failed to write memory census\n");
+    else
+      std::fprintf(stderr, "[openmua2] memory census: %llu samples written\n",
+                   static_cast<unsigned long long>(m_impl->memory_census->SampleCount()));
+    m_impl->memory_census.reset();
   }
   if (m_impl->presentation_timing) {
     std::ofstream output(m_impl->presentation_timing_path);

@@ -778,6 +778,12 @@ if(BUILD_TESTING)
     target_compile_features(moderngekko_frame_timing_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.frame_timing COMMAND moderngekko_frame_timing_test)
 
+    add_executable(moderngekko_memory_census_test tests/memory_census_test.cpp)
+    target_include_directories(moderngekko_memory_census_test PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/tools")
+    target_compile_features(moderngekko_memory_census_test PRIVATE cxx_std_23)
+    add_test(NAME moderngekko.memory_census COMMAND moderngekko_memory_census_test)
+
     add_executable(moderngekko_sharded_pointer_map_test tests/sharded_pointer_map_test.cpp)
     target_compile_features(moderngekko_sharded_pointer_map_test PRIVATE cxx_std_23)
     add_test(NAME moderngekko.sharded_pointer_map COMMAND moderngekko_sharded_pointer_map_test)
