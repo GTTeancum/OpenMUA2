@@ -134,8 +134,11 @@ effort. It would also need XDK 5849's proprietary MSVC 7.1 compiler.
 - **Memory:** the earlier "pools grow on demand" reading was wrong. The game's own
   memory manager creates nine fixed pools at startup, about 17.7 MiB in total,
   plus one without a fixed size. The largest are about 7.3 MiB and 5.9 MiB.
-  Which pool holds level assets is not yet known; details are in the private
-  notes.
+  From static analysis (not yet measured at runtime), level packages load into
+  the 7.3 MiB pool, which they share with dialogue, movie and zone data; sounds
+  use the 5.9 MiB pool; and each playable character probably gets one of four
+  0.66 MiB pools. A converted MUA2 level should be budgeted against those
+  numbers. Details are in the private notes.
 
 ### P1: Recommended direction if P0 confirms infeasibility: content port to the MUA1 Xbox engine
 The MUA1 Xbox XBE is the reference here: its size, sections and heap layout show
