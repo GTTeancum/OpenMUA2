@@ -64,6 +64,17 @@ jobs:
           --output-on-failure
           -R "moderngekko\.(launcher_savestates|dol_patch|frontend_config|pgo_support|port_command_line|memory_census)"
 
+      - name: Annotate failing tests
+        if: failure()
+        shell: bash
+        run: |
+          # Raw logs are not reachable by some automation; mirror failures into
+          # annotations (readable through the check-runs REST API).
+          f=build/moderngekko/Testing/Temporary/LastTestsFailed.log
+          if [ -f "$f" ]; then
+            while IFS= read -r line; do echo "::error::ctest failed: $line"; done < "$f"
+          fi
+
   full-build:
     name: Full build and test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -103,7 +114,18 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
-        run: cmake --build build/moderngekko --parallel 2
+        shell: bash
+        run: |
+          set -o pipefail
+          cmake --build build/moderngekko --parallel 2 2>&1 | tee build.log
+
+      - name: Annotate build errors
+        if: failure()
+        shell: bash
+        run: |
+          [ -f build.log ] || exit 0
+          grep -nE "(error|Error)[ :]|FAILED:|fatal error|undefined reference|unresolved external" build.log \
+            | head -30 | cut -c1-900 | while IFS= read -r line; do echo "::error::$line"; done
 
       - name: Test
         run: >-
@@ -113,6 +135,17 @@ jobs:
           --output-on-failure
           --timeout 300
           -E "fullbench|fuzzer|zstreamtest"
+
+      - name: Annotate failing tests
+        if: failure()
+        shell: bash
+        run: |
+          # Raw logs are not reachable by some automation; mirror failures into
+          # annotations (readable through the check-runs REST API).
+          f=build/moderngekko/Testing/Temporary/LastTestsFailed.log
+          if [ -f "$f" ]; then
+            while IFS= read -r line; do echo "::error::ctest failed: $line"; done < "$f"
+          fi
 
       - name: Upload Linux runtime kit
         if: runner.os == 'Linux'
