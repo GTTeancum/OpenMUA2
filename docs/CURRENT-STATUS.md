@@ -1,5 +1,21 @@
 # Current status — original-xbox branch
 
+## P0.1 memory census, 10 MB XBE budget, XBE inspector - 2026-11-10
+
+Maintainer requirement: an XBE must stay under 10 MB. xbox-nxdk.yml enforces it with
+tools/inspect_xbe.py, which exits 1 over budget and 2 if the XBE is malformed. The
+smoke XBE is 114688 B (image 119060 B; .text 86016 B), retail key, and parsed
+correctly in CI. A recompiled MUA2 (8.57 MB of PPC text before expansion) is
+expected to miss this budget. P0.2 still needs one measurement to confirm.
+
+OPENMUA2_MEMORY_CENSUS=<file> (opt-in; off by default) samples MEM1/MEM2 page usage
+on its own thread and writes a CSV at shutdown. The Windows full build and all
+tests pass (ModernGekko CI run 42725759349). It has not been run with the game yet:
+it needs the maintainer's disc on Windows. Ubuntu CI failures are inherited from
+main and documented in the plan, section 7. No WBFS, game data, or installed
+EXE/WAD was touched.
+
+
 ## Original Xbox feasibility survey and nxdk smoke build - 2026-11-09
 
 Branch original-xbox (from main e0f402e2). Survey and plan:

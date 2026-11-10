@@ -117,7 +117,12 @@ with igb-blender (per the brief). That makes the most realistic Xbox deliverable
 **MUA1-Xbox-engine mod that carries MUA2 content**, not OpenMUA2's runtime.
 1. Ask the user for a legally dumped **MUA1 Xbox XBE** (their own copy). Use it only
    locally, for RE of heap layout, streaming budgets and per-level memory ceilings.
-   It is never committed.
+   It is never committed. The first measurement is ready to run:
+   `python tools/inspect_xbe.py <MUA1 default.xbe> --json > .local/xbox/mua1-xbe.json`.
+   This reports load-image size, code/data/zero-fill per section, the linked XDK
+   library versions, and the 10 MB budget check. It only parses public header
+   structures and extracts no code or data. It has been validated against a real
+   cxbe-built XBE in CI; it has not been tested on a commercial XDK-built XBE yet.
 2. Build `tools/xbox_budget.py`, which checks converted packages against MUA1 Xbox's
    measured per-level texture/geometry/audio budgets.
 3. Extend the asset pipeline (`tools/alchemy_batch`, `build_content_pack.py`) with an
@@ -182,3 +187,16 @@ with igb-blender (per the brief). That makes the most realistic Xbox deliverable
 - The real MUA2 memory footprint is unknown (P0.1).
 - The expansion factor for recompiled code is unknown (P0.2).
 - Whether MUA1's engine can express MUA2 mechanics is unknown.
+
+## 7. CI baseline on this branch (failures inherited from `main`)
+Dispatched runs on `original-xbox` reproduce the same failures that `main` already
+had. None of them involve Xbox changes:
+- ModernGekko CI, Standalone tests (Ubuntu): `moderngekko.frontend_config` fails.
+  The new `moderngekko.memory_census` test passes on both OSes.
+- ModernGekko CI, Full build (Ubuntu): the build step fails, as on `main`.
+  The Windows full build and tests pass with the census change.
+- OpenMUA2 tooling CI (Ubuntu): `test_scm_revision` fails 3 times. Dolphin's
+  `CMake/ScmRevGen.cmake` exits 1, which also reproduces locally. On Windows
+  everything passes, including `test_inspect_xbe`.
+- The ModernGekko and tooling workflows now mirror failing tests and compiler errors
+  into annotations, so they can be read through the REST API.
