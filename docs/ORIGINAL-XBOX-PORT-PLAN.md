@@ -108,6 +108,32 @@ confirm that.
    real free-RAM figure to compare with P0.1.
 4. **Decide** on the outcome of steps 1 and 2.
 
+### Decision (2026-11-10): pivot to a non-matching decomp of MUA1 Xbox
+The maintainer chose to pivot: MUA1's Xbox engine becomes the base, and it is
+being decompiled (non-matching: readable C, not byte-identical) so that it can be
+changed to carry MUA2 content and mechanics. A matching decomp was ruled out on
+effort. It would also need XDK 5849's proprietary MSVC 7.1 compiler.
+
+- **Where:** a *private* repository of the maintainer's, not this public repo. The
+  decompiled code is derived from Activision/Raven code, so it is not GPL and
+  must not be published. This repo receives no game-derived code, data or
+  symbols, only plan-level notes like this one.
+- **How:** Ghidra 12.2 headless with custom scripts (GPL-3.0, original work).
+  They handle XBE mapping, kernel imports, MSVC RTTI classes and vtables, Alchemy
+  "ARK" class registrations and reflected fields, constructor/method/singleton
+  recovery, XDK and third-party library separation, and the script-binding
+  tables. These tools contain no game data and could be published separately,
+  after a licence review, if the maintainer wants.
+- **Status (static analysis only, nothing run):**
+  - About 24,200 functions decompiled.
+  - About 65% placed in classes, libraries or inferred source files.
+  - About 1,100 C++ classes and 476 Alchemy classes with exact sizes, and an
+    exact-layout type header that compiles.
+  - MUA1's script API (370 bindings), the surface converted MUA2 missions would
+    target.
+- **Memory:** the pools seem to grow on demand rather than having fixed budgets,
+  so the per-level asset budget needs a runtime measurement. Unverified.
+
 ### P1: Recommended direction if P0 confirms infeasibility: content port to the MUA1 Xbox engine
 The MUA1 Xbox XBE is the reference here: its size, sections and heap layout show
 what a shipped Alchemy-3.2 game on this hardware fits within the 10 MB/64 MiB
