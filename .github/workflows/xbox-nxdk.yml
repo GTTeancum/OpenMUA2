@@ -78,6 +78,14 @@ jobs:
             exit "$rc"
           fi
           ls -l bin
+          # Hard budget from the maintainer: an XBE must stay under 10 MB to leave
+          # any room for the game in 64 MiB. Fail the build if it doesn't.
+          size=$(stat -c %s bin/default.xbe)
+          limit=$((10 * 1000 * 1000))
+          if [ "$size" -ge "$limit" ]; then
+            echo "::error::default.xbe is $size bytes; budget is < $limit bytes (10 MB)"
+            exit 1
+          fi
           echo "::notice::$(clang --version | head -n1) | nxdk $NXDK_REF | default.xbe $(stat -c %s bin/default.xbe) bytes sha256 $(sha256sum bin/default.xbe | cut -c1-64)"
 
       - name: Upload XBE

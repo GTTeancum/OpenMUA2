@@ -92,9 +92,16 @@ confirm that.
    The census measures guest RAM only. Wii textures in guest RAM double as GPU memory
    on the Wii, but on the Xbox they would be converted into a second copy unless
    aliased.
-2. **Code-size probe.** Run DolRecomp's C backend (`BACKEND=c`) and compile the
-   output with `clang --target=i386-pc-win32 -Os`. Record the `.text` size. This needs
-   a disc, so it runs locally, not in CI. No game-derived output may be committed.
+2. **Code-size probe, against a hard limit: the XBE must be under 10 MB** (maintainer
+   requirement, 2026-11-09). The Xbox CI enforces this on every XBE it builds. Run
+   DolRecomp's C backend (`BACKEND=c`) and compile the output with
+   `clang --target=i386-pc-win32 -Os`. Record the `.text` size. This needs a disc,
+   so it runs locally, not in CI. No game-derived output may be committed.
+   *Expected outcome:* the input PPC text alone is about 8.57 MB. Recompiled x86
+   code is never smaller than that, and is usually several times larger. With a
+   runtime, initialized data (DOL data about 0.8 MB plus REL data about 0.36 MB) and
+   the 10 MB cap, this gate is very likely to **fail**. Run it anyway, because one
+   measured number settles the question.
 3. **nxdk smoke target.** `.github/workflows/xbox-nxdk.yml` builds pinned nxdk and
    `xbox/smoke`, a game-free XBE that prints the kernel's physical memory statistics.
    It uploads `default.xbe` as an artifact. Running it on hardware or xemu gives the
@@ -102,6 +109,9 @@ confirm that.
 4. **Decide** on the outcome of steps 1 and 2.
 
 ### P1: Recommended direction if P0 confirms infeasibility: content port to the MUA1 Xbox engine
+The MUA1 Xbox XBE is the reference here: its size, sections and heap layout show
+what a shipped Alchemy-3.2 game on this hardware fits within the 10 MB/64 MiB
+budget. Measure that before planning content, using step 1 below.
 MUA2 Wii assets can be back-converted from Alchemy 3.5 to MUA1 Xbox's Alchemy 3.2
 with igb-blender (per the brief). That makes the most realistic Xbox deliverable a
 **MUA1-Xbox-engine mod that carries MUA2 content**, not OpenMUA2's runtime.
