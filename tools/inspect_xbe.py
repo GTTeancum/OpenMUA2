@@ -183,15 +183,32 @@ def parse(data: bytes, path: str = "<memory>") -> XbeInfo:
             major, minor, build, flags = struct.unpack_from("<4H", data, o + 8)
             info.libraries.append(Library(name, f"{major}.{minor}.{build}", flags))
 
-    exe = [s for s in info.sections if "executable" in s.flags]
-    info.totals = {
-        "code_virtual": sum(s.virtual_size for s in exe),
-        "data_virtual": sum(s.virtual_size for s in info.sections if "executable" not in s.flags),
-        "raw_total": sum(s.raw_size for s in info.sections),
-        "preload_virtual": sum(s.virtual_size for s in info.sections if "preload" in s.flags),
-        # Bytes with no file backing (BSS-like): virtual beyond raw.
-        "zero_fill": sum(max(0, s.virtual_size - s.raw_size) for s in info.sections),
-    }
+    # XDK linkers set the "executable" flag on nearly every section (.rdata and
+    # .data included), so the flag says nothing about content. Classify by role:
+    #   game_text: .text (the title's own code: engine, middleware, game logic)
+    #   xdk_libs:  named XDK library sections (D3D, DSOUND, XONLINE, ...)
+    #   rodata / rwdata: .rdata / .data*  (rwdata includes zero-fill/BSS)
+    #   inserted:  inserted files ($$XTIMAGE, .XTLID, XBOXDSP, ...)
+    def role(sec: Section) -> str:
+        if "inserted_file" in sec.flags:
+            return "inserted"
+        if sec.name == ".text":
+            return "game_text"
+        if sec.name == ".rdata":
+            return "rodata"
+        if sec.name.startswith(".data") or sec.name in (".bss", ".tls"):
+            return "rwdata"
+        if sec.name.startswith("."):
+            return "other"
+        return "xdk_libs"
+
+    roles = ["game_text", "xdk_libs", "rodata", "rwdata", "inserted", "other"]
+    info.totals = {r: sum(s.virtual_size for s in info.sections if role(s) == r) for r in roles}
+    info.totals["raw_total"] = sum(s.raw_size for s in info.sections)
+    info.totals["preload_virtual"] = sum(
+        s.virtual_size for s in info.sections if "preload" in s.flags)
+    # Bytes with no file backing (BSS-like): virtual beyond raw.
+    info.totals["zero_fill"] = sum(max(0, s.virtual_size - s.raw_size) for s in info.sections)
     return info
 
 
@@ -209,8 +226,11 @@ def render(info: XbeInfo, budget: int) -> str:
         f"  file size:     {info.file_size:>10} B  ({_mib(info.file_size)})  budget < {budget} B: "
         + ("OK" if info.file_size < budget else "OVER"),
         f"  size of image: {info.size_of_image:>10} B  ({_mib(info.size_of_image)})  memory at load",
-        f"  code (exec):   {info.totals['code_virtual']:>10} B  ({_mib(info.totals['code_virtual'])})",
-        f"  data (other):  {info.totals['data_virtual']:>10} B  ({_mib(info.totals['data_virtual'])})",
+        f"  game .text:    {info.totals['game_text']:>10} B  ({_mib(info.totals['game_text'])})",
+        f"  XDK libraries: {info.totals['xdk_libs']:>10} B  ({_mib(info.totals['xdk_libs'])})",
+        f"  .rdata:        {info.totals['rodata']:>10} B  ({_mib(info.totals['rodata'])})",
+        f"  .data (+bss):  {info.totals['rwdata']:>10} B  ({_mib(info.totals['rwdata'])})",
+        f"  inserted/other:{info.totals['inserted'] + info.totals['other']:>10} B",
         f"  zero-fill:     {info.totals['zero_fill']:>10} B",
         f"  stack commit {info.stack_commit}  heap reserve {info.heap_reserve}  heap commit {info.heap_commit}",
         "  sections:",

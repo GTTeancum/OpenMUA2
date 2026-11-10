@@ -63,11 +63,21 @@ class InspectXbeTest(unittest.TestCase):
         self.assertEqual(info.title_id, 0x4D550001)
         self.assertEqual([s.name for s in info.sections], [".text", ".data"])
         self.assertEqual(info.sections[0].flags, ["preload", "executable"])
-        self.assertEqual(info.totals["code_virtual"], 0x3000)
-        self.assertEqual(info.totals["data_virtual"], 0x2800)
+        self.assertEqual(info.totals["game_text"], 0x3000)
+        self.assertEqual(info.totals["rwdata"], 0x2800)
+        self.assertEqual(info.totals["xdk_libs"], 0)
         self.assertEqual(info.totals["zero_fill"], 0x2000)
         self.assertEqual(info.libraries[0].name, "XAPILIB")
         self.assertEqual(info.libraries[0].version, "1.0.5849")
+
+    def test_roles_ignore_executable_flag(self):
+        # XDK builds mark .data executable; it must still count as data.
+        data = bytearray(synthetic_xbe())
+        flags_off = 0x400 + 0x38  # second section header
+        struct.pack_into("<I", data, flags_off, 0x01 | 0x02 | 0x04)
+        info = mod.parse(bytes(data))
+        self.assertEqual(info.totals["game_text"], 0x3000)
+        self.assertEqual(info.totals["rwdata"], 0x2800)
 
     def test_debug_key_detected(self):
         self.assertEqual(mod.parse(synthetic_xbe(kind="debug")).build_kind, "debug")

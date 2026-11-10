@@ -101,8 +101,8 @@ jobs:
           secs = " ".join(f"{s['name']}:{s['virtual_size']}" for s in d["sections"])
           libs = " ".join(f"{l['name']}:{l['version']}" for l in d["libraries"]) or "none"
           print(f"::notice::XBE {d['build_kind']} title={d['title_name']!r} file={d['file_size']} "
-                f"image={d['size_of_image']} code={d['totals']['code_virtual']} "
-                f"data={d['totals']['data_virtual']} within_budget={d['within_budget']} "
+                f"image={d['size_of_image']} text={d['totals']['game_text']} xdk={d['totals']['xdk_libs']} "
+                f"rodata={d['totals']['rodata']} rwdata={d['totals']['rwdata']} within_budget={d['within_budget']} "
                 f"sections=[{secs}] libs=[{libs}]")
           PY
 

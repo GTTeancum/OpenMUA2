@@ -112,6 +112,39 @@ confirm that.
 The MUA1 Xbox XBE is the reference here: its size, sections and heap layout show
 what a shipped Alchemy-3.2 game on this hardware fits within the 10 MB/64 MiB
 budget. Measure that before planning content, using step 1 below.
+
+#### MUA1 Xbox reference measurement (2026-11-10)
+Measured with `tools/inspect_xbe.py` on the maintainer's own copy of the XBE. The
+file was used inside the automation sandbox only; it is not in this repo or in CI.
+Only these header-level numbers are recorded.
+
+| Item | Value |
+|---|---|
+| Title / ID | Marvel: Ultimate Alliance, `0x4156005C`, retail |
+| XBE file size | 6,221,824 B (5.93 MiB), under the 10 MB budget |
+| Load image (`SizeOfImage`) | 9,381,344 B (8.95 MiB), leaving about 55 MiB for kernel, heap, assets and framebuffers |
+| Game `.text` (engine, Alchemy, game logic) | 4,459,476 B (4.25 MiB) |
+| XDK library sections (D3D, DSOUND, XONLINE, XNET, WMADEC, XGRPH, ...) | 695,008 B |
+| `.rdata` | 775,396 B |
+| `.data` + BSS | 3,411,644 B (3,202,768 B zero-filled at load) |
+| XDK | 5849 for every library (D3D8, DSOUND, XONLINES, XVOICE, D3DX8, XGRAPHC, ...) |
+| Stack commit / heap reserve | 256 KiB / 1 MiB |
+
+What this means:
+- **The recompile route (P2) fails the budget.** MUA2's PPC text (8.57 MB) is 1.92x
+  MUA1's *entire* native x86 game code (4.46 MB). Even a hypothetical 1:1
+  translation, before runtime, XDK-equivalent libraries and data, already uses 86%
+  of the 10 MB XBE budget. Real recompiled output is larger, so P0.2 is very likely
+  to confirm the failure.
+- **A shipped Alchemy-3.2 title fits comfortably.** MUA1 uses 62% of the file budget,
+  and its image takes about 14% of RAM. MUA2 content on MUA1's engine (P1) inherits a
+  known-good code footprint, so the open question is *asset* memory per level, not
+  code size.
+- **Next RE targets in this XBE, for local use only:** the Alchemy/Raven heap setup
+  (how the remaining ~55 MiB is split between the Alchemy pools, texture memory and
+  streaming), and the per-level asset loading path (`ravenZipFile` and the `.xmlb`/
+  `.igb` loaders). Together they define the per-level asset budget that converted
+  MUA2 content must meet.
 MUA2 Wii assets can be back-converted from Alchemy 3.5 to MUA1 Xbox's Alchemy 3.2
 with igb-blender (per the brief). That makes the most realistic Xbox deliverable a
 **MUA1-Xbox-engine mod that carries MUA2 content**, not OpenMUA2's runtime.
