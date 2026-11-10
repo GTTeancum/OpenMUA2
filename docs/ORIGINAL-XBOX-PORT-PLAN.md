@@ -69,10 +69,29 @@ confirm that.
 ## 4. Prioritized plan
 
 ### P0: Feasibility gates (cheap; decide before any porting work)
-1. **Memory census.** Add an opt-in runtime counter that records the high-water mark
-   of touched MEM1/MEM2 pages and the arena use during a Latveria level, on Windows.
-   This shows the game's real footprint against the 88 MiB maximum. If it is above
-   about 40 MiB, emulation and recompilation paths are closed.
+1. **Memory census (implemented; needs a run on your Windows machine).** It is an
+   opt-in sampler in the runtime (`tools/memory_census.hpp`, wired into
+   `dolphin_runtime.cpp`). It counts the 4 KiB pages of MEM1/MEM2 that are
+   non-zero (an upper bound) and the pages that change between samples (the
+   working set), plus a per-MiB occupancy map. Run it like this:
+
+   ```bat
+   set OPENMUA2_MEMORY_CENSUS=%CD%\.local\xbox\census-latveria.csv
+   rem optional, default 1000, clamped 100..600000
+   set OPENMUA2_MEMORY_CENSUS_INTERVAL_MS=1000
+   Run.cmd
+   ```
+
+   Play from boot through the main menu and into a Latveria fight (ideally with a
+   4-hero team and fusions), then exit normally. The file is written at shutdown.
+   Its `# peak` header lines give the answer. One sample takes about 40 ms of
+   memory reads on a separate thread, so it doesn't change game timing.
+   **Decision rule:** if peak `ever_nonzero` for MEM1+MEM2 is above about 40 MiB,
+   emulation and recompilation routes are closed. That figure is the Xbox's 64 MiB
+   minus room for the kernel, framebuffers, textures and the recompiled code itself.
+   The census measures guest RAM only. Wii textures in guest RAM double as GPU memory
+   on the Wii, but on the Xbox they would be converted into a second copy unless
+   aliased.
 2. **Code-size probe.** Run DolRecomp's C backend (`BACKEND=c`) and compile the
    output with `clang --target=i386-pc-win32 -Os`. Record the `.text` size. This needs
    a disc, so it runs locally, not in CI. No game-derived output may be committed.
