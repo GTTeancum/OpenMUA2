@@ -136,8 +136,8 @@ effort. It would also need XDK 5849's proprietary MSVC 7.1 compiler.
   plus one without a fixed size. The largest are about 7.3 MiB and 5.9 MiB.
   From static analysis (not yet measured at runtime), level packages load into
   the 7.3 MiB pool, which they share with dialogue, movie and zone data; sounds
-  use the 5.9 MiB pool; and each playable character probably gets one of four
-  0.66 MiB pools. A converted MUA2 level should be budgeted against those
+  use the 5.9 MiB pool; and each of the four hero slots gets its own 0.66 MiB
+  pool (read from the loader code). A converted MUA2 level should be budgeted against those
   numbers. Details are in the private notes.
 
 ### P1: Recommended direction if P0 confirms infeasibility: content port to the MUA1 Xbox engine
